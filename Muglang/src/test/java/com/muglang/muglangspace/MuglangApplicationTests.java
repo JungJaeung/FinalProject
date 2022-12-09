@@ -1,10 +1,10 @@
-package com.mugulang.mugulangproject;
+package com.muglang.muglangspace;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MugulangProjectApplicationTests {
+class MuglangApplicationTests {
 
 	@Test
 	void contextLoads() {
