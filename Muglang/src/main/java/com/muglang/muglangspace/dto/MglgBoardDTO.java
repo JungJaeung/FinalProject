@@ -16,6 +16,6 @@ public class MglgBoardDTO {
 	private int userId;
 	private String boardTitle;
 	private String boardContent;
-	private String boardCount;
-	private LocalDateTime boardDate;
+	private int boardCount;
+	private String boardDate;
 }
