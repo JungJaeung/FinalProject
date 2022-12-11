@@ -33,6 +33,6 @@ public class MglgBoard {
 	private int userId;
 	private String boardTitle;
 	private String boardContent;
-	private String boardCount;
+	private int boardCount;
 	private LocalDateTime boardDate = LocalDateTime.now();
 }

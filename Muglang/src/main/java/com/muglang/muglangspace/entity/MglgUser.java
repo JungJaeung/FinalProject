@@ -1,5 +1,7 @@
 package com.muglang.muglangspace.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,7 +34,7 @@ public class MglgUser {
 	private String email;
 	private String address;
 	private String bio;
-	private String regDate;
+	private LocalDateTime regDate;
 	@Column
 	@ColumnDefault("'ROLE_USER'")
 	private String userRole;
