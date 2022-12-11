@@ -4,12 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.muglang.muglangspace.service.mglguser.MglgUserService;
-
 @RestController
-@RequestMapping("/user")
-public class MglgUserController {
+@RequestMapping("/board")
+public class MglgBoardController {
 	@Autowired
-	MglgUserService mglgUserService;
-	//계정 관련 컨트롤
+	private MglgBoardController mglgBoardController;
+	//게시글 관련 컨트롤
 }
