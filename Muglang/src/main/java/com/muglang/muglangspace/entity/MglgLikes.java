@@ -9,30 +9,26 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.DynamicInsert;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="T_MGLG_BOARD")
+@Table(name="T_MGLG_LIKES")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@DynamicInsert
 @Data
-@IdClass(MglgBoardId.class)
-public class MglgBoard {
-	@Id
-	private int boardId;
+@IdClass(MglgLikesId.class)
+public class MglgLikes {
 	@Id
 	@ManyToOne
 	@JoinColumn(name="USER_ID")
 	private MglgUser mglgUser;
-	private String boardTitle;
-	private String boardContent;
-	private int boardCount;
-	private LocalDateTime boardDate = LocalDateTime.now();
+	@Id
+	@ManyToOne
+	@JoinColumn(name="POST_ID")
+	private MglgPost mglgPost;
+	private LocalDateTime likeDate = LocalDateTime.now();
 }
