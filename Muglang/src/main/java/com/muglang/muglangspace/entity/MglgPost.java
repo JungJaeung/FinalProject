@@ -1,5 +1,7 @@
 package com.muglang.muglangspace.entity;
 
+
+
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
@@ -11,29 +13,29 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
 
+import groovy.transform.builder.Builder;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="T_MGLG_BOARD")
+@Table(name="T_MGLG_POST")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @DynamicInsert
 @Data
-@IdClass(MglgBoardId.class)
-public class MglgBoard {
+@IdClass(MglgPostId.class)
+public class MglgPost {
 	@Id
-	private int boardId;
-	@Id
+	private int postId;
 	@ManyToOne
+	@Id
 	@JoinColumn(name="USER_ID")
-	private int userId;
-	
-	private String boardTitle;
-	private String boardContent;
-	private int boardCount;
-	private LocalDateTime boardDate = LocalDateTime.now();
+	private MglgUser mglgUser;
+	private String postContent;
+	private String restNm;
+	private int postRating;
+	private int viewCount;
+	private LocalDateTime postDate=LocalDateTime.now();
 }

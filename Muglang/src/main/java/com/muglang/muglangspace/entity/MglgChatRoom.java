@@ -1,4 +1,6 @@
-package com.muglang.muglangspace.dto;
+package com.muglang.muglangspace.entity;
+
+
 
 import java.time.LocalDateTime;
 
@@ -11,22 +13,23 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
 
+import groovy.transform.builder.Builder;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@Entity
+@Table(name="T_MGLG_CHATROOM")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MglgBoardDTO {
-	private int boardId;
-
+@DynamicInsert
+@Data
+public class MglgChatRoom {
+	@Id
+	private int chatroomId;
 	private int userId;
-	
-	private String boardTitle;
-	private String boardContent;
-	private int boardCount;
-	private String boardDate;
-}
+	private int receiverId;
+	private LocalDateTime datetime = LocalDateTime.now();
+	private String userYn;
+	}
