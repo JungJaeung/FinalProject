@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @DynamicInsert
 @Data
-public class MglgChatRoom {
+public class MglgChatroom {
 	@Id
 	private int chatroomId;
 	private int userId;
