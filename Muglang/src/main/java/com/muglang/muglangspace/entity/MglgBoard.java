@@ -23,11 +23,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @DynamicInsert
 @Data
-@IdClass(MglgBoardId.class)
 public class MglgBoard {
 	@Id
 	private int boardId;
-	@Id
 	@ManyToOne
 	@JoinColumn(name="USER_ID")
 	private MglgUser mglgUser;

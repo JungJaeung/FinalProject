@@ -6,6 +6,6 @@ import lombok.Data;
 
 @Data
 public class MglgLikesId implements Serializable{
-	private int userId;
-	private int postId;
+	private int mglgUser;
+	private int mglgPost;
 }

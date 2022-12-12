@@ -10,6 +10,6 @@ import com.muglang.muglangspace.service.mglguser.MglgUserService;
 @RequestMapping("/user")
 public class MglgUserController {
 	@Autowired
-	MglgUserService mglgUserService;
+	private MglgUserService mglgUserService;
 	//계정 관련 컨트롤
 }

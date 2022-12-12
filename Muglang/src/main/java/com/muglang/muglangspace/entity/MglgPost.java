@@ -25,12 +25,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @DynamicInsert
 @Data
-@IdClass(MglgPostId.class)
 public class MglgPost {
 	@Id
 	private int postId;
 	@ManyToOne
-	@Id
 	@JoinColumn(name="USER_ID")
 	private MglgUser mglgUser;
 	private String postContent;

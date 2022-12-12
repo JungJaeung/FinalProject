@@ -20,9 +20,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
+@IdClass(MglgPostFileId.class)
 public class MglgPostFile {
 	@Id
-	private int postId;
+	@ManyToOne
+	@JoinColumn(name="POST_ID")
+	private MglgPost mglgPost;
+	@Id
 	private int postFileId;
 	private String postFileNm;
 	private String postFileOriginNm;
