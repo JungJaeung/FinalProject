@@ -8,6 +8,5 @@ import lombok.Data;
 @Data
 public class MglgCommentId implements Serializable{
 	private int commentId;
-	private int postId;
-	private int userId;
+	private int mglgPost;
 }

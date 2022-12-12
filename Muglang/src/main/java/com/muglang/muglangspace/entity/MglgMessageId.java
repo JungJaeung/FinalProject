@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class MglgMessageId implements Serializable{
 	private int messageNo;
-	private int chatroomId;
+	private int mglgChatroom;
 }

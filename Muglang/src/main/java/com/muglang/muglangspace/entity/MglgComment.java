@@ -37,7 +37,6 @@ public class MglgComment {
 	private MglgPost mglgPost;
 	private String commentContent;
 	private LocalDateTime commentDate = LocalDateTime.now();
-	@Id
 	@ManyToOne
 	@JoinColumn(name="USER_ID")
 	private MglgUser mglgUser;

@@ -5,7 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class MglgBoardId implements Serializable{
-	private int boardId;
-	private int userId;
+public class MglgPostFileId implements Serializable{
+	private int mglgPost;
+	private int postFileId;
 }

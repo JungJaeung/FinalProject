@@ -30,7 +30,7 @@ public class MglgMessage {
 	@Id
 	@ManyToOne
 	@JoinColumn(name="CHATROOM_ID")
-	private MglgChatroom chatroomId;
+	private MglgChatroom mglgChatroom;
 	private int userId;
 	private int receiverId;
 	private String messageContent;
