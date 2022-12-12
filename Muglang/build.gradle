@@ -4,7 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.0'
 }
 
-group = 'com.muglang'
+group = 'com.ezen'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
@@ -29,15 +29,10 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	// https://mvnrepository.com/artifact/com.zaxxer/HikariCP
 	implementation 'com.zaxxer:HikariCP:5.0.1'
-	// https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-layout-dialect
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
-	// https://mvnrepository.com/artifact/org.mybatis/mybatis
-	implementation 'org.mybatis:mybatis:3.5.11'
-	// https://mvnrepository.com/artifact/org.mybatis/mybatis-spring
+	implementation 'org.mybatis:mybatis:3.5.11'	
 	implementation 'org.mybatis:mybatis-spring:3.0.0'
-	
 }
 
 tasks.named('test') {
