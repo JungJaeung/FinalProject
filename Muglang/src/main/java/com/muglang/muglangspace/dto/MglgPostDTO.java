@@ -19,7 +19,6 @@ public class MglgPostDTO {
 	private MglgUser mglgUser;
 	private String postContent;
 	private String restNm;
-	private int postRating;
-	private int viewCount;
+	private int restRating;
 	private String postDate;
 }
