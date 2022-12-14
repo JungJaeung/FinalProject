@@ -34,7 +34,7 @@ public class MglgUser {
 	private String email;
 	private String address;
 	private String bio;
-	private LocalDateTime regDate;
+	private LocalDateTime regDate = LocalDateTime.now();
 	@Column
 	@ColumnDefault("'ROLE_USER'")
 	private String userRole;

@@ -15,13 +15,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="T_MGLG_LIKES")
+@Table(name="T_MGLG_POST_LIKES")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 @IdClass(MglgLikesId.class)
-public class MglgLikes {
+public class MglgPostLikes {
 	@Id
 	@ManyToOne
 	@JoinColumn(name="USER_ID")
