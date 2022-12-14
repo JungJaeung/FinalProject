@@ -33,8 +33,7 @@ public class MglgPost {
 	private MglgUser mglgUser;
 	private String postContent;
 	private String restNm;
-	private int postRating;
-	private int viewCount;
+	private int restRating;
 	private String hashTag1;
 	private String hashTag2;
 	private String hashTag3;
