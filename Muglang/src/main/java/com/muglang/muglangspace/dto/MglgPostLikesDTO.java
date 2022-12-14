@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MglgLikesDTO {
+public class MglgPostLikesDTO {
 	private int userId;
 	private int postId;
 	private String likeDate;

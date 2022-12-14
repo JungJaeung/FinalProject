@@ -34,6 +34,6 @@ public class MglgMessage {
 	private int userId;
 	private int receiverId;
 	private String messageContent;
-	private LocalDateTime sendTime;
+	private LocalDateTime sendTime = LocalDateTime.now();
 	private String messageReadYn;
 }

@@ -35,5 +35,10 @@ public class MglgPost {
 	private String restNm;
 	private int postRating;
 	private int viewCount;
+	private String hashTag1;
+	private String hashTag2;
+	private String hashTag3;
+	private String hashTag4;
+	private String hashTag5;
 	private LocalDateTime postDate=LocalDateTime.now();
 }

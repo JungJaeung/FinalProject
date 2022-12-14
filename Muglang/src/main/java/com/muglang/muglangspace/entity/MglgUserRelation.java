@@ -3,6 +3,7 @@ package com.muglang.muglangspace.entity;
 
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,5 +33,5 @@ public class MglgUserRelation implements Serializable{
 	private MglgUser mglgUser;
 	
 	private int followerId;
-	private String followDate;
+	private LocalDateTime followDate = LocalDateTime.now();
 }
