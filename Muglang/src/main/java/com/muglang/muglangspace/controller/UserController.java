@@ -8,7 +8,7 @@ import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
 @RestController
 @RequestMapping("/user")
-public class MglgUserController {
+public class UserController {
 	@Autowired
 	private MglgUserService mglgUserService;
 	//계정 관련 컨트롤
