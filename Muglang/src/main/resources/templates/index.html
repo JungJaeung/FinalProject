@@ -68,7 +68,7 @@
 						</div><!-- End Recent Sales -->
 					</div>
 					<div class="row">
-						<div class="col-12">
+						<div th:each="post: ${postList}" class="col-12">
 							<div class="card recent-sales">
 								<div class="card-body">
 									<!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
@@ -85,7 +85,7 @@
 									<div class="card-title">
 										<img class="img-fluid rounded-circle" src="assets/img/messages-1.jpg"
 											style="width: 40px;">
-										<a href="#" class="card-title">asdf</a>
+										<a href="#" class="card-title" th:text="${post.postTitle}"></a>
 									</div>
 									<!-- 게시글 사진 부분 -->
 									<div class="activity" style="margin-bottom: 10px;">
@@ -93,14 +93,13 @@
 									</div>
 									<div class="activity">
 										<!-- 게시글 내용부분-->
-										<div>
-											헤으응
+										<div th:text="${post.postContent}">
 										</div>
 										<br>
 										<!-- 해시태그 -->
-										<a href="#" style="color: blue;">&emsp;#강남맛집</a>
-										<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>
-										<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>
+										<a href="#" style="color: blue;" th:text="">&emsp;#강남맛집</a>
+										<a href="#" style="color: blue;" th:text="">&emsp;#˘ᗜ˘</a>
+										<a href="#" style="color: blue;" th:text="">&emsp;#(๑╹ワ╹)</a>
 									</div>
 									<!-- 좋아요 댓글 아이콘 -->
 									<div class="activity">
@@ -123,6 +122,9 @@
 								</div>
 							</div>
 						</div>
+					</div>
+					<div>
+						
 					</div>
 				</div><!-- End Left side columns -->
 

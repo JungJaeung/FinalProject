@@ -15,7 +15,7 @@ import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
 @Service
-public class MglgPostServiceImpl implements MglgPostService, Function<List<MglgPost>, List<MglgPostDTO>>{
+public class MglgPostServiceImpl implements MglgPostService {
 	@Autowired
 	private MglgPostRepository mglgPostRepository;
 	
@@ -56,6 +56,5 @@ public class MglgPostServiceImpl implements MglgPostService, Function<List<MglgP
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
 
 }
