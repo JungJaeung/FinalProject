@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/board")
-public class FQAController {
+public class FAQController {
 	@Autowired
-	private FQAController mglgBoardController;
+	private FAQController mglgBoardController;
 	//게시글 관련 컨트롤
 }
