@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko"
+	  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layouts/layout}">
+	<head>
+
+	</head>
+	<th:block layout:fragment = "script">
+		<script th:inline="javascript">
+		
+		//딜리트 유저 작동
+		function banUser(userId){
+			const userBanYn = $("#userBanYn_"+userId).text();
+				
+			$.ajax({
+					url: '/admin/banUser',
+					type: 'put',
+					data: {userId: userId,
+						   userBanYn: userBanYn == 'O' ? 'X' : 'O'},
+					success: function(obj) {
+						console.log(obj);
+						
+						alert("변경되었습니다.");
+						$("#userBanYn_"+obj.item.userId).text(obj.item.userBanYn);
+					},
+					error: function(e) {
+						console.log(e);
+					}
+			});
+			
+		}
+	
+		</script>
+	</th:block>
+	<body>
+		<main layout:fragment="main" id="main" class="main">
+				<h3>유저 관리페이지입니다.</h3>
+				<form id="searchForm" action="/user/getUserList" method="get">
+					<input type="hidden" name="page" value="">
+					<tabl border="1" style="width: 700px; border-collapse: collapse;">
+						<etr>
+							<td align="right">
+								<select name="searchCondition">
+									<option value="ALL" th:selected="${searchCondition == 'ALL'}">전체</option>
+									<option value="이름" th:selected="${searchCondition == '이름'}">이름</option>
+									<option value="이메일" th:selected="${searchCondition == '이메일'}">이메일</option>
+								</select>
+								<input type="text" name="searchKeyword" th:value="${searchKeyword}">
+								<button type="button" id="btnSearch">검색</button>
+							</td>
+						</tr>
+					</table>
+				</form>
+				
+				<table id="boardTable" border="1" style="width: 700px; border-collapse: collapse;">
+					<tr>
+						<th>유저이름</th>
+						<th>전화번호</th>
+						<th>이메일</th>
+						<th>주소</th>
+						<th>가입일</th>
+						<th>활성화 여부</th> 
+						<th style="width: 70px;"></th> 
+					</tr>
+						<tr th:each="user : ${getUserList}">
+							<td th:text=${user.userName}></td>
+							<td th:text="${user.phone}"></td>
+							<td th:text="${user.email}"></td>
+							<td th:text="${user.address}"></td>
+							<td th:text="${user.regDate eq null ? '' : #strings.substring(user.regDate, 0, 10)}"></td>
+							<td th:text="${user.userBanYn}" th:id="'userBanYn_'+${user.userId}"></td>
+							<td><button id="'btn_'+ ${user.userId}" th:onclick="banUser([[${user.userId}]])" th:text="변경"></button></td>
+						</tr>
+				</table>
+				<br/>
+				<div style="text-align:center;">
+					<ul class="pagination" th:if="${getUserList.totalElements > 0}"
+										   th:with="pageNumber = ${getUserList.pageable.pageNumber},
+												    pageSize = ${getUserList.pageable.pageSize},
+												    totalPages = ${getUserList.totalPages},
+												    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+												    tempEndPage = ${startPage + pageSize - 1},
+												    endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
+						<li class="pagination_button" th:if="${pageNumber > 0}">
+							<a th:href="@{/user/getUserList(
+											page=${pageNumber - 1}, 
+											searchCondition=${searchCondition}, 
+											searchKeyword=${searchKeyword}
+										)}">이전</a>
+						</li>
+					
+					
+						<li class="pagination_button" th:each="page : ${#numbers.sequence(startPage, endPage)}">
+							<a th:href="@{/user/getUserList(
+											page=${page - 1},
+											searchCondition=${searchCondition},
+											searchKeyword=${searchKeyword}
+										)}" th:text="${page}"></a>
+						</li>
+					
+						<li class="pagination_button" th:if="${pageNumber < totalPages - 1}">
+							<a th:href="@{/user/getUserList(
+											page=${pageNumber + 1},
+											searchCondition=${searchCondition},
+											searchKeyword=${searchKeyword}
+										)}">다음</a>
+						</li>
+					</ul>
+				</div>
+				<br/>
+			</div>
+		</main>
+	</body>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</html>

@@ -28,8 +28,8 @@ import lombok.NoArgsConstructor;
 public class MglgChatroom {
 	@Id
 	private int chatroomId;
-	private int userId;
-	private int receiverId;
-	private LocalDateTime datetime = LocalDateTime.now();
-	private String userYn;
+	private int part1;
+	private int part2;
+	private LocalDateTime roomDatetime = LocalDateTime.now();
+	private String useYn;
 	}

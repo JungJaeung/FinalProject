@@ -1,5 +1,9 @@
 package com.muglang.muglangspace.dto;
 
+import javax.persistence.Column;
+
+import org.hibernate.annotations.ColumnDefault;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,13 +16,18 @@ import lombok.NoArgsConstructor;
 public class MglgUserDTO {
 	private int userId;
 	private String userName;
-	private String passWord;
+	private String password;
 	private String firstName;
 	private String lastName;
 	private String phone;
 	private String email;
 	private String address;
 	private String bio;
+	@Column
+	@ColumnDefault("'N'")
+	private String userBanYn;
 	private String regDate;
 	private String userRole;
+	private String searchCondition;
+	private String searchKeyword;
 }
