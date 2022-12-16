@@ -14,7 +14,7 @@ import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 public class PostController {
 	@Autowired
 	private MglgPostService mglgPostService;
-	
+	//수정작업실행함
 	public void insertPost(MglgPost mglgpost) {
 		
 	}
