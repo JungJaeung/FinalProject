@@ -39,27 +39,23 @@
 	<script th:src="@{/js/jquery-3.6.1.min.js}"></script>
 
 	<!-- Vendor JS Files -->
-	<script th:src="@{assets/vendor/apexcharts/apexcharts.min.js}"></script>
-	<script th:src="@{assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
-	<script th:src="@{assets/vendor/chart.js/chart.min.js}"></script>
-	<script th:src="@{assets/vendor/echarts/echarts.min.js}"></script>
-	<script th:src="@{assets/vendor/quill/quill.min.js}"></script>
-	<script th:src="@{assets/vendor/simple-datatables/simple-datatables.js}"></script>
-	<script th:src="@{assets/vendor/tinymce/tinymce.min.js}"></script>
-	<script th:src="@{assets/vendor/php-email-form/validate.js}"></script>
+	<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+	<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/assets/vendor/chart.js/chart.min.js}"></script>
+	<script th:src="@{/assets/vendor/echarts/echarts.min.js}"></script>
+	<script th:src="@{/assets/vendor/quill/quill.min.js}"></script>
+	<script th:src="@{/assets/vendor/simple-datatables/simple-datatables.js}"></script>
+	<script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
+	<script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
 
 	<!-- Template Main JS File -->
-	<script src="assets/js/main.js"></script>
+	<script th:src="@{/assets/js/main.js}"></script>
 	<script>
 		/* Sidebar toggle */
 		$(function () {
 			$('.toggle-sidebar-btn').on('click', function () {
 				$("body").toggleClass('toggle-sidebar');
 			})
-
-			new Quill('.quill-editor-default', {
-				theme: 'bubble'
-			});
 		})
 	</script>
 
