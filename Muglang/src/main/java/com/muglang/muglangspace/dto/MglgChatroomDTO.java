@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MglgChatroomDTO {
 	private int chatroomId;
-	private int userId;
-	private int receiverId;
-	private String datetime;
-	private String userYn;
+	private int part1;
+	private int part2;
+	private String roomDatetime;
+	private String useYn;
 }

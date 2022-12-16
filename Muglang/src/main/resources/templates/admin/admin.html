@@ -3,22 +3,20 @@
 	  xmlns:th="http://www.thymeleaf.org"
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	  layout:decorate="~{layouts/layout}">
-	  
-	<!-- head 영역 시작 -->
-	<!-- 개별적으로 사용할 css, js 링크 걸기 위해 남겨둠 -->
 	<head>
-
+		
 	</head>
-	<!-- head 영역 끝 -->
 	<body>
-			<div layout:fragment="content">
+	  <div layout:fragment="content">
 			
-					<h3>asdasdadsasdasd</h3>
-
-			
-			</div>
-
-
+		<h3>asdasdadsasdasd</h3>
+		-----------------------<br>
+		<h3>어드민페이지입니다.</h3>
+		<div>
+			<a th:href="@{/user/getUserList}">섹섹보</a>
+		</div>
+	  </div>
+	
 	</body>
 	
 	
