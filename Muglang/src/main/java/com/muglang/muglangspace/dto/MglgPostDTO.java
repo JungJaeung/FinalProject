@@ -1,6 +1,8 @@
 package com.muglang.muglangspace.dto;
 
 
+import java.time.LocalDateTime;
+
 import com.muglang.muglangspace.entity.MglgUser;
 
 import lombok.AllArgsConstructor;
@@ -19,6 +21,11 @@ public class MglgPostDTO {
 	private MglgUser mglgUser;
 	private String postContent;
 	private String restNm;
-	private int restRating;
+	private int restRating; //
+	private String hashTag1;
+	private String hashTag2;
+	private String hashTag3;
+	private String hashTag4;
+	private String hashTag5;
 	private String postDate;
 }

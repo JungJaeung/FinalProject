@@ -1,16 +1,21 @@
 package com.muglang.muglangspace.service.mglgpost.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.muglang.muglangspace.common.Function;
+import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
 @Service
-public class MglgPostServiceImpl implements MglgPostService	{
+public class MglgPostServiceImpl implements MglgPostService, Function<List<MglgPost>, List<MglgPostDTO>>{
 	@Autowired
 	private MglgPostRepository mglgPostRepository;
 	
@@ -39,10 +44,11 @@ public class MglgPostServiceImpl implements MglgPostService	{
 		
 	}
 
+	//DB에서 페이지 기법으로 형태를 짜서 map의 객체로 만들어서 반환
 	@Override
-	public List<MglgPost> getPostList() {
-		// TODO Auto-generated method stub
-		return null;
+	public Page<MglgPost> getPagePostList(Pageable pageable) {
+		
+		return mglgPostRepository.findAll(pageable);
 	}
 
 	@Override
@@ -50,5 +56,6 @@ public class MglgPostServiceImpl implements MglgPostService	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 
 }
