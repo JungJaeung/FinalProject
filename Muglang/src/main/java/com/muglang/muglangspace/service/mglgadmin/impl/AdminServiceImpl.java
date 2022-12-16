@@ -3,6 +3,7 @@ package com.muglang.muglangspace.service.mglgadmin.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.repository.MglgReportRepository;
 import com.muglang.muglangspace.repository.MglgUserRepository;
@@ -16,5 +17,23 @@ public class AdminServiceImpl implements AdminService{
 		private MglgUserRepository mglgUserRepository;
 		@Autowired
 		private MglgPostRepository mglgPostRepository;
+		
+		@Override
+		public MglgUser searchBan(MglgUser user) {
+			
+			return mglgUserRepository.findByUserNameContaining(user);
+		}
+
+		@Override
+		public MglgUser uptUserBan(MglgUser user) {
+			String userBanYn = user.getUserBanYn();
+			int userId = user.getUserId();
+			
+			
+			mglgUserRepository.uptUserBan(userBanYn,userId);
+			mglgUserRepository.flush();
+			
+			return user;
+		}
 		
 }

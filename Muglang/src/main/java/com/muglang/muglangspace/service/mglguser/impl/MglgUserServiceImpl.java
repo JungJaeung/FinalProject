@@ -33,6 +33,8 @@ public class MglgUserServiceImpl implements MglgUserService{
 				return mglgUserRepository.findAll(pageable);
 			}
 	}
+
+
 	
 	
 }

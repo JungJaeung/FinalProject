@@ -8,4 +8,7 @@ import com.muglang.muglangspace.entity.MglgUser;
 public interface MglgUserService {
 	
 	Page<MglgUser> getUserList(MglgUser user,Pageable pageable); 
+	
+	
+
 }
