@@ -1,16 +1,11 @@
 package com.muglang.muglangspace.controller;
 
-import java.time.LocalDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -69,4 +64,9 @@ public class UserController {
 					
 					return mv;
 	}//getUserList끝
+	
+	
+	
+	
+	
 }//페이지 끝

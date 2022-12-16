@@ -4,16 +4,42 @@
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	  layout:decorate="~{layouts/layout}">
 	<head>
-		
+
 	</head>
+	<th:block layout:fragment = "script">
+		<script th:inline="javascript">
+		
+		//딜리트 유저 작동
+		function banUser(userId){
+			const userBanYn = $("#userBanYn_"+userId).text();
+				
+			$.ajax({
+					url: '/admin/banUser',
+					type: 'put',
+					data: {userId: userId,
+						   userBanYn: userBanYn == 'O' ? 'X' : 'O'},
+					success: function(obj) {
+						console.log(obj);
+						
+						alert("변경되었습니다.");
+						$("#userBanYn_"+obj.item.userId).text(obj.item.userBanYn);
+					},
+					error: function(e) {
+						console.log(e);
+					}
+			});
+			
+		}
+	
+		</script>
+	</th:block>
 	<body>
-			<div layout:fragment="content">
-			<div>
+		<main layout:fragment="main" id="main" class="main">
 				<h3>유저 관리페이지입니다.</h3>
 				<form id="searchForm" action="/user/getUserList" method="get">
 					<input type="hidden" name="page" value="">
-					<table border="1" style="width: 700px; border-collapse: collapse;">
-						<tr>
+					<tabl border="1" style="width: 700px; border-collapse: collapse;">
+						<etr>
 							<td align="right">
 								<select name="searchCondition">
 									<option value="ALL" th:selected="${searchCondition == 'ALL'}">전체</option>
@@ -34,8 +60,8 @@
 						<th>이메일</th>
 						<th>주소</th>
 						<th>가입일</th>
-						<th>밴 여부</th> 
-						<th>유저 밴</th> 
+						<th>활성화 여부</th> 
+						<th style="width: 70px;"></th> 
 					</tr>
 						<tr th:each="user : ${getUserList}">
 							<td th:text=${user.userName}></td>
@@ -43,8 +69,8 @@
 							<td th:text="${user.email}"></td>
 							<td th:text="${user.address}"></td>
 							<td th:text="${user.regDate eq null ? '' : #strings.substring(user.regDate, 0, 10)}"></td>
-							<td th:text="${user.userBanYn}"></td>
-							<td><button id="btnBan">유저 밴</button></td>
+							<td th:text="${user.userBanYn}" th:id="'userBanYn_'+${user.userId}"></td>
+							<td><button id="'btn_'+ ${user.userId}" th:onclick="banUser([[${user.userId}]])" th:text="변경"></button></td>
 						</tr>
 				</table>
 				<br/>
@@ -84,7 +110,7 @@
 				</div>
 				<br/>
 			</div>
-		</div>
+		</main>
 	</body>
 	
 	

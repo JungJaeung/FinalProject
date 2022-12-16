@@ -1,6 +1,8 @@
 package com.muglang.muglangspace.dto;
 
-import javax.persistence.Transient;
+import javax.persistence.Column;
+
+import org.hibernate.annotations.ColumnDefault;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +23,9 @@ public class MglgUserDTO {
 	private String email;
 	private String address;
 	private String bio;
-	private String userBanYn = "N";
+	@Column
+	@ColumnDefault("'N'")
+	private String userBanYn;
 	private String regDate;
 	private String userRole;
 	private String searchCondition;
