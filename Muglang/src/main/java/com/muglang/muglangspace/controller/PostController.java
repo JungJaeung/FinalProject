@@ -14,7 +14,7 @@ import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 public class PostController {
 	@Autowired
 	private MglgPostService mglgPostService;
-	
+	//3843783
 	public void insertPost(MglgPost mglgpost) {
 		
 	}
