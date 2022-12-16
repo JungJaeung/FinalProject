@@ -1102,6 +1102,6 @@ h6 {
  /*--------------------------------------------------------------
 # 오늘의 메뉴
 --------------------------------------------------------------*/
- #today_eat ul, #today_eat li{ font-size: large; margin-left: 20px; }
+ #today_eat ul, #today_eat li{ font-size: large; margin-left: 15%; }
  #today_eat li{ margin-bottom: 20px;}
  #today_eat a{color: black;}
