@@ -23,7 +23,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 	@Override
 	public void insertPost(MglgPost mglgpost) {
 		// TODO Auto-generated method stub
-		
+		mglgPostRepository.save(mglgpost);
 	}
 
 	@Override

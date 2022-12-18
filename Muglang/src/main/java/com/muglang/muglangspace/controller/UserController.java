@@ -23,7 +23,6 @@ public class UserController {
 	private MglgUserService mglgUserService;
 	//계정 관련 컨트롤
 	
-
 	@GetMapping("/profile")
 	public ModelAndView profileView() {
 		ModelAndView mv = new ModelAndView();
@@ -31,10 +30,9 @@ public class UserController {
 		mv.setViewName("profile.html");
 		return mv;
 	}
-}
 
 	//유저 목록 불러오기 + 페이징
-	@GetMapping("getUserList")
+	@GetMapping("/getUserList")
 	public ModelAndView getUserList(MglgUserDTO userDTO, @PageableDefault(page = 0, size = 10) Pageable pageable) {
 		MglgUser user = MglgUser.builder()
 					   .searchCondition(userDTO.getSearchCondition())

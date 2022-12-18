@@ -780,6 +780,20 @@ h6 {
 # Dashboard
 --------------------------------------------------------------*/
 /* Filter dropdown */
+/* 하단의 글작성 버튼 추가*/
+#newPost {
+	width: 100px;
+	height: 80px;
+	text-align: center;
+	background-color: skyblue;
+	border: 1px solid black;
+}
+
+#new Post a {
+	color: black;
+	text-decoration: none;
+}
+
 .dashboard .filter {
   position: absolute;
   right: 0px;
