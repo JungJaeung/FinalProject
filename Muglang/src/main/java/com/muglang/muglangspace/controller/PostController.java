@@ -2,11 +2,14 @@ package com.muglang.muglangspace.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,9 +28,27 @@ public class PostController {
 	@Autowired
 	private MglgUserService mglgUserService;
 
-	public void insertPost(MglgPost mglgpost) {
+	//메인 게시글 사이트 글쓰기 페이지로 이동 (로그인 세션 적용은 추후에 할 예정)
+	@GetMapping("/newPost")
+	public ModelAndView goInsertView(HttpSession session) {
 		
-		mglgPostService.insertPost(mglgpost);
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("post/insertPost.html");
+		return mv; 
+	}
+	
+	//글쓰기 버튼으로 적용되는 글 새로 작성
+	@PostMapping("/insertPost")
+	public void insertPost(MglgPostDTO mglgPostDTO) {
+		System.out.println("새글을 작성합니다.");
+		MglgPost mglgPost = MglgPost.builder()
+									.postId(mglgPostDTO.getPostId())
+									.mglgUser(mglgPostDTO.getMglgUser())
+									.postContent(mglgPostDTO.getPostContent())
+									.restNm(mglgPostDTO.getRestNm())
+									.build();
+		
+		mglgPostService.insertPost(mglgPost);
 	}
 	
 	public void updatePost(MglgPost mglgpost) {
