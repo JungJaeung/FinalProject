@@ -1,5 +1,6 @@
 package com.muglang.muglangspace.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,8 +34,10 @@ public class PostController {
 
 	//메인 게시글 사이트 글쓰기 페이지로 이동 (로그인 세션 적용은 추후에 할 예정)
 	@GetMapping("/newPost")
-	public ModelAndView goInsertView() {
+	public ModelAndView goInsertView(HttpSession session) {
+		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
 		ModelAndView mv = new ModelAndView();
+		mv.addObject("loginUser", temp);
 		mv.setViewName("post/insertPost.html");
 		System.out.println("새글을 작성하는 페이지로 이동합니다.");
 		return mv; 
@@ -42,8 +46,8 @@ public class PostController {
 	
 	//글쓰기 버튼으로 적용되는 글 새로 작성
 	@PostMapping("/insertPost")
-	public void insertPost(MglgPostDTO mglgPostDTO, HttpSession session) {
-		System.out.println(session.getAttribute("loginUser"));
+	public ModelAndView insertPost(MglgPostDTO mglgPostDTO, HttpSession session) {
+		ModelAndView mv = new ModelAndView();
 		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
 		System.out.println(temp);
 		MglgUser mglgUser = MglgUser.builder()
@@ -56,13 +60,23 @@ public class PostController {
 									.mglgUser(mglgUser)
 									.postContent(mglgPostDTO.getPostContent())
 									.restNm(mglgPostDTO.getRestNm())
+									.postDate(LocalDateTime.now())
+									.postRating(mglgPostDTO.getPostRating())
+									.restRating(mglgPostDTO.getRestRating())
 									.build();
 		
 		mglgPostService.insertPost(mglgPost);
+		mv.addObject("loginUser", temp);
+		mv.setViewName("post/post.html");
+		return mv;
 	}
 	
-	public void updatePost(MglgPost mglgpost) {
+	@PutMapping("/updatePost")
+	public ModelAndView updatePost(MglgPost mglgPost) {
+		ModelAndView mv = new ModelAndView();
+		mglgPostService.updatePost(mglgPost);
 		
+		return mv;
 	}
 	
 	public void deletePost(MglgPost mglgpost) {
@@ -85,6 +99,7 @@ public class PostController {
 																			.postDate(pageMglgPost.getPostDate().toString())
 																			.restNm(pageMglgPost.getRestNm())
 																			.restRating(pageMglgPost.getRestRating())
+																			.postRating(pageMglgPost.getPostRating())
 																			.hashTag1(pageMglgPost.getHashTag1())
 																			.hashTag2(pageMglgPost.getHashTag2())
 																			.hashTag3(pageMglgPost.getHashTag3())

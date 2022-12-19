@@ -9,6 +9,8 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
+				let list = $('.post').get();
+				console.log(list.length);
 				//퀼 텍스트 에어리어 소환
 				new Quill('.quill-editor-default', {
 					theme: 'bubble'
@@ -23,6 +25,23 @@
 					$("#file_select").click();
 				})
 				
+				//게시글 수정 버튼을 클릭할시 해당 게시물의 편집 상태를 활성화 하는 이벤트를 발생
+				for(let i=0; i < list.length; i++) {
+					$($('.updateBtn')[i]).click(function(e) {
+						console.log("수정 버튼 클릭 해당 게시글 활성화");
+						$("#selectedPost").css("z-index", "5").css("display", "block");
+						$($('.post')[i]).clone().appendTo('#selectedPost');
+						$('#selectedPost').children('.post').css("width", "85%")
+						.css("height" ,"80%").css("padding" , "80px").css("margin", "50px");
+						$()
+						
+					});
+				}
+				//$("#updateButton").click(function(e) {
+				//	console.log("수정 버튼 클릭 해당 게시글 활성화");
+				//	$("#selectedPost").css("z-index", "5").css("display", "block");
+					
+				//});
 			});
 		</script>
 	</th:block>
@@ -31,8 +50,11 @@
 <!-- head 영역 끝 -->
 
 <body>
-	<main layout:fragment="main" id="main" class="main">
 
+	<main layout:fragment="main" id="main" class="main">
+		<div id="selectedPost">
+			
+		</div>
 		<div class="pagetitle">
 			<h1>HOME</h1>
 		</div><!-- End Page Title -->
@@ -73,7 +95,7 @@
 						</div><!-- End Recent Sales -->
 					</div>
 					<div class="row">
-						<div th:each="post: ${postList}" class="col-12">
+						<div th:each="post : ${postList}" class="col-12 post">
 							<div class="card recent-sales">
 								<div class="card-body">
 									<!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
@@ -90,7 +112,7 @@
 									<div class="card-title">
 										<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
 											style="width: 40px;">
-										<a href="#" class="card-title" th:text="${post.postTitle}"></a>
+										<a href="#" class="card-title" th:text="${post.restNm}"></a>
 									</div>
 									<!-- 게시글 사진 부분 -->
 									<div class="activity" style="margin-bottom: 10px;">
@@ -102,9 +124,9 @@
 										</div>
 										<br>
 										<!-- 해시태그 -->
-										<a href="#" style="color: blue;" th:text="">&emsp;#강남맛집</a>
-										<a href="#" style="color: blue;" th:text="">&emsp;#˘ᗜ˘</a>
-										<a href="#" style="color: blue;" th:text="">&emsp;#(๑╹ワ╹)</a>
+										<a href="#" style="color: blue;">&emsp;#강남맛집</a>
+										<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>
+										<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>
 									</div>
 									<!-- 좋아요 댓글 아이콘 -->
 									<div class="activity">
@@ -119,10 +141,16 @@
 										<a>좋아요 <span>21</span>개</a>
 										<hr>
 									</div>
+									<form action="/post/updatePost" method="post">
+										<input type="hidden" id="userId" name="userId">
+										<input type="hidden" id="postId" name="userId">
+									</form>
 									<!-- 친구 식사 했는지 확인 필드 -->
 									<div class="activity" style="text-align: center;">
 										<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>
 											<span>감성타코</span>에서 식사하셨어요!</a>
+										
+										<button class="updateBtn" id="updateButton" th:if="${post.userId} eq ${loginUser.userId}">게시글 수정</button>	
 									</div>
 								</div>
 							</div>

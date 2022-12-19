@@ -21,15 +21,19 @@ public class MglgPostServiceImpl implements MglgPostService {
 	
 	//포스팅 관련 서비스 제공
 	@Override
-	public void insertPost(MglgPost mglgpost) {
+	public void insertPost(MglgPost mglgPost) {
 		// TODO Auto-generated method stub
-		mglgPostRepository.save(mglgpost);
+		mglgPostRepository.save(mglgPost);
 	}
 
 	@Override
-	public void updatePost(MglgPost mglgpost) {
+	public MglgPost updatePost(MglgPost mglgPost) {
 		// TODO Auto-generated method stub
+		mglgPostRepository.save(mglgPost);
 		
+		mglgPostRepository.flush();
+		
+		return mglgPost;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
  	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	
 	>
 	<head>
 		<title>Welcome to MUGLANG</title>
@@ -20,11 +21,15 @@
             text-align: center;
         }
         </style>
-		<script>
-			$(function() {
-				alert("hello!");
-			});
-		</script>
+        <!--<th:block layout:fragment="script">
+			<script th:inline="javascript">
+				$(function() {
+					alert("hello!");
+				});
+			</script>
+		</th:block>-->
+		
+		
 	</head>
 	<body>
 	    <div id="container">
