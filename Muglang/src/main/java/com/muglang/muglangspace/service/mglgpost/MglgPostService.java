@@ -12,7 +12,7 @@ import com.muglang.muglangspace.entity.MglgPost;
 public interface MglgPostService {
 	public void insertPost(MglgPost mglgpost);
 	
-	public void updatePost(MglgPost mglgpost);
+	public MglgPost updatePost(MglgPost mglgpost);
 	
 	public void deletePost(MglgPost mglgpost);
 	
