@@ -7,8 +7,11 @@
 	  <aside th:fragment="sidebar" id="sidebar" class="sidebar">
 	    <div id="user_info">
 	      <img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg" style="margin-bottom: 20px;">
-	      <h4>머글랭</h4>
-	      <span>mugulang@naver.com</span>
+	 		
+	      <h4 th:text="${loginUser.userName}" th:if="${loginUser} != null"></h4>
+	      <span th:text="${loginUser.email}" th:if="${loginUser} != null"></span>
+	      <h4 th:text="머글랭" th:if="${loginUser} == null"></h4>
+	      <span th:text="'muglang@naver.com'" th:if="${loginUser} == null"></span>
 	      <div id="user_content">
 	        <div class="user_content">
 	          <p class="user_content_name">게시물</p>
@@ -43,7 +46,7 @@
 	      </li><!-- End F.A.Q Page Nav -->
 	
 	      <li class="nav-item">
-	        <a class="nav-link collapsed" href="pages-login.html">
+	        <a class="nav-link collapsed" th:href="@{/user/login}">
 	          <i class="bi bi-box-arrow-in-right"></i>
 	          <span>Login</span>
 	        </a>

@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.dto.MglgPostDTO;
+import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
@@ -30,20 +32,28 @@ public class PostController {
 
 	//메인 게시글 사이트 글쓰기 페이지로 이동 (로그인 세션 적용은 추후에 할 예정)
 	@GetMapping("/newPost")
-	public ModelAndView goInsertView(HttpSession session) {
-		
+	public ModelAndView goInsertView() {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/insertPost.html");
+		System.out.println("새글을 작성하는 페이지로 이동합니다.");
 		return mv; 
+		
 	}
 	
 	//글쓰기 버튼으로 적용되는 글 새로 작성
 	@PostMapping("/insertPost")
-	public void insertPost(MglgPostDTO mglgPostDTO) {
+	public void insertPost(MglgPostDTO mglgPostDTO, HttpSession session) {
+		System.out.println(session.getAttribute("loginUser"));
+		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
+		System.out.println(temp);
+		MglgUser mglgUser = MglgUser.builder()
+									.userId(temp.getUserId())
+									.build();
 		System.out.println("새글을 작성합니다.");
+		System.out.println("가져온 내용 : " + mglgPostDTO);
 		MglgPost mglgPost = MglgPost.builder()
 									.postId(mglgPostDTO.getPostId())
-									.mglgUser(mglgPostDTO.getMglgUser())
+									.mglgUser(mglgUser)
 									.postContent(mglgPostDTO.getPostContent())
 									.restNm(mglgPostDTO.getRestNm())
 									.build();
@@ -69,7 +79,7 @@ public class PostController {
 		Page<MglgPost> pagePostList = mglgPostService.getPagePostList(pageable);
 		
 		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
-																			.mglgUser(pageMglgPost.getMglgUser())
+																			.userId(pageMglgPost.getMglgUser().getUserId())
 																			.postId(pageMglgPost.getPostId())
 																			.postContent(pageMglgPost.getPostContent())
 																			.postDate(pageMglgPost.getPostDate().toString())
@@ -83,7 +93,7 @@ public class PostController {
 																			.build()
 															);
 		ModelAndView mv = new ModelAndView();
-		mv.setViewName("/post/mainPost.html");
+		mv.setViewName("post/mainPost.html");
 		mv.addObject("postList", pagePostListDTO);
 		
 		return mv;

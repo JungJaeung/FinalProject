@@ -34,7 +34,9 @@ public class MglgUserServiceImpl implements MglgUserService{
 			}
 	}
 
-
-	
+	@Override
+	public MglgUser loginUser(MglgUser mglgUser) {
+		return mglgUserRepository.findByUserId(mglgUser.getUserId());
+	}
 	
 }

@@ -1,7 +1,10 @@
-<!DOCTYPE>
-
+<!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layouts/layout}">
+
+<!-- head 영역 시작 -->
+<!-- 개별적으로 사용할 css, js 링크 걸기 위해 남겨둠 -->
+
 <head>
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
@@ -13,27 +16,27 @@
 				//게시글에서 메세지버튼 누르면 메세지 창 나옴
 				$("#msg_btn").click(function (e) {
 					$('#msgModal').modal("show");
-				});
+				})
 				
 				//게시글 작성에서 사진 버튼 누르면 input-file 실행
 				$("#file_select_btn").click(function (e) {
 					$("#file_select").click();
-				});
+				})
 				
-				$('#insertBtn').click(function(e) {
-					$('#textContent').val($('#content').val());
-					$('#restName').val($('#resturantName').val());
-					console.log("작성글 버튼 작동");
-					$('#postForm').submit();
-					
-				});
 			});
 		</script>
 	</th:block>
+
 </head>
-	
+<!-- head 영역 끝 -->
+
 <body>
 	<main layout:fragment="main" id="main" class="main">
+
+		<div class="pagetitle">
+			<h1>HOME</h1>
+		</div><!-- End Page Title -->
+
 		<section class="section dashboard">
 			<div class="row">
 				<!--왼쪽 라인을 8로 오른쪽 라인을 4 비율로 나눔(페이지 100% = 12)-->
@@ -51,25 +54,18 @@
 										<div class="quill-editor-default">
 											<h2>write your daily life</h2>
 										</div>
-										<input type="text" id="resturantName" name="resturantName" val="">
-										<textarea id="content" col=30 row="20"></textarea>
 									</div>
 									<!-- End Quill Editor Default -->
 									<br>
 									<!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임 -->
-									<form id="postForm" name="postForm" style="float: right; margin-bottom: -13px; margin-top: -13px"
-										action="/post/insertPost" method="post">
+									<form style="float: right; margin-bottom: -13px; margin-top: -13px">
 										<input type="file" id="file_select" style="display: none;">
 										<!-- 이미지에 클릭 이벤트를 넣어서 클릭시 타입 파일 실행 -->
 										<i id="file_select_btn" class="ri-image-2-line"
 											style="font-size: 30px; color: black; cursor: pointer; vertical-align:middle;">
 										</i>
-										
-										<input type="hidden" id="textContent" name="postContent" value="">
-										<input type="hidden" id="restName" name="restNm" value="">
-										<input type="hidden" id="restRating" name="restRating" value="1">
 										<!--버튼에 submit 스크립트 넣을예정-->
-										<input type="button" id="insertBtn" class="btn" value="작성"
+										<input type="button" class="btn" value="작성"
 											style="background-color: #4154f1; color: white;">
 									</form>
 								</div>
@@ -132,8 +128,8 @@
 							</div>
 						</div>
 					</div>
-					<div>
-						
+					<div id="newPost">
+						<a th:href="@{/post/newPost}">새글 쓰기</a>
 					</div>
 				</div><!-- End Left side columns -->
 
@@ -182,6 +178,76 @@
 
 			</div>
 		</section>
-	</main>
+		<!-- 댓글 모델 -->
+		<div class="modal fade" id="msgModal" role="dialog">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<!-- 댓글 작성 폼 -->
+						<form class="form-inline" role="form">
+							<input type="text" placeholder="댓글을 작성하세요!!" onfocus="this.placeholder=''"
+								onblur="this.placeholder='댓글을 작성하세요!!'">
+							<input type="submit" class="btn" value="작성">
+						</form>
+					</div>
+					<!-- 댓글 들어가는곳 -->
+					<div class="modal-body overflow-auto">
+						<div id="comment" style="max-height: 30em;">
+							<div class="comment_info" style="margin-bottom: 20px;">
+								<img class="img-fluid rounded-circle" src="../assets/img/messages-2.jpg"
+									style="width: 40px;">
+								<span style="margin-left: 10px;">머글랭</span>
+								<div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae
+									odit suscipit cumque nihil nulla ipsam obcaecati doloremque temporibus vel magni et
+									cupiditate repudiandae esse ea repellat, laudantium inventore!</div>
+							</div>
+							<div class="comment_info" style="margin-bottom: 20px;">
+								<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
+									style="width: 40px;">
+								<span style="margin-left: 10px;">머글랭</span>
+								<div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae
+									odit suscipit cumque nihil nulla ipsam obcaecati doloremque temporibus vel magni et
+									cupiditate repudiandae esse ea repellat, laudantium inventore!</div>
+							</div>
+							<div class="comment_info" style="margin-bottom: 20px;">
+								<img class="img-fluid rounded-circle" src="../assets/img/messages-3.jpg"
+									style="width: 40px;">
+								<span style="margin-left: 10px;">머글랭</span>
+								<div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae
+									odit suscipit cumque nihil nulla ipsam obcaecati doloremque temporibus vel magni et
+									cupiditate repudiandae esse ea repellat, laudantium inventore!</div>
+								<div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae
+									odit suscipit cumque nihil nulla ipsam obcaecati doloremque temporibus vel magni et
+									cupiditate repudiandae esse ea repellat, laudantium inventore!</div>
+								<div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae
+									odit suscipit cumque nihil nulla ipsam obcaecati doloremque temporibus vel magni et
+									cupiditate repudiandae esse ea repellat, laudantium inventore!</div>
+								<div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae
+									odit suscipit cumque nihil nulla ipsam obcaecati doloremque temporibus vel magni et
+									cupiditate repudiandae esse ea repellat, laudantium inventore!</div>
+								<div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae
+									odit suscipit cumque nihil nulla ipsam obcaecati doloremque temporibus vel magni et
+									cupiditate repudiandae esse ea repellat, laudantium inventore!</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+	</main><!-- End #main -->
 </body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </html>
