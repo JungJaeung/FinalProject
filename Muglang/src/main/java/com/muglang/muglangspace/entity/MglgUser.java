@@ -3,6 +3,7 @@ package com.muglang.muglangspace.entity;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -44,5 +45,7 @@ public class MglgUser {
 	private String searchCondition;
 	@Transient
 	private String searchKeyword;
+	@Transient
+	private int reportCnt;
 	
 }

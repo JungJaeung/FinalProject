@@ -38,7 +38,7 @@ public class UserController {
 					   .searchCondition(userDTO.getSearchCondition())
 					   .searchKeyword(userDTO.getSearchKeyword())
 					   .build();
-			
+		
 		Page<MglgUser> pageUserList = mglgUserService.getUserList(user, pageable);
 		Page<MglgUserDTO> pageUserDTOList = pageUserList.map(pageUser -> 
 													MglgUserDTO.builder()
@@ -57,11 +57,14 @@ public class UserController {
 																.regDate(pageUser.getRegDate() == null ?
 																	   	null :
 																	   		pageUser.getRegDate().toString())
+																.reportCnt(pageUser.getReportCnt())
 																.build()
 														);
 
 					ModelAndView mv = new ModelAndView();
+					
 					mv.setViewName("/admin/adminUser.html");
+					
 					mv.addObject("getUserList", pageUserDTOList);
 					
 					if(userDTO.getSearchCondition() != null && !userDTO.getSearchCondition().equals("")) {
@@ -74,7 +77,7 @@ public class UserController {
 					
 					return mv;
 	}//getUserList끝
-	
+	//유저 노란색 처리
 	
 	
 	
