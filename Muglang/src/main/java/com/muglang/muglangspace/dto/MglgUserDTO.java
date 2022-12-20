@@ -30,4 +30,6 @@ public class MglgUserDTO {
 	private String userRole;
 	private String searchCondition;
 	private String searchKeyword;
+	private int reportCnt;
+
 }

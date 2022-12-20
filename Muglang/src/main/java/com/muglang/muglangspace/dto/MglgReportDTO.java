@@ -15,7 +15,6 @@ public class MglgReportDTO {
 	private int sourceUserId;
 	private int targetUserId;
 	private String reportDate;
-	private int userId;
 	private int postId;
 	private int commentId;
 }

@@ -1,15 +1,13 @@
 package com.muglang.muglangspace.service.mglgpost.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
 import com.muglang.muglangspace.dto.MglgPostDTO;
+
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
@@ -21,15 +19,19 @@ public class MglgPostServiceImpl implements MglgPostService {
 	
 	//포스팅 관련 서비스 제공
 	@Override
-	public void insertPost(MglgPost mglgpost) {
+	public void insertPost(MglgPost mglgPost) {
 		// TODO Auto-generated method stub
-		mglgPostRepository.save(mglgpost);
+		mglgPostRepository.save(mglgPost);
 	}
 
 	@Override
-	public void updatePost(MglgPost mglgpost) {
+	public MglgPost updatePost(MglgPost mglgPost) {
 		// TODO Auto-generated method stub
+		mglgPostRepository.save(mglgPost);
 		
+		mglgPostRepository.flush();
+		
+		return mglgPost;
 	}
 
 	@Override
@@ -55,6 +57,12 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public int cntPost(int postId) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public MglgPost getPost(MglgPost post) {
+		
+		return mglgPostRepository.findByPostId(post.getPostId());
 	}
 
 }
