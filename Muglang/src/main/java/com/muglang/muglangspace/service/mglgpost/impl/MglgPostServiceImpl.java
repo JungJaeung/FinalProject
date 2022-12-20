@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.muglang.muglangspace.dto.MglgPostDTO;
+
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;

@@ -28,21 +28,46 @@ import com.muglang.muglangspace.service.mglguser.MglgUserService;
 public class UserController {
 	@Autowired
 	private MglgUserService mglgUserService;
+
 	//계정 관련 컨트롤
 	@Autowired
 	private MglgPostService mglgPostService;
-	
+
 	@GetMapping("/profile")
 	public ModelAndView profileView() {
 		ModelAndView mv = new ModelAndView();
-		
 		mv.setViewName("profile.html");
 		return mv;
 	}
 
-	//유저 목록 불러오기 + 페이징
+	// 내 게시물으로 이동
+	@GetMapping("/myBoard")
+	public ModelAndView myBoard() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("user/myBoard.html");
+		return mv;
+	}
+
+	// 팔로잉으로 이동
+	@GetMapping("/following")
+	public ModelAndView following() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("user/following.html");
+		return mv;
+	}
+
+	// 팔로워로 이동
+	@GetMapping("/follower")
+	public ModelAndView follower() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("user/follower.html");
+		return mv;
+	}
+
+	// 유저 목록 불러오기 + 페이징
 	@GetMapping("/getUserList")
 	public ModelAndView getUserList(MglgUserDTO userDTO, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+
 		MglgUser user = MglgUser.builder()
 					   .searchCondition(userDTO.getSearchCondition())
 					   .searchKeyword(userDTO.getSearchKeyword())
@@ -161,3 +186,4 @@ public class UserController {
 	}
 	
 }//페이지 끝
+
