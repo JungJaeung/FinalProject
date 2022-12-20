@@ -59,4 +59,10 @@ values (
     '서울시 서초구', 'bio', now(), 'ADMIN', '2조 조장'
 );
 
-delete from t_mglg_user where user_id=2;
+select * from t_mglg_user_seq;
+
+update t_mglg_user_seq set next_val = 2;
+
+delete from t_mglg_user where user_id=1;
+
+DELETE FROM T_MGLG_POST WHERE POST_ID = 0;
