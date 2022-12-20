@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko"
+	  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layouts/layout}">
+	<head>
+
+	</head>
+	<th:block layout:fragment = "script">
+		<script th:inline="javascript">
+			$(function() {
+				const url = new URL(window.location.href);
+				
+				const urlParams = url.searchParams;
+				
+				const commentId = urlParams.get("commentId");
+				
+				$.ajax({
+					url: '/comment/comment',
+					type: 'get',
+					data: {commentId: commentId},
+					success: function(obj) {
+						$("#commentId").text(obj.item.commentId);
+						$("#commentDate").text(obj.item.commentDate == null ?
+													'' :
+													obj.item.commentDate.substring(0, 10));
+						$("#commentContent").text(obj.item.commentContent);
+						$("#postId").text(obj.item.postId);
+						$("#userId").text(obj.item.userId);
+									   
+					},
+					error: function(e) {
+						console.log(e);
+					}
+			});
+				
+			});
+	
+		</script>
+	</th:block>
+	<body>
+		<main layout:fragment="main" id="main" class="main">		
+				<table id="boardTable" border="1" style="width: 700px; border-collapse: collapse;">
+					<tr>
+						<th>댓글 번호</th>
+						<th>글 번호</th>
+						<th>댓글 내용</th>
+						<th>작성 날짜</th>
+						<th>작성자</th>
+					</tr>
+						<tr>
+							<td id="commentId"></td>
+							<td id="postId"></td>
+							<td id="commentContent"></td>
+							<td id="commentDate"></td>
+							<td id="userId"></td>
+						</tr>
+				</table>
+		</main>
+	</body>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</html>
