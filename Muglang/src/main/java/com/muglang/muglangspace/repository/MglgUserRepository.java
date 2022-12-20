@@ -12,7 +12,9 @@ import org.springframework.data.repository.query.Param;
 import com.muglang.muglangspace.entity.MglgUser;
 
 @Transactional
+
 public interface MglgUserRepository extends JpaRepository<MglgUser, Integer>{
+
 	//이름으로 검색
 	Page<MglgUser> findByUserNameContaining(String searchKeyword, Pageable pageable);
 	//이메일로검색
