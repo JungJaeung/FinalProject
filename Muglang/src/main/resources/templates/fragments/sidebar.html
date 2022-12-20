@@ -12,15 +12,15 @@
 	      <div id="user_content">
 	        <div class="user_content">
 	          <p class="user_content_name">게시물</p>
-	          <p class="user_content_info"><a href="#" style="color:black;">22</a></p>
+	          <p class="user_content_info"><a th:href="@{/user/myBoard}" style="color:black;">22</a></p>
 	        </div>
 	        <div class="user_content">
 	          <p class="user_content_name">팔로워</p>
-	          <p class="user_content_info"><a href="#" style="color:black;">7</a></p>
+	          <p class="user_content_info"><a th:href="@{/user/follower}" style="color:black;">7</a></p>
 	        </div>
 	        <div class="user_content">
 	          <p class="user_content_name">팔로우</p>
-	          <p class="user_content_info"><a href="#" style="color:black;">26</a></p>
+	          <p class="user_content_info"><a th:href="@{/user/following}" style="color:black;">26</a></p>
 	        </div>
 	      </div>
 	    </div>
@@ -36,7 +36,7 @@
 	      </li><!-- End Profile Page Nav -->
 	
 	      <li class="nav-item">
-	        <a class="nav-link collapsed" href="pages-faq.html">
+	        <a class="nav-link collapsed" th:href="@{/board/FAQ}">
 	          <i class="bi bi-question-circle"></i>
 	          <span>F.A.Q</span>
 	        </a>

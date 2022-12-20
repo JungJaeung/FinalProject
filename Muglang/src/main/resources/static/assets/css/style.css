@@ -1119,3 +1119,27 @@ h6 {
  #today_eat ul, #today_eat li{ font-size: large; margin-left: 15%; }
  #today_eat li{ margin-bottom: 20px;}
  #today_eat a{color: black;}
+ 
+ 
+ /*--------------------------------------------------------------
+# 관리자 페이지 댓글신고
+--------------------------------------------------------------*/
+ #report_comment_tb a{ color: black;}
+ #report_comment_tb tr :nth-child(2){ text-align: center;}
+ #report_comment_tb tr :nth-child(4){ text-align: center;}
+ 
+/*--------------------------------------------------------------
+# 관리자 페이지 멤버신고
+--------------------------------------------------------------*/
+  #report_member_tb a{ color: black;}
+  #report_member_tb tr :nth-child(4){ text-align: center;}
+  
+/*--------------------------------------------------------------
+# 관리자 페이지 글신고
+--------------------------------------------------------------*/  
+  #report_board_tb a{ color: black;}
+  #report_board_tb tr :nth-child(3){ text-align: center;}
+  #report_board_tb tr :nth-child(4){ text-align: center;}
+  
+  
+  
