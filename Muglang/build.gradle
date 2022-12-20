@@ -22,17 +22,17 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security' //spring security 의존성 주입
+	//implementation 'org.springframework.boot:spring-boot-starter-security' //spring security 의존성 주입
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5' //spring security 의존성 주입
+	//implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5' //spring security 의존성 주입
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test' //spring security 의존성 주입
+	//testImplementation 'org.springframework.security:spring-security-test' //spring security 의존성 주입
 	implementation 'com.zaxxer:HikariCP:5.0.1'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
 	implementation 'org.mybatis:mybatis:3.5.11'	

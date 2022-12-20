@@ -88,62 +88,60 @@ public class AdminController {
 				mv.setViewName("/admin/postReport.html");
 				return mv;
 	}
-		//리포트 - 커멘트 이동
-		@GetMapping("/userReport") 	
-		public ModelAndView userReport() {
-			ModelAndView mv = new ModelAndView();
-			mv.setViewName("/admin/userReport.html");
-			return mv;
-		}
-		//커멘트윈도우 오픈
-		@GetMapping("/commentWindow")
-		public ModelAndView commentWindow(@RequestParam("commentId") int commentId) {
-			ModelAndView mv = new ModelAndView();
-			mv.setViewName("/admin/commentWindow.html");
-			return mv;
-		}
-		//포스트윈도우 오픈
-		@GetMapping("/postWindow")
-		public ModelAndView postWindow(@RequestParam("postId") int postId) {
-			ModelAndView mv = new ModelAndView();
-			mv.setViewName("/admin/postWindow.html");
-			return mv;
+	//리포트 - 커멘트 이동
+	@GetMapping("/userReport") 	
+	public ModelAndView userReport() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/admin/userReport.html");
+		return mv;
+	}
+	//커멘트윈도우 오픈
+	@GetMapping("/commentWindow")
+	public ModelAndView commentWindow(@RequestParam("commentId") int commentId) {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/admin/commentWindow.html");
+		return mv;
+	}
+	//포스트윈도우 오픈
+	@GetMapping("/postWindow")
+	public ModelAndView postWindow(@RequestParam("postId") int postId) {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/admin/postWindow.html");
+		return mv;
+	}
+	
+	
+	private void getComment(int commentId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	////-----------------------------------------////
+//밴 유저 yn 변경
+	@PutMapping("banUser")
+	public ResponseEntity<?> banUser(MglgUserDTO userDTO) {
+		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+		
+		try {
+			MglgUser user = MglgUser.builder()
+					.userId(userDTO.getUserId())
+					.userBanYn(userDTO.getUserBanYn())
+					.build();
+			user = adminService.uptUserBan(user);
+			MglgUserDTO returnUserDTO = MglgUserDTO.builder()
+												   .userId(user.getUserId())
+												   .userBanYn(user.getUserBanYn())
+												   .build();
+				
+			response.setItem(returnUserDTO);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
 		}
 		
 		
-		private void getComment(int commentId) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		////-----------------------------------------////
-	//밴 유저 yn 변경
-		@PutMapping("banUser")
-		public ResponseEntity<?> banUser(MglgUserDTO userDTO) {
-			MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-			
-			try {
-				MglgUser user = MglgUser.builder()
-						.userId(userDTO.getUserId())
-						.userBanYn(userDTO.getUserBanYn())
-						.build();
-				user = adminService.uptUserBan(user);
-				MglgUserDTO returnUserDTO = MglgUserDTO.builder()
-													   .userId(user.getUserId())
-													   .userBanYn(user.getUserBanYn())
-													   .build();
-					
-				response.setItem(returnUserDTO);
-				return ResponseEntity.ok().body(response);
-			} catch (Exception e) {
-				response.setErrorMessage(e.getMessage());
-				return ResponseEntity.badRequest().body(response);
-			}
-			
-			
-			
-		}
-
+		
 	}
 
 }
