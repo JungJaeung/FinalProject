@@ -18,6 +18,11 @@ public class CommentServiceImpl implements CommentService{
 			// TODO Auto-generated method stub
 			return mglgCommentRepository.findByCommentId(comment.getCommentId());
 		}
+
+		@Override
+		public void deleteComment(int commentId) {
+			mglgCommentRepository.deleteComment(commentId);
+		}
 		
 		
 

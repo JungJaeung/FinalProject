@@ -46,7 +46,11 @@ public class AdminServiceImpl implements AdminService{
 			
 			return mglgReportRepository.findByReportType(a,pageable);
 		}
-
+		@Override
+		public Page<MglgReport> reportedUser(Pageable pageable){
+			
+			return mglgReportRepository.reportedUser(pageable);
+		}
 
 		
 }

@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgReportDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.entity.MglgComment;
+import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgReport;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.comment.CommentService;
@@ -36,6 +38,7 @@ public class AdminController {
 		mv.setViewName("/admin/admin.html");
 		return mv;
 	}
+//////////////////----------커멘트/유저/포스트 신고----------------------/////////////
 	//리포트 - 커멘트 이동
 	@GetMapping("/commentReport")
 	public ModelAndView reportComment(@PageableDefault(page = 0, size = 10) Pageable pageable) {
@@ -67,7 +70,7 @@ public class AdminController {
 	@GetMapping("/postReport")
 	public ModelAndView reportPost(@PageableDefault(page = 0, size = 10) Pageable pageable) {
 		int a = 2;
-
+		//동일한 로직의 사용을 위해 getreportcomment 재사용
 		Page<MglgReport> pageReportList = adminService.getReportComment(a,pageable);
 		Page<MglgReportDTO> pageReportDTOList = pageReportList.map(pageReport -> 
 												MglgReportDTO.builder()
@@ -82,19 +85,67 @@ public class AdminController {
 												.build()
 		);
 
-		
+				
 				ModelAndView mv = new ModelAndView();
 				mv.addObject("reportList",pageReportDTOList);
 				mv.setViewName("/admin/postReport.html");
 				return mv;
 	}
-		//리포트 - 커멘트 이동
-		@GetMapping("/userReport") 	
-		public ModelAndView userReport() {
-			ModelAndView mv = new ModelAndView();
-			mv.setViewName("/admin/userReport.html");
-			return mv;
+	//리포트 - 유저 이동 및 유저 신고 조회 a = 번호
+		@GetMapping("/userReport")
+		public ModelAndView reportUser(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+			int a = 3;
+			//동일한 로직의 사용을 위해 getreportcomment 재사용
+			Page<MglgReport> pageReportList = adminService.getReportComment(a,pageable);
+			Page<MglgReportDTO> pageReportDTOList = pageReportList.map(pageReport -> 
+													MglgReportDTO.builder()
+													.reportId(pageReport.getReportId())
+													.reportType(pageReport.getReportType())
+													.sourceUserId(pageReport.getSourceUserId())
+													.targetUserId(pageReport.getTargetUserId())
+													.reportDate(pageReport.getReportDate() == null ?
+																   	null :
+																   		pageReport.getReportDate().toString())
+													.postId(pageReport.getPostId())
+													.build()
+			);
+
+					
+					ModelAndView mv = new ModelAndView();
+					mv.addObject("reportList",pageReportDTOList);
+					mv.setViewName("/admin/userReport.html");
+					return mv;
 		}
+//////////////////----------커멘트/유저/포스트 신고끝----------------------/////////////
+/// 오더 윈도우 -------------------------
+		//유저 오더 윈도우 
+		@GetMapping("orderWindow")
+		public ModelAndView orderWindow(@PageableDefault(page = 0, size = 10)Pageable pageable) {
+			int a = 3;
+			//동일한 로직의 사용을 위해 getreportcomment 재사용
+			Page<MglgReport> reportedUserList = adminService.reportedUser(pageable);
+			Page<MglgReportDTO> pageReportDTOList = reportedUserList.map(reportUser -> 
+													MglgReportDTO.builder()
+													.count(reportUser.getCount())
+													.targetUserId(reportUser.getTargetUserId())
+													.build()
+			);
+
+					
+					ModelAndView mv = new ModelAndView();
+					mv.addObject("reportedUserList",pageReportDTOList);
+					mv.setViewName("/admin/userOrderWindow.html");
+					return mv;
+		}
+		//질문하기(count// 컬럼)
+
+		
+		
+		
+		
+		
+/// 오더 윈도우 끝 ------------------------
+//---------------------------------윈도우 오픈---------------------------------
 		//커멘트윈도우 오픈
 		@GetMapping("/commentWindow")
 		public ModelAndView commentWindow(@RequestParam("commentId") int commentId) {
@@ -110,11 +161,14 @@ public class AdminController {
 			return mv;
 		}
 		
-		
-		private void getComment(int commentId) {
-			// TODO Auto-generated method stub
-			
+		//유저 오더 윈도우 오픈
+		@GetMapping("/userOrderWindow")
+		public ModelAndView userOrderWindow() {
+			ModelAndView mv = new ModelAndView();
+			mv.setViewName("/admin/userOrderWindow.html");
+			return mv;
 		}
+		
 
 		////-----------------------------------------////
 	//밴 유저 yn 변경
