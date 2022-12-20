@@ -34,11 +34,19 @@
 				for(let i=0; i < list.length; i++) {
 					
 					$($('.updateBtn')[i]).click(function(e) {
-						$(this).hide();						
-						$("<button id='deleteButton" + $(this).val() + "'>").appendTo($(this).prev());
-						$("<button id='updateButton" + $(this).val() + "'>").appendTo($(this).prev());
 
 						flagList[i] = !flagList[i];
+						if(flagList[i]) {
+							$(this).text("돌아가기");
+							$("<button id='deleteButton" + $(this).val() + "'>").appendTo($(this).parent());
+							$("#deleteButton" + $(this).val()).text("글 삭제");
+							$("<button id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
+							$("#updateButton" + $(this).val()).text("게시글 수정하기");
+						} else {
+							$(this).text("게시글 수정")	
+							$("#deleteButton" + $(this).val()).remove();
+							$("#updateButton" + $(this).val()).remove();
+						}
 						console.log("수정 버튼 클릭 해당 게시글 활성화 " + i + "번 글 활성");
 						if(!flagList[i]) {
 							$("#postContent" + $(this).val()).show();
@@ -51,10 +59,10 @@
 				}
 				
 				for(let i=0; i < list.length; i++) {
-					$("'#updateButton'" + i + "'").click(function(e) {
+					$("#updateButton" + i).click(function(e) {
 						$($('.data')[i]).fnUpdatePost(i);
 					});
-					$("'#deleteButton'" + i + "'").click(function(e) {
+					$("#deleteButton" + i).click(function(e) {
 						$($('.data')[i]).submit();
 					});
 				}	
