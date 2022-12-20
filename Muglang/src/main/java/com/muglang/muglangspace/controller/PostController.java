@@ -1,8 +1,10 @@
 package com.muglang.muglangspace.controller;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.muglang.muglangspace.dto.MglgCommentDTO;
 import com.muglang.muglangspace.dto.MglgPostDTO;
-
 import com.muglang.muglangspace.dto.MglgResponseDTO;
-import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
@@ -79,11 +78,25 @@ public class PostController {
 	}
 	
 	@PutMapping("/updatePost")
-	public ModelAndView updatePost(MglgPost mglgPost) {
-		ModelAndView mv = new ModelAndView();
-		mglgPostService.updatePost(mglgPost);
+	public void updatePost(MglgPost mglgPost, HttpSession session,
+			HttpServletResponse response) throws IOException {
+		MglgPost getMglgPost = mglgPostService.updatePost(mglgPost);
+		System.out.println(getMglgPost);
+		//갱신한 데이터내용을 수정한 뒤 다시 메인화면으로 이동하여 돌아옴.
+//		MglgPostDTO getMglgPostDTO = MglgPostDTO.builder()
+//												.postId(getMglgPost.getPostId())
+//												.userId(getMglgPost.getMglgUser().getUserId())
+//												.postContent(getMglgPost.getPostContent())
+//												.restNm(getMglgPost.getRestNm())
+//												.restRating(getMglgPost.getRestRating())
+//												.postRating(getMglgPost.getPostRating())
+//												.postDate(getMglgPost.getPostDate().toString())
+//												.build();
+//		mv.addObject("getPost", getMglgPostDTO);
+//		mv.addObject("loginUser",(MglgUserDTO)session.getAttribute("loginUser"));
+		response.sendRedirect("/post/mainPost");
 		
-		return mv;
+//		return mv;
 	}
 	
 	public void deletePost(MglgPost mglgpost) {

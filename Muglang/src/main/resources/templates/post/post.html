@@ -60,15 +60,20 @@
 				
 				for(let i=0; i < list.length; i++) {
 					$("#updateButton" + i).click(function(e) {
-						$($('.data')[i]).fnUpdatePost(i);
+						console.log("update");
+						console.log($(this).attr("id").toString() + "번째 게시글 업데이트 시작");
+						fnUpdatePost(i);
+						//$($('.data')[i]).fnUpdatePost(i);
 					});
 					$("#deleteButton" + i).click(function(e) {
+						console.log("update");
+						console.log($(this).attr("id").toString() + "삭제 작업 시작");
 						$($('.data')[i]).submit();
 					});
 				}	
 			});
 			
-			function fnUpdatePost(size) {	//파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
+			function fnUpdatePost(i) {	//파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
 				dt = new DataTransfer();
 					
 				for(f in uploadFiles) {
@@ -110,7 +115,7 @@
 					enctype: 'multipart/form-data',
 					url: '/post/updatePost',
 					type: 'put',
-					data: formData,
+					data: formData[i],
 					processData: false,
 					contentType: false,
 					success: function(obj) {
@@ -120,7 +125,7 @@
 						$("#userId").val(obj.item.getPost.userId);
 						$("#postContentIn").text(obj.item.getPost.postContent);
 						$("#restNmIn").val(obj.item.getPost.restNm);
-						$("#boardRegdateText").text(obj.item.getPost.boardRegdate == null ?
+						$("#PostRegdateText").text(obj.item.getPost.boardRegdate == null ?
 													'' :
 													obj.item.boardRegdate.substring(0, 10));
 						$("#boardCntText").text(obj.item.getPost.boardCnt);
@@ -135,6 +140,7 @@
 						$("#attZone").replaceWith(result);
 					}
 				});
+				return false;
 			}
 		</script>
 	</th:block>
@@ -249,7 +255,7 @@
 										<hr>
 									</div>
 									<!-- 내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. -->
-									<form class="data" action="/post/updatePost" th:method="post">
+									<form class="data" id="data" name="data" action="/post/updatePost" th:method="post">
 										<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">
 										<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">
 										<input type="hidden" id="userId" name="userId" value="${post.userId}">
