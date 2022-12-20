@@ -6,12 +6,6 @@
 <!-- 개별적으로 사용할 css, js 링크 걸기 위해 남겨둠 -->
 
 <head>
-	<th:block layout:frament="css">
-		<style>
-		
-		</style>
-	</th:block>
-	
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
@@ -23,12 +17,12 @@
 				$("#msg_btn").click(function (e) {
 					$('#msgModal').modal("show");
 				})
-
+				
 				//게시글 작성에서 사진 버튼 누르면 input-file 실행
 				$("#file_select_btn").click(function (e) {
 					$("#file_select").click();
 				})
-
+				
 			});
 		</script>
 	</th:block>
@@ -94,13 +88,13 @@
 									</div>
 									<!-- 이름부분 후에 스크립트로 for문 예정 -->
 									<div class="card-title">
-										<img class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
+										<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
 											style="width: 40px;">
 										<a href="#" class="card-title" th:text="${post.postTitle}"></a>
 									</div>
 									<!-- 게시글 사진 부분 -->
 									<div class="activity" style="margin-bottom: 10px;">
-										<img th:src="@{/assets/img/news-1.jpg}" style="width: 100%;">
+										<img src="../assets/img/news-1.jpg" style="width: 100%;">
 									</div>
 									<div class="activity">
 										<!-- 게시글 내용부분-->
@@ -145,13 +139,11 @@
 					<!-- Recent Activity -->
 					<div class="card">
 						<div class="card-body">
-							<h5 class="card-title"
-								style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
-								먹거리 <span>| Today</span></h5>
+							<h5 class="card-title" style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는 먹거리 <span>| Today</span></h5>
 							<div class="activity">
 								<div id="today_eat">
 									<ol>
-										<!--
+									<!--
 										<li><a href="#">#치킨</a></li>
 										<li><a href="#">#보쌈</a></li>
 										<li><a href="#">#연어초밥</a></li>
@@ -162,7 +154,7 @@
 										<li><a href="#">#갈비</a></li>
 										<li><a href="#">#곱창</a></li>
 										<li><a href="#">#막창</a></li> -->
-
+										
 										<li><a href="#"><b>#치킨</b></a></li>
 										<li><a href="#"><b>#보쌈</b></a></li>
 										<li><a href="#"><b>#연어초밥</b></a></li>
@@ -173,7 +165,7 @@
 										<li><a href="#"><b>#갈비</b></a></li>
 										<li><a href="#"><b>#곱창</b></a></li>
 										<li><a href="#"><b>#막창</b></a></li>
-
+										
 									</ol>
 								</div>
 
@@ -202,7 +194,7 @@
 					<div class="modal-body overflow-auto">
 						<div id="comment" style="max-height: 30em;">
 							<div class="comment_info" style="margin-bottom: 20px;">
-								<img class="img-fluid rounded-circle" th:src="@{/assets/img/messages-2.jpg}"
+								<img class="img-fluid rounded-circle" src="../assets/img/messages-2.jpg"
 									style="width: 40px;">
 								<span style="margin-left: 10px;">머글랭</span>
 								<div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae
@@ -210,7 +202,7 @@
 									cupiditate repudiandae esse ea repellat, laudantium inventore!</div>
 							</div>
 							<div class="comment_info" style="margin-bottom: 20px;">
-								<img class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
+								<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
 									style="width: 40px;">
 								<span style="margin-left: 10px;">머글랭</span>
 								<div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae
@@ -218,7 +210,7 @@
 									cupiditate repudiandae esse ea repellat, laudantium inventore!</div>
 							</div>
 							<div class="comment_info" style="margin-bottom: 20px;">
-								<img class="img-fluid rounded-circle" th:src="@{/assets/img/messages-3.jpg}"
+								<img class="img-fluid rounded-circle" src="../assets/img/messages-3.jpg"
 									style="width: 40px;">
 								<span style="margin-left: 10px;">머글랭</span>
 								<div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae

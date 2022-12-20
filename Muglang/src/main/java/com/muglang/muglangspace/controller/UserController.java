@@ -21,66 +21,62 @@ import com.muglang.muglangspace.service.mglguser.MglgUserService;
 public class UserController {
 	@Autowired
 	private MglgUserService mglgUserService;
-	// 계정 관련 컨트롤
-
+	//계정 관련 컨트롤
+	
 	@GetMapping("/profile")
 	public ModelAndView profileView() {
 		ModelAndView mv = new ModelAndView();
+		
 		mv.setViewName("profile.html");
 		return mv;
 	}
 
-	// 내 게시물으로 이동
-	@GetMapping("/myBoard")
-	public ModelAndView myBoard() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("user/myBoard.html");
-		return mv;
-	}
-
-	// 팔로잉으로 이동
-	@GetMapping("/following")
-	public ModelAndView following() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("user/following.html");
-		return mv;
-	}
-
-	// 팔로워로 이동
-	@GetMapping("/follower")
-	public ModelAndView follower() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("user/follower.html");
-		return mv;
-	}
-
-	// 유저 목록 불러오기 + 페이징
+	//유저 목록 불러오기 + 페이징
 	@GetMapping("/getUserList")
 	public ModelAndView getUserList(MglgUserDTO userDTO, @PageableDefault(page = 0, size = 10) Pageable pageable) {
-		MglgUser user = MglgUser.builder().searchCondition(userDTO.getSearchCondition())
-				.searchKeyword(userDTO.getSearchKeyword()).build();
-
+		MglgUser user = MglgUser.builder()
+					   .searchCondition(userDTO.getSearchCondition())
+					   .searchKeyword(userDTO.getSearchKeyword())
+					   .build();
+			
 		Page<MglgUser> pageUserList = mglgUserService.getUserList(user, pageable);
-		Page<MglgUserDTO> pageUserDTOList = pageUserList.map(pageUser -> MglgUserDTO.builder()
-				.userId(pageUser.getUserId()).userName(pageUser.getUserName()).password(pageUser.getPassword())
-				.firstName(pageUser.getFirstName()).lastName(pageUser.getLastName()).phone(pageUser.getPhone())
-				.email(pageUser.getEmail()).address(pageUser.getAddress()).bio(pageUser.getBio())
-				.userBanYn(pageUser.getUserBanYn()).password(pageUser.getPassword()).firstName(pageUser.getFirstName())
-				.regDate(pageUser.getRegDate() == null ? null : pageUser.getRegDate().toString()).build());
+		Page<MglgUserDTO> pageUserDTOList = pageUserList.map(pageUser -> 
+													MglgUserDTO.builder()
+																.userId(pageUser.getUserId())
+																.userName(pageUser.getUserName())
+																.password(pageUser.getPassword())
+																.firstName(pageUser.getFirstName())
+																.lastName(pageUser.getLastName())
+																.phone(pageUser.getPhone())
+																.email(pageUser.getEmail())
+																.address(pageUser.getAddress())
+																.bio(pageUser.getBio())
+																.userBanYn(pageUser.getUserBanYn())
+																.password(pageUser.getPassword())
+																.firstName(pageUser.getFirstName())
+																.regDate(pageUser.getRegDate() == null ?
+																	   	null :
+																	   		pageUser.getRegDate().toString())
+																.build()
+														);
 
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("/admin/adminUser.html");
-		mv.addObject("getUserList", pageUserDTOList);
-
-		if (userDTO.getSearchCondition() != null && !userDTO.getSearchCondition().equals("")) {
-			mv.addObject("searchCondition", userDTO.getSearchCondition());
-		}
-
-		if (userDTO.getSearchKeyword() != null && !userDTO.getSearchKeyword().equals("")) {
-			mv.addObject("searchKeyword", userDTO.getSearchKeyword());
-		}
-
-		return mv;
-	}// getUserList끝
-
-}// 페이지 끝
+					ModelAndView mv = new ModelAndView();
+					mv.setViewName("/admin/adminUser.html");
+					mv.addObject("getUserList", pageUserDTOList);
+					
+					if(userDTO.getSearchCondition() != null && !userDTO.getSearchCondition().equals("")) {
+						mv.addObject("searchCondition", userDTO.getSearchCondition());
+					}
+					
+					if(userDTO.getSearchKeyword() != null && !userDTO.getSearchKeyword().equals("")) {
+						mv.addObject("searchKeyword", userDTO.getSearchKeyword());
+					}
+					
+					return mv;
+	}//getUserList끝
+	
+	
+	
+	
+	
+}//페이지 끝
