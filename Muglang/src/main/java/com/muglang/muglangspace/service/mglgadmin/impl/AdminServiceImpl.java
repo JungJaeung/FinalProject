@@ -1,8 +1,13 @@
 package com.muglang.muglangspace.service.mglgadmin.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.muglang.muglangspace.entity.MglgReport;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.repository.MglgReportRepository;
@@ -35,5 +40,13 @@ public class AdminServiceImpl implements AdminService{
 			
 			return user;
 		}
+
+		@Override
+		public Page<MglgReport> getReportComment(int a,Pageable pageable) {
+			
+			return mglgReportRepository.findByReportType(a,pageable);
+		}
+
+
 		
 }

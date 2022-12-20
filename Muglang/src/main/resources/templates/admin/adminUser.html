@@ -47,7 +47,7 @@
 									<option value="이메일" th:selected="${searchCondition == '이메일'}">이메일</option>
 								</select>
 								<input type="text" name="searchKeyword" th:value="${searchKeyword}">
-								<button type="button" id="btnSearch">검색</button>
+								<button type="submit" id="btnSearch">검색</button>
 							</td>
 						</tr>
 					</table>
@@ -64,7 +64,7 @@
 						<th style="width: 70px;"></th> 
 					</tr>
 						<tr th:each="user : ${getUserList}">
-							<td th:text=${user.userName}></td>
+							<td th:text="${user.userName}"></td>
 							<td th:text="${user.phone}"></td>
 							<td th:text="${user.email}"></td>
 							<td th:text="${user.address}"></td>

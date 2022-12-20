@@ -6,13 +6,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.mapper.MglgUserMapper;
 import com.muglang.muglangspace.repository.MglgUserRepository;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
 @Service
 public class MglgUserServiceImpl implements MglgUserService{
 	@Autowired
-	MglgUserRepository mglgUserRepository;
+	private MglgUserRepository mglgUserRepository;
+	
+	@Autowired
+	private MglgUserMapper mglgUserMapper;
 
 	@Override
 	public Page<MglgUser> getUserList(MglgUser user, Pageable pageable) {

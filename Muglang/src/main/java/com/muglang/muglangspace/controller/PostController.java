@@ -9,14 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.muglang.muglangspace.dto.MglgCommentDTO;
 import com.muglang.muglangspace.dto.MglgPostDTO;
+
+import com.muglang.muglangspace.dto.MglgResponseDTO;
+import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
@@ -53,8 +59,9 @@ public class PostController {
 		MglgUser mglgUser = MglgUser.builder()
 									.userId(temp.getUserId())
 									.build();
-		System.out.println("새글을 작성합니다.");
+
 		System.out.println("가져온 내용 : " + mglgPostDTO);
+
 		MglgPost mglgPost = MglgPost.builder()
 									.postId(mglgPostDTO.getPostId())
 									.mglgUser(mglgUser)
@@ -122,6 +129,33 @@ public class PostController {
 		return 0;
 	}
 
+	//포스트 단건 조회
+	@GetMapping("post")
+	public ResponseEntity<?> getPost(@RequestParam("postId") int postId) {
+		MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
+		
+		try {
+			MglgPost post = MglgPost.builder()
+										.postId(postId)
+										.build();
+			
+			post = mglgPostService.getPost(post);
+			MglgPostDTO returnPostDTO = MglgPostDTO.builder()
+												   .postId(post.getPostId())
+												   .postContent(post.getPostContent())
+												   .postDate(post.getPostDate().toString())
+												   .postId(post.getMglgUser().getUserId())
+												   .restNm(post.getRestNm())
+												   .userId(post.getMglgUser().getUserId())
+												   .build();
+
+			response.setItem(returnPostDTO);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+	}
 
 	
 

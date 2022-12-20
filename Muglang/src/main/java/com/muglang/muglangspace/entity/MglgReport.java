@@ -30,7 +30,6 @@ public class MglgReport {
 	private int sourceUserId;
 	private int targetUserId;
 	private LocalDateTime reportDate = LocalDateTime.now();
-	private int userId;
 	private int postId;
 	private int commentId;
 }

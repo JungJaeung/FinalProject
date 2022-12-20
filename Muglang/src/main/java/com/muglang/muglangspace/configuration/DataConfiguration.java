@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @PropertySource("classpath:/application.properties")
 //매퍼 인터페이스 위치 지정
-@MapperScan(basePackages="com.ezen.springboard.mapper")
+@MapperScan(basePackages="com.muglang.muglangspace.mapper")
 public class DataConfiguration {
 	@Autowired
 	//스프링 컨테이너 호출: 현재 프로젝트의 설정파일 등을 가져올 수 있다.
