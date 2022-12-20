@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout_admin}">
+
+<head>
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+			$(function () {
+				//게시글에서 메세지버튼 누르면 메세지 창 나옴
+				$("#msg_btn").click(function (e) {
+					$('#msgModal').modal("show");
+				})
+			});
+		</script>
+	</th:block>
+
+</head>
+<!-- head 영역 끝 -->
+
+<body>
+	<main layout:fragment="main" id="main" class="main">
+		<div class="pagetitle">
+			<h1>Admin Page</h1>
+			<nav>
+				<ol class="breadcrumb">
+				</ol>
+			</nav>
+		</div><!-- End Page Title -->
+
+		<section class="section dashboard">
+			<div class="row">
+
+				<!-- Left side columns -->
+				<div class="col-lg-8">
+					<div class="row">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">신고 글 관리</h5>
+
+									<!-- Table with hoverable rows -->
+									<table class="table table-hover" id="report_board_tb">
+										<thead>
+											<tr>
+												<th scope="col" style="width: 25%;">작성자</th>
+												<th scope="col" style="width: 25%;">신고자</th>
+												<th scope="col" style="width: 15%;">글번호</th>
+												<th scope="col" style="width: 20%;">신고일자</th>
+												<th scope="col" style="width: 15%;">관리</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<!--작성자-->
+												<th scope="row"><a href="#">보노보노</a></th>
+												<!--신고자 이름 넣는곳-->
+												<th scope="row"><a href="#">머글랭</a></td>
+													<!--글 번호-->
+												<td><a href="#">3</a></td>
+												<!--신고일자-->
+												<td>2016-05-25</td>
+												<!--제제 버튼-->
+												<td style="position: relative;">
+													<div class="filter"
+														style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+														<a class="icon" href="#" data-bs-toggle="dropdown"><i
+																class="ri-admin-line"></i></a>
+														<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+															<li><a class="dropdown-item" href="#">15일 정지</a></li>
+															<li><a class="dropdown-item" href="#">30일 정지</a></li>
+															<li><a class="dropdown-item" href="#">영구정지</a></li>
+														</ul>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<th scope="row"><a href="#">ㅁㄴㅇㄹ</a></th>
+												<th scope="row"><a href="#">!1234</a></td>
+												<td><a href="#">8</a></td>
+												<td>2016-05-25</td>
+												<td style="position: relative;">
+													<div class="filter"
+														style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+														<a class="icon" href="#" data-bs-toggle="dropdown"><i
+																class="ri-admin-line"></i></a>
+														<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+															<li><a class="dropdown-item" href="#">15일 정지</a></li>
+															<li><a class="dropdown-item" href="#">30일 정지</a></li>
+															<li><a class="dropdown-item" href="#">영구정지</a></li>
+														</ul>
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<!-- End Table with hoverable rows -->
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div><!-- End Left side columns -->
+
+				<!-- Right side columns -->
+				<div class="col-lg-4 col-xxl-3">
+
+					<div class="card" style="text-align: center;">
+						<h5 class="card-title" style="font-weight: bold;">검색</h5>
+						<div class="card-body">
+							<form class="form-inline" role="form">
+								<input type="text" placeholder="신고 유저 검색" onfocus="this.placeholder=''"
+									onblur="this.placeholder='신고 유저 검색!!'">
+								<input type="button" value="검색">
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+	</main><!-- End #main -->
+</body>
+
+</html>
