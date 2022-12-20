@@ -96,12 +96,13 @@ public class PostController {
 	
 	@GetMapping("/mainPost")
 	//로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드
-	public ModelAndView getPostList(@PageableDefault(page=0, size=10) Pageable pageable) {
+	public ModelAndView getPostList(@PageableDefault(page=0, size=10) Pageable pageable, HttpSession session) {
+		
 		Page<MglgPost> pagePostList = mglgPostService.getPagePostList(pageable);
 		
 		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
-																			.userId(pageMglgPost.getMglgUser().getUserId())
 																			.postId(pageMglgPost.getPostId())
+																			.userId(pageMglgPost.getMglgUser().getUserId())
 																			.postContent(pageMglgPost.getPostContent())
 																			.postDate(pageMglgPost.getPostDate().toString())
 																			.restNm(pageMglgPost.getRestNm())
@@ -114,10 +115,12 @@ public class PostController {
 																			.hashTag5(pageMglgPost.getHashTag5())
 																			.build()
 															);
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("post/mainPost.html");
-		mv.addObject("postList", pagePostListDTO);
 		
+		System.out.println(pagePostListDTO.getContent());
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("post/post.html");
+		mv.addObject("postList", pagePostListDTO);
+		mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
 		return mv;
 	}
 	

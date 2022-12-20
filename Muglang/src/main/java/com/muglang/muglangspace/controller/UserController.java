@@ -3,6 +3,7 @@ package com.muglang.muglangspace.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
-import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
@@ -99,7 +98,8 @@ public class UserController {
 	
 	//로그인 시도하는 임시 url
 	@PostMapping("/login")
-	public ModelAndView loginProcess(@PageableDefault(page=0, size=10) Pageable pageable, MglgUserDTO userDTO, HttpSession session) {
+	public void loginProcess(@PageableDefault(page=0, size=10) Pageable pageable, MglgUserDTO userDTO, 
+			HttpSession session, HttpServletResponse response) {
 		ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>();
 		Map<String, String> returnMap = new HashMap<String, String>();
 		ModelAndView mv = new ModelAndView();
@@ -114,7 +114,7 @@ public class UserController {
 			System.out.println("비교군 계정 : " + checkedUser);
 			if(checkedUser == null) {
 				System.out.println("로그인을 실패함.");
-				returnMap.put("msg", "idFail");
+				response.sendRedirect("/user/login");
 			} else {
 				MglgUserDTO loginUser = MglgUserDTO.builder()
 									 	.userId(checkedUser.getUserId())
@@ -129,34 +129,35 @@ public class UserController {
 				System.out.println("로그인한 유저 아이디 : " + loginUser);
 			}
 			responseDTO.setItem(returnMap);
-			mv.addObject("loginUser", session.getAttribute("loginUser"));
+			
+			response.sendRedirect("/post/mainPost");
 			//로그인후 게시글 페이지로 이동함. 게시글의 정보를 조회하고 이 정보를 다음 화면단에 넘김.
-			Page<MglgPost> postList = mglgPostService.getPagePostList(pageable);
-			Page<MglgPostDTO> postListDTO = postList.map(pageMglgPost -> MglgPostDTO.builder()
-																					.postId(pageMglgPost.getPostId())
-																					.userId(pageMglgPost.getMglgUser().getUserId())
-																					.postContent(pageMglgPost.getPostContent())
-																					.postDate(pageMglgPost.getPostDate().toString())
-																					.restNm(pageMglgPost.getRestNm())
-																					.restRating(pageMglgPost.getRestRating())
-																					.postRating(pageMglgPost.getPostRating())
-																					.hashTag1(pageMglgPost.getHashTag1())
-																					.hashTag2(pageMglgPost.getHashTag2())
-																					.hashTag3(pageMglgPost.getHashTag3())
-																					.hashTag4(pageMglgPost.getHashTag4())
-																					.hashTag5(pageMglgPost.getHashTag5())
-																					.build()
-														);
-			mv.addObject("postList", postListDTO);
-			mv.setViewName("post/post.html");
-			
-			return mv;
+//			Page<MglgPost> postList = mglgPostService.getPagePostList(pageable);
+//			Page<MglgPostDTO> postListDTO = postList.map(pageMglgPost -> MglgPostDTO.builder()
+//																					.postId(pageMglgPost.getPostId())
+//																					.userId(pageMglgPost.getMglgUser().getUserId())
+//																					.postContent(pageMglgPost.getPostContent())
+//																					.postDate(pageMglgPost.getPostDate().toString())
+//																					.restNm(pageMglgPost.getRestNm())
+//																					.restRating(pageMglgPost.getRestRating())
+//																					.postRating(pageMglgPost.getPostRating())
+//																					.hashTag1(pageMglgPost.getHashTag1())
+//																					.hashTag2(pageMglgPost.getHashTag2())
+//																					.hashTag3(pageMglgPost.getHashTag3())
+//																					.hashTag4(pageMglgPost.getHashTag4())
+//																					.hashTag5(pageMglgPost.getHashTag5())
+//																					.build()
+//														);
+//			mv.addObject("postList", postListDTO);
+//			mv.setViewName("post/post.html");
+//			
+//			return mv;
 		} catch(Exception e) {
-			responseDTO.setErrorMessage(e.getMessage());
-			
-			mv.setViewName("user/login.html");
-			
-			return mv;
+//			responseDTO.setErrorMessage(e.getMessage());
+//			
+//			mv.setViewName("user/login.html");
+//			
+//			return mv;
 		}
 	}
 	
