@@ -45,8 +45,8 @@
 							<td th:text="${report.postId}"></td>
 							<td th:text="${report.commentId}"></td>
 							<td><input type="button" th:onclick="new_window([[${report.commentId}]])" th:value="보기"></td>
-							<a th:href="@{/comment/deleteComment(commentId=${report.commentId})">삭제</a>
-							
+<!--							<a th:href="@{/comment/deleteComment(commentId=${report.commentId})">삭제</a>
+-->							
 							//질문하기(pathvariable)
 						</tr>
 						

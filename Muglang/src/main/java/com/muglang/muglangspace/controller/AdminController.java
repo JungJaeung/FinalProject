@@ -38,6 +38,14 @@ public class AdminController {
 		mv.setViewName("/admin/admin.html");
 		return mv;
 	}
+	//어드민페이지로 이동
+	@GetMapping("/adminMemberView")
+	public ModelAndView adminMemberView() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/admin/memberManager.html");
+		return mv;
+	}
+	
 //////////////////----------커멘트/유저/포스트 신고----------------------/////////////
 	//리포트 - 커멘트 이동
 	@GetMapping("/commentReport")
