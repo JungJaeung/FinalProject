@@ -113,8 +113,8 @@
 						}
 
 						$("#updateButton" + postIdList[i]).click(function (e) {
-							console.log("update" + $("#contentIn" + postIdList[i]).text());
-							
+							$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).text())
+							console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).text());
 							fnUpdatePost(postIdList[i], i);
 						});
 						$("#deleteButton" + postIdList[i]).click(function (e) {
@@ -123,39 +123,6 @@
 						});
 					});
 				}
-<<<<<<< HEAD
-				
-				for(let i=0; i < list.length; i++) {
-					$("#updateButton" + i).click(function(e) {
-						console.log("update");
-						console.log($(this).attr("id").toString() + "번째 게시글 업데이트 시작");
-						fnUpdatePost(i);
-						//$($('.data')[i]).fnUpdatePost(i);
-					});
-					$("#deleteButton" + i).click(function(e) {
-						console.log("update");
-						console.log($(this).attr("id").toString() + "삭제 작업 시작");
-						$($('.data')[i]).submit();
-					});
-				}	
-			});
-			
-			function fnUpdatePost(i) {	//파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
-				dt = new DataTransfer();
-=======
-
-				//				for(let i=0; i < list.length; i++) {
-				//					console.log(typeof(postIdList[i]));
-				//					console.log(postIdList[i]);
-				//					$("#updateButton" + postIdList[i]).click(function(e) {
-				//						console.log("update");
-				//						fnUpdatePost(postIdList[i]);
-				//					});
-				//					$("#deleteButton" + postIdList[i]).click(function(e) {
-				//						console.log("delete");
-				//						$($('.data')[i]).submit();
-				//					});
-				//				}	
 			});
 
 			function fnGetChangedFileInfo(boardFileNo, e) {
@@ -173,7 +140,6 @@
 				reader.onload = function(ee) {
 					const img = document.getElementById("img" + boardFileNo);
 					const p = document.getElementById("fileNm" + boardFileNo);
->>>>>>> 0fbfe0a10a7bf5a4797c52bc6cbda15a66b78e31
 					
 					p.textContent = fileArr[0].name;
 					
@@ -196,6 +162,8 @@
 			}
 			
 			function fnUpdatePost(postId, index) {	//파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
+				
+				
 				/*
 				dt = new DataTransfer();
 
@@ -237,27 +205,20 @@
 					enctype: 'multipart/form-data',
 					url: '/post/updatePost',
 					type: 'put',
-					data: formData[i],
+					data: formData,
 					processData: false,
 					contentType: false,
 					success: function (obj) {
-						console.log(obj);
 						console.log(obj.item);
 						alert("수정작업을 성공하였습니다.");
-						$("#postId").val(obj.item.getPost.postId);
-						$("#userId").val(obj.item.getPost.userId);
+						
+						$("#postId").val('' + obj.item.getPost.postId);
+						$("#userId").val('' + obj.item.getPost.userId);
 						$("#postContent").text(obj.item.getPost.postContent);
+						$("#postContent" + postId).text(obj.item.getPost.postContent);
+						$("#contentIn" + postId).text(obj.item.getPost.postContent)
 						$("#ContentIn").text(obj.item.getPost.postContent)
 						$("#restNmIn").val(obj.item.getPost.restNm);
-<<<<<<< HEAD
-						$("#PostRegdateText").text(obj.item.getPost.boardRegdate == null ?
-													'' :
-													obj.item.boardRegdate.substring(0, 10));
-						$("#boardCntText").text(obj.item.getPost.boardCnt);
-						$("#boardRegdate").val(obj.item.getPost.boardRegdate);
-						$("#boardCnt").val(obj.item.getPost.boardCnt);
-=======
->>>>>>> 0fbfe0a10a7bf5a4797c52bc6cbda15a66b78e31
 					},
 					error: function (e) {
 						console.log(e);
@@ -384,11 +345,6 @@
 										<hr>
 									</div>
 									<!-- 내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. -->
-									<form class="data" id="data" name="data" action="/post/updatePost" th:method="post">
-										<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">
-										<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">
-										<input type="hidden" id="userId" name="userId" value="${post.userId}">
-										<input type="hidden" id="postId" name="postId" value="${post.postId}">
 									<form class="data" action="/post/deletePost" th:method="post">
 										<input type="hidden" id="restNmIn" name="restNm" th:value="${post.restNm}">
 										<input type="hidden" id="postContentIn" name="postContent"

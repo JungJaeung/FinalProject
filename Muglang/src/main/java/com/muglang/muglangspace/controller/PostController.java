@@ -83,25 +83,6 @@ public class PostController {
 	}
 	
 	@PutMapping("/updatePost")
-	public void updatePost(MglgPost mglgPost, HttpSession session,
-			HttpServletResponse response) throws IOException {
-		MglgPost getMglgPost = mglgPostService.updatePost(mglgPost);
-		System.out.println(getMglgPost);
-		//갱신한 데이터내용을 수정한 뒤 다시 메인화면으로 이동하여 돌아옴.
-//		MglgPostDTO getMglgPostDTO = MglgPostDTO.builder()
-//												.postId(getMglgPost.getPostId())
-//												.userId(getMglgPost.getMglgUser().getUserId())
-//												.postContent(getMglgPost.getPostContent())
-//												.restNm(getMglgPost.getRestNm())
-//												.restRating(getMglgPost.getRestRating())
-//												.postRating(getMglgPost.getPostRating())
-//												.postDate(getMglgPost.getPostDate().toString())
-//												.build();
-//		mv.addObject("getPost", getMglgPostDTO);
-//		mv.addObject("loginUser",(MglgUserDTO)session.getAttribute("loginUser"));
-		response.sendRedirect("/post/mainPost");
-		
-//		return mv;
 	public ResponseEntity<?> updatePost(MglgPostDTO mglgPostDTO, HttpSession session) {
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
 		MglgUser mglgUser = new MglgUser();
@@ -130,6 +111,7 @@ public class PostController {
 			returnMap.put("getPost", updateMglgPostDTO);
 			
 			responseDTO.setItem(returnMap);
+			System.out.println("수정 작업 마무리단계");
 			return ResponseEntity.ok().body(responseDTO);
 		} catch(Exception e) {
 			responseDTO.setErrorMessage(e.getMessage());
