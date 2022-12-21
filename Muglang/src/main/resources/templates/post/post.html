@@ -10,37 +10,91 @@
 		<script th:inline="javascript">
 			$(function () {
 				let list = $('.post').get();
-				console.log(list.length);
 				//퀼 텍스트 에어리어 소환
 				new Quill('.quill-editor-default', {
-					theme: 'bubble'
+					modules: {
+						toolbar: [
+							[{
+								font: []
+							}, {
+								size: []
+							}],
+							["bold", "italic", "underline", "strike"],
+							[{
+								color: []
+							},
+							{
+								background: []
+							}
+							],
+							[{
+								script: "super"
+							},
+							{
+								script: "sub"
+							}
+							],
+							[{
+								list: "ordered"
+							},
+							{
+								list: "bullet"
+							},
+							{
+								indent: "-1"
+							},
+							{
+								indent: "+1"
+							}
+							],
+							["direction", {
+								align: []
+							}],
+							["image"],
+							["clean"]
+						]
+					},
+					theme: 'snow'
 				});
+				
+				//해시태그 이벤트
+				for(let i = 1; i < 5; i++){
+					$("#hashTag" + i).blur(function(){
+						if($("#hashTag" + i).val() != ""){
+							$("#hashTag_label"+ (i + 1)).css("display", "inline-block");
+						}
+					});
+				}
+				
+				//작성 버튼
+				$("#insert_board").click(function(){
+					$("#postContent").val($(".ql-editor").html());
+					$("#insert_form").submit();
+				})
+				
 				//게시글에서 메세지버튼 누르면 메세지 창 나옴
 				$("#msg_btn").click(function (e) {
 					$('#msgModal').modal("show");
 				})
+
 				
-				//게시글 작성에서 사진 버튼 누르면 input-file 실행
-				$("#file_select_btn").click(function (e) {
-					$("#file_select").click();
-				})
-				
+
 				//게시글 수정 버튼을 클릭할시 해당 게시물의 편집 상태를 활성화 하는 이벤트를 발생
-				for(let i=0; i < list.length; i++) {
-					$($('.updateBtn')[i]).click(function(e) {
+				for (let i = 0; i < list.length; i++) {
+					$($('.updateBtn')[i]).click(function (e) {
 						console.log("수정 버튼 클릭 해당 게시글 활성화");
 						$("#selectedPost").css("z-index", "5").css("display", "block");
 						$($('.post')[i]).clone().appendTo('#selectedPost');
 						$('#selectedPost').children('.post').css("width", "85%")
-						.css("height" ,"80%").css("padding" , "80px").css("margin", "50px");
+							.css("height", "80%").css("padding", "80px").css("margin", "50px");
 						$()
-						
+
 					});
 				}
 				//$("#updateButton").click(function(e) {
 				//	console.log("수정 버튼 클릭 해당 게시글 활성화");
 				//	$("#selectedPost").css("z-index", "5").css("display", "block");
-					
+
 				//});
 			});
 		</script>
@@ -53,7 +107,7 @@
 
 	<main layout:fragment="main" id="main" class="main">
 		<div id="selectedPost">
-			
+
 		</div>
 		<div class="pagetitle">
 			<h1>HOME</h1>
@@ -70,25 +124,27 @@
 							<!-- 작성 하는 부분 -->
 							<div class="card recent-sales overflow-auto">
 								<div class="card-body">
-									<h5 class="card-title">What's happening?</h5>
+									<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
 									<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
-									<div style="border-radius: 8px;">
-										<div class="quill-editor-default">
-											<h2>write your daily life</h2>
-										</div>
+									<div class="quill-editor-default">
+										<h2>write your daily life</h2>
+										<h2> </h2>
+										<p> </p>
 									</div>
 									<!-- End Quill Editor Default -->
-									<br>
 									<!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임 -->
-									<form style="float: right; margin-bottom: -13px; margin-top: -13px">
-										<input type="file" id="file_select" style="display: none;">
-										<!-- 이미지에 클릭 이벤트를 넣어서 클릭시 타입 파일 실행 -->
-										<i id="file_select_btn" class="ri-image-2-line"
-											style="font-size: 30px; color: black; cursor: pointer; vertical-align:middle;">
-										</i>
-										<!--버튼에 submit 스크립트 넣을예정-->
-										<input type="button" class="btn" value="작성"
-											style="background-color: #4154f1; color: white;">
+									<form id="insert_form" action="" method="">
+										<input type="hidden" id="postContent" name="postContent" value="">
+										<div style="margin-bottom: 5px;">
+											<label id="hashTag_label1">&emsp;# <input type="text" id=hashTag1 name="hashTag1" class="hashTag_text" placeholder="태그 입력" onfocus="this.placeholder=''" onblur="this.placeholder='태그 입력'"></label>
+											<label id="hashTag_label2" style="display: none;">&emsp;# <input type="text" id=hashTag2 name="hashTag2" class="hashTag_text" placeholder="태그 입력" onfocus="this.placeholder=''" onblur="this.placeholder='태그 입력'"></label>
+											<label id="hashTag_label3" style="display: none;">&emsp;# <input type="text" id=hashTag3 name="hashTag3" class="hashTag_text" placeholder="태그 입력" onfocus="this.placeholder=''" onblur="this.placeholder='태그 입력'"></label>
+											<label id="hashTag_label4" style="display: none;">&emsp;# <input type="text" id=hashTag4 name="hashTag4" class="hashTag_text" placeholder="태그 입력" onfocus="this.placeholder=''" onblur="this.placeholder='태그 입력'"></label>
+											<label id="hashTag_label5" style="display: none;">&emsp;# <input type="text" id=hashTag5 name="hashTag5" class="hashTag_text" placeholder="태그 입력" onfocus="this.placeholder=''" onblur="this.placeholder='태그 입력'"></label>
+											
+										</div>
+										<input type="button" class="btn" id="insert_board" value="작성"
+											style="background-color: #4154f1; color: white; float: right;">
 									</form>
 								</div>
 							</div>
@@ -149,8 +205,9 @@
 									<div class="activity" style="text-align: center;">
 										<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>
 											<span>감성타코</span>에서 식사하셨어요!</a>
-										
-										<button class="updateBtn" id="updateButton" th:if="${post.userId} eq ${loginUser.userId}">게시글 수정</button>	
+
+										<button class="updateBtn" id="updateButton"
+											th:if="${post.userId} eq ${loginUser.userId}">게시글 수정</button>
 									</div>
 								</div>
 							</div>
@@ -167,11 +224,13 @@
 					<!-- Recent Activity -->
 					<div class="card">
 						<div class="card-body">
-							<h5 class="card-title" style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는 먹거리 <span>| Today</span></h5>
+							<h5 class="card-title"
+								style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
+								먹거리 <span>| Today</span></h5>
 							<div class="activity">
 								<div id="today_eat">
 									<ol>
-									<!--
+										<!--
 										<li><a href="#">#치킨</a></li>
 										<li><a href="#">#보쌈</a></li>
 										<li><a href="#">#연어초밥</a></li>
@@ -182,7 +241,7 @@
 										<li><a href="#">#갈비</a></li>
 										<li><a href="#">#곱창</a></li>
 										<li><a href="#">#막창</a></li> -->
-										
+
 										<li><a href="#"><b>#치킨</b></a></li>
 										<li><a href="#"><b>#보쌈</b></a></li>
 										<li><a href="#"><b>#연어초밥</b></a></li>
@@ -193,7 +252,7 @@
 										<li><a href="#"><b>#갈비</b></a></li>
 										<li><a href="#"><b>#곱창</b></a></li>
 										<li><a href="#"><b>#막창</b></a></li>
-										
+
 									</ol>
 								</div>
 
