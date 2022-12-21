@@ -11,9 +11,9 @@
 
 
 	 /*<![CDATA[*/
-				function new_window(commentId) {
+				function new_window(commentId,postId) {
 		        window.open(
-		          "commentWindow?commentId=" + commentId,
+		          "commentWindow?commentId=" + commentId + "&postId=" + postId,
 		          "Comment",
 		          "width=550, height=200, top=50, left=50"
 		        );
@@ -44,7 +44,7 @@
 							<td th:text="${report.reportDate eq null ? '' : #strings.substring(report.reportDate, 0, 10)}"></td>
 							<td th:text="${report.postId}"></td>
 							<td th:text="${report.commentId}"></td>
-							<td><input type="button" th:onclick="new_window([[${report.commentId}]])" th:value="보기"></td>
+							<td><input type="button" th:onclick="new_window([[${report.commentId}]],[[${report.postId}]])" th:value="보기"></td>
 						</tr>
 						
 				</table>
@@ -65,7 +65,7 @@
 					
 					
 						<li class="pagination_button" th:each="page : ${#numbers.sequence(startPage, endPage)}">
-							<a th:href="@{/user/getUserList(
+							<a th:href="@{/admin/commentReport(
 											page=${page - 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
@@ -73,7 +73,7 @@
 						</li>
 					
 						<li class="pagination_button" th:if="${pageNumber < totalPages - 1}">
-							<a th:href="@{/user/getUserList(
+							<a th:href="@{/admin/commentReport(
 											page=${pageNumber + 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}

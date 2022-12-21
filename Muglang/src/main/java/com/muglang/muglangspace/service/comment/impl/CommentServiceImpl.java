@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.muglang.muglangspace.dto.MglgCommentDTO;
 import com.muglang.muglangspace.entity.MglgComment;
+import com.muglang.muglangspace.entity.MglgCommentId;
 import com.muglang.muglangspace.repository.MglgCommentRepository;
 import com.muglang.muglangspace.service.comment.CommentService;
 
@@ -16,7 +17,11 @@ public class CommentServiceImpl implements CommentService{
 		@Override
 		public MglgComment getComment(MglgComment comment) {
 			// TODO Auto-generated method stub
-			return mglgCommentRepository.findByCommentId(comment.getCommentId());
+			System.out.println(comment.getCommentId());
+			MglgCommentId commentIds = new MglgCommentId();
+			commentIds.setCommentId(comment.getCommentId());
+			commentIds.setMglgPost(comment.getMglgPost().getPostId());
+			return mglgCommentRepository.findById(commentIds).get();
 		}
 
 		@Override

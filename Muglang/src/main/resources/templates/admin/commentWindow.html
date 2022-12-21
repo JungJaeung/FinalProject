@@ -14,12 +14,14 @@
 				const urlParams = url.searchParams;
 				
 				const commentId = urlParams.get("commentId");
-				
+				const postId = urlParams.get("postId");
+
 				$.ajax({
 					url: '/comment/comment',
 					type: 'get',
-					data: {commentId: commentId},
+					data: {commentId: commentId, postId: postId},
 					success: function(obj) {
+						console.log(obj);
 						$("#commentId").text(obj.item.commentId);
 						$("#commentDate").text(obj.item.commentDate == null ?
 													'' :
@@ -27,8 +29,8 @@
 						$("#commentContent").text(obj.item.commentContent);
 						$("#postId").text(obj.item.postId);
 						$("#userId").text(obj.item.userId);
-						$("#valPost").text(obj.item.postId);
-						$("#valComment").text(obj.item.commentId);
+						$("#postIds").val(obj.item.postId);
+						$("#commentIds").val(obj.item.commentId);
 									   
 					},
 					error: function(e) {
@@ -49,8 +51,6 @@
 						<th style="background-color: bisque; text-align: center;">댓글 내용</th>
 						<th style="background-color: bisque; text-align: center;">작성 날짜</th>
 						<th style="background-color: bisque; text-align: center;">작성자</th>
-						<th id="valPost"></th>
-						<th  id="valComment"></th>
 					</tr>
 						<tr>
 							<td id="commentId" style="text-align: center;"></td>
@@ -58,6 +58,11 @@
 							<td id="commentContent" style="text-align: center;"></td>
 							<td id="commentDate" style="text-align: center;"></td>
 							<td id="userId" style="text-align: center;"></td>
+							<form action="/comment/deleteComment" method="get">
+								<input type="hidden" id="postIds" name="postId">
+								<input type="hidden" id="commentIds" name="commentId">
+								<input type="submit" value="삭제">
+							</form>
 						</tr>
 				</table>
 		</main>

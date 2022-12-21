@@ -50,5 +50,12 @@ public class AdminServiceImpl implements AdminService{
 			return mglgReportRepository.reportedUser(pageable);
 		}
 
+		@Override
+		public void deleteReport(int commentId, int postId) {
+
+			mglgReportRepository.deleteReport(commentId,postId);
+
+		}
+
 		
 }

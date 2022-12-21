@@ -17,5 +17,7 @@ public interface AdminService {
 
 	Page<CamelHashMap> reportedUser(Pageable pageable);
 	
+	 void deleteReport(int commentId,int postId);
+	
 	
 }
