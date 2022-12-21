@@ -1,8 +1,10 @@
 package com.muglang.muglangspace.controller;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.muglang.muglangspace.dto.MglgCommentDTO;
 import com.muglang.muglangspace.dto.MglgPostDTO;
-
 import com.muglang.muglangspace.dto.MglgResponseDTO;
-import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
@@ -79,15 +78,42 @@ public class PostController {
 	}
 	
 	@PutMapping("/updatePost")
-	public ModelAndView updatePost(MglgPost mglgPost) {
+	public ModelAndView updatePost(MglgPostDTO mglgPostDTO, HttpSession session) {
 		ModelAndView mv = new ModelAndView();
-		mglgPostService.updatePost(mglgPost);
+		MglgUser mglgUser = new MglgUser();
+		mglgUser.setUserId(mglgPostDTO.getUserId());
+		mglgUser = mglgUserService.loginUser(mglgUser);
+		System.out.println("수정 작업을 실행합니다.");
+		MglgPost mglgPost = MglgPost.builder()
+									.postId(mglgPostDTO.getPostId())
+									.mglgUser(mglgUser)
+									.postContent(mglgPostDTO.getPostContent())
+									.restNm(mglgPostDTO.getRestNm())
+									.build();
+		
+		MglgPost updatedMglgPost = mglgPostService.updatePost(mglgPost);
+		mv.addObject(updatedMglgPost);
+		mv.setViewName("post/post.html");
 		
 		return mv;
 	}
 	
-	public void deletePost(MglgPost mglgpost) {
+	//삭제 작업 수행하기
+	@PostMapping("/deletePost")
+	public void deletePost(MglgPostDTO mglgPostDTO, HttpSession session,
+			HttpServletResponse response) throws IOException {
+		System.out.println("삭제 작업 실행");
+		MglgUser mglgUser = new MglgUser();
+		mglgUser.setUserId(mglgPostDTO.getUserId());
+		mglgUser = mglgUserService.loginUser(mglgUser);
+		MglgPost mglgPost = MglgPost.builder()
+									.postId(mglgPostDTO.getPostId())
+									.mglgUser(mglgUser)
+									.build();
 		
+		mglgPostService.deletePost(mglgPost);
+		
+		response.sendRedirect("/post/mainPost");
 	}
 	
 	public void likePost(MglgPost mglgpost) {
@@ -96,7 +122,7 @@ public class PostController {
 	
 	@GetMapping("/mainPost")
 	//로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드
-	public ModelAndView getPostList(@PageableDefault(page=0, size=10) Pageable pageable) {
+	public ModelAndView getPostList(@PageableDefault(page=0, size=10) Pageable pageable, HttpSession session) {
 		Page<MglgPost> pagePostList = mglgPostService.getPagePostList(pageable);
 		
 		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
@@ -115,7 +141,8 @@ public class PostController {
 																			.build()
 															);
 		ModelAndView mv = new ModelAndView();
-		mv.setViewName("post/mainPost.html");
+		mv.setViewName("post/post.html");
+		mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
 		mv.addObject("postList", pagePostListDTO);
 		
 		return mv;

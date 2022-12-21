@@ -1,24 +1,15 @@
 package com.muglang.muglangspace.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
-import com.muglang.muglangspace.dto.ResponseDTO;
-import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
@@ -254,6 +245,5 @@ public class UserController {
 		mv.setViewName("user/login.html");
 		return mv;
 	}
-	
 }//페이지 끝
 

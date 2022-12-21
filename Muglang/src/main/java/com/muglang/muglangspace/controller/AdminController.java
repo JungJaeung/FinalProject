@@ -88,33 +88,34 @@ public class AdminController {
 				mv.setViewName("/admin/postReport.html");
 				return mv;
 	}
-		//리포트 - 커멘트 이동
-		@GetMapping("/userReport") 	
-		public ModelAndView userReport() {
-			ModelAndView mv = new ModelAndView();
-			mv.setViewName("/admin/userReport.html");
-			return mv;
-		}
-		//커멘트윈도우 오픈
-		@GetMapping("/commentWindow")
-		public ModelAndView commentWindow(@RequestParam("commentId") int commentId) {
-			ModelAndView mv = new ModelAndView();
-			mv.setViewName("/admin/commentWindow.html");
-			return mv;
-		}
-		//포스트윈도우 오픈
-		@GetMapping("/postWindow")
-		public ModelAndView postWindow(@RequestParam("postId") int postId) {
-			ModelAndView mv = new ModelAndView();
-			mv.setViewName("/admin/postWindow.html");
-			return mv;
-		}
+	//리포트 - 커멘트 이동
+	@GetMapping("/userReport") 	
+	public ModelAndView userReport() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/admin/userReport.html");
+		return mv;
+	}
+	//커멘트윈도우 오픈
+	@GetMapping("/commentWindow")
+	public ModelAndView commentWindow(@RequestParam("commentId") int commentId) {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/admin/commentWindow.html");
+		return mv;
+	}
+	//포스트윈도우 오픈
+	@GetMapping("/postWindow")
+	public ModelAndView postWindow(@RequestParam("postId") int postId) {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/admin/postWindow.html");
+		return mv;
+	}
+	
+	
+	private void getComment(int commentId) {
+		// TODO Auto-generated method stub
 		
-		
-		private void getComment(int commentId) {
-			// TODO Auto-generated method stub
-			
-		}
+	}
+
 
 		////-----------------------------------------////
 	//밴 유저 yn 변경
@@ -143,5 +144,6 @@ public class AdminController {
 			
 			
 		}
+
 
 }
