@@ -8,28 +8,28 @@ public class KakaoUserInfo implements OAuth2UserInfo{
 	
 	public KakaoUserInfo(Map<String, Object> attributes) {
 		this.attributes = attributes;
-		this.properties = (Map<String, Object>)attributes.get(("kakao acount");
+		this.properties = (Map<String, Object>)attributes.get("kakao_account");
 	}
 	
 	@Override
 	public String getProviderId() {
-		// TODO Auto-generated method stub
-		return null;
+		return attributes.get("id") + "";
 	}
+	
 	@Override
-	public String getPrivider() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getProvider() {
+		return "kakao";
 	}
+	
 	@Override
 	public String getEmail() {
-		// TODO Auto-generated method stub
-		return null;
+		return properties.get("email") + "";
 	}
+	
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		Map profile = (Map)properties.get("profile");
+		return profile.get("nickname") + "";
 	}
 	
 	

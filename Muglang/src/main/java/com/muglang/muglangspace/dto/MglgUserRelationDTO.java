@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MglgUserRelationDTO {
-	private int userId;
+	private String userId;
 	private int followerId;
 	private String followDate;
 }

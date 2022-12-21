@@ -1,5 +1,7 @@
 package com.muglang.muglangspace.repository;
 
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -13,7 +15,7 @@ import com.muglang.muglangspace.entity.MglgUser;
 
 @Transactional
 
-public interface MglgUserRepository extends JpaRepository<MglgUser, Integer>{
+public interface MglgUserRepository extends JpaRepository<MglgUser, String>{
 
 	//이름으로 검색
 	Page<MglgUser> findByUserNameContaining(String searchKeyword, Pageable pageable);
@@ -26,7 +28,5 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer>{
 	
 	@Modifying //데이터의 변경이 일어나는 @Query을 사용할 때는 @Modifying을 붙여준다.
 	@Query(value="UPDATE T_MGLG_USER SET USER_BAN_YN = :userBanYn WHERE USER_ID = :userId", nativeQuery=true)
-	void uptUserBan(@Param("userBanYn") String userBanYn, @Param("userId") int userId);
-	
-	MglgUser findByUserId(@Param("userId") int userId);
+	void uptUserBan(@Param("userBanYn") String userBanYn, @Param("userId") String userId);
 }

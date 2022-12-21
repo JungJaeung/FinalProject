@@ -10,12 +10,12 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.oauth.provider.KakaoUserInfo;
 import com.muglang.muglangspace.oauth.provider.OAuth2UserInfo;
 import com.muglang.muglangspace.repository.MglgUserRepository;
 
-//221219 김동현 작업중
 @Service //서비스 표시
 public class Oauth2UserService extends DefaultOAuth2UserService {
 	
@@ -29,15 +29,15 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		OAuth2User oAuth2User = super.loadUser(userRequest);
 		Map<String, Object> temp = oAuth2User.getAttributes();
 		
-		Iterator<String> iter = temp.keySet().iterator(); //이더레이터로 키 값만 저장
+		Iterator<String> iter = temp.keySet().iterator(); //이더레이터로 벨류 값만 저장
 		
 		while(iter.hasNext()) {
 			System.out.println(iter.next());
 			System.out.println(userRequest.getAccessToken().getTokenValue());
 		}
 		
-		String userName = "";
-		int providerId;
+		String userName = ""; //닉네임
+		String providerId = "";//업체가 제공한 아이디
 		
 		OAuth2UserInfo oAuth2UserInfo = null;
 		
@@ -50,12 +50,10 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 			System.out.println("카카오 계정이 아닙니다.");
 		}
 		
-		String provider = oAuth2UserInfo.getPrivider();
+		String provider = oAuth2UserInfo.getProvider();
 		//userId = kakao_4891279
-//		String userId = provider + "_" + providerId; //id는 식별 목적, 표시는 닉네임으로
-		int userId = providerId;
+		String userId = provider + "_" + providerId; //id는 식별 목적, 표시는 닉네임으로
 		String email = oAuth2UserInfo.getEmail();
-		String userNm = oAuth2UserInfo.getName();     //이것이 닉네임
 		String role = "ROLE_USER";
 		
 		//사용자가 이미 소셜 로그인한 기록이 있는지 검사
@@ -73,8 +71,8 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		if(mglgUser == null) {
 			mglgUser = MglgUser.builder()
 							   .userId(userId)
-							   .userNm(userName)
-							   .userEmail(email)
+							   .userName(userName)
+							   .email(email)
 							   .userRole(role)
 							   .build();
 			
@@ -84,7 +82,9 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		
 		//SecurityContext에 인증 정보 저장
 		return CustomUserDetails.builder()
-								.
+								.mglgUser(mglgUser)
+								.attributes(oAuth2User.getAttributes())
+								.build();
 	}
 	
 }

@@ -22,10 +22,9 @@ import lombok.NoArgsConstructor;
 @Data
 @IdClass(MglgLikesId.class)
 public class MglgPostLikes {
+	//userId는 foreign키 해제하였음 20221221 - 김동현
 	@Id
-	@ManyToOne
-	@JoinColumn(name="USER_ID")
-	private MglgUser mglgUser;
+	private String userId;
 	@Id
 	@ManyToOne
 	@JoinColumn(name="POST_ID")

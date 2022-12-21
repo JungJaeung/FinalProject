@@ -9,8 +9,6 @@ public interface MglgUserService {
 	
 	Page<MglgUser> getUserList(MglgUser user,Pageable pageable);
 
-	MglgUser loginUser(MglgUser user); 
-	
 	
 
 }
