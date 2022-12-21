@@ -33,7 +33,6 @@
 					<tr>
 						<th>신고 번호</th>
 						<th>신고한 유저 아이디</th>
-						<th>신고된 유저 아이디</th>
 						<th>신고 날짜</th>
 						<th>글 번호</th>
 						<th></th> 
@@ -41,7 +40,6 @@
 						<tr th:each="report : ${reportList}">
 							<td th:text="${report.reportId}"></td>
 							<td th:text="${report.sourceUserId}"></td>
-							<td th:text="${report.TargetUserId}"></td>
 							<td th:text="${report.reportDate eq null ? '' : #strings.substring(report.reportDate, 0, 10)}"></td>
 							<td th:text="${report.postId}"></td>
 							<td><input type="button" th:onclick="new_window([[${report.postId}]])" value="보기"></td>

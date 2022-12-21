@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.DynamicInsert;
 
@@ -32,4 +33,6 @@ public class MglgReport {
 	private LocalDateTime reportDate = LocalDateTime.now();
 	private int postId;
 	private int commentId;
+	@Transient
+	private int count;
 }
