@@ -17,4 +17,5 @@ public class MglgReportDTO {
 	private String reportDate;
 	private int postId;
 	private int commentId;
+	private int count;
 }

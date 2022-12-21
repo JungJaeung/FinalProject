@@ -10,18 +10,14 @@
 		<script th:inline="javascript">
 
 
-		     /*<![CDATA[*/
-
-
+	 /*<![CDATA[*/
 				function new_window(commentId) {
 		        window.open(
 		          "commentWindow?commentId=" + commentId,
 		          "Comment",
-		          "width=400, height=300, top=50, left=50"
+		          "width=550, height=200, top=50, left=50"
 		        );
 		      }
-		
-
 		/*]]>*/
 				
 		</script>
@@ -38,7 +34,8 @@
 						<th>신고 날짜</th>
 						<th>글 번호</th>
 						<th>코멘트 번호</th> 
-						<th></th> 
+						<th>보기</th>  
+						<th>삭제</th> 
 					</tr>
 						<tr th:each="report : ${reportList}">
 							<td th:text="${report.reportId}"></td>
@@ -47,10 +44,11 @@
 							<td th:text="${report.reportDate eq null ? '' : #strings.substring(report.reportDate, 0, 10)}"></td>
 							<td th:text="${report.postId}"></td>
 							<td th:text="${report.commentId}"></td>
-							<td><input type="button" th:onclick="new_window([[${report.commentId}]])" value="보기"></td>
+							<td><input type="button" th:onclick="new_window([[${report.commentId}]])" th:value="보기"></td>
 						</tr>
+						
 				</table>
-				<br/>
+				<br/>                                                              
 				<div style="text-align:center;">
 					<ul class="pagination" th:if="${reportList.totalElements > 0}"
 										   th:with="pageNumber = ${reportList.pageable.pageNumber},

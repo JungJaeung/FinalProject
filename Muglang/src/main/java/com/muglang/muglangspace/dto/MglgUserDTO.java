@@ -23,8 +23,6 @@ public class MglgUserDTO {
 	private String email;
 	private String address;
 	private String bio;
-	@Column
-	@ColumnDefault("'N'")
 	private String userBanYn;
 	private String regDate;
 	private String userRole;

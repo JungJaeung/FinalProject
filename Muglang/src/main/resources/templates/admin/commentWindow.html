@@ -27,6 +27,8 @@
 						$("#commentContent").text(obj.item.commentContent);
 						$("#postId").text(obj.item.postId);
 						$("#userId").text(obj.item.userId);
+						$("#valPost").text(obj.item.postId);
+						$("#valComment").text(obj.item.commentId);
 									   
 					},
 					error: function(e) {
@@ -41,19 +43,21 @@
 	<body>
 		<main layout:fragment="main" id="main" class="main">		
 				<table id="boardTable" border="1" style="width: 700px; border-collapse: collapse;">
-					<tr>
-						<th>댓글 번호</th>
-						<th>글 번호</th>
-						<th>댓글 내용</th>
-						<th>작성 날짜</th>
-						<th>작성자</th>
+					<tr style="border: 1px solid black;">
+						<th style="background-color: bisque; text-align: center;">댓글 번호</th>
+						<th style="background-color: bisque; text-align: center;">글 번호</th>
+						<th style="background-color: bisque; text-align: center;">댓글 내용</th>
+						<th style="background-color: bisque; text-align: center;">작성 날짜</th>
+						<th style="background-color: bisque; text-align: center;">작성자</th>
+						<th id="valPost"></th>
+						<th  id="valComment"></th>
 					</tr>
 						<tr>
-							<td id="commentId"></td>
-							<td id="postId"></td>
-							<td id="commentContent"></td>
-							<td id="commentDate"></td>
-							<td id="userId"></td>
+							<td id="commentId" style="text-align: center;"></td>
+							<td id="postId" style="text-align: center;"></td>
+							<td id="commentContent" style="text-align: center;"></td>
+							<td id="commentDate" style="text-align: center;"></td>
+							<td id="userId" style="text-align: center;"></td>
 						</tr>
 				</table>
 		</main>

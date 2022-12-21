@@ -3,7 +3,10 @@ package com.muglang.muglangspace.repository;
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgCommentId;
@@ -12,6 +15,9 @@ import com.muglang.muglangspace.entity.MglgCommentId;
 public interface MglgCommentRepository extends JpaRepository<MglgComment, MglgCommentId>{
 	
 	MglgComment findByCommentId(@Param("commentId") int commentId);
-
+	
+	@Modifying
+	@Query(value="DELETE FROM T_MGLG_COMMENT WHERE COMMENT_ID = :commentId AND POST_ID = :postId",nativeQuery=true)
+	void deleteComment(@Param("commentId") int commentId,@Param("postId") int postId);
 
 }
