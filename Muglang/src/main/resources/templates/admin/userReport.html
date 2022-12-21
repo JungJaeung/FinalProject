@@ -13,14 +13,20 @@
 		     /*<![CDATA[*/
 
 
-				function new_window(commentId) {
+				function new_window(TargetUserId) {
 		        window.open(
-		          "commentWindow?commentId=" + commentId,
-		          "Comment",
+		          "userWindow?TargetUserId=" + TargetUserId,
+		          "user",
 		          "width=400, height=300, top=50, left=50"
 		        );
 		      }
-		
+					function new_windows() {
+		        	window.open(
+			          "userOrderWindow",
+			          "users",
+			          "width=400, height=300, top=50, left=50"
+				        );
+				      }
 
 		/*]]>*/
 				
@@ -28,7 +34,6 @@
 	</th:block>
 	<body>
 		<main layout:fragment="main" id="main" class="main">
-				<h3>유저 관리페이지입니다.</h3>
 		
 				<table id="boardTable" border="1" style="width: 700px; border-collapse: collapse;">
 					<tr>
@@ -36,18 +41,14 @@
 						<th>신고한 유저 아이디</th>
 						<th>신고된 유저 아이디</th>
 						<th>신고 날짜</th>
-						<th>글 번호</th>
-						<th>코멘트 번호</th> 
-						<th></th> 
+						<th><input type="button" th:onclick="new_windows()" value="우선순위 보기"></th> 
 					</tr>
 						<tr th:each="report : ${reportList}">
 							<td th:text="${report.reportId}"></td>
 							<td th:text="${report.sourceUserId}"></td>
 							<td th:text="${report.TargetUserId}"></td>
 							<td th:text="${report.reportDate eq null ? '' : #strings.substring(report.reportDate, 0, 10)}"></td>
-							<td th:text="${report.postId}"></td>
-							<td th:text="${report.commentId}"></td>
-							<td><input type="button" th:onclick="new_window([[${report.commentId}]])" value="보기"></td>
+							<td><!--<input type="button" th:onclick="new_window([[${report.TargetUserId}]])" value="보기">--></td>
 						</tr>
 				</table>
 				<br/>
