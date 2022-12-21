@@ -37,7 +37,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 	@Override
 	public void deletePost(MglgPost mglgpost) {
 		// TODO Auto-generated method stub
-		
+		mglgPostRepository.delete(mglgpost);
 	}
 
 	@Override
