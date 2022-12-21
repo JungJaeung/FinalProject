@@ -2,7 +2,9 @@ package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
+import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
@@ -51,7 +54,8 @@ public class PostController {
 	
 	//글쓰기 버튼으로 적용되는 글 새로 작성
 	@PostMapping("/insertPost")
-	public ModelAndView insertPost(MglgPostDTO mglgPostDTO, HttpSession session) {
+	public void insertPost(MglgPostDTO mglgPostDTO, HttpSession session, 
+			HttpServletResponse response) throws IOException {
 		ModelAndView mv = new ModelAndView();
 		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
 		System.out.println(temp);
@@ -74,7 +78,8 @@ public class PostController {
 		mglgPostService.insertPost(mglgPost);
 		mv.addObject("loginUser", temp);
 		mv.setViewName("post/post.html");
-		return mv;
+
+		response.sendRedirect("/post/mainPost");
 	}
 	
 	@PutMapping("/updatePost")
@@ -97,10 +102,60 @@ public class PostController {
 		response.sendRedirect("/post/mainPost");
 		
 //		return mv;
+	public ResponseEntity<?> updatePost(MglgPostDTO mglgPostDTO, HttpSession session) {
+		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
+		MglgUser mglgUser = new MglgUser();
+		mglgUser.setUserId(mglgPostDTO.getUserId());
+		mglgUser = mglgUserService.loginUser(mglgUser);
+		System.out.println("수정 작업을 실행합니다." + mglgPostDTO);
+		
+		try {
+			//수정될 게시글의 정보를 모두 담아 갱신하려는 객체 생성.
+			MglgPost mglgPost = MglgPost.builder()
+										.postId(mglgPostDTO.getPostId())
+										.mglgUser(mglgUser)
+										.postContent(mglgPostDTO.getPostContent())
+										.restNm(mglgPostDTO.getRestNm())
+										.build();
+			
+			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
+			System.out.println(updateMglgPost);
+			MglgPostDTO updateMglgPostDTO = MglgPostDTO.builder()
+														.postId(mglgPost.getPostId())
+														.userId(mglgPost.getMglgUser().getUserId())
+														.postContent(mglgPost.getPostContent())
+														.restNm(mglgPost.getRestNm())
+														.build();
+			Map<String, Object> returnMap = new HashMap<String, Object>();
+			returnMap.put("getPost", updateMglgPostDTO);
+			
+			responseDTO.setItem(returnMap);
+			return ResponseEntity.ok().body(responseDTO);
+		} catch(Exception e) {
+			responseDTO.setErrorMessage(e.getMessage());
+			
+			return ResponseEntity.badRequest().body(responseDTO);
+		}
+
 	}
 	
-	public void deletePost(MglgPost mglgpost) {
+	//삭제 작업 수행하기
+	@PostMapping("/deletePost")
+	public void deletePost(MglgPostDTO mglgPostDTO, HttpSession session,
+			HttpServletResponse response) throws IOException {
+		System.out.println("삭제 작업 실행");
+		MglgUser mglgUser = new MglgUser();
+		mglgUser.setUserId(mglgPostDTO.getUserId());
+		mglgUser = mglgUserService.loginUser(mglgUser);
+
+		MglgPost mglgPost = MglgPost.builder()
+									.postId(mglgPostDTO.getPostId())
+									.mglgUser(mglgUser)
+									.build();
 		
+		mglgPostService.deletePost(mglgPost);
+		
+		response.sendRedirect("/post/mainPost");
 	}
 	
 	public void likePost(MglgPost mglgpost) {
