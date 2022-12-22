@@ -97,6 +97,7 @@ public class PostController {
 										.mglgUser(mglgUser)
 										.postContent(mglgPostDTO.getPostContent())
 										.restNm(mglgPostDTO.getRestNm())
+										.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate()))
 										.build();
 			
 			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
