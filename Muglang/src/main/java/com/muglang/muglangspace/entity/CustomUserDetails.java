@@ -48,7 +48,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 	//아이디
 	@Override
 	public String getUsername() {
-		return mglgUser.getUserId();
+		return mglgUser.getUserSnsId();
 	}
 
 	@Override

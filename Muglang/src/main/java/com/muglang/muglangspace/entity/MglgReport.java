@@ -33,4 +33,7 @@ public class MglgReport {
 	private LocalDateTime reportDate = LocalDateTime.now();
 	private int postId; //포스트 번호
 	private int commentId; //포스트 댓글의 번호
+	
+	@Transient
+	private int count;
 }
