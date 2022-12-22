@@ -8,7 +8,7 @@
 
 			<li class="nav-heading">admin page</li>
 			<li class="nav-item">
-				<a class="nav-link collapsed" th:href="@{/admin/adminView}">
+				<a class="nav-link collapsed" th:href="@{/user/getAdminUserList}">
 					<i class="bi bi-person"></i>
 					<span>회원관리</span>
 				</a>
@@ -20,17 +20,17 @@
 				</a>
 				<ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
 					<li>
-						<a th:href="@{/admin/declarationMember}">
+						<a th:href="@{/admin/userReport}">
 							<i class="bi bi-circle"></i><span>신고 회원 관리</span>
 						</a>
 					</li>
 					<li>
-						<a th:href="@{/admin/declarationBoard}">
+						<a th:href="@{/admin/postReport}">
 							<i class="bi bi-circle"></i><span>신고 글 관리</span>
 						</a>
 					</li>
 					<li>
-						<a th:href="@{/admin/declarationComment}">
+						<a th:href="@{/admin/commentReport}">
 							<i class="bi bi-circle"></i><span>신고 댓글 관리</span>
 						</a>
 					</li>

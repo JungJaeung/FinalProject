@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-   layout:decorate="~{layouts/layout}">
+   layout:decorate="~{layouts/layout_admin}">
 
 <!-- head 영역 시작 -->
 <!-- 개별적으로 사용할 css, js 링크 걸기 위해 남겨둠 -->
@@ -54,7 +54,7 @@
 
 <body>
   	<main layout:fragment="main" id="main" class="main">		
-				<table id="boardTable" border="1" style="width: 700px; border-collapse: collapse;">
+				<table id="boardTable" border="1" style="width: 100%; border-collapse: collapse; margin: 0 auto;">
 					<tr>
 						<th>유저 아이디</th>
 						<th>신고 횟수</th>

@@ -57,7 +57,7 @@
 											th:src="@{/assets/img/messages-1.jpg}" style="width: 50px;"></div>
 									<!--회원 이름, 아이디-->
 									<div style="width: 70%; float: left; margin-top: 5px;">
-										<div style="font-weight: bold;" th:text="${user.userName}"></div>
+										<div th:style="${user.reportCnt >=3? 'font-weight: bold;color:red':'font-weight: bold;color:black'}" th:text="${user.userName}"></div>
 										<div style="color: #aaaaaa; font-size: x-small;" th:text="${user.email}"></div>
 									</div>
 									<!--정지,추방 버튼-->
@@ -89,7 +89,7 @@
 
 										<li class="pagination_button"
 											th:each="page : ${#numbers.sequence(startPage, endPage)}">
-											<a th:href="@{/admin/getAdminUserList(
+											<a th:href="@{/user/getAdminUserList(
 											page=${page - 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
@@ -97,7 +97,7 @@
 										</li>
 
 										<li class="pagination_button" th:if="${pageNumber < totalPages - 1}">
-											<a th:href="@{/admin/getAdminUserList(
+											<a th:href="@{/user/getAdminUserList(
 											page=${pageNumber + 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
