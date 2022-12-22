@@ -87,14 +87,14 @@
 												    tempEndPage = ${startPage + pageSize - 1},
 												    endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
 								<li class="pagination_button" th:if="${pageNumber > 0}">
-									<a th:href="@{/admin/commentReport(
+									<a th:href="@{/admin/userReport(
 											page=${pageNumber - 1}
 										)}">이전</a>
 								</li>
 
 
 								<li class="pagination_button" th:each="page : ${#numbers.sequence(startPage, endPage)}">
-									<a th:href="@{/user/getUserList(
+									<a th:href="@{/admin/userReport(
 											page=${page - 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
@@ -102,7 +102,7 @@
 								</li>
 
 								<li class="pagination_button" th:if="${pageNumber < totalPages - 1}">
-									<a th:href="@{/user/getUserList(
+									<a th:href="@{/admin/userReport(
 											page=${pageNumber + 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
