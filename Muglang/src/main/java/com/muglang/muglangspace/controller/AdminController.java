@@ -24,6 +24,7 @@ import com.muglang.muglangspace.service.mglgadmin.AdminService;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
+
 	@Autowired
 	private AdminService adminService;
 
@@ -109,7 +110,7 @@ public class AdminController {
 //////////////////----------커멘트/유저/포스트 신고끝----------------------/////////////
 /// 오더 윈도우 -------------------------
 		//유저 오더 윈도우 
-		@GetMapping("orderWindow")
+		@GetMapping("/orderWindow")
 		public ResponseEntity<?> orderWindow(@PageableDefault(page = 0, size = 10)Pageable pageable) {
 			//동일한 로직의 사용을 위해 getreportcomment 재사용
 			MglgResponseDTO<MglgReportDTO> response = new MglgResponseDTO<>();
@@ -136,13 +137,9 @@ public class AdminController {
 		}
 		//질문하기(count// 컬럼)
 
-		
-		
-		
-		
-		
 /// 오더 윈도우 끝 ------------------------
 //---------------------------------윈도우 오픈---------------------------------
+
 		//커멘트윈도우 오픈
 		@GetMapping("/commentWindow")
 		public ModelAndView commentWindow(@RequestParam("commentId") int commentId) {
@@ -210,3 +207,4 @@ public class AdminController {
 
 
 }
+

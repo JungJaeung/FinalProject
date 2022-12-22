@@ -97,6 +97,7 @@ public class PostController {
 										.mglgUser(mglgUser)
 										.postContent(mglgPostDTO.getPostContent())
 										.restNm(mglgPostDTO.getRestNm())
+										.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate()))
 										.build();
 			
 			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
@@ -180,7 +181,7 @@ public class PostController {
 	}
 
 	//포스트 단건 조회
-	@GetMapping("post")
+	@GetMapping("/post")
 	public ResponseEntity<?> getPost(@RequestParam("postId") int postId) {
 		MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
 		
@@ -194,9 +195,9 @@ public class PostController {
 												   .postId(post.getPostId())
 												   .postContent(post.getPostContent())
 												   .postDate(post.getPostDate().toString())
-												   .postId(post.getMglgUser().getUserId())
-												   .restNm(post.getRestNm())
+												   //아래줄 원래 .postId(post.getMglgUser().getUserId()) 2022/12/21 19:09
 												   .userId(post.getMglgUser().getUserId())
+												   .restNm(post.getRestNm())
 												   .build();
 
 			response.setItem(returnPostDTO);
