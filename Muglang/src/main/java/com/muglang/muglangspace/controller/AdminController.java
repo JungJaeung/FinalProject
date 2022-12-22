@@ -27,21 +27,6 @@ public class AdminController {
 	@Autowired
 	private AdminService adminService;
 
-	//어드민페이지로 이동
-	@GetMapping("/adminView")
-	public ModelAndView adminView() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("/admin/admin.html");
-		return mv;
-	}
-	//어드민페이지로 이동
-	@GetMapping("/adminMemberView")
-	public ModelAndView adminMemberView() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("/admin/memberManager.html");
-		return mv;
-	}
-
 //////////////////----------커멘트/유저/포스트 신고----------------------/////////////
 	//리포트 - 커멘트 이동
 	@GetMapping("/commentReport")
@@ -180,6 +165,14 @@ public class AdminController {
 			mv.setViewName("/admin/userOrderWindow.html");
 			return mv;
 		}
+//		//faq 윈도우 오픈
+//		@GetMapping("/adminFAQWindow")
+//		public ModelAndView adminFAQWindow() {
+//			System.out.println("어드민faq윈도우");
+//			ModelAndView mv = new ModelAndView();
+//			mv.setViewName("/admin/adminFAQWindow.html");
+//			return mv;
+//		}
 		
 
 		////-----------------------------------------////

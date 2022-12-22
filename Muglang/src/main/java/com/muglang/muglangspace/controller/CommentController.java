@@ -35,7 +35,6 @@ public class CommentController {
 	@GetMapping("/comment")
 	public ResponseEntity<?> getComment(@RequestParam("commentId") int commentId,@RequestParam("postId") int postId) {
 		MglgResponseDTO<MglgCommentDTO> response = new MglgResponseDTO<>();
-		System.out.println("????????????????");
 		try {
 			MglgPost post = MglgPost.builder()
 								    .postId(postId)
