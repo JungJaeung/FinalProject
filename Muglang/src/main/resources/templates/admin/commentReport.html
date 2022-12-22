@@ -11,6 +11,7 @@
 
 
 	 /*<![CDATA[*/
+
 				function new_window(commentId,postId) {
 		        window.open(
 		          "commentWindow?commentId=" + commentId + "&postId=" + postId,
@@ -35,7 +36,6 @@
 						<th>글 번호</th>
 						<th>코멘트 번호</th> 
 						<th>보기</th>  
-						<th>삭제</th> 
 					</tr>
 						<tr th:each="report : ${reportList}">
 							<td th:text="${report.reportId}"></td>

@@ -62,7 +62,7 @@
 					
 					
 						<li class="pagination_button" th:each="page : ${#numbers.sequence(startPage, endPage)}">
-							<a th:href="@{/user/getUserList(
+							<a th:href="@{/user/postReport(
 											page=${page - 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
@@ -70,7 +70,7 @@
 						</li>
 					
 						<li class="pagination_button" th:if="${pageNumber < totalPages - 1}">
-							<a th:href="@{/user/getUserList(
+							<a th:href="@{/user/postReport(
 											page=${pageNumber + 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}

@@ -28,6 +28,7 @@ public class CommentServiceImpl implements CommentService{
 		public void deleteComment(int commentId,int postId) {
 			mglgCommentRepository.deleteComment(commentId,postId);
 		}
+
 		
 		
 

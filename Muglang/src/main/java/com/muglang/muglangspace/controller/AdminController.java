@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgReportDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
+
+import com.muglang.muglangspace.common.CamelHashMap;
+
 import com.muglang.muglangspace.entity.MglgReport;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
@@ -33,6 +34,14 @@ public class AdminController {
 		mv.setViewName("/admin/admin.html");
 		return mv;
 	}
+	//어드민페이지로 이동
+	@GetMapping("/adminMemberView")
+	public ModelAndView adminMemberView() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/admin/memberManager.html");
+		return mv;
+	}
+
 //////////////////----------커멘트/유저/포스트 신고----------------------/////////////
 	//리포트 - 커멘트 이동
 	@GetMapping("/commentReport")
@@ -111,12 +120,12 @@ public class AdminController {
 					mv.setViewName("/admin/userReport.html");
 					return mv;
 		}
+
 //////////////////----------커멘트/유저/포스트 신고끝----------------------/////////////
 /// 오더 윈도우 -------------------------
 		//유저 오더 윈도우 
 		@GetMapping("orderWindow")
 		public ResponseEntity<?> orderWindow(@PageableDefault(page = 0, size = 10)Pageable pageable) {
-			int a = 3;
 			//동일한 로직의 사용을 위해 getreportcomment 재사용
 			MglgResponseDTO<MglgReportDTO> response = new MglgResponseDTO<>();
 			try {

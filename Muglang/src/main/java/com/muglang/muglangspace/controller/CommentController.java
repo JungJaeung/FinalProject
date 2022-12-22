@@ -7,10 +7,13 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.dto.MglgCommentDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
@@ -60,6 +63,7 @@ public class CommentController {
 	}
 
 	//커멘트 아이디로 삭제
+
 	@Transactional
 	@GetMapping("deleteComment")
 	public void deleteComment(@RequestParam("commentId") int commentId,@RequestParam("postId") int postId, HttpServletResponse response) throws IOException {
