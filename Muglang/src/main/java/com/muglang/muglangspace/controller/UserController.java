@@ -1,6 +1,7 @@
 package com.muglang.muglangspace.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
@@ -112,7 +114,52 @@ public class UserController {
 					return mv;
 	}//getUserList끝
 
-	//유저 노란색 처리
+		//유저 노란색 처리
+		// 유저 목록 불러오기 + 페이징
+		@GetMapping("/getAdminUserList")
+		public ModelAndView getAdminUserList(MglgUserDTO userDTO, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+
+			MglgUser user = MglgUser.builder()
+						   .searchCondition(userDTO.getSearchCondition())
+						   .searchKeyword(userDTO.getSearchKeyword())
+						   .build();
+			
+			Page<CamelHashMap> pageUserList = mglgUserService.getAdminUserList(user, pageable);
+			Page<MglgUserDTO> pageUserDTOList = pageUserList.map(pageUser -> 
+														MglgUserDTO.builder()
+																	.userId(Integer.valueOf(String.valueOf(pageUser.get("userId"))))
+																	.userName(String.valueOf(pageUser.get("userName")))
+																	.password(String.valueOf(pageUser.get("password")))
+																	.firstName(String.valueOf(pageUser.get("firstName")))
+																	.lastName(String.valueOf(pageUser.get("lastName")))
+																	.phone(String.valueOf(pageUser.get("phone")))
+																	.email(String.valueOf(pageUser.get("email")))
+																	.address(String.valueOf(pageUser.get("address")))
+																	.bio(String.valueOf(pageUser.get("bio")))
+																	.userBanYn(String.valueOf(pageUser.get("userBanYn")))
+																	.regDate(String.valueOf(pageUser.get("regDate")) == null ?
+																		   	null :
+																		   		String.valueOf(pageUser.get("regDate")))
+																	.reportCnt(Integer.valueOf(String.valueOf(pageUser.get("reportCnt"))))
+																	.build()
+															);
+
+						ModelAndView mv = new ModelAndView();
+						
+						mv.setViewName("/admin/adminUser.html");
+						
+						mv.addObject("getUserList", pageUserDTOList);
+						
+						if(userDTO.getSearchCondition() != null && !userDTO.getSearchCondition().equals("")) {
+							mv.addObject("searchCondition", userDTO.getSearchCondition());
+						}
+						
+						if(userDTO.getSearchKeyword() != null && !userDTO.getSearchKeyword().equals("")) {
+							mv.addObject("searchKeyword", userDTO.getSearchKeyword());
+						}
+						
+						return mv;
+		}//getUserList끝
 	
 	//로그인을 위한 페이지로 이동하는 임시 mapping
 	@GetMapping("/login")

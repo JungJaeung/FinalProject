@@ -1,7 +1,5 @@
 package com.muglang.muglangspace.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,16 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgReportDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
-import com.muglang.muglangspace.entity.MglgComment;
-import com.muglang.muglangspace.entity.MglgPost;
+
+import com.muglang.muglangspace.common.CamelHashMap;
+
 import com.muglang.muglangspace.entity.MglgReport;
 import com.muglang.muglangspace.entity.MglgUser;
-import com.muglang.muglangspace.service.comment.CommentService;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 
 @RestController
@@ -45,7 +41,7 @@ public class AdminController {
 		mv.setViewName("/admin/memberManager.html");
 		return mv;
 	}
-	
+
 //////////////////----------커멘트/유저/포스트 신고----------------------/////////////
 	//리포트 - 커멘트 이동
 	@GetMapping("/commentReport")
@@ -124,26 +120,34 @@ public class AdminController {
 					mv.setViewName("/admin/userReport.html");
 					return mv;
 		}
+
 //////////////////----------커멘트/유저/포스트 신고끝----------------------/////////////
 /// 오더 윈도우 -------------------------
 		//유저 오더 윈도우 
 		@GetMapping("orderWindow")
-		public ModelAndView orderWindow(@PageableDefault(page = 0, size = 10)Pageable pageable) {
-			int a = 3;
+		public ResponseEntity<?> orderWindow(@PageableDefault(page = 0, size = 10)Pageable pageable) {
 			//동일한 로직의 사용을 위해 getreportcomment 재사용
-			Page<MglgReport> reportedUserList = adminService.reportedUser(pageable);
-			Page<MglgReportDTO> pageReportDTOList = reportedUserList.map(reportUser -> 
-													MglgReportDTO.builder()
-													.count(reportUser.getCount())
-													.targetUserId(reportUser.getTargetUserId())
-													.build()
-			);
+			MglgResponseDTO<MglgReportDTO> response = new MglgResponseDTO<>();
+			try {
+
+				Page<CamelHashMap> reportedUserList = adminService.reportedUser(pageable);
+				Page<MglgReportDTO> pageReportDTOList = reportedUserList.map(reportUser -> 
+														MglgReportDTO.builder()
+														.count(Integer.valueOf(String.valueOf(reportUser.get("count"))))
+														.targetUserId(Integer.valueOf(String.valueOf(reportUser.get("targetUserId"))))
+														.build()											
+				);
+				response.setPageItems(pageReportDTOList);
+				return ResponseEntity.ok().body(response);
+			} catch (Exception e) {
+				response.setErrorMessage(e.getMessage());
+				return ResponseEntity.badRequest().body(response);
+			}
+			
 
 					
-					ModelAndView mv = new ModelAndView();
-					mv.addObject("reportedUserList",pageReportDTOList);
-					mv.setViewName("/admin/userOrderWindow.html");
-					return mv;
+				
+				
 		}
 		//질문하기(count// 컬럼)
 

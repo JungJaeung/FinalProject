@@ -1151,5 +1151,8 @@ h6 {
   #report_board_tb tr :nth-child(3){ text-align: center;}
   #report_board_tb tr :nth-child(4){ text-align: center;}
   
-  
+/*--------------------------------------------------------------
+# 관리자 페이지 글신고
+--------------------------------------------------------------*/  
+  .hashTag_text{width: 100px; border: none; border-bottom: 1px solid #bbb; outline: none;}
   

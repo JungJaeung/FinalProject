@@ -1,10 +1,13 @@
 package com.muglang.muglangspace.service.mglguser.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.mapper.MglgUserMapper;
 import com.muglang.muglangspace.repository.MglgUserRepository;
@@ -37,10 +40,34 @@ public class MglgUserServiceImpl implements MglgUserService{
 				return mglgUserRepository.findAll(pageable);
 			}
 	}
+	
+	///// 검색 + 유저 카운트
+	@Override
+	public Page<CamelHashMap> getAdminUserList(MglgUser user, Pageable pageable) {
+			if(user.getSearchKeyword() != null && !user.getSearchKeyword().equals("")) {
+				if(user.getSearchCondition().equals("ALL")) {
+					return mglgUserRepository.searchAll(user.getSearchKeyword(),
+							user.getSearchKeyword(), pageable);		
+				} else if(user.getSearchCondition().equals("이름")) {
+					return mglgUserRepository.searchName(user.getSearchKeyword(), pageable);
+				} else{
+					return mglgUserRepository.searchEmail(user.getSearchKeyword(), pageable);
+				}
+			}else {
+				return mglgUserRepository.searchDefault(pageable);
+			}
+	}
+
 
 	@Override
 	public MglgUser loginUser(MglgUser mglgUser) {
 		return mglgUserRepository.findByUserId(mglgUser.getUserId());
+	}
+
+	@Override
+	public List<MglgUser> getNoUserList() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

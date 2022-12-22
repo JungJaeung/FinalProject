@@ -25,10 +25,20 @@
 					url: '/admin/orderWindow',
 					type: 'get',
 					success: function(obj) {
-						$("#count").text(obj.item.count);
-						$("#targetUserId").text(obj.item.targetUserId);
-
-									   
+						console.log(obj); 
+						let htmlStr = '';
+						for(let i =0 ;i<obj.pageItems.content.length;i++){
+							htmlStr += `
+								<tr>
+									<td id="targetUserId${i}">${obj.pageItems.content[i].targetUserId}</td>
+									<td id="count${i}">${obj.pageItems.content[i].count}</td>
+								</tr>
+							`
+							/*$("#count").text(obj.pageItems.content[i].count);
+							$("#targetUserId").text(obj.pageItems.content[i].targetUserId);*/
+						}
+						
+						$("#boardTable").append(htmlStr);									   
 					},
 					error: function(e) {
 						console.log(e);
@@ -49,10 +59,7 @@
 						<th>유저 아이디</th>
 						<th>신고 횟수</th>
 					</tr>
-						<tr>
-							<td id="targetUserId"></td>
-							<td id="count"></td>
-						</tr>
+
 				</table>
 		</main>
 </body>
