@@ -18,7 +18,7 @@ public class MglgPostDTO {
 
 	private int postId;
 
-	private int userId;
+	private String userId;
 
 	private int postRating;
 	private String postContent;

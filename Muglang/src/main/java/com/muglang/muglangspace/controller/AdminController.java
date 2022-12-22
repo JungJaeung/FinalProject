@@ -24,6 +24,7 @@ import com.muglang.muglangspace.service.mglgadmin.AdminService;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
+
 	@Autowired
 	private AdminService adminService;
 
@@ -151,68 +152,63 @@ public class AdminController {
 		}
 		//질문하기(count// 컬럼)
 
-		
-		
-		
-		
-		
 /// 오더 윈도우 끝 ------------------------
 //---------------------------------윈도우 오픈---------------------------------
-		//커멘트윈도우 오픈
-		@GetMapping("/commentWindow")
-		public ModelAndView commentWindow(@RequestParam("commentId") int commentId) {
-			ModelAndView mv = new ModelAndView();
-			mv.setViewName("/admin/commentWindow.html");
-			return mv;
-		}
-		//포스트윈도우 오픈
-		@GetMapping("/postWindow")
-		public ModelAndView postWindow(@RequestParam("postId") int postId) {
-			ModelAndView mv = new ModelAndView();
-			mv.setViewName("/admin/postWindow.html");
-			return mv;
-		}
-		
-		//유저 오더 윈도우 오픈
-		@GetMapping("/userOrderWindow")
-		public ModelAndView userOrderWindow() {
-			ModelAndView mv = new ModelAndView();
-			mv.setViewName("/admin/userOrderWindow.html");
-			return mv;
-		}
-		
+      //커멘트윈도우 오픈
+      @GetMapping("/commentWindow")
+      public ModelAndView commentWindow(@RequestParam("commentId") int commentId) {
+         ModelAndView mv = new ModelAndView();
+         mv.setViewName("/admin/commentWindow.html");
+         return mv;
+      }
+      //포스트윈도우 오픈
+      @GetMapping("/postWindow")
+      public ModelAndView postWindow(@RequestParam("postId") int postId) {
+         ModelAndView mv = new ModelAndView();
+         mv.setViewName("/admin/postWindow.html");
+         return mv;
+      }
+      
+      //유저 오더 윈도우 오픈
+      @GetMapping("/userOrderWindow")
+      public ModelAndView userOrderWindow() {
+         ModelAndView mv = new ModelAndView();
+         mv.setViewName("/admin/userOrderWindow.html");
+         return mv;
+      }
+      
 
-		////-----------------------------------------////
-	//밴 유저 yn 변경
-		@PutMapping("banUser")
-		public ResponseEntity<?> banUser(MglgUserDTO userDTO) {
-			MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-			
-			try {
-				MglgUser user = MglgUser.builder()
-						.userId(userDTO.getUserId())
-						.userBanYn(userDTO.getUserBanYn())
-						.build();
-				user = adminService.uptUserBan(user);
-				MglgUserDTO returnUserDTO = MglgUserDTO.builder()
-													   .userId(user.getUserId())
-													   .userBanYn(user.getUserBanYn())
-													   .build();
-					
-				response.setItem(returnUserDTO);
-				return ResponseEntity.ok().body(response);
-			} catch (Exception e) {
-				response.setErrorMessage(e.getMessage());
-				return ResponseEntity.badRequest().body(response);
-			}
-			
-			
-			
+      ////-----------------------------------------////
+   //밴 유저 yn 변경
+      @PutMapping("banUser")
+      public ResponseEntity<?> banUser(MglgUserDTO userDTO) {
+         MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+         
+         try {
+            MglgUser user = MglgUser.builder()
+                  .userId(userDTO.getUserId())
+                  .userBanYn(userDTO.getUserBanYn())
+                  .build();
+            user = adminService.uptUserBan(user);
+            MglgUserDTO returnUserDTO = MglgUserDTO.builder()
+                                          .userId(user.getUserId())
+                                          .userBanYn(user.getUserBanYn())
+                                          .build();
+               
+            response.setItem(returnUserDTO);
+            return ResponseEntity.ok().body(response);
+         } catch (Exception e) {
+            response.setErrorMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+         }
+         
+         
+         
 
-			
-			
-			
-		}
+         
+         
+         
+      }
 
 
 

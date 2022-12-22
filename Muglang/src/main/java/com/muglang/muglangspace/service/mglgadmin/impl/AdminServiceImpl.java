@@ -20,7 +20,7 @@ public class AdminServiceImpl implements AdminService{
 		@Autowired
 		private MglgUserRepository mglgUserRepository;
 		@Autowired
-		private MglgPostRepository mglgPostRepository;
+		private MglgPostRepository mglgPostepository;
 		
 		@Override
 		public MglgUser searchBan(MglgUser user) {
@@ -31,7 +31,7 @@ public class AdminServiceImpl implements AdminService{
 		@Override
 		public MglgUser uptUserBan(MglgUser user) {
 			String userBanYn = user.getUserBanYn();
-			int userId = user.getUserId();
+			String userId = user.getUserId();
 			
 			
 			mglgUserRepository.uptUserBan(userBanYn,userId);

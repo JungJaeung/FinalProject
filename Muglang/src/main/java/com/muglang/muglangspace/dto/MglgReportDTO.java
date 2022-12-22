@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MglgReportDTO {
-	private int reportId;
-	private int reportType;
-	private int sourceUserId;
-	private int targetUserId;
+	private int reportId; //신고 번호
+	private int reportType; //신고 타입 번호
+	private int sourceUserId; //신고한 사람 아이디값 String
+	private int targetUserId; //신고당한 사람 아이디값 String
 	private String reportDate;
-	private int postId;
-	private int commentId;
-	private int count;
+	private int postId; //포스트 번호
+	private int commentId; //포스트 댓글의 번호
+
 }

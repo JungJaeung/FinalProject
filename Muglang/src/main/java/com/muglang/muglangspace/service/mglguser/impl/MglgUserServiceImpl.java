@@ -57,8 +57,7 @@ public class MglgUserServiceImpl implements MglgUserService{
 				return mglgUserRepository.searchDefault(pageable);
 			}
 	}
-
-
+	
 	@Override
 	public MglgUser loginUser(MglgUser mglgUser) {
 		return mglgUserRepository.findByUserId(mglgUser.getUserId());
@@ -68,6 +67,5 @@ public class MglgUserServiceImpl implements MglgUserService{
 	public List<MglgUser> getNoUserList() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
+	}	
 }
