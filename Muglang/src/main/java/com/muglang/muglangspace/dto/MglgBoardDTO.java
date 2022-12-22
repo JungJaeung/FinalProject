@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class MglgBoardDTO {
 	private int boardId;
 
-	private String userId;
+	private int userId;
 	
 	private String boardTitle;
 	private String boardContent;

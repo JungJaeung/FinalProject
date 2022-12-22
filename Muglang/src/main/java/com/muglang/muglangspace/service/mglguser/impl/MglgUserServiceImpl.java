@@ -60,12 +60,19 @@ public class MglgUserServiceImpl implements MglgUserService{
 	
 	@Override
 	public MglgUser loginUser(MglgUser mglgUser) {
-		return mglgUserRepository.findByUserId(mglgUser.getUserId());
+		return mglgUserRepository.findById(mglgUser.getUserId());
 	}
+	
+	@Override
+	public MglgUser socialLoginUser(MglgUser mglgUser) {
+		// TODO Auto-generated method stub
+		return mglgUserRepository.findByUserSnsId(mglgUser.getUserSnsId());
+	}	
 
 	@Override
 	public List<MglgUser> getNoUserList() {
 		// TODO Auto-generated method stub
 		return null;
-	}	
+	}
+
 }

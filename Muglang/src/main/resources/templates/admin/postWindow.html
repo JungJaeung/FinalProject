@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-   layout:decorate="~{layouts/layout}">
+   layout:decorate="~{layouts/layout_admin}">
 
 <!-- head 영역 시작 -->
 <!-- 개별적으로 사용할 css, js 링크 걸기 위해 남겨둠 -->
@@ -54,8 +54,6 @@
          작성자: <h1 id="userId"></h1>
          글넘버: <h3 id="postId"></h3>
          작성일:<h4 id="postDate"></h4>
-         내용:<h4 id="postContent"></h4>
-
       </div><!-- End Page Title -->
 
       <section class="section dashboard">
@@ -70,12 +68,7 @@
                      <div class="card recent-sales overflow-auto">
                         <div class="card-body">
                            <h5 class="card-title"></h5>
-                           <!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
-                           <div style="border-radius: 8px;">
-                              <div class="quill-editor-default">
-                                 <h2 id="postContent"></h2>
-                              </div>
-                           </div>
+							<h2 id="postContent"></h2>   
                         </div>
                      </div>
                   </div><!-- End Recent Sales -->

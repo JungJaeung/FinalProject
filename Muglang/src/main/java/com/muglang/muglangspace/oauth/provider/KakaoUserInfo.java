@@ -32,7 +32,7 @@ public class KakaoUserInfo implements OAuth2UserInfo{
 	//카카오가 제공하는 사용자의 닉네임을 받아옴(필수)
 	@Override
 	public String getName() {
-		Map profile = (Map)properties.get("profile");
+		Map<String, Object> profile = (Map<String, Object>)properties.get("profile");
 		return profile.get("nickname") + "";
 	}
 	

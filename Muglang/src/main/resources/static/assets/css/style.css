@@ -1134,9 +1134,8 @@ h6 {
  /*--------------------------------------------------------------
 # 관리자 페이지 댓글신고
 --------------------------------------------------------------*/
- #report_comment_tb a{ color: black;}
- #report_comment_tb tr :nth-child(2){ text-align: center;}
- #report_comment_tb tr :nth-child(4){ text-align: center;}
+ #boardTable_comment a{ color: black;}
+ #boardTable_comment tr{ text-align: center;}
  
 /*--------------------------------------------------------------
 # 관리자 페이지 멤버신고

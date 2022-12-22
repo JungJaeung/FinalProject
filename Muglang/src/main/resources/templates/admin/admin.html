@@ -2,7 +2,7 @@
 <html lang="ko"
 	  xmlns:th="http://www.thymeleaf.org"
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	  layout:decorate="~{layouts/layout}">
+	  layout:decorate="~{layouts/layout_admin}">
 	<head>
 		
 	</head>
@@ -27,6 +27,10 @@
 		<div>
 			<a th:href="@{/admin/userReport}">리포트-유저 리스트로 이동</a>
 		</div>
+		<div>
+			<a th:href="@{/admin/adminMemberView}">리포트-유저 리스트로 이동</a>
+		</div>
+		
 	</main>
 	
 	</body>

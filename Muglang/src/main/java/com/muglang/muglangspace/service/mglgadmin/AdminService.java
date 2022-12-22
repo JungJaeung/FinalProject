@@ -1,5 +1,7 @@
 package com.muglang.muglangspace.service.mglgadmin;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,6 +16,7 @@ public interface AdminService {
 	MglgUser uptUserBan(MglgUser user);
 	
 	Page<MglgReport> getReportComment(int a,Pageable pageable);
+
 
 	Page<CamelHashMap> reportedUser(Pageable pageable);
 	

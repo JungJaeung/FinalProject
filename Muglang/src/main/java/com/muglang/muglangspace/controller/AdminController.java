@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgReportDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
+
+import com.muglang.muglangspace.common.CamelHashMap;
+
 import com.muglang.muglangspace.entity.MglgReport;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
@@ -23,130 +24,134 @@ import com.muglang.muglangspace.service.mglgadmin.AdminService;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-   @Autowired
-   private AdminService adminService;
 
-   //어드민페이지로 이동
-   @GetMapping("/adminView")
-   public ModelAndView adminView() {
-      ModelAndView mv = new ModelAndView();
-      mv.setViewName("/admin/admin.html");
-      return mv;
-   }
+	@Autowired
+	private AdminService adminService;
+
+	//어드민페이지로 이동
+	@GetMapping("/adminView")
+	public ModelAndView adminView() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/admin/admin.html");
+		return mv;
+	}
+	//어드민페이지로 이동
+	@GetMapping("/adminMemberView")
+	public ModelAndView adminMemberView() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/admin/memberManager.html");
+		return mv;
+	}
+
 //////////////////----------커멘트/유저/포스트 신고----------------------/////////////
-   //리포트 - 커멘트 이동
-   @GetMapping("/commentReport")
-   public ModelAndView reportComment(@PageableDefault(page = 0, size = 10) Pageable pageable) {
-      
-      int a = 1;
-      Page<MglgReport> pageReportList = adminService.getReportComment(a,pageable);
-      Page<MglgReportDTO> pageReportDTOList = pageReportList.map(pageReport -> 
-                                    MglgReportDTO.builder()
-                                    .reportId(pageReport.getReportId())
-                                    .reportType(pageReport.getReportType())
-                                    .sourceUserId(pageReport.getSourceUserId())
-                                    .targetUserId(pageReport.getTargetUserId())
-                                    .reportDate(pageReport.getReportDate() == null ?
-                                                   null :
-                                                      pageReport.getReportDate().toString())
-                                    .postId(pageReport.getPostId())
-                                    .commentId(pageReport.getCommentId())
-                                    .build()
-      );
+	//리포트 - 커멘트 이동
+	@GetMapping("/commentReport")
+	public ModelAndView reportComment(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+		
+		int a = 1;
+		Page<MglgReport> pageReportList = adminService.getReportComment(a,pageable);
+		Page<MglgReportDTO> pageReportDTOList = pageReportList.map(pageReport -> 
+												MglgReportDTO.builder()
+												.reportId(pageReport.getReportId())
+												.reportType(pageReport.getReportType())
+												.sourceUserId(pageReport.getSourceUserId())
+												.targetUserId(pageReport.getTargetUserId())
+												.reportDate(pageReport.getReportDate() == null ?
+															   	null :
+															   		pageReport.getReportDate().toString())
+												.postId(pageReport.getPostId())
+												.commentId(pageReport.getCommentId())
+												.build()
+		);
 
-      
-            ModelAndView mv = new ModelAndView();
-            mv.addObject("reportList",pageReportDTOList);
-            mv.setViewName("/admin/commentReport.html");
-            return mv;
-   }
+		
+				ModelAndView mv = new ModelAndView();
+				mv.addObject("reportList",pageReportDTOList);
+				mv.setViewName("/admin/commentReport.html");
+				return mv;
+	}
 
-   //리포트 - 포스트 이동 및 포스트 조회 a = 번호
-   @GetMapping("/postReport")
-   public ModelAndView reportPost(@PageableDefault(page = 0, size = 10) Pageable pageable) {
-      int a = 2;
-      //동일한 로직의 사용을 위해 getreportcomment 재사용
-      Page<MglgReport> pageReportList = adminService.getReportComment(a,pageable);
-      Page<MglgReportDTO> pageReportDTOList = pageReportList.map(pageReport -> 
-                                    MglgReportDTO.builder()
-                                    .reportId(pageReport.getReportId())
-                                    .reportType(pageReport.getReportType())
-                                    .sourceUserId(pageReport.getSourceUserId())
-                                    .targetUserId(pageReport.getTargetUserId())
-                                    .reportDate(pageReport.getReportDate() == null ?
-                                                   null :
-                                                      pageReport.getReportDate().toString())
-                                    .postId(pageReport.getPostId())
-                                    .build()
-      );
+	//리포트 - 포스트 이동 및 포스트 조회 a = 번호
+	@GetMapping("/postReport")
+	public ModelAndView reportPost(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+		int a = 2;
+		//동일한 로직의 사용을 위해 getreportcomment 재사용
+		Page<MglgReport> pageReportList = adminService.getReportComment(a,pageable);
+		Page<MglgReportDTO> pageReportDTOList = pageReportList.map(pageReport -> 
+												MglgReportDTO.builder()
+												.reportId(pageReport.getReportId())
+												.reportType(pageReport.getReportType())
+												.sourceUserId(pageReport.getSourceUserId())
+												.targetUserId(pageReport.getTargetUserId())
+												.reportDate(pageReport.getReportDate() == null ?
+															   	null :
+															   		pageReport.getReportDate().toString())
+												.postId(pageReport.getPostId())
+												.build()
+		);
 
-            
-            ModelAndView mv = new ModelAndView();
-            mv.addObject("reportList",pageReportDTOList);
-            mv.setViewName("/admin/postReport.html");
-            return mv;
-   }
-   //리포트 - 유저 이동 및 유저 신고 조회 a = 번호
-      @GetMapping("/userReport")
-      public ModelAndView reportUser(@PageableDefault(page = 0, size = 10) Pageable pageable) {
-         int a = 3;
-         //동일한 로직의 사용을 위해 getreportcomment 재사용
-         Page<MglgReport> pageReportList = adminService.getReportComment(a,pageable);
-         Page<MglgReportDTO> pageReportDTOList = pageReportList.map(pageReport -> 
-                                       MglgReportDTO.builder()
-                                       .reportId(pageReport.getReportId())
-                                       .reportType(pageReport.getReportType())
-                                       .sourceUserId(pageReport.getSourceUserId())
-                                       .targetUserId(pageReport.getTargetUserId())
-                                       .reportDate(pageReport.getReportDate() == null ?
-                                                      null :
-                                                         pageReport.getReportDate().toString())
-                                       .postId(pageReport.getPostId())
-                                       .build()
-         );
+				
+				ModelAndView mv = new ModelAndView();
+				mv.addObject("reportList",pageReportDTOList);
+				mv.setViewName("/admin/postReport.html");
+				return mv;
+	}
+	//리포트 - 유저 이동 및 유저 신고 조회 a = 번호
+		@GetMapping("/userReport")
+		public ModelAndView reportUser(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+			int a = 3;
+			//동일한 로직의 사용을 위해 getreportcomment 재사용
+			Page<MglgReport> pageReportList = adminService.getReportComment(a,pageable);
+			Page<MglgReportDTO> pageReportDTOList = pageReportList.map(pageReport -> 
+													MglgReportDTO.builder()
+													.reportId(pageReport.getReportId())
+													.reportType(pageReport.getReportType())
+													.sourceUserId(pageReport.getSourceUserId())
+													.targetUserId(pageReport.getTargetUserId())
+													.reportDate(pageReport.getReportDate() == null ?
+																   	null :
+																   		pageReport.getReportDate().toString())
+													.postId(pageReport.getPostId())
+													.build()
+			);
 
-               
-               ModelAndView mv = new ModelAndView();
-               mv.addObject("reportList",pageReportDTOList);
-               mv.setViewName("/admin/userReport.html");
-               return mv;
-      }
+					
+					ModelAndView mv = new ModelAndView();
+					mv.addObject("reportList",pageReportDTOList);
+					mv.setViewName("/admin/userReport.html");
+					return mv;
+		}
+
 //////////////////----------커멘트/유저/포스트 신고끝----------------------/////////////
 /// 오더 윈도우 -------------------------
-      //유저 오더 윈도우 
-      @GetMapping("orderWindow")
-      public ResponseEntity<?> orderWindow(@PageableDefault(page = 0, size = 10)Pageable pageable) {
-         int a = 3;
-         //동일한 로직의 사용을 위해 getreportcomment 재사용
-         MglgResponseDTO<MglgReportDTO> response = new MglgResponseDTO<>();
-         try {
+		//유저 오더 윈도우 
+		@GetMapping("/orderWindow")
+		public ResponseEntity<?> orderWindow(@PageableDefault(page = 0, size = 10)Pageable pageable) {
+			//동일한 로직의 사용을 위해 getreportcomment 재사용
+			MglgResponseDTO<MglgReportDTO> response = new MglgResponseDTO<>();
+			try {
 
-            Page<CamelHashMap> reportedUserList = adminService.reportedUser(pageable);
-            Page<MglgReportDTO> pageReportDTOList = reportedUserList.map(reportUser -> 
-                                          MglgReportDTO.builder()
-                                          .count(Integer.valueOf(String.valueOf(reportUser.get("count"))))
-                                          .targetUserId(Integer.valueOf(String.valueOf(reportUser.get("targetUserId"))))
-                                          .build()                                 
-            );
-            response.setPageItems(pageReportDTOList);
-            return ResponseEntity.ok().body(response);
-         } catch (Exception e) {
-            response.setErrorMessage(e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-         }
-         
+				Page<CamelHashMap> reportedUserList = adminService.reportedUser(pageable);
+				Page<MglgReportDTO> pageReportDTOList = reportedUserList.map(reportUser -> 
+														MglgReportDTO.builder()
+														.count(Integer.valueOf(String.valueOf(reportUser.get("count"))))
+														.targetUserId(Integer.valueOf(String.valueOf(reportUser.get("targetUserId"))))
+														.build()											
+				);
+				response.setPageItems(pageReportDTOList);
+				return ResponseEntity.ok().body(response);
+			} catch (Exception e) {
+				response.setErrorMessage(e.getMessage());
+				return ResponseEntity.badRequest().body(response);
+			}
+			
 
-               
-            
-            
-      }
-      //질문하기(count// 컬럼)
+					
+				
+				
+		}
+		//질문하기(count// 컬럼)
 
-      
-      
-      
-      
-      
 /// 오더 윈도우 끝 ------------------------
 //---------------------------------윈도우 오픈---------------------------------
       //커멘트윈도우 오픈

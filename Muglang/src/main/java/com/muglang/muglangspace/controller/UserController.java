@@ -124,7 +124,7 @@ public class UserController {
 			Page<CamelHashMap> pageUserList = mglgUserService.getAdminUserList(user, pageable);
 			Page<MglgUserDTO> pageUserDTOList = pageUserList.map(pageUser -> 
 														MglgUserDTO.builder()
-																	.userId(String.valueOf(String.valueOf(pageUser.get("userId"))))
+																	.userId((int)pageUser.get("userId"))
 																	.userName(String.valueOf(pageUser.get("userName")))
 																	.password(String.valueOf(pageUser.get("password")))
 																	.firstName(String.valueOf(pageUser.get("firstName")))

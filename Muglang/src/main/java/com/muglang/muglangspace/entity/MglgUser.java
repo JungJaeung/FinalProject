@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class MglgUser {
 	@Id
-	private String userId;
+	private int userId;
 	private String userName;
 	private String password;
 	private String firstName;
@@ -44,6 +44,8 @@ public class MglgUser {
 	@Column
 	@ColumnDefault("'ROLE_USER'")
 	private String userRole;
+	private String userSnsId;
+	
 	@Transient
 	private String searchCondition;
 	@Transient

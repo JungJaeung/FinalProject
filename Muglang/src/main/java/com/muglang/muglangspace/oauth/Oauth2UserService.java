@@ -57,25 +57,26 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		}
 		
 		String provider = oAuth2UserInfo.getProvider();
-		String userId = provider + "_" + providerId; //id는 식별 목적, 표시는 닉네임으로
+		//userSnsId = kakao_4891279
+		String userSnsId = provider + "_" + providerId; //id는 식별 목적, 표시는 닉네임으로
 		String email = oAuth2UserInfo.getEmail();
 		String role = "ROLE_USER";
 		
 		//사용자가 이미 소셜 로그인한 기록이 있는지 검사
 		MglgUser mglgUser;
 		
-		//userId가 존재하면 true 존재하지 않으면 false로 반환 
-		if(mglgUserRepository.findById(userId).isPresent()) {
+		//userSnsId가 존재하면 true 존재하지 않으면 false로 반환, user 정보를 찾는 것은 userSnsId로 sns로그인의 기록이 있는지 확인한다.
+		if(mglgUserRepository.findByUserSnsId(userSnsId) != null) {
 			//userId가 존재할 시 정보를 mglgUser 엔티티에 담아줌
-			mglgUser = mglgUserRepository.findById(userId).get();
+			mglgUser = mglgUserRepository.findByUserSnsId(userSnsId);
 		} else {
 			//존재하지 않으면 null로 리턴하여 회원가입
 			mglgUser = null;
 		}
-		
+		//userId는 자동으로 기본키로 1씩 증가하여 생성한다.
 		if(mglgUser == null) {
 			mglgUser = MglgUser.builder()
-							   .userId(userId)
+							   .userSnsId(userSnsId)
 							   .userName(userName)
 							   .email(email)
 							   .userRole(role)

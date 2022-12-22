@@ -14,7 +14,7 @@ import com.muglang.muglangspace.entity.MglgUser;
 
 @Transactional
 
-public interface MglgUserRepository extends JpaRepository<MglgUser, String>{
+public interface MglgUserRepository extends JpaRepository<MglgUser, Integer>{
 
 	//이름으로 검색
 	Page<MglgUser> findByUserNameContaining(String searchKeyword, Pageable pageable);
@@ -29,7 +29,11 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, String>{
 	@Query(value="UPDATE T_MGLG_USER SET USER_BAN_YN = :userBanYn WHERE USER_ID = :userId", nativeQuery=true)
 	void uptUserBan(@Param("userBanYn") String userBanYn, @Param("userId") int userId);
 	
-	MglgUser findByUserId(@Param("userId") String userId);
+	MglgUser findById(@Param("userId") int userId);
+
+	//Sns계정이 가입 되어있는지 여부를 판단하는 간단한 검색쿼리
+	@Query(value="SELECT * FROM T_MGLG_USER WHERE USER_SNS_ID = :userSnsId", nativeQuery=true)
+	MglgUser findByUserSnsId(@Param("userSnsId") String userSnsId);
 //--------------------어드민 관련///	
 	@Query(value="SELECT A.*"
 			+ "	 , IFNULL(B.REPORT_CNT, 0) AS REPORT_CNT"
