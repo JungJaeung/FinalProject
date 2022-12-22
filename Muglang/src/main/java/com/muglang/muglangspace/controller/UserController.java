@@ -171,7 +171,7 @@ public class UserController {
 	
 	//로그인 시도하는 임시 url
 	@PostMapping("/login")
-	public ModelAndView loginProcess(@PageableDefault(page=0, size=10) Pageable pageable, MglgUserDTO userDTO, HttpSession session) {
+	public ModelAndView loginProcess(@PageableDefault(page=0, size=5) Pageable pageable, MglgUserDTO userDTO, HttpSession session) {
 		ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>();
 		Map<String, String> returnMap = new HashMap<String, String>();
 		ModelAndView mv = new ModelAndView();

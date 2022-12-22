@@ -57,7 +57,8 @@
 											th:src="@{/assets/img/messages-1.jpg}" style="width: 50px;"></div>
 									<!--회원 이름, 아이디-->
 									<div style="width: 70%; float: left; margin-top: 5px;">
-										<div th:style="${user.reportCnt >=3? 'font-weight: bold;color:red':'font-weight: bold;color:black'}" th:text="${user.userName}"></div>
+										<div th:style="${user.reportCnt >=3? 'font-weight: bold;color:red':'font-weight: bold;color:black'}"
+											th:text="${user.userName}"></div>
 										<div style="color: #aaaaaa; font-size: x-small;" th:text="${user.email}"></div>
 									</div>
 									<!--정지,추방 버튼-->
@@ -73,38 +74,37 @@
 								</div>
 							</div>
 							<div class="col-12">
-								<div style="align-items: center;">
+								<nav aria-label="Page navigation example">
 									<ul class="pagination" th:if="${getUserList.totalElements > 0}" th:with="pageNumber = ${getUserList.pageable.pageNumber},
 												    pageSize = ${getUserList.pageable.pageSize},
 												    totalPages = ${getUserList.totalPages},
 												    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
 												    tempEndPage = ${startPage + pageSize - 1},
 												    endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
-										<li class="pagination_button" th:if="${pageNumber > 0}">
-											<a th:href="@{/admin/getAdminUserList(
-											page=${pageNumber - 1}
-										)}">이전</a>
+										<li class="page-item" th:if="${pageNumber > 0}">
+											<a class="page-link"
+												th:href="@{/user/getAdminUserList(page=${pageNumber - 1})}">이전</a>
 										</li>
-
-
-										<li class="pagination_button"
-											th:each="page : ${#numbers.sequence(startPage, endPage)}">
-											<a th:href="@{/user/getAdminUserList(
+										<li class="page-item" th:if="${pageNumber == 0}" style="cursor: pointer;">
+											<a class="page-link">이전</a>	
+										</li>
+										<li class="page-item" th:each="page : ${#numbers.sequence(startPage, endPage)}">
+											<a class="page-link" th:href="@{/user/getAdminUserList(
 											page=${page - 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
 										)}" th:text="${page}"></a>
 										</li>
-
-										<li class="pagination_button" th:if="${pageNumber < totalPages - 1}">
-											<a th:href="@{/user/getAdminUserList(
-											page=${pageNumber + 1},
+										<li class="page-item" th:if="${pageNumber < totalPages - 1}">
+											<a class="page-link" th:href="@{/user/getAdminUserList(page=${pageNumber + 1},
 											searchCondition=${searchCondition},
-											searchKeyword=${searchKeyword}
-										)}">다음</a>
+											searchKeyword=${searchKeyword})}">다음</a>
+										</li>
+										<li class="page-item" th:if="${pageNumber == (totalPages -1)}" style="cursor: pointer;">
+											<a class="page-link">다음</a>	
 										</li>
 									</ul>
-								</div>
+								</nav>
 							</div>
 						</div>
 					</div>
@@ -144,47 +144,5 @@
 		</section>
 	</main><!-- End #main -->
 </body>
-<!--<h3>유저 관리페이지입니다.</h3>
-				<form id="searchForm" action="/user/getUserList" method="get">
-					<input type="hidden" name="page" value="">
-					<tabl border="1" style="width: 700px; border-collapse: collapse;">
-						<etr>
-							<td align="right">
-								<select name="searchCondition">
-									<option value="ALL" th:selected="${searchCondition == 'ALL'}">전체</option>
-									<option value="이름" th:selected="${searchCondition == '이름'}">이름</option>
-									<option value="이메일" th:selected="${searchCondition == '이메일'}">이메일</option>
-								</select>
-								<input type="text" name="searchKeyword" th:value="${searchKeyword}">
-								<button type="submit" id="btnSearch">검색</button>
-							</td>
-						</tr>
-					</table>
-				</form>
-				
-				<table id="boardTable" border="1" style="width: 700px; border-collapse: collapse;">
-					<tr>
-						<th>유저이름</th>
-						<th>전화번호</th>
-						<th>이메일</th>
-						<th>주소</th>
-						<th>가입일</th>
-						<th>활성화 여부</th> 
-						<th style="width: 70px;"></th> 
-					</tr>
-						<tr th:each="user : ${getUserList.content}">
-							<input type="hidden" th:value="${user.reportCnt}">
-							<td th:text="${user.userName}" th:style="${user.reportCnt <3 ? 'background: white': 'background: yellow'}"></td>
-							<td th:text="${user.phone}"></td>
-							<td th:text="${user.email}"></td>
-							<td th:text="${user.address}"></td>
-							<td th:text="${user.regDate eq null ? '' : #strings.substring(user.regDate, 0, 10)}"></td>
-							<td th:text="${user.userBanYn}" th:id="'userBanYn_'+${user.userId}"></td>
-							<td><button id="'btn_user.user.userId}" th:onclick="banUser([[${user.userId}]])" th:text="변경"></button></td>
-						</tr>
-				</table>
-				<br/>
-				<div style="text-align:center;">
-					<ul class="pagination" th:if="${getUserList.totalElements > 0}"-->
 
 </html>
