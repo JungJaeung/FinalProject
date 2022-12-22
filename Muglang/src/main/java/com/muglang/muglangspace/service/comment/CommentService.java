@@ -1,6 +1,5 @@
 package com.muglang.muglangspace.service.comment;
 
-import java.util.List;
 
 
 import com.muglang.muglangspace.entity.MglgComment;
