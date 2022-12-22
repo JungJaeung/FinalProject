@@ -12,10 +12,15 @@
   scroll-behavior: smooth;
 }
 
-/*최근 추가한 수정 관련 css*/
-#contentIn {
+#selectedPost {
+	position: fixed;
+	left: 0; top: 0;
+	width:100%; height: 100%;
+	background-color: gray;
 	display: none;
 }
+
+
 
 body {
   font-family: "Open Sans", sans-serif;
@@ -881,8 +886,8 @@ h6 {
 .dashboard .activity .activity-item .activite-label {
   color: #888;
   position: relative;
-  flex-shrink: 3px;
-  flex-grow: 3px;
+  flex-shrink: 0;
+  flex-grow: 0;
   min-width: 64px;
 }
 
@@ -1146,5 +1151,8 @@ h6 {
   #report_board_tb tr :nth-child(3){ text-align: center;}
   #report_board_tb tr :nth-child(4){ text-align: center;}
   
-  
+/*--------------------------------------------------------------
+# 관리자 페이지 글신고
+--------------------------------------------------------------*/  
+  .hashTag_text{width: 100px; border: none; border-bottom: 1px solid #bbb; outline: none;}
   

@@ -1,7 +1,5 @@
 package com.muglang.muglangspace.repository;
 
-import java.util.Optional;
-
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -11,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgUser;
 
 @Transactional
@@ -28,5 +27,72 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, String>{
 	
 	@Modifying //데이터의 변경이 일어나는 @Query을 사용할 때는 @Modifying을 붙여준다.
 	@Query(value="UPDATE T_MGLG_USER SET USER_BAN_YN = :userBanYn WHERE USER_ID = :userId", nativeQuery=true)
-	void uptUserBan(@Param("userBanYn") String userBanYn, @Param("userId") String userId);
+	void uptUserBan(@Param("userBanYn") String userBanYn, @Param("userId") int userId);
+	
+	MglgUser findByUserId(@Param("userId") String userId);
+//--------------------어드민 관련///	
+	@Query(value="SELECT A.*"
+			+ "	 , IFNULL(B.REPORT_CNT, 0) AS REPORT_CNT"
+			+ "	FROM T_MGLG_USER A"
+			+ "    LEFT OUTER JOIN ("
+			+ "						SELECT C.TARGET_USER_ID"
+			+ "							 , COUNT(C.TARGET_USER_ID) AS REPORT_CNT"
+			+ "                            FROM T_MGLG_REPORT C"
+			+ "                            GROUP BY C.TARGET_USER_ID"
+			+ "					 ) B"
+			+ "	ON A.USER_ID = B.TARGET_USER_ID",
+			countQuery = "SELECT COUNT(*) FROM ("
+					+ " SELECT A.*"
+					+ "	 , IFNULL(B.REPORT_CNT, 0) AS REPORT_CNT"
+					+ "	FROM T_MGLG_USER A"
+							+ "    LEFT OUTER JOIN ("
+							+ "						SELECT C.TARGET_USER_ID"
+							+ "							 , COUNT(C.TARGET_USER_ID) AS REPORT_CNT"
+							+ "                            FROM T_MGLG_REPORT C"
+							+ "                            GROUP BY C.TARGET_USER_ID"
+							+ "					 ) B"
+							+ "	ON A.USER_ID = B.TARGET_USER_ID) D",
+			nativeQuery = true)
+		Page<CamelHashMap> searchDefault(Pageable pageable);
+	
+		//이름으로 검색
+	@Query(value="SELECT A.*"
+			+ "	 , IFNULL(B.REPORT_CNT, 0) AS REPORT_CNT"
+			+ "	FROM (T_MGLG_USER) A"
+			+ "    LEFT OUTER JOIN ("
+			+ "						SELECT C.TARGET_USER_ID"
+			+ "							 , COUNT(C.TARGET_USER_ID) AS REPORT_CNT"
+			+ "                            FROM (T_MGLG_REPORT) C"
+			+ "                            GROUP BY C.TARGET_USER_ID"
+			+ "					 ) B"
+			+ "	ON A.USER_ID = B.TARGET_USER_ID"
+			+ " WHERE USER_NAME LIKE CONCAT('%',:searchKeyword,'%')", nativeQuery=true)
+		Page<CamelHashMap> searchEmail(@Param("searchKeyword") String searchKeyword, Pageable pageable);
+		//이메일로검색
+	 @Query(value="SELECT A.*"
+			+ "	 , IFNULL(B.REPORT_CNT, 0) AS REPORT_CNT"
+			+ "	FROM (T_MGLG_USER) A"
+			+ "    LEFT OUTER JOIN ("
+			+ "						SELECT C.TARGET_USER_ID"
+			+ "							 , COUNT(C.TARGET_USER_ID) AS REPORT_CNT"
+			+ "                            FROM (T_MGLG_REPORT) C"
+			+ "                            GROUP BY C.TARGET_USER_ID"
+			+ "					 ) B"
+			+ "	ON A.USER_ID = B.TARGET_USER_ID"
+			+ " WHERE EMAIL LIKE CONCAT('%',:searchKeyword,'%')", nativeQuery=true)
+		Page<CamelHashMap> searchName(@Param("searchKeyword") String searchKeyword, Pageable pageable);
+		//둘다 검색
+	 	@Query(value="SELECT A.*"
+				+ "	 , IFNULL(B.REPORT_CNT, 0) AS REPORT_CNT"
+				+ "	FROM (T_MGLG_USER) A"
+				+ "    LEFT OUTER JOIN ("
+				+ "						SELECT C.TARGET_USER_ID"
+				+ "							 , COUNT(C.TARGET_USER_ID) AS REPORT_CNT"
+				+ "                            (FROM T_MGLG_REPORT) C"
+				+ "                            GROUP BY C.TARGET_USER_ID"
+				+ "					 ) B"
+				+ "	ON A.USER_ID = B.TARGET_USER_ID"
+				+ " WHERE USER_NAME LIKE CONCAT('%',:searchKeyword1,'%') OR EMAIL LIKE CONCAT('%',:searchKeyword2,'%')", nativeQuery=true)
+		Page<CamelHashMap> searchAll(@Param("searchKeyword1") String searchKeyword1,@Param("searchKeyword2") String searchKeyword2, Pageable pageable);
+//--------------------어드민 관련 끝///	
 }

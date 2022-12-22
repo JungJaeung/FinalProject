@@ -17,4 +17,5 @@ public class MglgReportDTO {
 	private String reportDate;
 	private int postId; //포스트 번호
 	private int commentId; //포스트 댓글의 번호
+
 }

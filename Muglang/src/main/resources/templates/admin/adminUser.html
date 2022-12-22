@@ -63,14 +63,15 @@
 						<th>활성화 여부</th> 
 						<th style="width: 70px;"></th> 
 					</tr>
-						<tr th:each="user : ${getUserList}">
-							<td th:text="${user.userName}"></td>
+						<tr th:each="user : ${getUserList.content}">
+							<input type="hidden" th:value="${user.reportCnt}">
+							<td th:text="${user.userName}" th:style="${user.reportCnt <3 ? 'background: white': 'background: yellow'}"></td>
 							<td th:text="${user.phone}"></td>
 							<td th:text="${user.email}"></td>
 							<td th:text="${user.address}"></td>
 							<td th:text="${user.regDate eq null ? '' : #strings.substring(user.regDate, 0, 10)}"></td>
 							<td th:text="${user.userBanYn}" th:id="'userBanYn_'+${user.userId}"></td>
-							<td><button id="'btn_'+ ${user.userId}" th:onclick="banUser([[${user.userId}]])" th:text="변경"></button></td>
+							<td><button id="'btn_user.user.userId}" th:onclick="banUser([[${user.userId}]])" th:text="변경"></button></td>
 						</tr>
 				</table>
 				<br/>
@@ -83,7 +84,7 @@
 												    tempEndPage = ${startPage + pageSize - 1},
 												    endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
 						<li class="pagination_button" th:if="${pageNumber > 0}">
-							<a th:href="@{/user/getUserList(
+							<a th:href="@{/user/getAdminUserList(
 											page=${pageNumber - 1}, 
 											searchCondition=${searchCondition}, 
 											searchKeyword=${searchKeyword}
@@ -92,7 +93,7 @@
 					
 					
 						<li class="pagination_button" th:each="page : ${#numbers.sequence(startPage, endPage)}">
-							<a th:href="@{/user/getUserList(
+							<a th:href="@{/user/getAdminUserList(
 											page=${page - 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
@@ -100,7 +101,7 @@
 						</li>
 					
 						<li class="pagination_button" th:if="${pageNumber < totalPages - 1}">
-							<a th:href="@{/user/getUserList(
+							<a th:href="@{/user/getAdminUserList(
 											page=${pageNumber + 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}

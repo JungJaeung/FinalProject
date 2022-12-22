@@ -3,6 +3,7 @@ package com.muglang.muglangspace.service.mglgadmin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgReport;
 import com.muglang.muglangspace.entity.MglgUser;
 
@@ -14,6 +15,9 @@ public interface AdminService {
 	
 	Page<MglgReport> getReportComment(int a,Pageable pageable);
 
+	Page<CamelHashMap> reportedUser(Pageable pageable);
+	
+	 void deleteReport(int commentId,int postId);
 	
 	
 }
