@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.oauth.provider.KakaoUserInfo;
+import com.muglang.muglangspace.oauth.provider.NaverUserInfo;
 import com.muglang.muglangspace.oauth.provider.OAuth2UserInfo;
 import com.muglang.muglangspace.repository.MglgUserRepository;
 
@@ -38,16 +39,21 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		
 		String userName = ""; //닉네임
 		String providerId = "";//업체가 제공한 아이디
+		String providerName = userRequest.getClientRegistration().getRegistrationId();//업체이름
 		
 		OAuth2UserInfo oAuth2UserInfo = null;
 		
-		//소셜 카테고리 검증
-		if(userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
+		//소셜 카테고리 검증 카카오, 네이버
+		if(providerName.equals("kakao")) { //업체의 이름이 카카오라면 유저의 정보를 변수에 담아줌
 			oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
 			userName = oAuth2UserInfo.getName();
 			providerId = oAuth2UserInfo.getProviderId();		
+		} else if(providerName.equals("naver"))  { //업체의 이름이 네이버라면 유저의 정보를 변수에 담아줌
+			oAuth2UserInfo = new NaverUserInfo(oAuth2User.getAttributes());
+			userName = oAuth2UserInfo.getName();
+			providerId = oAuth2UserInfo.getProviderId();
 		} else {
-			System.out.println("카카오 계정이 아닙니다.");
+			System.out.println("소셜 계정을 다시 확인해주세요");
 		}
 		
 		String provider = oAuth2UserInfo.getProvider();
