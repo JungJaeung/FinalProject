@@ -125,7 +125,7 @@ public class AdminController {
 //////////////////----------커멘트/유저/포스트 신고끝----------------------/////////////
 /// 오더 윈도우 -------------------------
 		//유저 오더 윈도우 
-		@GetMapping("orderWindow")
+		@GetMapping("/orderWindow")
 		public ResponseEntity<?> orderWindow(@PageableDefault(page = 0, size = 10)Pageable pageable) {
 			//동일한 로직의 사용을 위해 getreportcomment 재사용
 			MglgResponseDTO<MglgReportDTO> response = new MglgResponseDTO<>();

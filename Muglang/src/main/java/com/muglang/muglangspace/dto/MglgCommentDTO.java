@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class MglgCommentDTO {
 	private int commentId;
 	private int postId;
-	private String userId;
+	private int userId;
 	private String commentContent;
 	private String commentDate;
 

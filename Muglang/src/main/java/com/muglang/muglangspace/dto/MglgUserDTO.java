@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MglgUserDTO {
-	private String userId;
+	private int userId;
 	private String userName;
 	private String password;
 	private String firstName;
@@ -26,6 +26,7 @@ public class MglgUserDTO {
 	private String userBanYn;
 	private String regDate;
 	private String userRole;
+	private String userSnsId;
 	private String searchCondition;
 	private String searchKeyword;
 	private int reportCnt;

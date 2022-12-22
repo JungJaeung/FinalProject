@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 public class MglgPostLikes {
 	//userId는 foreign키 해제하였음 20221221 - 김동현
 	@Id
-	private String userId;
+	private int userId;
 	@Id
 	@ManyToOne
 	@JoinColumn(name="POST_ID")

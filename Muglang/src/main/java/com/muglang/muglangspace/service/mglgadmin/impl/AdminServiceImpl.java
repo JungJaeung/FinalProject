@@ -31,7 +31,7 @@ public class AdminServiceImpl implements AdminService{
 		@Override
 		public MglgUser uptUserBan(MglgUser user) {
 			String userBanYn = user.getUserBanYn();
-			String userId = user.getUserId();
+			int userId = user.getUserId();
 			
 			
 			mglgUserRepository.uptUserBan(userBanYn,userId);
