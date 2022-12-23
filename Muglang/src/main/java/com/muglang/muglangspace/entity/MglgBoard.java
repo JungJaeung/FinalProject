@@ -26,9 +26,7 @@ import lombok.NoArgsConstructor;
 public class MglgBoard {
 	@Id
 	private int boardId;
-	@ManyToOne
-	@JoinColumn(name="USER_ID")
-	private MglgUser mglgUser;
+	private int userId;
 	private String boardTitle;
 	private String boardContent;
 	private int boardCount;

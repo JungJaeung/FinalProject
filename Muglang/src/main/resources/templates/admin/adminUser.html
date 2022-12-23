@@ -76,16 +76,19 @@
 							<div class="col-12">
 								<nav aria-label="Page navigation example">
 									<ul class="pagination" th:if="${getUserList.totalElements > 0}" th:with="pageNumber = ${getUserList.pageable.pageNumber},
+
 												    pageSize = ${getUserList.pageable.pageSize},
 												    totalPages = ${getUserList.totalPages},
 												    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
 												    tempEndPage = ${startPage + pageSize - 1},
 												    endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
+
 										<li class="page-item" th:if="${pageNumber > 0}">
 											<a class="page-link"
 												th:href="@{/user/getAdminUserList(page=${pageNumber - 1})}">이전</a>
 										</li>
 										<li class="page-item" th:if="${pageNumber == 0}" style="cursor: pointer;">
+
 											<a class="page-link">이전</a>	
 										</li>
 										<li class="page-item" th:each="page : ${#numbers.sequence(startPage, endPage)}">
@@ -102,6 +105,7 @@
 										</li>
 										<li class="page-item" th:if="${pageNumber == (totalPages -1)}" style="cursor: pointer;">
 											<a class="page-link">다음</a>	
+
 										</li>
 									</ul>
 								</nav>

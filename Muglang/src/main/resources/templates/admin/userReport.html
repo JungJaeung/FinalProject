@@ -88,6 +88,7 @@
 												    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
 												    tempEndPage = ${startPage + pageSize - 1},
 												    endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
+
 										<li class="page-item" th:if="${pageNumber > 0}">
 											<a class="page-link" page-link th:href="@{/admin/userReport(
 											page=${pageNumber - 1}
@@ -99,13 +100,16 @@
 										<li class="page-item"
 											th:each="page : ${#numbers.sequence(startPage, endPage)}">
 											<a class="page-link" page-link th:href="@{/admin/userReport(
+
 											page=${page - 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
 										)}" th:text="${page}"></a>
+
 										</li>
 										<li class="page-item" th:if="${pageNumber < totalPages - 1}">
 											<a class="page-link" page-link th:href="@{/admin/userReport(
+
 											page=${pageNumber + 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}

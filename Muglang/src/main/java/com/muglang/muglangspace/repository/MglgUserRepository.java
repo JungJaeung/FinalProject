@@ -2,7 +2,6 @@ package com.muglang.muglangspace.repository;
 
 import javax.transaction.Transactional;
 
-import org.hibernate.query.NativeQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,7 +29,11 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer>{
 	@Query(value="UPDATE T_MGLG_USER SET USER_BAN_YN = :userBanYn WHERE USER_ID = :userId", nativeQuery=true)
 	void uptUserBan(@Param("userBanYn") String userBanYn, @Param("userId") int userId);
 	
-	MglgUser findByUserId(@Param("userId") int userId);
+	MglgUser findById(@Param("userId") int userId);
+
+	//Sns계정이 가입 되어있는지 여부를 판단하는 간단한 검색쿼리
+	@Query(value="SELECT * FROM T_MGLG_USER WHERE USER_SNS_ID = :userSnsId", nativeQuery=true)
+	MglgUser findByUserSnsId(@Param("userSnsId") String userSnsId);
 //--------------------어드민 관련///	
 	@Query(value="SELECT A.*"
 			+ "	 , IFNULL(B.REPORT_CNT, 0) AS REPORT_CNT"
@@ -96,5 +99,4 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer>{
 				+ " WHERE USER_NAME LIKE CONCAT('%',:searchKeyword1,'%') OR EMAIL LIKE CONCAT('%',:searchKeyword2,'%')", nativeQuery=true)
 		Page<CamelHashMap> searchAll(@Param("searchKeyword1") String searchKeyword1,@Param("searchKeyword2") String searchKeyword2, Pageable pageable);
 //--------------------어드민 관련 끝///	
-		
 }
