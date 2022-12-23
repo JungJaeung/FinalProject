@@ -24,11 +24,11 @@ import lombok.NoArgsConstructor;
 @DynamicInsert
 @Data
 public class MglgBoard {
-	@Id
-	private int boardId;
-	private int userId;
-	private String boardTitle;
-	private String boardContent;
-	private int boardCount;
-	private LocalDateTime boardDate = LocalDateTime.now();
+   @Id
+   private int boardId;
+   private int userId;
+   private String boardTitle;
+   private String boardContent;
+   private int boardCount;
+   private LocalDateTime boardDate = LocalDateTime.now();
 }
