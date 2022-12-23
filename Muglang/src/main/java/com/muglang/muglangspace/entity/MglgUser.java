@@ -21,6 +21,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+
 @Entity
 @Table(name="T_MGLG_USER")
 @SequenceGenerator(
@@ -57,11 +58,12 @@ public class MglgUser {
 	private String userRole;
 	private String userSnsId;
 	private String userNick;
+
 	@Transient
-	private String searchCondition;
+	private String searchCondition;					//검색 조건
 	@Transient
-	private String searchKeyword;
+	private String searchKeyword;					//검색 키워드
 	@Transient
-	private int reportCnt;
+	private int reportCnt;							//신고당한 횟수
 	
 }

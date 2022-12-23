@@ -31,8 +31,9 @@ public class SecurityConfiguration {
 								.antMatchers("/js/**").permitAll()		//자바스크립트
 								.antMatchers("/images/**").permitAll()	//이미지들
 								.antMatchers("/upload/**").permitAll()	//사용자가 올린 이미지
-								.antMatchers("/post/**").permitAll()
-								//.antMatchers("/user/loginProc").permitAll()
+								.antMatchers("/post/**").permitAll()	//포스트 관련
+								.antMatchers("/assets/**").permitAll()  //부트스트랩 관련
+
 								//권한을 가진 유저들만 접근 할 수 있는 요청 리소드들
 //								.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")//관리자 페이지는 관리자만 조회가능
 //								.antMatchers("/index/**").access("hasAnyRole('ROLE_USER', ROLE_ADMIN')")//index = main 페이지는 사용자, 관리자 모두 조회가능
@@ -45,8 +46,7 @@ public class SecurityConfiguration {
 		//회원가입이 없으므로 바로 OAUTH2기반 로그인 처리
 		http.oauth2Login()
 			.loginPage("/user/login")
-			//.defaultSuccessUrl("/user/loginProc")
-			.defaultSuccessUrl("/user/socialLogin")
+			.defaultSuccessUrl("/post/mainPost")
 			.userInfoEndpoint() //업체로 부터 받은 사용자 정보를 다 받아온 포인트
 			.userService(oauth2UserService);
 		

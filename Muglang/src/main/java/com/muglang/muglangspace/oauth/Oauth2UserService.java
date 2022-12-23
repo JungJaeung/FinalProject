@@ -33,7 +33,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		OAuth2User oAuth2User = super.loadUser(userRequest);
 		Map<String, Object> temp = oAuth2User.getAttributes();
 		
-		Iterator<String> iter = temp.keySet().iterator(); //이더레이터로 벨류 값만 저장
+		Iterator<String> iter = temp.keySet().iterator(); //이더레이터로 키 값만 저장
 		
 		while(iter.hasNext()) {
 			System.out.println(iter.next());
@@ -78,7 +78,6 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 			//존재하지 않으면 null로 리턴하여 회원가입
 			mglgUser = null;
 		}
-		//userId는 자동으로 기본키로 1씩 증가하여 생성한다.
 		if(mglgUser == null) {
 			mglgUser = MglgUser.builder()
 							   .userSnsId(userSnsId)
