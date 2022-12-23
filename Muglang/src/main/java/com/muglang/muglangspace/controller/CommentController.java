@@ -20,14 +20,14 @@ import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
-import com.muglang.muglangspace.service.comment.CommentService;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
+import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
 
 @RestController
 @RequestMapping("/comment")
 public class CommentController {
 	@Autowired
-	private CommentService commentService;
+	private MglgCommentService mglgCommentService;
 	@Autowired
 	private AdminService adminService;
 	
@@ -45,7 +45,7 @@ public class CommentController {
 										.mglgPost(post)
 										.build();
 			
-			comment = commentService.getComment(comment);
+			comment = mglgCommentService.getComment(comment);
 			MglgCommentDTO returnCommentDTO = MglgCommentDTO.builder()
 												   .commentId(comment.getCommentId())
 												   .commentContent(comment.getCommentContent())
@@ -67,16 +67,16 @@ public class CommentController {
 	@Transactional
 	@GetMapping("deleteComment")
 	public void deleteComment(@RequestParam("commentId") int commentId,@RequestParam("postId") int postId, HttpServletResponse response) throws IOException {
-		 commentService.deleteComment(commentId,postId);
+		mglgCommentService.deleteComment(commentId,postId);
 		 adminService.deleteReport(commentId,postId);
 		 System.out.println("--------딜리트 끝--------");
 
 		 response.sendRedirect("/admin/commentReport");
 	}
 	
+	//댓글 작성 쿼리 실행
 	@PostMapping("/insertComment")
-	public void insertComment(HttpSession session, MglgCommentDTO commentDTO) {
-		
+	public void insertComment(HttpSession session, MglgCommentDTO commentDTO, HttpServletResponse response) throws IOException {
 		
 		MglgComment mglgComment = MglgComment.builder()
 											 .mglgPost(MglgPost.builder().postId(commentDTO.getPostId()).build())
@@ -84,7 +84,8 @@ public class CommentController {
 											 .commentContent(commentDTO.getCommentContent())
 											 .commentDate(LocalDateTime.now())
 											 .build();
-										
+		mglgCommentService.insertComment(mglgComment);
+		response.sendRedirect("/post/post");
 	}
 	
 }

@@ -28,7 +28,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 	MglgUserRepository mglgUserRepository;
 	
 	public OAuth2User loadUser(OAuth2UserRequest userRequest, HttpSession session) throws OAuth2AuthenticationException {
-
+		System.out.println("111111111111111111111");
 		
 		OAuth2User oAuth2User = super.loadUser(userRequest);
 		Map<String, Object> temp = oAuth2User.getAttributes();
@@ -86,12 +86,16 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 							   .userRole(role)
 							   .build();
 			System.out.println("새로운 회원을 등록할 임시 정보를 취합니다." + mglgUser);
+			//세션에 담아 추가적인 정보를 처리하려고 했지만 실패함.
 			session.setAttribute("loginUser", mglgUser);
+			System.out.println(mglgUser);
 			//추가정보 입력한 뒤, 로그인 처리를 마무리 할 예정
-			mglgUserRepository.save(mglgUser);
+			UserController.socialLoginView();
+			
+			//mglgUserRepository.save(mglgUser);
 		}
 		
-		
+		System.out.println("새로운 로그인 정보를 저장완료하였습니다.");
 		//SecurityContext에 인증 정보 저장
 		return CustomUserDetails.builder()
 								.mglgUser(mglgUser)

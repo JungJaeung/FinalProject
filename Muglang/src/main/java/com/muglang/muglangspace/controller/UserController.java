@@ -190,7 +190,9 @@ public class UserController {
 		newUser.setFirstName(mglgUserDTO.getFirstName());
 		newUser.setLastName(mglgUserDTO.getLastName());
 		newUser.setUserNick(mglgUserDTO.getUserNick());
-
+		
+		mglgUserService.socialLoginProcess(newUser);
+		
 		session.setAttribute("loginUser", newUser);
 		mv.setViewName("post/post.html");
 		return mv;
