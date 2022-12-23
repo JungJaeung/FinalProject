@@ -45,25 +45,25 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 		return null;
 	}
 	
-	//아이디
+	//소셜 로그인 업체가 제공한 아이디
 	@Override
 	public String getUsername() {
 		return mglgUser.getUserSnsId();
 	}
 
+	//계정 만료 여부
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
-	//계정 만료 여부
+	//계정 잠김 여부
 	@Override
 	public boolean isAccountNonLocked() {
 		return true;
 	}
 
-	//계정 잠김 여부
+	//계정 인증정보를 항상 저장할 지 여부
 	@Override
 	public boolean isCredentialsNonExpired() {
 		return true;

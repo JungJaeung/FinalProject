@@ -68,6 +68,12 @@ public class MglgUserServiceImpl implements MglgUserService{
 		// TODO Auto-generated method stub
 		return mglgUserRepository.findByUserSnsId(mglgUser.getUserSnsId());
 	}	
+	
+	//소셜로그인 최종 완료
+	@Override
+	public void socialLoginProcess(MglgUser mglgUser) {
+		mglgUserRepository.save(mglgUser);
+	}
 
 	@Override
 	public List<MglgUser> getNoUserList() {

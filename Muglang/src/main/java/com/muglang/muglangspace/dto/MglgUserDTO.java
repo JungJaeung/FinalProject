@@ -27,6 +27,7 @@ public class MglgUserDTO {
 	private String regDate;
 	private String userRole;
 	private String userSnsId;
+	private String userNick;
 	private String searchCondition;
 	private String searchKeyword;
 	private int reportCnt;
