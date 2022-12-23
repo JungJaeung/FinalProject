@@ -170,6 +170,33 @@ public class UserController {
 		mv.setViewName("user/login.html");
 		return mv;
 	}
+	
+	@GetMapping("/socialLogin")
+	public static ModelAndView socialLoginView() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("user/socialLogin.html");
+		
+		return mv;
+	}
+	
+	//추가 정보 입력 처리 과정
+	@PostMapping("/joinUser")
+	public ModelAndView joinUser(HttpSession session, MglgUserDTO mglgUserDTO) {
+		System.out.println(mglgUserDTO);
+		ModelAndView mv = new ModelAndView();
+		MglgUser newUser = (MglgUser)session.getAttribute("loginUser");
+		System.out.println(newUser);
+		
+		newUser.setFirstName(mglgUserDTO.getFirstName());
+		newUser.setLastName(mglgUserDTO.getLastName());
+		newUser.setUserNick(mglgUserDTO.getUserNick());
+		
+		mglgUserService.socialLoginProcess(newUser);
+		
+		session.setAttribute("loginUser", newUser);
+		mv.setViewName("post/post.html");
+		return mv;
+	}
 
 	
 	//로그인 시도하는 임시 url

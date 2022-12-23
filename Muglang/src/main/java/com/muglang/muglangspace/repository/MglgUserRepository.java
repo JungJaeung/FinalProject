@@ -34,6 +34,7 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer>{
 	//Sns계정이 가입 되어있는지 여부를 판단하는 간단한 검색쿼리
 	@Query(value="SELECT * FROM T_MGLG_USER WHERE USER_SNS_ID = :userSnsId", nativeQuery=true)
 	MglgUser findByUserSnsId(@Param("userSnsId") String userSnsId);
+	
 //--------------------어드민 관련///	
 	@Query(value="SELECT A.*"
 			+ "	 , IFNULL(B.REPORT_CNT, 0) AS REPORT_CNT"

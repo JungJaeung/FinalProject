@@ -33,7 +33,7 @@ public class SecurityConfiguration {
 								.antMatchers("/upload/**").permitAll()	//사용자가 올린 이미지
 								.antMatchers("/post/**").permitAll()	//포스트 관련
 								.antMatchers("/assets/**").permitAll()  //부트스트랩 관련
-									
+
 								//권한을 가진 유저들만 접근 할 수 있는 요청 리소드들
 //								.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")//관리자 페이지는 관리자만 조회가능
 //								.antMatchers("/index/**").access("hasAnyRole('ROLE_USER', ROLE_ADMIN')")//index = main 페이지는 사용자, 관리자 모두 조회가능

@@ -23,5 +23,6 @@ public interface MglgCommentRepository extends JpaRepository<MglgComment, MglgCo
 	@Modifying
 	@Query(value="DELETE FROM T_MGLG_COMMENT WHERE COMMENT_ID = :commentId AND POST_ID = :postId",nativeQuery=true)
 	void deleteComment(@Param("commentId") int commentId,@Param("postId") int postId);
-
+	
+	
 }
