@@ -3,6 +3,8 @@ package com.muglang.muglangspace.oauth;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -10,6 +12,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.muglang.muglangspace.controller.UserController;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.oauth.provider.KakaoUserInfo;
@@ -24,7 +27,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 	@Autowired
 	MglgUserRepository mglgUserRepository;
 	
-	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+	public OAuth2User loadUser(OAuth2UserRequest userRequest, HttpSession session) throws OAuth2AuthenticationException {
 
 		
 		OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -68,8 +71,10 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		//userSnsId가 존재하면 true 존재하지 않으면 false로 반환, user 정보를 찾는 것은 userSnsId로 sns로그인의 기록이 있는지 확인한다.
 		if(mglgUserRepository.findByUserSnsId(userSnsId) != null) {
 			//userId가 존재할 시 정보를 mglgUser 엔티티에 담아줌
+			System.out.println("존재하는 회원입니다. 로그인을 진행합니다.");
 			mglgUser = mglgUserRepository.findByUserSnsId(userSnsId);
 		} else {
+			System.out.println("회원이 존재하지 않습니다. 새로 회원을 등록해야합니다.");
 			//존재하지 않으면 null로 리턴하여 회원가입
 			mglgUser = null;
 		}
@@ -81,7 +86,9 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 							   .email(email)
 							   .userRole(role)
 							   .build();
-			
+			System.out.println("새로운 회원을 등록할 임시 정보를 취합니다." + mglgUser);
+			session.setAttribute("loginUser", mglgUser);
+			//추가정보 입력한 뒤, 로그인 처리를 마무리 할 예정
 			mglgUserRepository.save(mglgUser);
 		}
 		

@@ -166,7 +166,7 @@ public class PostController {
 																			.build()
 															);
 		ModelAndView mv = new ModelAndView();
-		mv.setViewName("post/mainPost.html");
+		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostListDTO);
 		
 		return mv;

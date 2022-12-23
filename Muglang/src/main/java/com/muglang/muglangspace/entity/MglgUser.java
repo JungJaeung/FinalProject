@@ -23,6 +23,12 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="T_MGLG_USER")
+@SequenceGenerator(
+		name="MglgUserSequenceGenerator",
+		sequenceName="T_MGLG_USER_SEQ",
+		initialValue=1,
+		allocationSize=1
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -30,7 +36,12 @@ import lombok.NoArgsConstructor;
 @Data
 public class MglgUser {
 	@Id
+	@GeneratedValue(
+			strategy=GenerationType.SEQUENCE,
+			generator="MglgUserSequenceGenerator"
+	)
 	private int userId;
+	
 	private String userName;
 	private String password;
 	private String firstName;
@@ -45,7 +56,7 @@ public class MglgUser {
 	@ColumnDefault("'ROLE_USER'")
 	private String userRole;
 	private String userSnsId;
-	
+	private String userNick;
 	@Transient
 	private String searchCondition;
 	@Transient

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -158,14 +159,6 @@ public class UserController {
 						return mv;
 		}//getUserList끝
 	
-//	//로그인을 위한 페이지로 이동하는 임시 mapping
-//	@GetMapping("/login")
-//	public ModelAndView loginPage() {
-//		ModelAndView mv = new ModelAndView();
-//		mv.setViewName("user/login.html");
-//		return mv;
-//	}
-	
 //	//로그인 시도하는 임시 url
 //	@PostMapping("/login")
 //	public ModelAndView loginProcess(@PageableDefault(page=0, size=10) Pageable pageable, MglgUserDTO userDTO, HttpSession session) {
@@ -296,6 +289,31 @@ public class UserController {
 		ModelAndView mv = new ModelAndView();
 		
 		mv.setViewName("user/login.html");
+		return mv;
+	}
+	
+	@GetMapping("/socialLogin")
+	public static ModelAndView socialLoginView() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("user/socialLogin.html");
+		
+		return mv;
+	}
+	
+	//추가 정보 입력 처리 과정
+	@PostMapping("/joinUser")
+	public ModelAndView joinUser(HttpSession session, MglgUserDTO mglgUserDTO) {
+		System.out.println(mglgUserDTO);
+		ModelAndView mv = new ModelAndView();
+		MglgUser newUser = (MglgUser)session.getAttribute("loginUser");
+		System.out.println(newUser);
+		
+		newUser.setFirstName(mglgUserDTO.getFirstName());
+		newUser.setLastName(mglgUserDTO.getLastName());
+		newUser.setUserNick(mglgUserDTO.getUserNick());
+
+		session.setAttribute("loginUser", newUser);
+		mv.setViewName("post/post.html");
 		return mv;
 	}
 }//페이지 끝
