@@ -29,6 +29,7 @@ public class AdminController {
 
 //////////////////----------커멘트/유저/포스트 신고----------------------/////////////
 	//리포트 - 커멘트 이동
+	
 	@GetMapping("/commentReport")
 	public ModelAndView reportComment(@PageableDefault(page = 0, size = 10) Pageable pageable) {
 		
