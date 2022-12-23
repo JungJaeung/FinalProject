@@ -68,35 +68,44 @@
 									<!-- End Table with hoverable rows -->
 								</div>
 							</div>
-							<ul class="pagination" th:if="${reportList.totalElements > 0}" th:with="pageNumber = ${reportList.pageable.pageNumber},
+							<div class="col-12">
+								<nav aria-label="Page navigation example">
+									<ul class="pagination" th:if="${reportList.totalElements > 0}" th:with="pageNumber = ${reportList.pageable.pageNumber},
 												    pageSize = ${reportList.pageable.pageSize},
 												    totalPages = ${reportList.totalPages},
 												    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
 												    tempEndPage = ${startPage + pageSize - 1},
 												    endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
-								<li class="pagination_button" th:if="${pageNumber > 0}">
-									<a th:href="@{/admin/commentReport(
+										<li class="page-item" th:if="${pageNumber > 0}">
+											<a class="page-link" th:href="@{/admin/postReport(
 											page=${pageNumber - 1}
 										)}">이전</a>
-								</li>
+										</li>
+										<li class="page-item" th:if="${pageNumber == 0}" style="cursor: pointer;">
+											<a class="page-link">이전</a>
+										</li>
 
-
-								<li class="pagination_button" th:each="page : ${#numbers.sequence(startPage, endPage)}">
-									<a th:href="@{/user/postReport(
+										<li class="page-item" th:each="page : ${#numbers.sequence(startPage, endPage)}">
+											<a class="page-link" th:href="@{/user/postReport(
 											page=${page - 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
 										)}" th:text="${page}"></a>
-								</li>
+										</li>
 
-								<li class="pagination_button" th:if="${pageNumber < totalPages - 1}">
-									<a th:href="@{/user/postReport(
+										<li class="page-item" th:if="${pageNumber < totalPages - 1}">
+											<a class="page-link" th:href="@{/user/postReport(
 											page=${pageNumber + 1},
 											searchCondition=${searchCondition},
 											searchKeyword=${searchKeyword}
 										)}">다음</a>
-								</li>
-							</ul>
+										</li>
+										<li class="page-item" th:if="${pageNumber == (totalPages -1)}" style="cursor: pointer;">
+											<a class="page-link">다음</a>	
+										</li>
+									</ul>
+								</nav>
+							</div>
 						</div>
 					</div>
 				</div><!-- End Left side columns -->
