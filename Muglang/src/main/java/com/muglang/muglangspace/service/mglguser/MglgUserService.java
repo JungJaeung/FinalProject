@@ -14,6 +14,8 @@ public interface MglgUserService {
 
 	MglgUser loginUser(MglgUser user); 
 	
+	MglgUser socialLoginUser(MglgUser user);
+	
 	Page<CamelHashMap> getAdminUserList(MglgUser user,Pageable pageable);
 
 	List<MglgUser> getNoUserList();

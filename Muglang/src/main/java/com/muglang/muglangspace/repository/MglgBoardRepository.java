@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 import com.muglang.muglangspace.entity.MglgBoard;
 
+
 @Transactional
 public interface MglgBoardRepository extends JpaRepository<MglgBoard, Integer> {
-	
 	
 	@Modifying
 	void deleteByBoardId(int boardId); 
@@ -49,6 +49,6 @@ public interface MglgBoardRepository extends JpaRepository<MglgBoard, Integer> {
 			,nativeQuery = true)
 	void insertBoard(@Param("boardTitle") String boardTitle,@Param("boardContent") String boardContent);
 	
-	
-	
+	MglgBoard findByBoardId(MglgBoard board);
+
 }

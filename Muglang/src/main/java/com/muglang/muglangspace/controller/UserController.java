@@ -127,7 +127,7 @@ public class UserController {
 			Page<CamelHashMap> pageUserList = mglgUserService.getAdminUserList(user, pageable);
 			Page<MglgUserDTO> pageUserDTOList = pageUserList.map(pageUser -> 
 														MglgUserDTO.builder()
-																	.userId(Integer.valueOf(String.valueOf(pageUser.get("userId"))))
+																	.userId((int)pageUser.get("userId"))
 																	.userName(String.valueOf(pageUser.get("userName")))
 																	.password(String.valueOf(pageUser.get("password")))
 																	.firstName(String.valueOf(pageUser.get("firstName")))
@@ -161,17 +161,20 @@ public class UserController {
 						return mv;
 		}//getUserList끝
 	
-	//로그인을 위한 페이지로 이동하는 임시 mapping
+	
+	//로그인 겟 맵핑 - 김동현
 	@GetMapping("/login")
-	public ModelAndView loginPage() {
+	public ModelAndView loginView() {
 		ModelAndView mv = new ModelAndView();
+		
 		mv.setViewName("user/login.html");
 		return mv;
 	}
+
 	
 	//로그인 시도하는 임시 url
 	@PostMapping("/login")
-	public ModelAndView loginProcess(@PageableDefault(page=0, size=10) Pageable pageable, MglgUserDTO userDTO, HttpSession session) {
+	public ModelAndView loginProcess(@PageableDefault(page=0, size=5) Pageable pageable, MglgUserDTO userDTO, HttpSession session) {
 		ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>();
 		Map<String, String> returnMap = new HashMap<String, String>();
 		ModelAndView mv = new ModelAndView();
@@ -231,6 +234,6 @@ public class UserController {
 			return mv;
 		}
 	}
-	
+
 }//페이지 끝
 
