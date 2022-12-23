@@ -27,7 +27,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 	//이미 가입한 회원인지 검사하기위해 MglgUserRepository를 가져옴
 	@Autowired
 	MglgUserRepository mglgUserRepository;
-	
+
 	public OAuth2User loadUser(OAuth2UserRequest userRequest, HttpSession session) throws OAuth2AuthenticationException {
 		System.out.println("111111111111111111111");
 		

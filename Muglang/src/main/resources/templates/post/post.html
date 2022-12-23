@@ -91,6 +91,7 @@
                $("#postContent").val($(".ql-editor").html());
                $("#insert_form").submit();
             })
+            
 
             //좋아요 버튼 함수(innerHtml에도 먹이기 위해서 함수로 만듬)
             $.like_button = function () {
@@ -477,6 +478,7 @@
                   <!-- Recent Sales -->
                   <div class="col-12">
                      <!-- 작성 하는 부분 -->
+    
                      <div class="card recent-sales overflow-auto">
                         <div class="card-body">
                            <h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
@@ -488,7 +490,7 @@
                            </div>
                            <!-- End Quill Editor Default -->
                            <!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임 -->
-                           <form id="insert_form" action="" method="">
+                           <form id="insert_form" action="/post/insertPost" method="post">
                               <input type="hidden" id="postContent" name="postContent" value="">
                               <div style="margin-bottom: 5px;">
                                  <label id="hashTag_label1">&emsp;# <input type="text" id=hashTag1
@@ -590,7 +592,7 @@
 
                               <input type="hidden" class="test" value="">
                               <button class="updateBtn" id="updateButton" th:value="${post.postId}"
-                                 th:if="${post.userId} eq ${loginUser.userId}">게시글 수정</button>
+                                 th:if="${post.userId} eq ${session.loginUser.userId}">게시글 수정</button>
                            </div>
                         </div>
                      </div>
@@ -598,9 +600,7 @@
                   <!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
                   <div id="post_scroll_div" class="col-12"></div>
                </div>
-               <div id="newPost">
-                  <a th:href="@{/post/newPost}">새글 쓰기</a>
-               </div>
+
             </div><!-- End Left side columns -->
 
             <!-- Right side columns -->
