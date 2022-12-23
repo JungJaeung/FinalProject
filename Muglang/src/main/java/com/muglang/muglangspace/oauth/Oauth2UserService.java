@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.oauth.provider.GoogleUserInfo;
 import com.muglang.muglangspace.oauth.provider.KakaoUserInfo;
 import com.muglang.muglangspace.oauth.provider.NaverUserInfo;
 import com.muglang.muglangspace.oauth.provider.OAuth2UserInfo;
@@ -43,13 +44,17 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		
 		OAuth2UserInfo oAuth2UserInfo = null;
 		
-		//소셜 카테고리 검증 카카오, 네이버
+		//소셜 카테고리 검증 카카오, 네이버, 구글
 		if(providerName.equals("kakao")) { //업체의 이름이 카카오라면 유저의 정보를 변수에 담아줌
 			oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
 			userName = oAuth2UserInfo.getName();
 			providerId = oAuth2UserInfo.getProviderId();		
 		} else if(providerName.equals("naver"))  { //업체의 이름이 네이버라면 유저의 정보를 변수에 담아줌
 			oAuth2UserInfo = new NaverUserInfo(oAuth2User.getAttributes());
+			userName = oAuth2UserInfo.getName();
+			providerId = oAuth2UserInfo.getProviderId();
+		} else if(providerName.equals("google"))  { //업체의 이름이 서브(구글)라면 유저의 정보를 변수에 담아줌
+			oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
 			userName = oAuth2UserInfo.getName();
 			providerId = oAuth2UserInfo.getProviderId();
 		} else {
