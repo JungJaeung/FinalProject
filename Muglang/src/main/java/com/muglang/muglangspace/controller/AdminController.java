@@ -165,14 +165,21 @@ public class AdminController {
 			mv.setViewName("/admin/userOrderWindow.html");
 			return mv;
 		}
-//		//faq 윈도우 오픈
-//		@GetMapping("/adminFAQWindow")
-//		public ModelAndView adminFAQWindow() {
-//			System.out.println("어드민faq윈도우");
-//			ModelAndView mv = new ModelAndView();
-//			mv.setViewName("/admin/adminFAQWindow.html");
-//			return mv;
-//		}
+		//faq 윈도우 오픈
+		@GetMapping("/adminFAQWindow")
+		public ModelAndView adminFAQWindow(@RequestParam("boardId") int boardId) {
+			ModelAndView mv = new ModelAndView();
+			mv.setViewName("/admin/adminFAQWindow.html");
+			return mv;
+		}
+		//faq 인서트 윈도우 오픈
+		@GetMapping("/adminFAQInsert")
+		public ModelAndView adminFAQInsert() {
+			System.out.println("어드민faq윈도우");
+			ModelAndView mv = new ModelAndView();
+			mv.setViewName("/admin/adminFAQInsert.html");
+			return mv;
+		}
 		
 
 		////-----------------------------------------////

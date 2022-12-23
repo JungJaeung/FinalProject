@@ -26,6 +26,8 @@ public class CommentServiceImpl implements CommentService{
 
 		@Override
 		public void deleteComment(int commentId,int postId) {
+			System.out.println("commentId============" + commentId);
+			System.out.println("postId============" + postId);
 			mglgCommentRepository.deleteComment(commentId,postId);
 		}
 
