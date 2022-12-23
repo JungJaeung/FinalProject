@@ -41,17 +41,6 @@ public class PostController {
 	@Autowired
 	private MglgUserService mglgUserService;
 
-	//메인 게시글 사이트 글쓰기 페이지로 이동 (로그인 세션 적용은 추후에 할 예정)
-	@GetMapping("/newPost")
-	public ModelAndView goInsertView(HttpSession session) {
-		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
-		ModelAndView mv = new ModelAndView();
-		mv.addObject("loginUser", temp);
-		mv.setViewName("post/insertPost.html");
-		System.out.println("새글을 작성하는 페이지로 이동합니다.");
-		return mv; 
-		
-	}
 	
 	//글쓰기 버튼으로 적용되는 글 새로 작성
 	@PostMapping("/insertPost")
@@ -74,6 +63,11 @@ public class PostController {
 									.postDate(LocalDateTime.now())
 									.postRating(mglgPostDTO.getPostRating())
 									.restRating(mglgPostDTO.getRestRating())
+									.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
+									.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
+									.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
+									.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
+									.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
 									.build();
 		
 		mglgPostService.insertPost(mglgPost);

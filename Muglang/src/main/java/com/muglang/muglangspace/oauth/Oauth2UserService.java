@@ -25,7 +25,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 	MglgUserRepository mglgUserRepository;
 	
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
+		System.out.println("11111111111111111");
 		
 		OAuth2User oAuth2User = super.loadUser(userRequest);
 		Map<String, Object> temp = oAuth2User.getAttributes();
