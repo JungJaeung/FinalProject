@@ -1,4 +1,4 @@
-package com.muglang.muglangspace.service.comment.impl;
+package com.muglang.muglangspace.service.mglgcomment.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,10 +7,10 @@ import com.muglang.muglangspace.dto.MglgCommentDTO;
 import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgCommentId;
 import com.muglang.muglangspace.repository.MglgCommentRepository;
-import com.muglang.muglangspace.service.comment.CommentService;
+import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
 
 @Service
-public class CommentServiceImpl implements CommentService{
+public class MglgCommentServiceImpl implements MglgCommentService{
 		@Autowired
 		private MglgCommentRepository mglgCommentRepository;
 
@@ -29,6 +29,12 @@ public class CommentServiceImpl implements CommentService{
 			System.out.println("commentId============" + commentId);
 			System.out.println("postId============" + postId);
 			mglgCommentRepository.deleteComment(commentId,postId);
+		}
+
+		@Override
+		public void insertComment(MglgComment comment) {
+			// TODO Auto-generated method stub
+			//mglgCommentRepository.insertComment(comment);
 		}
 
 		

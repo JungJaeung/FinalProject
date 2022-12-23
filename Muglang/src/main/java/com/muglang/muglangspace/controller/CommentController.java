@@ -1,32 +1,33 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.dto.MglgCommentDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgPost;
-import com.muglang.muglangspace.service.comment.CommentService;
+import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
+import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
 
 @RestController
 @RequestMapping("/comment")
 public class CommentController {
 	@Autowired
-	private CommentService commentService;
+	private MglgCommentService mglgCommentService;
 	@Autowired
 	private AdminService adminService;
 	
@@ -44,7 +45,7 @@ public class CommentController {
 										.mglgPost(post)
 										.build();
 			
-			comment = commentService.getComment(comment);
+			comment = mglgCommentService.getComment(comment);
 			MglgCommentDTO returnCommentDTO = MglgCommentDTO.builder()
 												   .commentId(comment.getCommentId())
 												   .commentContent(comment.getCommentContent())
@@ -66,11 +67,25 @@ public class CommentController {
 	
 	@GetMapping("deleteComment")
 	public void deleteComment(@RequestParam("commentId") int commentId,@RequestParam("postId") int postId, HttpServletResponse response) throws IOException {
-		 commentService.deleteComment(commentId,postId);
+		mglgCommentService.deleteComment(commentId,postId);
 		 adminService.deleteReport(commentId,postId);
 		 System.out.println("--------딜리트 끝--------");
 
 		 response.sendRedirect("/admin/commentReport");
+	}
+	
+	//댓글 작성 쿼리 실행
+	@PostMapping("/insertComment")
+	public void insertComment(HttpSession session, MglgCommentDTO commentDTO, HttpServletResponse response) throws IOException {
+		
+		MglgComment mglgComment = MglgComment.builder()
+											 .mglgPost(MglgPost.builder().postId(commentDTO.getPostId()).build())
+											 .mglgUser(MglgUser.builder().userId(commentDTO.getUserId()).build())
+											 .commentContent(commentDTO.getCommentContent())
+											 .commentDate(LocalDateTime.now())
+											 .build();
+		mglgCommentService.insertComment(mglgComment);
+		response.sendRedirect("/post/post");
 	}
 	
 }
