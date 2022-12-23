@@ -64,7 +64,7 @@ public class CommentController {
 
 	//커멘트 아이디로 삭제
 
-	@Transactional
+	
 	@GetMapping("deleteComment")
 	public void deleteComment(@RequestParam("commentId") int commentId,@RequestParam("postId") int postId, HttpServletResponse response) throws IOException {
 		mglgCommentService.deleteComment(commentId,postId);

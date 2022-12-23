@@ -5,21 +5,38 @@
 <head>
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
-
+			let pop;
+			const boardList = /*[[${boardList}]]*/;
 
 			/*<![CDATA[*/
-
 			function new_window(boardId) {
 				
-				window.open(
-					"adminFAQWindow?boardId="+boardId,
+				pop = window.open(
+					"/admin/adminFAQWindow?boardId="+boardId,
 					"Board",
 					"width=400, height=300, top=50, left=50"
 				);
-				console.log("실행됨")
+				console.log("실행됨");
+				
+			}		
+			function insert_window() {
+				
+				pop = window.open(
+					"/admin/adminFAQInsert",
+					"insert",
+					"width=400, height=300, top=50, left=50"
+				);
+				console.log("실행됨");
+				
+			}			
+			function closeCallback() {
+				pop.close();
+				location.reload();
 			}
 		/*]]>*/
-
+			$(function() {
+				
+			})
 		</script>
 	</th:block>
 </head>
@@ -62,12 +79,13 @@
 												<div class="accordion-body" th:text="${board.boardContent}"></div>
 												
 												<div>
-													<input type="button" th:onclick="new_window([[${board.boardId}]])"value="수정하기">
+													<input type="button" th:onclick="new_window([[${board.boardId}]])" value="수정하기">
 												</div>
 											</div>
 										</div>
 									</div>
 								</div>
+								<input type="button" th:onclick="insert_window()" value="작성하기">
 							</div>
 						</div>
 					</div>
