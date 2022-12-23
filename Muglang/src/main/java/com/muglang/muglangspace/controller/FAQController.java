@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +26,7 @@ public class FAQController {
 	@Autowired
 	private MglgBoardService mglgBoardService;
 
-	// FAQ로 이동
+	// 어드민 FAQ로 이동
 	@GetMapping("/adminFAQ")
 	public ModelAndView adminFAQ() {
 		List<MglgBoard> board = mglgBoardService.getFAQList();
@@ -54,6 +56,7 @@ public class FAQController {
 
 			board = mglgBoardService.getBoard(board);
 			MglgBoardDTO returnBoardDTO = MglgBoardDTO.builder()
+					.boardId(boardId)
 					.boardTitle(board.getBoardTitle())
 					.boardContent(board.getBoardContent())
 					.build();
@@ -72,6 +75,36 @@ public class FAQController {
 		mglgBoardService.deleteBoard(boardId);
 
 		response.sendRedirect("/board/adminFAQ");
+	}
+	@PostMapping("/updateBoard")
+	public void updateBoard(MglgBoardDTO boardDTO){
+		MglgBoard board = MglgBoard.builder()
+							.boardTitle(boardDTO.getBoardTitle())
+							.boardContent(boardDTO.getBoardContent())
+							.boardId(boardDTO.getBoardId())
+							.build();
+		mglgBoardService.updateBoard(board);
+	
+
+	}
+	@PostMapping("/deleteBoard")
+	public void deleteBoard(MglgBoardDTO boardDTO){
+		MglgBoard board = MglgBoard.builder()
+							.boardId(boardDTO.getBoardId())
+							.build();
+		mglgBoardService.deleteBoard(board);
+	
+
+	}
+	@PostMapping("/insertBoard")
+	public void insertBoard(MglgBoardDTO boardDTO)  {
+		MglgBoard board = MglgBoard.builder()
+							.boardTitle(boardDTO.getBoardTitle())
+							.boardContent(boardDTO.getBoardContent())
+							.build();
+		mglgBoardService.insertBoard(board);
+	
+
 	}
 
 }

@@ -28,6 +28,29 @@ public class MglgBoardServiceImpl implements MglgBoardService{
 	@Override
 	public MglgBoard getBoard(MglgBoard board) {
 		
-		return mglgBoardRepository.findByBoardId(board);
+		return mglgBoardRepository.findById(board.getBoardId()).get();
+	}
+
+	@Override
+	public void updateBoard(MglgBoard board) {
+		String boardTitle = board.getBoardTitle();
+		String boardContent = board.getBoardContent();
+		int boardId = board.getBoardId();
+		mglgBoardRepository.updateBoard(boardTitle,boardContent,boardId);
+		
+	}
+
+	@Override
+	public void deleteBoard(MglgBoard board) {
+		int boardId = board.getBoardId();
+		mglgBoardRepository.deleteBoard(boardId);
+	}
+
+	@Override
+	public void insertBoard(MglgBoard board) {
+		String boardTitle = board.getBoardTitle();
+		String boardContent = board.getBoardContent();
+		mglgBoardRepository.insertBoard(boardTitle,boardContent);
+
 	}
 }
