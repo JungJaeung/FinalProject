@@ -5,12 +5,12 @@ import java.time.LocalDateTime;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -77,7 +77,7 @@ public class CommentController {
 	//댓글 작성 쿼리 실행
 	@PostMapping("/insertComment")
 	public void insertComment(HttpSession session, MglgCommentDTO commentDTO, HttpServletResponse response) throws IOException {
-		
+		System.out.println("댓글을 작성합니다.");
 		MglgComment mglgComment = MglgComment.builder()
 											 .mglgPost(MglgPost.builder().postId(commentDTO.getPostId()).build())
 											 .mglgUser(MglgUser.builder().userId(commentDTO.getUserId()).build())
@@ -85,7 +85,17 @@ public class CommentController {
 											 .commentDate(LocalDateTime.now())
 											 .build();
 		mglgCommentService.insertComment(mglgComment);
-		response.sendRedirect("/post/post");
+		response.sendRedirect("/post/mainPost");
+	}
+	
+	//댓글의 수정,삭제는 본인것만 할 수 있음.
+	@PutMapping("/updateComment")
+	public void insertComment(HttpSession session, MglgCommentDTO commentDTO) {
+		System.out.println("댓글을 수정합니다.");
+		MglgComment mglgComment = MglgComment.builder()
+											 .commentContent(commentDTO.getCommentContent())
+											 .build();
+		mglgCommentService.updateComment(mglgComment);
 	}
 	
 }
