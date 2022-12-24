@@ -37,7 +37,7 @@ import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
 @RestController
 @RequestMapping("/user")
-public class UserController extends Oauth2UserService {
+public class UserController {
 	@Autowired
 	private MglgUserService mglgUserService;
 
@@ -197,7 +197,17 @@ public class UserController extends Oauth2UserService {
 		if(userInfo.getMglgUser().getRegDate() != null) {
 			System.out.println("기존 회원이 로그인합니다.");
 			System.out.println("회원의 아이디와 메일 : " + userInfo.getMglgUser().getUserId() + ", " + userInfo.getMglgUser().getEmail());
-			session.setAttribute("loginUser", userInfo);
+			MglgUser loginUser = mglgUserService.loginUser(userInfo.getMglgUser());
+			MglgUserDTO loginUserDTO = MglgUserDTO.builder()
+												  .userId(loginUser.getUserId())
+												  .userName(loginUser.getUserName())
+												  .userSnsId(loginUser.getUserSnsId())
+												  .regDate(loginUser.getRegDate().toString())
+												  .email(loginUser.getEmail())
+												  .userRole(loginUser.getUserRole())
+												  .build();
+			
+			session.setAttribute("loginUser", loginUserDTO);
 			response.sendRedirect("/post/mainPost");
 			//mv.setViewName("post/post.html");
 		} else { //신규 회원일 경우 처리
@@ -232,8 +242,17 @@ public class UserController extends Oauth2UserService {
 		
 		mglgUserService.socialLoginProcess(newUser);
 		System.out.println("회원가입을 축하드립니다. 게시판으로 이동합니다.");
+		//로그인한 유저의 세션 정보는 엔티티가 아닌 DTO로 따로 저장하여 사용할것임.
 		MglgUser loginUser = mglgUserService.socialLoginUser(newUser);
-		session.setAttribute("loginUser", loginUser);
+		MglgUserDTO loginUserDTO = MglgUserDTO.builder()
+											  .userId(loginUser.getUserId())
+											  .userName(loginUser.getUserName())
+											  .userSnsId(loginUser.getUserSnsId())
+											  .regDate(loginUser.getRegDate().toString())
+											  .email(loginUser.getEmail())
+											  .userRole(loginUser.getUserRole())
+											  .build();
+		session.setAttribute("loginUser", loginUserDTO);
 		
 		response.sendRedirect("/post/mainPost");
 
@@ -272,7 +291,7 @@ public class UserController extends Oauth2UserService {
 				System.out.println("로그인한 유저 아이디 : " + loginUser);
 			}
 			responseDTO.setItem(returnMap);
-			mv.addObject("loginUser", session.getAttribute("loginUser"));
+			mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
 			//로그인후 게시글 페이지로 이동함. 게시글의 정보를 조회하고 이 정보를 다음 화면단에 넘김.
 			Page<MglgPost> postList = mglgPostService.getPagePostList(pageable);
 			Page<MglgPostDTO> postListDTO = postList.map(pageMglgPost -> MglgPostDTO.builder()

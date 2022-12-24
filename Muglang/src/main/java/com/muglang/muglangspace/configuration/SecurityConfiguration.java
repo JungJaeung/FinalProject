@@ -20,8 +20,6 @@ public class SecurityConfiguration {
 	@Autowired
 	private Oauth2UserService oauth2UserService;
 	
-	@Autowired
-	private Oauth2UserService oauth2NewUserService;
 	
 	//필터 체인 구현(HttpSecurity 객체 사용)
 	@Bean //외부객체를 끌어올 때는 Bean
@@ -38,7 +36,7 @@ public class SecurityConfiguration {
 								.antMatchers("/assets/**").permitAll()  //부트스트랩 관련
 								.antMatchers("/home/**").permitAll()
 								//권한을 가진 유저들만 접근 할 수 있는 요청 리소드들
-								.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")//관리자 페이지는 관리자만 조회가능
+								//.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")//관리자 페이지는 관리자만 조회가능
 //								.antMatchers("/index/**").access("hasAnyRole('ROLE_USER', ROLE_ADMIN')")//index = main 페이지는 사용자, 관리자 모두 조회가능
 //								.antMatchers("/profile/**").access("hasAnyRole('ROLE_USER', ROLE_ADMIN')")//profile 페이지는 사용자, 관리자 모두 조회가능
 									

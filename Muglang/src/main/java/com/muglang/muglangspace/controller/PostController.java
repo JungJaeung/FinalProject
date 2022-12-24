@@ -164,7 +164,7 @@ public class PostController {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostListDTO);
-		mv.addObject("loginUser", session.getAttribute("loginUser"));
+		mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
 		return mv;
 	}
 	
