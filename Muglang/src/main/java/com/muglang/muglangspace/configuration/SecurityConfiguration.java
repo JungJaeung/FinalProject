@@ -47,7 +47,7 @@ public class SecurityConfiguration {
 		//회원가입이 없으므로 바로 OAUTH2기반 로그인 처리
 		http.oauth2Login()
 			.loginPage("/user/login")
-			.defaultSuccessUrl("/user/socialLoginPage")
+			.defaultSuccessUrl("/user/socialLoginPage")	//이 url은 templates 폴더 하위의 링크
 			.userInfoEndpoint() //업체로 부터 받은 사용자 정보를 다 받아온 포인트
 			.userService(oauth2UserService);
 

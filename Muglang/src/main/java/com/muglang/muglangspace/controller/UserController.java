@@ -212,7 +212,7 @@ public class UserController {
 			//mv.setViewName("post/post.html");
 		} else { //신규 회원일 경우 처리
 			System.out.println("신규회원입니다.");
-			mv.setViewName("user/socialLogin.html");
+			mv.setViewName("user/socialLoginPage.html");
 		}
 		return mv;
 	}
@@ -322,5 +322,10 @@ public class UserController {
 		}
 	}
 
+	//로그아웃을 하는 매핑 메소드(아무것도 없어도 securityFilter에 정의 되어 있음.)
+	@GetMapping("/logout")
+	public void logout() {
+		
+	}
 }//페이지 끝
 
