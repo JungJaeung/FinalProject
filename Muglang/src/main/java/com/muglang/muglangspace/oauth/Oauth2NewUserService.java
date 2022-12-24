@@ -3,15 +3,11 @@ package com.muglang.muglangspace.oauth;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.controller.UserController;
 import com.muglang.muglangspace.entity.CustomUserDetails;
@@ -22,17 +18,14 @@ import com.muglang.muglangspace.oauth.provider.NaverUserInfo;
 import com.muglang.muglangspace.oauth.provider.OAuth2UserInfo;
 import com.muglang.muglangspace.repository.MglgUserRepository;
 
-import lombok.RequiredArgsConstructor;
 
-@Service //서비스 표시
-public class Oauth2UserService extends DefaultOAuth2UserService {
-	
-	//이미 가입한 회원인지 검사하기위해 MglgUserRepository를 가져옴
+@Service
+public class Oauth2NewUserService extends Oauth2UserService{
 	@Autowired
-	MglgUserRepository mglgUserRepository;
-
-	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-		System.out.println("111111111111111111111");
+	private MglgUserRepository mglgUserRepository;
+	
+	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException{
+		System.out.println("222222222222222222222");
 		
 		OAuth2User oAuth2User = super.loadUser(userRequest);
 		Map<String, Object> temp = oAuth2User.getAttributes();
@@ -92,13 +85,13 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 							   .userName(userName)
 							   .email(email)
 							   .userRole(role)
+							   .userNick(userName)
 							   .build();
 			System.out.println("새로운 회원을 등록할 임시 정보를 취합니다." + mglgUser);
 			//세션에 담아 추가적인 정보를 처리하려고 했지만 실패함. 오버라이딩 안하면 자동로딩을 안함.
 			//session.setAttribute("loginUser", mglgUser);
 			//추가정보 입력한 뒤, 로그인 처리를 마무리 할 예정
-			
-			//mglgUserRepository.save(mglgUser);
+	
 		}
 		
 		System.out.println("새로운 로그인 정보를 저장완료하였습니다.");
@@ -108,5 +101,4 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 								.attributes(oAuth2User.getAttributes())
 								.build();
 	}
-	
 }

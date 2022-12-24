@@ -20,6 +20,9 @@ public class SecurityConfiguration {
 	@Autowired
 	private Oauth2UserService oauth2UserService;
 	
+	@Autowired
+	private Oauth2UserService oauth2NewUserService;
+	
 	//필터 체인 구현(HttpSecurity 객체 사용)
 	@Bean //외부객체를 끌어올 때는 Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -46,9 +49,16 @@ public class SecurityConfiguration {
 		//회원가입이 없으므로 바로 OAUTH2기반 로그인 처리
 		http.oauth2Login()
 			.loginPage("/user/login")
-			.defaultSuccessUrl("/post/mainPost")
+			.defaultSuccessUrl("/user/socialLogin")
 			.userInfoEndpoint() //업체로 부터 받은 사용자 정보를 다 받아온 포인트
 			.userService(oauth2UserService);
+
+//		//회원가입을 대신하는 추가정보 입력후 로그인.
+//		http.oauth2Login()
+//			.loginPage("/user/socialLogin")
+//			.defaultSuccessUrl("/post/mainPost")
+//			.userInfoEndpoint()
+//			.userService(oauth2NewUserService);
 		
 		//로그아웃 설정
 		http.logout()
