@@ -142,7 +142,7 @@ public class PostController {
 	
 	@GetMapping("/mainPost")
 	//로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드
-	public ModelAndView getPostList(@PageableDefault(page=0, size=5) Pageable pageable) {
+	public ModelAndView getPostList(@PageableDefault(page=0, size=5) Pageable pageable, HttpSession session) {
 		Page<MglgPost> pagePostList = mglgPostService.getPagePostList(pageable);
 		
 		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
@@ -160,10 +160,11 @@ public class PostController {
 																			.hashTag5(pageMglgPost.getHashTag5())
 																			.build()
 															);
+		//화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostListDTO);
-		
+		mv.addObject("loginUser", session.getAttribute("loginUser"));
 		return mv;
 	}
 	

@@ -1,9 +1,12 @@
 package com.muglang.muglangspace.controller;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -24,6 +28,7 @@ import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
+import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.oauth.Oauth2UserService;
@@ -171,42 +176,40 @@ public class UserController extends Oauth2UserService {
 	@GetMapping("/login")
 	public ModelAndView loginView() {
 		ModelAndView mv = new ModelAndView();
-		
+		System.out.println("이전 로그인 시스템작동");
 		mv.setViewName("user/login.html");
 		return mv;
 	}
 	
-	//계정의 검증은 끝나고 회원의 정보가 들어있는지 확인하고 처리하는 메소드
-	@GetMapping("/socialLogin")
-	public ModelAndView socialLoginView(OAuth) {
-		ModelAndView mv = new ModelAndView();
-		mglgUserService.socialLoginUser(null);
-		if(mglgUserService) {
-			System.out.println("신규회원입니다.");
-			mv.setViewName("user/socialLogin.html");
-		} else {
-			System.out.println("기존 회원이 로그인합니다.");
-			mv.setViewName("post/post.html");
-		}
-		return mv;
-	}
-	
-	//추가 회원 정보 입력 처리 과정
-	@PostMapping("/joinUser")
-	public ModelAndView joinUser(, HttpSession session, MglgUserDTO mglgUserDTO) 
-			throws OAuth2AuthenticationException {
-		System.out.println(mglgUserDTO);
-		ModelAndView mv = new ModelAndView();
+	//계정의 검증을 끝내고 최종적으로 정보를 추가하여 처리하는 메소드 가입하고 메인 페이지로 이동.
+	//유저 정보를 추가하는 자리를 추가할 경우 여기를 수정하여 수정하면됩니다.
+	@PostMapping("/socialLogin")
+	public void socialLoginView(MglgUserDTO mglgUserDTO, HttpSession session,
+			HttpServletResponse response) throws IOException {
+		CustomUserDetails userInfo = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		newUser.setFirstName(mglgUserDTO.getFirstName());
-		newUser.setLastName(mglgUserDTO.getLastName());
-		newUser.setUserNick(mglgUserDTO.getUserNick());
+//		System.out.println("연동되어있는 정보 표시 : " + userInfo.getAttributes().keySet());
+		
+		MglgUser newUser = MglgUser.builder()
+						   .userName(userInfo.getMglgUser().getUserName())
+						   .userSnsId(userInfo.getMglgUser().getUserSnsId())
+						   .userBanYn("N")
+						   //.phone(userInfo.getAttributes().) //추가 입력창에 입력하는 정보
+						   .firstName(mglgUserDTO.getFirstName())
+						   .lastName(mglgUserDTO.getLastName())
+						   .email(userInfo.getMglgUser().getEmail())
+						   .userNick(mglgUserDTO.getUserNick())
+						   .regDate(LocalDateTime.now())
+						   .userRole(userInfo.getMglgUser().getUserRole())
+						   .build();
 		
 		mglgUserService.socialLoginProcess(newUser);
+		System.out.println("회원가입을 축하드립니다. 게시판으로 이동합니다.");
+		MglgUser loginUser = mglgUserService.socialLoginUser(newUser);
+		session.setAttribute("loginUser", loginUser);
 		
-		session.setAttribute("loginUser", newUser);
-		mv.setViewName("post/post.html");
-		return mv;
+		response.sendRedirect("/post/mainPost");
+
 	}
 
 	

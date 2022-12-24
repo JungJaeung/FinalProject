@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -110,7 +111,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		//반환한 OAuth2User를 Spring이 OAuth2LoginAuthenticationToken으로 변환
 		//OAuth2LoginAuthenticationToken은 Authentication의 자식이므로 SecurityContextHolder에 저장가능
 		//아래의 과정이 SecurityContextHolder에 우리가 반환한 소셜 계정 정보를 저장하는 장면
-		System.out.println("새로운 로그인 정보를 저장완료하였습니다.");
+		System.out.println("로그인 정보를 저장완료하였습니다.");
 		//SecurityContext에 인증 정보 저장
 		return CustomUserDetails.builder()
 								.mglgUser(mglgUser)

@@ -20,7 +20,7 @@ public class AdminServiceImpl implements AdminService{
 		@Autowired
 		private MglgUserRepository mglgUserRepository;
 		@Autowired
-		private MglgPostRepository mglgPostepository;
+		private MglgPostRepository mglgPostRepository;
 		
 		@Override
 		public MglgUser searchBan(MglgUser user) {
