@@ -21,28 +21,24 @@
             text-align: center;
         }
         </style>
-        <!--<th:block layout:fragment="script">
-			<script th:inline="javascript">
-				$(function() {
-					alert("hello!");
-				});
-			</script>
-		</th:block>-->
-		
+
 		
 	</head>
 	<body>
 	    <div id="container">
-	        <form action="/user/joinUser" method="post">
+
+	        <form action="/user/socialNewLogin" method="post">
 	            <h3>MUGLANG에 처음 로그인 하시네요.</h3>
 	           
 	          	<!-- 데이터 테스트를 위한 임시 로그인 추가정보 입력 (필수로 들어가는 정보를 입력하고 sns로그인을 마무리 한다.)-->
 	            <span>이름(first name)</span><input type="text" id="firstName" name="firstName" value=""><br>
 	          	<span>성(last name)</span><input type="text" id="lastName" name="lastName" value=""><br>
 	          	<span>닉네임(이 사이트에서 사용하실 닉네임)</span><input type="text" id="userNick" name="userNick" value=""><br>
+
 	            <!-- 로그인 버튼 (SNS로그인으로 대체 되므로 추후에 지우면 됨.) -->
 	            <input type="submit" value="로그인하기">
 	        </form>
 	    </div>		
 	</body>
 </html>
+

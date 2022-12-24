@@ -1,15 +1,23 @@
 package com.muglang.muglangspace.controller;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +28,10 @@ import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
+import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.oauth.Oauth2UserService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
@@ -166,36 +176,86 @@ public class UserController {
 	@GetMapping("/login")
 	public ModelAndView loginView() {
 		ModelAndView mv = new ModelAndView();
-		
+		System.out.println("최초 로그인 시스템작동");
 		mv.setViewName("user/login.html");
 		return mv;
 	}
 	
-	@GetMapping("/socialLogin")
-	public static ModelAndView socialLoginView() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("user/socialLogin.html");
+	//소셜 로그인을 진행합니다.
+	//소셜 계정이 존재할경우, 존재하지 않았을 경우의 두가지를 제어하는 로직입니다.
+	//계정정보를 api에서 가져온 뒤 그 데이터를 사용하여 로그인 정보를 제어합니다.
+	@RequestMapping("/socialLoginPage")
+	public ModelAndView socialLoginInput(HttpServletResponse response, HttpSession session, SecurityContextHolder security) throws IOException {
+
+		System.out.println(SecurityContextHolder.getContext());
 		
+		ModelAndView mv = new ModelAndView();
+		
+		CustomUserDetails userInfo = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		//로그인을 했던 기존 유저인지 아닌지 확인하는 과정.
+		if(userInfo.getMglgUser().getRegDate() != null) {
+			System.out.println("기존 회원이 로그인합니다.");
+			System.out.println("회원의 아이디와 메일 : " + userInfo.getMglgUser().getUserId() + ", " + userInfo.getMglgUser().getEmail());
+			MglgUser loginUser = mglgUserService.loginUser(userInfo.getMglgUser());
+			MglgUserDTO loginUserDTO = MglgUserDTO.builder()
+												  .userId(loginUser.getUserId())
+												  .userName(loginUser.getUserName())
+												  .userSnsId(loginUser.getUserSnsId())
+												  .regDate(loginUser.getRegDate().toString())
+												  .email(loginUser.getEmail())
+												  .userRole(loginUser.getUserRole())
+												  .build();
+			
+			session.setAttribute("loginUser", loginUserDTO);
+			response.sendRedirect("/post/mainPost");
+			//mv.setViewName("post/post.html");
+		} else { //신규 회원일 경우 처리
+			System.out.println("신규회원입니다.");
+			mv.setViewName("user/socialLoginPage.html");
+		}
 		return mv;
 	}
 	
-	//추가 정보 입력 처리 과정
-	@PostMapping("/joinUser")
-	public ModelAndView joinUser(HttpSession session, MglgUserDTO mglgUserDTO) {
-		System.out.println(mglgUserDTO);
-		ModelAndView mv = new ModelAndView();
-		MglgUser newUser = (MglgUser)session.getAttribute("loginUser");
-		System.out.println(newUser);
+	//신규회원의 로그인 처리를 담당하는 메소드
+	//계정의 검증을 끝내고 최종적으로 정보를 추가하여 처리하는 메소드 가입하고 메인 페이지로 이동.
+	//유저 정보를 추가하는 자리를 추가할 경우 여기를 수정하여 수정하면됩니다.
+	@PostMapping("/socialNewLogin")
+	public void socialLoginView(MglgUserDTO mglgUserDTO, HttpSession session,
+			HttpServletResponse response) throws IOException {
+		CustomUserDetails userInfo = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		newUser.setFirstName(mglgUserDTO.getFirstName());
-		newUser.setLastName(mglgUserDTO.getLastName());
-		newUser.setUserNick(mglgUserDTO.getUserNick());
+//		System.out.println("연동되어있는 정보 표시 : " + userInfo.getAttributes().keySet());
+		
+		MglgUser newUser = MglgUser.builder()
+						   .userName(userInfo.getMglgUser().getUserName())
+						   .userSnsId(userInfo.getMglgUser().getUserSnsId())
+						   .userBanYn("N")
+						   //.phone(userInfo.getAttributes().) //추가 입력창에 입력하는 정보
+						   .firstName(mglgUserDTO.getFirstName())
+						   .lastName(mglgUserDTO.getLastName())
+						   .email(userInfo.getMglgUser().getEmail())
+						   .userNick(mglgUserDTO.getUserNick())
+						   .regDate(LocalDateTime.now())
+						   .userRole(userInfo.getMglgUser().getUserRole())
+						   .build();
 		
 		mglgUserService.socialLoginProcess(newUser);
+		System.out.println("회원가입을 축하드립니다. 게시판으로 이동합니다.");
+		//로그인한 유저의 세션 정보는 엔티티가 아닌 DTO로 따로 저장하여 사용할것임.
+		MglgUser loginUser = mglgUserService.socialLoginUser(newUser);
+		MglgUserDTO loginUserDTO = MglgUserDTO.builder()
+											  .userId(loginUser.getUserId())
+											  .userName(loginUser.getUserName())
+											  .userSnsId(loginUser.getUserSnsId())
+											  .regDate(loginUser.getRegDate().toString())
+											  .email(loginUser.getEmail())
+											  .userRole(loginUser.getUserRole())
+											  .build();
+		session.setAttribute("loginUser", loginUserDTO);
 		
-		session.setAttribute("loginUser", newUser);
-		mv.setViewName("post/post.html");
-		return mv;
+		response.sendRedirect("/post/mainPost");
+
 	}
 
 	
@@ -231,7 +291,7 @@ public class UserController {
 				System.out.println("로그인한 유저 아이디 : " + loginUser);
 			}
 			responseDTO.setItem(returnMap);
-			mv.addObject("loginUser", session.getAttribute("loginUser"));
+			mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
 			//로그인후 게시글 페이지로 이동함. 게시글의 정보를 조회하고 이 정보를 다음 화면단에 넘김.
 			Page<MglgPost> postList = mglgPostService.getPagePostList(pageable);
 			Page<MglgPostDTO> postListDTO = postList.map(pageMglgPost -> MglgPostDTO.builder()
@@ -262,5 +322,10 @@ public class UserController {
 		}
 	}
 
+	//로그아웃을 하는 매핑 메소드(아무것도 없어도 securityFilter에 정의 되어 있음.)
+	@GetMapping("/logout")
+	public void logout() {
+		
+	}
 }//페이지 끝
 

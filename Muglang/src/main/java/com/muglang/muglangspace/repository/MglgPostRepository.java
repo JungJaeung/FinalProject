@@ -35,15 +35,15 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	Page<MglgPost> findByHashTag4Containing(String searchKeyword, Pageable pageable);
 	Page<MglgPost> findByHashTag5Containing(String searchKeyword, Pageable pageable);
 	
-	//모두 검색
-	Page<MglgPost> findByEntireSearchKeywordContaining(
-			String searchKeyword1,
-			String searchKeyword2,
-			String searchKeyword3,
-			String searchKeyword4,
-			String searchKeyword5,
-			String searchKeyword6,
-			String searchKeyword7,
-			Pageable pageable
-			);
+//	//모두 검색 - JPA 명명규칙 오류난듯 query 못만듬.
+//	Page<MglgPost> findByEntireSearchKeywordContaining(
+//			String searchKeyword1,
+//			String searchKeyword2,
+//			String searchKeyword3,
+//			String searchKeyword4,
+//			String searchKeyword5,
+//			String searchKeyword6,
+//			String searchKeyword7,
+//			Pageable pageable
+//			);
 }
