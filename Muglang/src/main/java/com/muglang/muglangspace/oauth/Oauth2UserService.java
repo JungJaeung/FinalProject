@@ -29,7 +29,6 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 	MglgUserRepository mglgUserRepository;
 
 	public OAuth2User loadUser(OAuth2UserRequest userRequest, HttpSession session) throws OAuth2AuthenticationException {
-		System.out.println("111111111111111111111");
 		
 		OAuth2User oAuth2User = super.loadUser(userRequest);
 		Map<String, Object> temp = oAuth2User.getAttributes();
@@ -100,6 +99,14 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 			//mglgUserRepository.save(mglgUser);
 		}
 		
+
+		//Spring Security의 in-momory 세션 저장소인
+		//SecurityContextHolder에 인증 정보 저장 <- 들어갈 수 있는 인증객체는 Authentication(인증)
+		//Authentication은 AbstractAuthenticationToken으로 구현되어 있고
+		//AbstractAuthenticationToken은 OAuth2LoginAuthenticationToken이 구현
+		//반환한 OAuth2User를 Spring이 OAuth2LoginAuthenticationToken으로 변환
+		//OAuth2LoginAuthenticationToken은 Authentication의 자식이므로 SecurityContextHolder에 저장가능
+		//아래의 과정이 SecurityContextHolder에 우리가 반환한 소셜 계정 정보를 저장하는 장면
 		System.out.println("새로운 로그인 정보를 저장완료하였습니다.");
 		//SecurityContext에 인증 정보 저장
 		return CustomUserDetails.builder()

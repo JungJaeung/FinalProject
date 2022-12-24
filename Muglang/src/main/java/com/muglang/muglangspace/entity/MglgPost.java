@@ -41,20 +41,20 @@ public class MglgPost {
 			strategy=GenerationType.SEQUENCE,
 			generator="MglgPostSequenceGenerator"
 	)
-	private int postId;
+	private int postId;				//게시물 번호
 	@ManyToOne
 	@JoinColumn(name="USER_ID")
-	private MglgUser mglgUser;
-	private int postRating;
-	private String postContent;
-	private String restNm;
-	private int restRating;
-	private String hashTag1;
-	private String hashTag2;
-	private String hashTag3;
-	private String hashTag4;
-	private String hashTag5;
+	private MglgUser mglgUser;		//사용자 구분을 위한 아이디
+	private int postRating;			//게시물 별점
+	private String postContent;		//게시물 내용
+	private String restNm;			//식당 이름
+	private int restRating;			//식당 별점
+	private String hashTag1;		//해시태그1
+	private String hashTag2;		//해시태그2
+	private String hashTag3;		//해시태그3
+	private String hashTag4;		//해시태그4
+	private String hashTag5;		//해시태그5
 //	@Column
 //	@ColumnDefault(LocalDateTime.now())
-	private LocalDateTime postDate;
+	private LocalDateTime postDate;	//게시한 날짜
 }
