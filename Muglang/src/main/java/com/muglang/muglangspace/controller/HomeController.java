@@ -16,25 +16,15 @@ import com.muglang.muglangspace.entity.CustomUserDetails;
 @RestController
 @RequestMapping("/home")
 public class HomeController {
-	@RequestMapping("/main")
-	public ModelAndView mainPage(HttpServletResponse response, HttpSession session) throws IOException {
-		System.out.println(SecurityContextHolder.getContext());
-		
-		ModelAndView mv = new ModelAndView();
-		
-		CustomUserDetails userInfo = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
-		//로그인을 했던 기존 유저인지 아닌지 확인하는 과정.
-		if(userInfo.getMglgUser().getRegDate() != null) {
-			System.out.println("기존 회원이 로그인합니다.");
-			System.out.println("회원의 아이디와 메일 : " + userInfo.getMglgUser().getUserId() + ", " + userInfo.getMglgUser().getEmail());
-			session.setAttribute("loginUser", userInfo);
+	//로그인 정보 확인하여 메인 페이지 표시 제어
+	@RequestMapping("/home")
+	public void home(HttpSession session, HttpServletResponse response) throws IOException {
+		if(session.getAttribute("loginUser") == null) {	//세션정보가 없을 경우(로그아웃이 되어있는 경우)
+			System.out.println("로그인을 하지 않았습니다. 로그인 페이지로 이동합니다.");
+			response.sendRedirect("/user/login");
+		} else {
+			System.out.println("환영합니다. 메인 페이지로 이동합니다.");
 			response.sendRedirect("/post/mainPost");
-			//mv.setViewName("post/post.html");
-		} else { //신규 회원일 경우 처리
-			System.out.println("신규회원입니다.");
-			mv.setViewName("user/socialLogin.html");
 		}
-		return mv;
 	}
 }

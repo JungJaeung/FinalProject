@@ -176,14 +176,41 @@ public class UserController extends Oauth2UserService {
 	@GetMapping("/login")
 	public ModelAndView loginView() {
 		ModelAndView mv = new ModelAndView();
-		System.out.println("이전 로그인 시스템작동");
+		System.out.println("최초 로그인 시스템작동");
 		mv.setViewName("user/login.html");
 		return mv;
 	}
 	
+	//소셜 로그인을 진행합니다.
+	//소셜 계정이 존재할경우, 존재하지 않았을 경우의 두가지를 제어하는 로직입니다.
+	//계정정보를 api에서 가져온 뒤 그 데이터를 사용하여 로그인 정보를 제어합니다.
+	@RequestMapping("/socialLoginPage")
+	public ModelAndView socialLoginInput(HttpServletResponse response, HttpSession session, SecurityContextHolder security) throws IOException {
+
+		System.out.println(SecurityContextHolder.getContext());
+		
+		ModelAndView mv = new ModelAndView();
+		
+		CustomUserDetails userInfo = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		//로그인을 했던 기존 유저인지 아닌지 확인하는 과정.
+		if(userInfo.getMglgUser().getRegDate() != null) {
+			System.out.println("기존 회원이 로그인합니다.");
+			System.out.println("회원의 아이디와 메일 : " + userInfo.getMglgUser().getUserId() + ", " + userInfo.getMglgUser().getEmail());
+			session.setAttribute("loginUser", userInfo);
+			response.sendRedirect("/post/mainPost");
+			//mv.setViewName("post/post.html");
+		} else { //신규 회원일 경우 처리
+			System.out.println("신규회원입니다.");
+			mv.setViewName("user/socialLogin.html");
+		}
+		return mv;
+	}
+	
+	//신규회원의 로그인 처리를 담당하는 메소드
 	//계정의 검증을 끝내고 최종적으로 정보를 추가하여 처리하는 메소드 가입하고 메인 페이지로 이동.
 	//유저 정보를 추가하는 자리를 추가할 경우 여기를 수정하여 수정하면됩니다.
-	@PostMapping("/socialLogin")
+	@PostMapping("/socialNewLogin")
 	public void socialLoginView(MglgUserDTO mglgUserDTO, HttpSession session,
 			HttpServletResponse response) throws IOException {
 		CustomUserDetails userInfo = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
