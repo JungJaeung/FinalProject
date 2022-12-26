@@ -31,7 +31,7 @@ public class MglgCommentServiceImpl implements MglgCommentService{
 		@Override
 		public Optional<MglgComment> getCommentList(MglgPost mglgPost) {
 			// TODO Auto-generated method stub
-			return mglgCommentRepository.findAllById(mglgPost);
+			return mglgCommentRepository.findAllByCommentId(mglgPost);
 		}
 		
 		@Override
