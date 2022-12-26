@@ -53,6 +53,12 @@ public class MglgCommentServiceImpl implements MglgCommentService{
 			
 		}
 
+		@Override
+		public Page<MglgComment> getPageCommentList(Pageable pageable) {
+			// TODO Auto-generated method stub
+			return mglgCommentRepository.findAll(pageable);
+		}
+
 //		@Override
 //		public void insertComment(MglgComment comment) {
 //			// TODO Auto-generated method stub

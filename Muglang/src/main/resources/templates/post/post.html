@@ -228,8 +228,8 @@
 					$("#insert_btn" + postId).click(function (e) {
 						console.log($("#insert_text" + postId).val())
 						$.ajax({
-							url: '/post/insertComment',
-							type: 'get',
+							url: '/comment/insertComment',
+							type: 'post',
 							data: {
 								userId: [[${loginUser.userId}]],
 								postId: postId,
@@ -252,8 +252,8 @@
 						let text_comment = "";
 
 						$.ajax({
-							url: '/post/deleteComment',
-							type: 'get',
+							url: '/comment/deleteComment',
+							type: 'post',
 							data: {
 								commentId: commentId,
 								postId: postId
@@ -282,8 +282,8 @@
 					$(".update_comment").click(function (e) {
 						commentContent = $("#update_text" + commentId).val();
 						$.ajax({
-							url: '/post/updateComment',
-							type: 'get',
+							url: '/comment/updateComment',
+							type: 'put',
 							data: {
 								commentId: commentId,
 								postId: postId,

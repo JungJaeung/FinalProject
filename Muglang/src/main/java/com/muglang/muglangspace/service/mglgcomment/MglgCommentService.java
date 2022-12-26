@@ -22,4 +22,5 @@ public interface MglgCommentService {
 
 	Page<MglgComment> getCommentList(MglgComment comment, Pageable pageable, int postId);
 
+	Page<MglgComment> getPageCommentList(Pageable pageable);
 }
