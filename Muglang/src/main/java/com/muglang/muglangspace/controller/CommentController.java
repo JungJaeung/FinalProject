@@ -1,7 +1,10 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -18,22 +21,23 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.dto.MglgCommentDTO;
-import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
+import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
 @RestController
 @RequestMapping("/comment")
 public class CommentController {
 	@Autowired
 	private MglgCommentService mglgCommentService;
+	@Autowired
+	private MglgUserService mglgUserService;
 	@Autowired
 	private AdminService adminService;
 	
@@ -81,33 +85,32 @@ public class CommentController {
 	
 	//댓글 리스트 불러오기 - 불러온 댓글들을 다시 화면단으로 전송
 	@GetMapping("/commentList")
-	public ModelAndView getCommentList(MglgComment comment, @PageableDefault(page = 0, size = 8) Pageable pageable,
+	public ResponseEntity<?> getCommentList(HttpSession session ,MglgComment comment, @PageableDefault(page = 0, size = 8) Pageable pageable,
 			@RequestParam("postId") int postId) {
-		ModelAndView mv = new ModelAndView();
-		Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable);
-		Page<MglgCommentDTO> pageCommentListDTO = pageCommentList.map(pageMglgComment->MglgCommentDTO.builder()
-																									 .userId(pageMglgComment.getMglgUser().getUserId())
-																									 .commentId(pageMglgComment.getCommentId())
-																									 .commentContent(pageMglgComment.getCommentContent())
-																									 .commentDate(pageMglgComment.getCommentDate().toString())
-																								 	 .build()
-																					 );
-		
-		System.out.println("댓글 조회 ㄱㄱ");
-		mv.setViewName("post/post.html");
-		mv.addObject("commentList", pageCommentListDTO);
-		
-		return mv;
+		//이 객체에는 댓글이 현재 가지고 있는 유저 정보와 포스팅의 정보도 같이 가지고 있다.
+		Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable, postId);
+		//댓글 목록 테스트용
+		for(MglgComment comment1 :  pageCommentList) {
+			System.out.println(comment1);
+		}
+		try {
+			System.out.println("댓글 조회 ㄱㄱ");
+			return ResponseEntity.ok().body(pageCommentList);
+		} catch(Exception e) {
+			return ResponseEntity.badRequest().body(pageCommentList);
+		}
+
 	}
 	
 	//코멘트 리스트 페이징 무한 스크롤
 	@PostMapping("/commentList")
 	//스크롤시 데이터 불러오는 로직
 	//재웅이형이 작성한 바로 위 로직이랑 거의 동일
-	public ResponseEntity<?> getCommentListScroll(Pageable pageable, @RequestParam("page_num") int page_num) {
+	public ResponseEntity<?> getCommentListScroll(Pageable pageable, @RequestParam("page_num") int page_num,
+			@RequestParam("postId") int postId) {
 		pageable = PageRequest.of(page_num, 8);
 		
-		Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable);
+		Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable, postId);
 		Page<MglgCommentDTO> pageCommentListDTO = pageCommentList.map(pageMglgComment->MglgCommentDTO.builder()
 																			.userId(pageMglgComment.getMglgUser().getUserId())
 																			.commentId(pageMglgComment.getCommentId())

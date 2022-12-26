@@ -26,7 +26,7 @@ public class MglgCommentServiceImpl implements MglgCommentService{
 		}
 
 		@Override
-		public Page<MglgComment> getCommentList(MglgComment comment, Pageable pageable, int postId) {
+		public Page<MglgComment> getPageCommentList(Pageable pageable, int postId) {
 			// TODO Auto-generated method stub
 			return mglgCommentRepository.getCommentList(pageable, postId);
 		}
@@ -51,12 +51,6 @@ public class MglgCommentServiceImpl implements MglgCommentService{
 		public void insertComment(int userId, int postId, String commentContent) {
 			mglgCommentRepository.insertComment(userId, postId, commentContent);
 			
-		}
-
-		@Override
-		public Page<MglgComment> getPageCommentList(Pageable pageable) {
-			// TODO Auto-generated method stub
-			return mglgCommentRepository.findAll(pageable);
 		}
 
 //		@Override

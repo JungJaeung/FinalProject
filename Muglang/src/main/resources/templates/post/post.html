@@ -8,6 +8,7 @@
 <head>
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
+			const loginUserId = /*[[${loginUser.userId}]]*/;
 			//추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
 			let uploadFiles = [];
 			//기존 첨부파일 배열
@@ -158,7 +159,7 @@
 				//전역변수인 게시글 id로 리스트 불러오는 로직
 				$.comment_list = function () {
 					$.ajax({
-						url: '/post/commentList',
+						url: '/comment/commentList',
 						type: 'get',
 						data: {
 							postId: postId,
@@ -171,13 +172,13 @@
 							text_comment += `<div id="comment" style="max-height: 30em;">`
 							//받아온 객체의 내용을(댓글) 숫자만큼 반복
 							for (let comment of obj.content) {
-								//console.log(comment);
+								console.log(comment);
 								text_comment += `<div class="comment_info" style="margin-bottom: 30px;  position:relative;">`
 
 								text_comment += `<div class="filter" style="margin-top: 15px; position: absolute; top:-12px; right:10px;">`
 								text_comment += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
 								text_comment += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
-								if ([[${loginUser.userId}]] == comment.mglgUser.userId) {
+								if (/*[[${loginUser.userId}]]*/loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
 									text_comment += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`
 									text_comment += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`
 								} else {
@@ -231,7 +232,7 @@
 							url: '/comment/insertComment',
 							type: 'post',
 							data: {
-								userId: [[${loginUser.userId}]],
+								userId: /*[[${loginUser.userId}]]*/loginUserId,
 								postId: postId,
 								commentContent: $("#insert_text" + postId).val()
 							},

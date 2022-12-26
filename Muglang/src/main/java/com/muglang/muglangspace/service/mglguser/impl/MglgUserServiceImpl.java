@@ -58,6 +58,7 @@ public class MglgUserServiceImpl implements MglgUserService{
 			}
 	}
 	
+	
 	@Override
 	public MglgUser loginUser(MglgUser mglgUser) {
 		return mglgUserRepository.findById(mglgUser.getUserId());
@@ -79,6 +80,13 @@ public class MglgUserServiceImpl implements MglgUserService{
 	public List<MglgUser> getNoUserList() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	//댓글의 특정 유저를 검색하는 쿼리
+	@Override
+	public MglgUser findUser(int userId) {
+		// TODO Auto-generated method stub
+		return mglgUserRepository.findById(userId);
 	}
 
 }

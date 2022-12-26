@@ -245,41 +245,41 @@ public class PostController {
 
 	
 	
-	// 코멘트 컨트롤러가 고장나서 잠시 실례하겠습니다
-
-		// 댓글 리스트 불러오기
-		@GetMapping("commentList")
-		public ResponseEntity<?> commentList(MglgComment comment, @PageableDefault(page = 0, size = 10) Pageable pageable,
-				@RequestParam("postId") int postId) {
-			Page<MglgComment> commentList = mglgCommentService.getCommentList(comment, pageable, postId);
-
-			return ResponseEntity.ok().body(commentList);
-		}
-
-		// 댓글 작성 쿼리 실행
-		@GetMapping("insertComment")
-		public void insertComment(@RequestParam("userId") int userId, @RequestParam("postId") int postId, @RequestParam("commentContent") String commentContent)
-				throws IOException {
-
-			mglgCommentService.insertComment(userId, postId, commentContent);
-		}
-
-		// 댓글 삭제
-		@GetMapping("deleteComment")
-		public void deleteComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
-				HttpServletResponse response, MglgComment comment)
-				throws IOException {
-			mglgCommentService.deleteComment(commentId, postId);
-			adminService.deleteReport(commentId, postId);
-
-			response.sendRedirect("/admin/commentReport");
-		}
-
-		// 댓글 업데이트
-		@GetMapping("updateComment")
-		public void updateComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
-				@RequestParam("commentContent") String commentContent) throws IOException {
-			mglgCommentService.updateComment(commentId, postId, commentContent);
-		}
+//	// 코멘트 컨트롤러가 고장나서 잠시 실례하겠습니다
+//
+//		// 댓글 리스트 불러오기
+//		@GetMapping("commentList")
+//		public ResponseEntity<?> commentList(MglgComment comment, @PageableDefault(page = 0, size = 10) Pageable pageable,
+//				@RequestParam("postId") int postId) {
+//			Page<MglgComment> commentList = mglgCommentService.getCommentList(comment, pageable, postId);
+//
+//			return ResponseEntity.ok().body(commentList);
+//		}
+//
+//		// 댓글 작성 쿼리 실행
+//		@GetMapping("insertComment")
+//		public void insertComment(@RequestParam("userId") int userId, @RequestParam("postId") int postId, @RequestParam("commentContent") String commentContent)
+//				throws IOException {
+//
+//			mglgCommentService.insertComment(userId, postId, commentContent);
+//		}
+//
+//		// 댓글 삭제
+//		@GetMapping("deleteComment")
+//		public void deleteComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
+//				HttpServletResponse response, MglgComment comment)
+//				throws IOException {
+//			mglgCommentService.deleteComment(commentId, postId);
+//			adminService.deleteReport(commentId, postId);
+//
+//			response.sendRedirect("/admin/commentReport");
+//		}
+//
+//		// 댓글 업데이트
+//		@GetMapping("updateComment")
+//		public void updateComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
+//				@RequestParam("commentContent") String commentContent) throws IOException {
+//			mglgCommentService.updateComment(commentId, postId, commentContent);
+//		}
 
 }
