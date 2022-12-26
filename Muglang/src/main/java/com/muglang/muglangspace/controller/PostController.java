@@ -27,8 +27,11 @@ import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
+import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.service.mglgadmin.AdminService;
+import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
@@ -41,6 +44,11 @@ public class PostController {
 	@Autowired
 	private MglgUserService mglgUserService;
 
+	@Autowired
+	private MglgCommentService mglgCommentService;
+
+	@Autowired
+	private AdminService adminService;
 	
 	//글쓰기 버튼으로 적용되는 글 새로 작성
 	@PostMapping("/insertPost")
@@ -236,5 +244,42 @@ public class PostController {
 	}
 
 	
+	
+	// 코멘트 컨트롤러가 고장나서 잠시 실례하겠습니다
+
+		// 댓글 리스트 불러오기
+		@GetMapping("commentList")
+		public ResponseEntity<?> commentList(MglgComment comment, @PageableDefault(page = 0, size = 10) Pageable pageable,
+				@RequestParam("postId") int postId) {
+			Page<MglgComment> commentList = mglgCommentService.getCommentList(comment, pageable, postId);
+
+			return ResponseEntity.ok().body(commentList);
+		}
+
+		// 댓글 작성 쿼리 실행
+		@GetMapping("insertComment")
+		public void insertComment(@RequestParam("userId") int userId, @RequestParam("postId") int postId, @RequestParam("commentContent") String commentContent)
+				throws IOException {
+
+			mglgCommentService.insertComment(userId, postId, commentContent);
+		}
+
+		// 댓글 삭제
+		@GetMapping("deleteComment")
+		public void deleteComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
+				HttpServletResponse response, MglgComment comment)
+				throws IOException {
+			mglgCommentService.deleteComment(commentId, postId);
+			adminService.deleteReport(commentId, postId);
+
+			response.sendRedirect("/admin/commentReport");
+		}
+
+		// 댓글 업데이트
+		@GetMapping("updateComment")
+		public void updateComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
+				@RequestParam("commentContent") String commentContent) throws IOException {
+			mglgCommentService.updateComment(commentId, postId, commentContent);
+		}
 
 }
