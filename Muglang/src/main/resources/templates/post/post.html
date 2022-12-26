@@ -401,11 +401,11 @@
 										else if(post_date / (1000*60*60*24) > 1){
 											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24))}일 전</a>`
 										}
-										else if(post_date / (1000*60*60)%24 > 1){
-											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60)/24)}시간 전</a>`
+										else if(post_date / (1000*60*60) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60))}시간 전</a>`
 										}
-										else if(post_date / (1000*60)%60 > 1){
-											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60)/60)}분전</a>`
+										else{
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60))}분전</a>`
 										}
 										text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
 										text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
@@ -417,7 +417,7 @@
 										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
 										text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;"></div>`
 										text_scroll += `<div class="activity">`
-										text_scroll += `<div th:id="'postContent' + ${post.postId}" th:text="${post.postContent}"></div>`
+										text_scroll += `<div th:id="'postContent' + ${post.postId}">${post.postContent}</div>`
 										//여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
 										text_scroll += `<br>`
 										text_scroll += `<a href="#" style="color: blue;">&emsp;#강남맛집</a>`
