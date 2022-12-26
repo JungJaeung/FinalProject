@@ -20,7 +20,7 @@ public interface MglgCommentRepository extends JpaRepository<MglgComment, MglgCo
 	
 	Optional<MglgComment> findById(MglgCommentId commentIds);
 	
-	Optional<MglgComment> findAllById(MglgPost mglgPost);
+	Optional<MglgComment> findAllByCommentId(MglgPost mglgPost);
 	
 	@Modifying
 	@Query(value="DELETE FROM T_MGLG_COMMENT WHERE COMMENT_ID = :commentId AND POST_ID = :postId",nativeQuery=true)
@@ -28,7 +28,7 @@ public interface MglgCommentRepository extends JpaRepository<MglgComment, MglgCo
 	
 
 	@Modifying
-	@Query(value="UPDATE T_MGLG_COMMENT SET COMMENT_CONTENT = :#{mglgComment.commentContent}"
-			+ " WHERE COMMENT_ID = :#{mglgComment.commentId}", nativeQuery=true)
+	@Query(value="UPDATE T_MGLG_COMMENT SET COMMENT_CONTENT = :#{#mglgComment.commentContent}"
+			+ " WHERE COMMENT_ID = :#{#mglgComment.commentId}", nativeQuery=true)
 	void updateComment(@Param("mglgComment") MglgComment mglgComment);
 }
