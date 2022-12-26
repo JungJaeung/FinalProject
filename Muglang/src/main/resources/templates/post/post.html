@@ -417,7 +417,7 @@
 										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
 										text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;"></div>`
 										text_scroll += `<div class="activity">`
-										text_scroll += `<div th:id="'postContent' + ${post.postId}" th:text="${post.postContent}"></div>`
+										text_scroll += `<div th:id="'postContent' + ${post.postId}">${post.postContent}</div>`
 										//여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
 										text_scroll += `<br>`
 										text_scroll += `<a href="#" style="color: blue;">&emsp;#강남맛집</a>`
