@@ -10,6 +10,8 @@ import com.muglang.muglangspace.entity.MglgUser;
 
 public interface MglgUserService {
 	
+	MglgUser findUser(int userId);
+	
 	Page<MglgUser> getUserList(MglgUser user,Pageable pageable);
 
 	MglgUser loginUser(MglgUser user); 
