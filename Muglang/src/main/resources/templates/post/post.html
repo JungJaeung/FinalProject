@@ -19,6 +19,9 @@
 			let postId;
 			let commentId;
 			let text_comment;
+			
+			//현재시간
+			let now = new Date();
 
 			//댓글 수정 texteara 크기 자동 증가
 			function resize(obj) {
@@ -157,6 +160,7 @@
 
 				//전역변수인 게시글 id로 리스트 불러오는 로직
 				$.comment_list = function () {
+					
 					$.ajax({
 						url: '/post/commentList',
 						type: 'get',
@@ -202,10 +206,13 @@
 							$.comment_insert();
 							$.comment_update();
 							$.comment_delete();
+							
 						},
 						error: function (e) {
 							console.log("에러에러");
 						}
+						
+						
 					});
 				}
 
@@ -375,10 +382,31 @@
 									//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
 									page_num++;
 									for (let post of obj.content) {
+										let post_date = new Date(post.postDate);
+										//날짜 데이터 밀리초
+										post_date = now - post_date;
+										
+										
+										console.log(post_date)
+										
 										text_scroll += `<div class="card recent-sales">`
 										text_scroll += `<div class="card-body">`
 										text_scroll += `<div class="filter" style="margin-top: 15px;">`
-										text_scroll += `<a style="margin-right: 20px;">30분전</a>`
+										if(post_date / (1000*60*60*24*30*12) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24*30*12))}년 전</a>`
+										}
+										else if(post_date / (1000*60*60*24*30) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24*30))}달 전</a>`
+										}
+										else if(post_date / (1000*60*60*24) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24))}일 전</a>`
+										}
+										else if(post_date / (1000*60*60)%24 > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60)/24)}시간 전</a>`
+										}
+										else if(post_date / (1000*60)%60 > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60)/60)}분전</a>`
+										}
 										text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
 										text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
 										text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
@@ -646,11 +674,19 @@
 					</div>
 					<div class="row">
 						<div th:each="post : ${postList}" class="col-12 post">
+							<input type="hidden" th:value="${post.betweenDate}">
 							<div class="card recent-sales">
 								<div class="card-body">
 									<!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
 									<div class="filter" style="margin-top: 15px;">
-										<a style="margin-right: 20px;">30분전</a>
+										<a style="margin-right: 20px;">
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 / 24 / 30 / 12).intValue()} + '년 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 / 24 / 30).intValue()} + '달 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 < 1 && post.betweenDate / 60 / 60 / 24 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 / 24).intValue()} + '일 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 < 1 && post.betweenDate / 60 / 60 / 24 < 1 && post.betweenDate / 60 / 60 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 ).intValue()} + '시간 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 < 1
+														   && post.betweenDate / 60 / 60 / 24 < 1 && post.betweenDate / 60 / 60 < 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60).intValue()} + '분 전'"/>
+									    </a>
 										<a class="icon" href="#" data-bs-toggle="dropdown"><i
 												class="bi bi-three-dots"></i></a>
 										<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
