@@ -1,9 +1,9 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -13,11 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +27,6 @@ import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
-import com.muglang.muglangspace.oauth.Oauth2UserService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
@@ -298,7 +293,7 @@ public class UserController {
 																					.postId(pageMglgPost.getPostId())
 																					.userId(pageMglgPost.getMglgUser().getUserId())
 																					.postContent(pageMglgPost.getPostContent())
-																					.postDate(pageMglgPost.getPostDate().toString())
+																					.postDate((pageMglgPost.getPostDate()).toString())
 																					.restNm(pageMglgPost.getRestNm())
 																					.restRating(pageMglgPost.getRestRating())
 																					.postRating(pageMglgPost.getPostRating())
@@ -307,9 +302,18 @@ public class UserController {
 																					.hashTag3(pageMglgPost.getHashTag3())
 																					.hashTag4(pageMglgPost.getHashTag4())
 																					.hashTag5(pageMglgPost.getHashTag5())
+																					//.betweenDate(Duration.between(LocalDateTime.now(), pageMglgPost.getPostDate()).getSeconds())
 																					.build()
 														);
 			mv.addObject("postList", postListDTO);
+			
+			System.out.println(postListDTO.getContent().size());
+			
+			for(int i = 0; i < postListDTO.getContent().size(); i++) {
+				System.out.println("111111111111111111111111111111111");
+				System.out.println(postListDTO.getContent().get(i).getBetweenDate());
+			}
+			
 			mv.setViewName("post/post.html");
 			
 			return mv;

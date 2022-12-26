@@ -1,6 +1,7 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -171,12 +172,22 @@ public class PostController {
 																			.hashTag3(pageMglgPost.getHashTag3())
 																			.hashTag4(pageMglgPost.getHashTag4())
 																			.hashTag5(pageMglgPost.getHashTag5())
+																			.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
 																			.build()
 															);
 		//화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostListDTO);
+
+		
+		System.out.println(pagePostListDTO.getContent().size());
+		
+		for(int i = 0; i < pagePostListDTO.getContent().size(); i++) {
+			System.out.println("111111111111111111111111111111111");
+			System.out.println(pagePostListDTO.getContent().get(i).getBetweenDate());
+		}
+		
 		mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
 		return mv;
 	}
