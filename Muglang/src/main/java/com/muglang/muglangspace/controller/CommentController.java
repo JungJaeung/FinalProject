@@ -34,7 +34,7 @@ public class CommentController {
 	
 	//커멘트 조회
 	@GetMapping("/comment")
-	public ResponseEntity<?> getComment(@RequestParam("commentId") int commentId,@RequestParam("postId") int postId) {
+	public ResponseEntity<?> getComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId) {
 		MglgResponseDTO<MglgCommentDTO> response = new MglgResponseDTO<>();
 		try {
 			MglgPost post = MglgPost.builder()
@@ -71,7 +71,9 @@ public class CommentController {
 		 adminService.deleteReport(commentId,postId);
 		 System.out.println("--------딜리트 끝--------");
 
-		 response.sendRedirect("/admin/commentReport");
+		 //response.sendRedirect("/admin/commentReport");
+		 response.sendRedirect("/post/mainPost");
+		 
 	}
 	
 	//댓글 작성 쿼리 실행
