@@ -30,5 +30,7 @@ public class MglgPostDTO {
 	private String hashTag4;
 	private String hashTag5;
 	private String postDate;
-	private long betweenDate;
+	private String searchCondition;
+	private String searchKeyword;
+
 }

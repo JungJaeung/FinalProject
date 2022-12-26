@@ -6,8 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.muglang.muglangspace.dto.MglgPostDTO;
-
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
@@ -63,6 +61,40 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public MglgPost getPost(MglgPost post) {
 		
 		return mglgPostRepository.findByPostId(post.getPostId());
+	}
+	
+	//검색
+	@Override
+	public Page<MglgPost> searchPostList(MglgPost mglgPost, Pageable pageable) {
+		if(mglgPost.getSearchKeyword() != null && !mglgPost.getSearchKeyword().equals("")) {
+			if(mglgPost.getSearchCondition().equals("ALL")) {
+				return mglgPostRepository.findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5KeywordContaining(
+						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(), 
+						pageable);
+			} else if (mglgPost.getSearchCondition().equals("POSTCONTENT")) {
+				return mglgPostRepository.findByPostContentContaining(mglgPost.getSearchKeyword(), pageable);
+			} else if (mglgPost.getSearchCondition().equals("RESTNM")) {
+				return mglgPostRepository.findByRestNmContaining(mglgPost.getSearchKeyword(), pageable);
+			} else if (mglgPost.getSearchCondition().equals("HASHTAG")) {
+				return mglgPostRepository.findByHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5Containing(
+						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(), 
+						pageable);
+			} else {
+				return mglgPostRepository.findAll(pageable);
+			}
+		} else {
+			return mglgPostRepository.findAll(pageable);
+		}
 	}
 
 }
