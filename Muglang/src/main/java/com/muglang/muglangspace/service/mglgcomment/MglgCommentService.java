@@ -1,22 +1,25 @@
 package com.muglang.muglangspace.service.mglgcomment;
 
-
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.muglang.muglangspace.entity.MglgComment;
-import com.muglang.muglangspace.entity.MglgPost;
 
 public interface MglgCommentService {
 	MglgComment getComment(MglgComment comment);
-	
-	Optional<MglgComment> getCommentList(MglgPost mglgPost);
-	
+
+//	Optional<MglgComment> getCommentList(MglgPost mglgPost);
+
 	void deleteComment(int commentId, int postId);
-	
-	void insertComment(MglgComment comment);
-	
-	void updateComment(MglgComment comment);
+
+//	void insertComment(MglgComment comment);
+//	
+//	void updateComment(MglgComment comment);
+
+	void updateComment(int commentId, int postId, String commentContent);
+
+	void insertComment(int userId, int postId, String commentContent);
+
+	Page<MglgComment> getCommentList(MglgComment comment, Pageable pageable, int postId);
 
 }
