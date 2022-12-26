@@ -21,6 +21,5 @@ public interface MglgUserService {
 	Page<CamelHashMap> getAdminUserList(MglgUser user,Pageable pageable);
 
 	List<MglgUser> getNoUserList();
-	
-
+		
 }

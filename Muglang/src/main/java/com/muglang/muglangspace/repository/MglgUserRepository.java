@@ -100,4 +100,14 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer>{
 				+ " WHERE USER_NAME LIKE CONCAT('%',:searchKeyword1,'%') OR EMAIL LIKE CONCAT('%',:searchKeyword2,'%')", nativeQuery=true)
 		Page<CamelHashMap> searchAll(@Param("searchKeyword1") String searchKeyword1,@Param("searchKeyword2") String searchKeyword2, Pageable pageable);
 //--------------------어드민 관련 끝///	
+	 	
+	 	//팔로워 리스트
+		@Query(value="SELECT A.* FROM T_MGLG_USER A WHERE USER_ID IN (SELECT FOLLOWER_ID FROM t_mglg_user_relation WHERE USER_ID= :userId)", nativeQuery=true)
+		Page<MglgUser> followList(@Param("userId") int userId, Pageable pageable);
+
+		//질문하기---쿼리문 왜 틀림
+		@Query(value="SELECT A.* FROM T_MGLG_USER A WHERE USER_ID IN (SELECT FOLLOWER_ID FROM t_mglg_user_relation WHERE USER_ID= :userId)"
+				+ "	   AND USER_NAME = :searchKeyword", nativeQuery=true)
+	Page<MglgUser> searchFollowList( @Param("searchKeyword") String searchKeyword, @Param("userId") int userId, Pageable pageable);
+	 	
 }

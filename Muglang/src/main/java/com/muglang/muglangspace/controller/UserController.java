@@ -3,7 +3,6 @@ package com.muglang.muglangspace.controller;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -13,12 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,8 +27,8 @@ import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
-import com.muglang.muglangspace.oauth.Oauth2UserService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
+import com.muglang.muglangspace.service.mglgsocial.UserRelationService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
 @RestController
@@ -40,7 +36,9 @@ import com.muglang.muglangspace.service.mglguser.MglgUserService;
 public class UserController {
 	@Autowired
 	private MglgUserService mglgUserService;
-
+	@Autowired
+	private UserRelationService userRelationService;
+	
 	//계정 관련 컨트롤
 	@Autowired
 	private MglgPostService mglgPostService;
@@ -61,18 +59,47 @@ public class UserController {
 	}
 
 	// 팔로잉으로 이동
-	@GetMapping("/following")
-	public ModelAndView following() {
+	// 유저 목록 불러오기 + 페이징
+	@GetMapping("/follower")
+	public ModelAndView followList(MglgUserDTO userDTO,@PageableDefault(page = 0, size = 5) Pageable pageable,HttpSession session) {
+		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
+		
+		MglgUser user = MglgUser.builder()
+				   .searchKeyword(userDTO.getSearchKeyword())
+				   .userId(temp.getUserId())
+				   .build();
+		
 		ModelAndView mv = new ModelAndView();
-		mv.setViewName("user/following.html");
-		return mv;
+		
+		Page<MglgUser> pagefollowList = userRelationService.followList(user, pageable);
+		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> 
+													MglgUserDTO.builder()
+																.userId(pageUser.getUserId())
+																.userName(pageUser.getUserName())
+																.email(pageUser.getEmail())
+																.userNick(pageUser.getUserNick())
+																.build()
+														);
+
+					
+					mv.setViewName("/user/follower.html");
+					
+					mv.addObject("followList", pagefollowDTOList);
+					
+					
+					if(userDTO.getSearchKeyword() != null && !userDTO.getSearchKeyword().equals("")) {
+						mv.addObject("searchKeyword", userDTO.getSearchKeyword());
+					}
+					
+					return mv;
 	}
 
 	// 팔로워로 이동
-	@GetMapping("/follower")
-	public ModelAndView follower() {
+	@GetMapping("/following")
+	public ModelAndView follower(@PathVariable("userId") int userId) {
 		ModelAndView mv = new ModelAndView();
-		mv.setViewName("user/follower.html");
+		System.out.println(userId+"유저 아이디 알려줌");
+		mv.setViewName("/user/follower.html");
 		return mv;
 	}
 

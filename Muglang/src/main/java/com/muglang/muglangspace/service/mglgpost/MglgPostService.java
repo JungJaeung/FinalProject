@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 
 import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.entity.MglgUserRelation;
 
 public interface MglgPostService {
 	public void insertPost(MglgPost mglgpost);
@@ -23,6 +25,9 @@ public interface MglgPostService {
 	public int cntPost(int postId);
 	
 	public MglgPost getPost(MglgPost post);
+	
+	int postCnt(MglgUserRelation relUser);
+
 
 	
 }

@@ -23,7 +23,7 @@ public class MglgPostDTO {
 	private int postRating;
 	private String postContent;
 	private String restNm;
-	private int restRating; //
+	private int restRating; 
 	private String hashTag1;
 	private String hashTag2;
 	private String hashTag3;

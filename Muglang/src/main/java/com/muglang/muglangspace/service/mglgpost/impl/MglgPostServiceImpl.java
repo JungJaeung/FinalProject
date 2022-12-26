@@ -6,9 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.muglang.muglangspace.dto.MglgPostDTO;
-
 import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.entity.MglgUserRelation;
 import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
@@ -64,5 +64,12 @@ public class MglgPostServiceImpl implements MglgPostService {
 		
 		return mglgPostRepository.findByPostId(post.getPostId());
 	}
+	//포스트 갯수 조회
+	@Override
+	public int postCnt(MglgUserRelation relUser) {
+		MglgUser user = relUser.getMglgUser();
+		int userId = user.getUserId();
+		return mglgPostRepository.cntPost(userId);
 
+	}
 }

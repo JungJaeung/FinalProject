@@ -16,6 +16,8 @@
          let changedFiles = [];
 
          $(function () {
+	
+			 
 
             let list = $('.post').get();
 
@@ -528,7 +530,10 @@
                         <div class="card-body">
                            <!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
                            <div class="filter" style="margin-top: 15px;">
-                              <a style="margin-right: 20px;">30분전</a>
+							  <!--인풋 히든을 이용해 지난 시간 구하기-->
+							  <input type="hidden" th:value="post.postDate" th:id="'timeInput_'+post.postId">
+                              <a style="margin-right: 20px;" th:id="'time_'+post.postId">30분전</a>
+                              
                               <a class="icon" href="#" data-bs-toggle="dropdown"><i
                                     class="bi bi-three-dots"></i></a>
                               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">

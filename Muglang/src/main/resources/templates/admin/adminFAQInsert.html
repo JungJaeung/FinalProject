@@ -15,8 +15,8 @@
 						url: '/board/insertBoard',
 						type: 'post',
 						data: {
-							boardContent: $("#boardContent").val(),
-							boardTitle: $("#boardTitle").val()
+							boardContent: "A. "+$("#boardContent").val(),
+							boardTitle: "Q. "+$("#boardTitle").val()
 						},
 						success: function (obj) {
 							console.log("서브밋 성공");
@@ -61,15 +61,15 @@
 												<h2 class="accordion-header" id="flush-heading">
 													<button class="accordion-button collapsed" type="button"
 														data-bs-toggle="collapse" data-bs-target="#flush-collapse"
-														aria-expanded="false" aria-controls="flush-collapse"><input
-															id="boardTitle" style="width: 300px;" name="boardTitle">
+														aria-expanded="false" aria-controls="flush-collapse">
+														Q.<input id="boardTitle" style="width: 300px;" name="boardTitle">
 														<input id="boardId" type="hidden" name="boardId">
 													</button>
 												</h2>
 												<div id="flush-collapse" class="accordion-collapse collapse"
 													aria-labelledby="flush-heading">
 													<div class="accordion-body">
-														<input id="boardContent" style="width: 300px;"
+														A.<input id="boardContent" style="width: 300px;"
 															name="boardContent">
 													</div>
 												</div>

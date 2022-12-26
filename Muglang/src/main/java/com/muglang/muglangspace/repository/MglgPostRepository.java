@@ -46,4 +46,8 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 //			String searchKeyword7,
 //			Pageable pageable
 //			);
+	
+ 	//포스트 갯수 세기
+ 	@Query(value="SELECT COUNT(*) AS postCount FROM T_MGLG_POST WHERE USER_ID = :userId", nativeQuery=true)
+	int cntPost(@Param("userId") int userId);
 }
