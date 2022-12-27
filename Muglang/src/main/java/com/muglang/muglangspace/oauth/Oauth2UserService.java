@@ -78,6 +78,8 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		//사용자가 이미 소셜 로그인한 기록이 있는지 검사
 		MglgUser mglgUser;
 		
+		System.out.println("userSnsId====================================" + userSnsId);
+		
 		//userSnsId가 존재하면 true 존재하지 않으면 false로 반환, user 정보를 찾는 것은 userSnsId로 sns로그인의 기록이 있는지 확인한다.
 		if(mglgUserRepository.findByUserSnsId(userSnsId) != null) {
 			//userId가 존재할 시 정보를 mglgUser 엔티티에 담아줌

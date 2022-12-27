@@ -106,4 +106,13 @@ public class MglgUserServiceImpl implements MglgUserService{
 		}
 	}
 
+	@Override
+	public MglgUser updateUser(MglgUser user) {
+		mglgUserRepository.save(user);
+		mglgUserRepository.flush();
+		
+		
+		return user;
+	}
+
 }

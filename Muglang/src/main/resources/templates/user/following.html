@@ -24,7 +24,7 @@
 			<nav>
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
-					<li class="breadcrumb-item active">Follower</li>
+					<li class="breadcrumb-item active">Following</li>
 				</ol>
 			</nav>
 		</div><!-- End Page Title -->
@@ -121,7 +121,7 @@
 										style="width: 50px;"></div>
 								<!--친구 닉네임, 아이디-->
 								<div style="width: 60%; margin-top: 13px; float: left;">
-									<div><b th:text="${followingList.userName}"></b></div>
+									<div><a th:href="@{#}" style="font-weight: bold; color: black;" th:text="${followingList.userName}"></a></div>
 									<div style="color: #aaaaaa; font-size: x-small;" th:text="${followingList.email}">
 									</div>
 								</div>

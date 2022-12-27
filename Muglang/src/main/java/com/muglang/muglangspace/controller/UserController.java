@@ -14,10 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,8 +47,30 @@ public class UserController {
 	private MglgPostService mglgPostService;
 
 	@GetMapping("/profile")
-	public ModelAndView profileView() {
+	public ModelAndView profileView(@AuthenticationPrincipal CustomUserDetails customUser) {
+		System.out.println(customUser.getMglgUser().getUserSnsId().substring(0,1));
+		
+
+		
+		
+		
 		ModelAndView mv = new ModelAndView();
+		MglgUserDTO user = MglgUserDTO.builder()
+								.userNick(customUser.getMglgUser().getUserNick())
+								.userName(customUser.getMglgUser().getUserName())
+								.email(customUser.getMglgUser().getEmail())
+								.firstName(customUser.getMglgUser().getFirstName())
+								.lastName(customUser.getMglgUser().getLastName())
+								.address(customUser.getMglgUser().getAddress())
+								.phone(customUser.getMglgUser().getPhone())
+								.userId(customUser.getMglgUser().getUserId())
+								.bio(customUser.getMglgUser().getBio())
+								.regDate(customUser.getMglgUser().getRegDate().toString())
+								.userSnsId(customUser.getMglgUser().getUserSnsId())
+								.build();
+		System.out.println("profile use" + user);
+		
+		mv.addObject("user", user);
 		mv.setViewName("profile.html");
 		return mv;
 	}
@@ -401,5 +423,42 @@ public class UserController {
 	public void logout() {
 		
 	}
+	//유저 정보 업데이트 폼
+	@PostMapping("/updateUser")
+	public void updateUser(MglgUserDTO mglgUserDTO, HttpSession session,
+			HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails customUser) throws IOException {
+		System.out.println(mglgUserDTO);
+		MglgUser user = MglgUser.builder()
+						   .userNick(mglgUserDTO.getUserNick())
+						   .userName(customUser.getMglgUser().getUserName())
+						   .bio(mglgUserDTO.getBio())
+						   .address(mglgUserDTO.getAddress())
+						   .phone(mglgUserDTO.getPhone())
+						   .email(customUser.getMglgUser().getEmail())
+						   .firstName(customUser.getMglgUser().getFirstName())
+						   .lastName(customUser.getMglgUser().getLastName())
+						   .userId(customUser.getMglgUser().getUserId())
+						   .userSnsId(customUser.getMglgUser().getUserSnsId())
+						   .regDate(customUser.getMglgUser().getRegDate())
+						   .userRole(customUser.getMglgUser().getUserRole())
+						   .userBanYn(customUser.getMglgUser().getUserBanYn())				
+						   .build();
+
+		System.out.println(user);
+		MglgUser updateUser = mglgUserService.updateUser(user);
+
+		CustomUserDetails customUserDetails = mglgUserService.loadByUserId(updateUser.getUserId());
+		
+		Authentication authetication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+		
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		
+		securityContext.setAuthentication(authetication);
+		session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+		
+		response.sendRedirect("/user/profile");
+
+	}
+
 }//페이지 끝
 

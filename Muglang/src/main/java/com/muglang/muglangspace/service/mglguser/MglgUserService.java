@@ -26,4 +26,6 @@ public interface MglgUserService {
 	List<MglgUser> getNoUserList();
 	
 	CustomUserDetails loadByUserId(int userId);
+	
+	MglgUser updateUser(MglgUser user);
 }
