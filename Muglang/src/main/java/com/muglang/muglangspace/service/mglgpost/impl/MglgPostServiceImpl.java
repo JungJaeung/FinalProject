@@ -68,7 +68,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public Page<MglgPost> searchPostList(MglgPost mglgPost, Pageable pageable) {
 		if(mglgPost.getSearchKeyword() != null && !mglgPost.getSearchKeyword().equals("")) {
 			if(mglgPost.getSearchCondition().equals("ALL")) {
-				return mglgPostRepository.findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5SearchKeywordContainingOrderByPostDateDesc(
+				return mglgPostRepository.findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5OrSearchKeywordContainingOrderByPostDateDesc(
 						mglgPost.getSearchKeyword(), 
 						mglgPost.getSearchKeyword(), 
 						mglgPost.getSearchKeyword(), 
