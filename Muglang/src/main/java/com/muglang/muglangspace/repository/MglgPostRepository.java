@@ -36,6 +36,10 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			Pageable pageable
 			);
 	
+ 	//포스트 갯수 세기
+ 	@Query(value="SELECT COUNT(*) AS postCount FROM T_MGLG_POST WHERE USER_ID = :userId", nativeQuery=true)
+	int cntPost(@Param("userId") int userId);
+
 	//모두 검색
 
 	Page<MglgPost> findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5OrSearchKeywordContainingOrderByPostDateDesc(

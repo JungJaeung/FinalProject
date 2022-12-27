@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
- xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
- >
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <!-- head 영역 시작 -->
 <!-- layout으로 잡히는 모든 html의 head 영역을 config.html로 대체" -->
@@ -52,14 +50,40 @@
 
 	<!-- Template Main JS File -->
 	<!--<script th:src="@{/assets/js/main.js}"></script>-->
-		<script>
-			/* Sidebar toggle */
-			$(function () {
-				$('.toggle-sidebar-btn').on('click', function () {
-					$("body").toggleClass('toggle-sidebar');
-				})
+	<script>
+		/* Sidebar toggle */
+		$(function () {
+			//사이드바 불러올때 게시글. 다 가져옴
+			$.ajax({
+				url: '/social/cntFollow',
+				type: 'get',
+				data: {
+					userId_side: 1001,
+				},
+				success: function (obj) {
+					
+				//	$("#cntPost").text(obj.item.postCount);
+					$("#cntFollowing").text(obj.item.followingCount);
+					$("#cntFollower").text(obj.item.followCount);
+
+				},
+				error: function (e) {
+					console.log(e);
+				}
+			});
+
+
+			$('.toggle-sidebar-btn').on('click', function () {
+				$("body").toggleClass('toggle-sidebar');
+
+
+
+
+
+
 			})
-		</script>
+		})
+	</script>
 
 	<!-- 현재 페이지 내에서 개별적으로 사용할 js링크 -->
 	<th:block layout:fragment="script"></th:block>

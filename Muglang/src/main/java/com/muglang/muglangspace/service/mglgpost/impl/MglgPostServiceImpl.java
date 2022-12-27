@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.entity.MglgUserRelation;
 import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
@@ -62,6 +64,14 @@ public class MglgPostServiceImpl implements MglgPostService {
 		
 		return mglgPostRepository.findByPostId(post.getPostId());
 	}
+
+	//포스트 갯수 조회
+	@Override
+	public int postCnt(MglgUserRelation relUser) {
+		MglgUser user = relUser.getMglgUser();
+		int userId = user.getUserId();
+		return mglgPostRepository.cntPost(userId);
+  }
 	
 	//검색 - 쿼리 이름 다 안적어서 오류남. keyword가 아니고 searchKeyword임.그리고 매개변수랑 이름 적은 거랑 일치하게 줘야함.
 	@Override
@@ -96,6 +106,6 @@ public class MglgPostServiceImpl implements MglgPostService {
 		} else {
 			return mglgPostRepository.findAll(pageable);
 		}
-	}
 
+	}
 }
