@@ -63,12 +63,12 @@ public class MglgPostServiceImpl implements MglgPostService {
 		return mglgPostRepository.findByPostId(post.getPostId());
 	}
 	
-	//검색
+	//검색 - 쿼리 이름 다 안적어서 오류남. keyword가 아니고 searchKeyword임.그리고 매개변수랑 이름 적은 거랑 일치하게 줘야함.
 	@Override
 	public Page<MglgPost> searchPostList(MglgPost mglgPost, Pageable pageable) {
 		if(mglgPost.getSearchKeyword() != null && !mglgPost.getSearchKeyword().equals("")) {
 			if(mglgPost.getSearchCondition().equals("ALL")) {
-				return mglgPostRepository.findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5KeywordContainingOrderByPostDateDesc(
+				return mglgPostRepository.findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5SearchKeywordContainingOrderByPostDateDesc(
 						mglgPost.getSearchKeyword(), 
 						mglgPost.getSearchKeyword(), 
 						mglgPost.getSearchKeyword(), 
@@ -76,6 +76,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 						mglgPost.getSearchKeyword(), 
 						mglgPost.getSearchKeyword(), 
 						mglgPost.getSearchKeyword(), 
+						mglgPost.getSearchKeyword(),
 						pageable);
 			} else if (mglgPost.getSearchCondition().equals("POSTCONTENT")) {
 				return mglgPostRepository.findByPostContentContainingOrderByPostDateDesc(mglgPost.getSearchKeyword(), pageable);

@@ -456,8 +456,97 @@
 							});
 						}
 					}
-				})
+				});
+/*
+				//댓글 무한 스크롤 - 부분
+				let page_num = 1;
+				let text_scroll = "";
+				$(window).scroll(function () {
+					if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+						if (page_num < [[${postList.totalPages}]]) {
+							$.ajax({
+								url: '/post/mainPost',
+								type: 'post',
+								data: {page_num: page_num},
+								success: function (obj) {
+									//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
+									page_num++;
+									for (let post of obj.content) {
+										let post_date = new Date(post.postDate);
+										//날짜 데이터 밀리초
+										post_date = now - post_date;
+										
+										
+										console.log(post_date)
+										
+										text_scroll += `<div class="card recent-sales">`
+										text_scroll += `<div class="card-body">`
+										text_scroll += `<div class="filter" style="margin-top: 15px;">`
+										if(post_date / (1000*60*60*24*30*12) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24*30*12))}년 전</a>`
+										}
+										else if(post_date / (1000*60*60*24*30) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24*30))}달 전</a>`
+										}
+										else if(post_date / (1000*60*60*24) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24))}일 전</a>`
+										}
+										else if(post_date / (1000*60*60) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60))}시간 전</a>`
+										}
+										else{
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60))}분전</a>`
+										}
+										text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
+										text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
+										text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
+										text_scroll += `</ul></div>`
+										text_scroll += `<div class="card-title">`
+										text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
+										text_scroll += `<a href="#" class="card-title"> ${post.restNm}</a></div>`
+										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
+										text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;"></div>`
+										text_scroll += `<div class="activity">`
+										text_scroll += `<div th:id="'postContent' + ${post.postId}">${post.postContent}</div>`
+										//여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
+										text_scroll += `<br>`
+										text_scroll += `<a href="#" style="color: blue;">&emsp;#강남맛집</a>`
+										text_scroll += `<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>`
+										text_scroll += `<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>`
+										text_scroll += `</div>`
+										text_scroll += `<div class="activity">`
+										text_scroll += `<i class="ri-heart-3-line post_like" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+										text_scroll += `<i class="ri-message-3-line msg_icon" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+										text_scroll += `<i class="ri-send-plane-2-line" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+										text_scroll += `<br>`
+										text_scroll += `<a>좋아요 <span id="like_num${post.postId}">21</span>개</a>`
+										text_scroll += `<hr></div>`
+										//내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. 
+										text_scroll += `<form class="data" action="/post/deletePost" method="post">`
+										text_scroll += `<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">`
+										text_scroll += `<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">`
+										text_scroll += `<input type="hidden" id="userId" name="userId" value="''+${post.userId}">`
+										text_scroll += `<input type="hidden" id="postId" name="postId" value="''+${post.postId}">`
+										text_scroll += `<input type="hidden" id="postDate" name="postDate" value="''+${post.postDate}">`
+										text_scroll += `</form>`
+										text_scroll += `<div class="activity" style="text-align: center;">`
+										text_scroll += `<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>`
+										text_scroll += `<span>감성타코</span>에서 식사하셨어요!</a></div></div></div>`
+									}
 
+									$("#post_scroll_div").html(text_scroll);
+									//이벤트 리스너 함수 호출
+									$.like_button();
+									$.comment_button();
+								},
+								error: function (e) {
+									console.log(e);
+								}
+							});
+						}
+					}
+				});
+				*/
 			});
 
 			//수정모드에서 제목변경시 실행될 메소드

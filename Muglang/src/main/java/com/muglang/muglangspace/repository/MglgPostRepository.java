@@ -37,7 +37,8 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			);
 	
 	//모두 검색
-	Page<MglgPost> findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5KeywordContainingOrderByPostDateDesc(
+
+	Page<MglgPost> findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5SearchKeywordContainingOrderByPostDateDesc(
 			String searchKeyword1,
 			String searchKeyword2,
 			String searchKeyword3,
@@ -45,6 +46,7 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			String searchKeyword5,
 			String searchKeyword6,
 			String searchKeyword7,
+			String searchKeyword8,
 			Pageable pageable
 			);
 }
