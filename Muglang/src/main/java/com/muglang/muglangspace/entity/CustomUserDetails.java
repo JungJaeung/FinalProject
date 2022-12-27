@@ -45,10 +45,10 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 		return null;
 	}
 	
-	//소셜 로그인 업체가 제공한 아이디
+	//DB의 int형 userId
 	@Override
 	public String getUsername() {
-		return mglgUser.getUserSnsId();
+		return String.valueOf(mglgUser.getUserId());
 	}
 
 	//계정 만료 여부

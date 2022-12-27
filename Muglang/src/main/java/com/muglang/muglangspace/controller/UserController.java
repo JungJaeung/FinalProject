@@ -1,7 +1,6 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -97,11 +99,37 @@ public class UserController {
 
 	// 팔로워로 이동
 	@GetMapping("/following")
-	public ModelAndView follower(@PathVariable("userId") int userId) {
+	public ModelAndView followingList(MglgUserDTO userDTO,@PageableDefault(page = 0, size = 5) Pageable pageable,HttpSession session) {
+		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
+		
+		MglgUser user = MglgUser.builder()
+				   .searchKeyword(userDTO.getSearchKeyword())
+				   .userId(temp.getUserId())
+				   .build();
+		
 		ModelAndView mv = new ModelAndView();
-		System.out.println(userId+"유저 아이디 알려줌");
-		mv.setViewName("/user/follower.html");
-		return mv;
+		
+		Page<MglgUser> pagefollowingList = userRelationService.followingList(user, pageable);
+		Page<MglgUserDTO> pagefollowingDTOList = pagefollowingList.map(pageUser -> 
+													MglgUserDTO.builder()
+																.userId(pageUser.getUserId())
+																.userName(pageUser.getUserName())
+																.email(pageUser.getEmail())
+																.userNick(pageUser.getUserNick())
+																.build()
+														);
+
+					
+					mv.setViewName("/user/following.html");
+					
+					mv.addObject("followingList", pagefollowingDTOList);
+					
+					
+					if(userDTO.getSearchKeyword() != null && !userDTO.getSearchKeyword().equals("")) {
+						mv.addObject("searchKeyword", userDTO.getSearchKeyword());
+					}
+					
+					return mv;
 	}
 
 	// 유저 목록 불러오기 + 페이징
@@ -268,19 +296,28 @@ public class UserController {
 						   .userRole(userInfo.getMglgUser().getUserRole())
 						   .build();
 		
-		mglgUserService.socialLoginProcess(newUser);
+		newUser = mglgUserService.socialLoginProcess(newUser);
 		System.out.println("회원가입을 축하드립니다. 게시판으로 이동합니다.");
 		//로그인한 유저의 세션 정보는 엔티티가 아닌 DTO로 따로 저장하여 사용할것임.
-		MglgUser loginUser = mglgUserService.socialLoginUser(newUser);
-		MglgUserDTO loginUserDTO = MglgUserDTO.builder()
-											  .userId(loginUser.getUserId())
-											  .userName(loginUser.getUserName())
-											  .userSnsId(loginUser.getUserSnsId())
-											  .regDate(loginUser.getRegDate().toString())
-											  .email(loginUser.getEmail())
-											  .userRole(loginUser.getUserRole())
-											  .build();
-		session.setAttribute("loginUser", loginUserDTO);
+//		MglgUser loginUser = mglgUserService.socialLoginUser(newUser);
+//		MglgUserDTO loginUserDTO = MglgUserDTO.builder()
+//											  .userId(loginUser.getUserId())
+//											  .userName(loginUser.getUserName())
+//											  .userSnsId(loginUser.getUserSnsId())
+//											  .regDate(loginUser.getRegDate().toString())
+//											  .email(loginUser.getEmail())
+//											  .userRole(loginUser.getUserRole())
+//											  .build();
+//		session.setAttribute("loginUser", loginUserDTO);
+		//회원정보 수정시에도 삽입 필(수정 후 바로 반영하기 위함 )
+		CustomUserDetails customUserDetails = mglgUserService.loadByUserId(newUser.getUserId());
+		
+		Authentication authetication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+		
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		
+		securityContext.setAuthentication(authetication);
+		session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 		
 		response.sendRedirect("/post/mainPost");
 

@@ -13,4 +13,6 @@ public interface UserRelationService {
 	int cntFollowing(MglgUserRelation following);
 
 	Page<MglgUser> followList(MglgUser user,Pageable pageable);
+	Page<MglgUser> followingList(MglgUser user,Pageable pageable);
+
 }

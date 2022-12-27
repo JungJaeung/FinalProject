@@ -43,7 +43,19 @@ public class UserRelationServiceImpl implements UserRelationService {
 		
 
 	}
+	@Override
+	public Page<MglgUser> followingList(MglgUser user, Pageable pageable) {
+		int userId = user.getUserId();
+		String searchKeyword = user.getSearchKeyword();
+		if(user.getSearchKeyword() != null && !user.getSearchKeyword().equals("")) {
+			return mglgUserRepository.searchFollowingList(searchKeyword,userId, pageable);
+			
+		}else {
+			return mglgUserRepository.followingList(userId,pageable);
+		}
+		
 
+	}
 	
 
 

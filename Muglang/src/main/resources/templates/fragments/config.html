@@ -53,16 +53,13 @@
 	<script>
 		/* Sidebar toggle */
 		$(function () {
-			//사이드바 불러올때 게시글. 다 가져옴
+		
 			$.ajax({
 				url: '/social/cntFollow',
 				type: 'get',
-				data: {
-					userId_side: 1001,
-				},
 				success: function (obj) {
 					
-				//	$("#cntPost").text(obj.item.postCount);
+					$("#cntPost").text(obj.item.postCount);
 					$("#cntFollowing").text(obj.item.followingCount);
 					$("#cntFollower").text(obj.item.followCount);
 

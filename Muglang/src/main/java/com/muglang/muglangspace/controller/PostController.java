@@ -222,9 +222,6 @@ public class PostController {
 		return null;
 	}
 	
-	public int cntPost(int postId) {
-		return 0;
-	}
 
 	//포스트 단건 조회
 	@GetMapping("/post")

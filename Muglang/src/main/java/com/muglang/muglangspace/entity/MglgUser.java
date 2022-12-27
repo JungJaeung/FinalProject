@@ -44,6 +44,8 @@ public class MglgUser {
 	private int userId;
 	
 	private String userName;
+	@Column
+	@ColumnDefault("'0000'")
 	private String password;
 	private String firstName;
 	private String lastName;
@@ -51,7 +53,9 @@ public class MglgUser {
 	private String email;
 	private String address;
 	private String bio;
-	private String userBanYn = "N";
+	@Column
+	@ColumnDefault("'N'")
+	private String userBanYn;
 	private LocalDateTime regDate;
 	@Column
 	@ColumnDefault("'ROLE_USER'")

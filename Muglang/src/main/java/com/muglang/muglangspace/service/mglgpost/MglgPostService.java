@@ -17,9 +17,7 @@ public interface MglgPostService {
 	public void likePost(MglgPost mglgpost);
 	
 	public Page<MglgPost> getPagePostList(Pageable pageable);
-	
-	public int cntPost(int postId);
-	
+		
 	public MglgPost getPost(MglgPost post);
 	
 	int postCnt(MglgUserRelation relUser);

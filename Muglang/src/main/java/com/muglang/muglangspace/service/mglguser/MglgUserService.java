@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.muglang.muglangspace.common.CamelHashMap;
+import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgUser;
 
 public interface MglgUserService {
@@ -18,10 +19,11 @@ public interface MglgUserService {
 	
 	MglgUser socialLoginUser(MglgUser user);
 	
-	void socialLoginProcess(MglgUser user);
+	MglgUser socialLoginProcess(MglgUser user);
 	
 	Page<CamelHashMap> getAdminUserList(MglgUser user,Pageable pageable);
 
 	List<MglgUser> getNoUserList();
-		
+	
+	CustomUserDetails loadByUserId(int userId);
 }

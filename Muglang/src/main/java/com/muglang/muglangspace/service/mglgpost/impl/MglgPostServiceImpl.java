@@ -53,11 +53,6 @@ public class MglgPostServiceImpl implements MglgPostService {
 		return mglgPostRepository.findAll(pageable);
 	}
 
-	@Override
-	public int cntPost(int postId) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public MglgPost getPost(MglgPost post) {
@@ -70,7 +65,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public int postCnt(MglgUserRelation relUser) {
 		MglgUser user = relUser.getMglgUser();
 		int userId = user.getUserId();
-		return mglgPostRepository.cntPost(userId);
+		return mglgPostRepository.postCnt(userId);
   }
 	
 	//검색 - 쿼리 이름 다 안적어서 오류남. keyword가 아니고 searchKeyword임.그리고 매개변수랑 이름 적은 거랑 일치하게 줘야함.

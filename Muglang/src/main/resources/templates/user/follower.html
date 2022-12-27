@@ -103,15 +103,18 @@
 						<!--검색-->
 						<div class="card-body">
 							<form class="form-inline" role="form" action="/user/follower" method="get">
-								<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"onblur="this.placeholder='이름으로 검색'"
-								name="searchKeyword">
+								<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
+									onblur="this.placeholder='이름으로 검색'" name="searchKeyword">
 								<input type="submit" value="검색">
 							</form>
 						</div>
-						<div class="card-body">
+						<div class="card-body" style="position: relative;">
+                        <button style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%);"><</button>
+                        <button style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%);">></button>
 							<!--팔로우 리스트-->
 							<div class=""
-								style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;" th:each="followList : ${followList}">
+								style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;"
+								th:each="followList : ${followList}">
 								<!--친구 사진-->
 								<div style="width: 30%; margin-top: 10px; float: left;"><img
 										class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
@@ -119,10 +122,34 @@
 								<!--친구 닉네임, 아이디-->
 								<div style="width: 60%; margin-top: 13px; float: left;">
 									<div><b th:text="${followList.userName}"></b></div>
-									<div style="color: #aaaaaa; font-size: x-small;" th:text="${followList.email}"></div>
+									<div style="color: #aaaaaa; font-size: x-small;" th:text="${followList.email}">
+									</div>
 								</div>
-								
+
 							</div>
+						
+									<ul class="pagination" th:if="${followList.totalElements > 0}" th:with="pageNumber = ${followList.pageable.pageNumber},
+												    pageSize = ${followList.pageable.pageSize},
+												    totalPages = ${followList.totalPages},
+												    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+												    tempEndPage = ${startPage + pageSize - 1},
+												    endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
+										<li class="page-item" th:if="${pageNumber > 0}">
+											<a th:href="@{/user/follower(page=${pageNumber - 1})}">이전</a>
+										</li>
+										<li class="page-item" th:if="${pageNumber == 0}" style="cursor: pointer;">
+											<a class="page-link">이전</a>
+										</li>
+										<li class="page-item" th:if="${pageNumber < totalPages - 1}">
+											<a class="page-link" th:href="@{/user/follower(page=${pageNumber + 1},
+											searchCondition=${searchCondition},
+											searchKeyword=${searchKeyword})}">다음</a>
+										</li>
+										<li class="page-item" th:if="${pageNumber == (totalPages -1)}"
+											style="cursor: pointer;">
+											<a class="page-link">다음</a>
+										</li>
+								</ul>
 						</div>
 					</div>
 				</div>
@@ -139,7 +166,7 @@
 						<form class="form-inline" role="form">
 							<input type="text" placeholder="댓글을 작성하세요!!" onfocus="this.placeholder=''"
 								onblur="this.placeholder='댓글을 작성하세요!!'">
-							<input type="button"value="작성">
+							<input type="button" value="작성">
 						</form>
 					</div>
 					<div class="modal-body overflow-auto">
