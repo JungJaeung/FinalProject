@@ -18,11 +18,9 @@ public interface MglgPostService {
 	
 	public Page<MglgPost> getPagePostList(Pageable pageable);
 	
-	public int cntPost(int postId);
-	
 	public MglgPost getPost(MglgPost post);
 	
-	int postCnt(MglgUserRelation relUser);
+	public int postCnt(MglgUserRelation relUser);
 
 	
 	//검색
