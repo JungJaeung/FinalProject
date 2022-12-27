@@ -1,11 +1,16 @@
 package com.muglang.muglangspace.controller;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.muglang.muglangspace.dto.MglgResponseDTO;
@@ -60,5 +65,11 @@ public class SocialController {
 			return ResponseEntity.badRequest().body(response);
 		}
 	}
-
+	//맞팔
+	@PostMapping("followUser")
+	public void followUser(int followerId, int userId, HttpServletResponse response) throws IOException {
+		userRelationService.followUser(followerId, userId);
+		
+		response.sendRedirect("/user/profile");
+	}
 }

@@ -47,13 +47,11 @@ public class UserController {
 	private MglgPostService mglgPostService;
 
 	@GetMapping("/profile")
-	public ModelAndView profileView(@AuthenticationPrincipal CustomUserDetails customUser) {
+	public ModelAndView profileView(@AuthenticationPrincipal CustomUserDetails customUser,
+									@PageableDefault(page = 0, size = 10) Pageable pageable) {
 		System.out.println(customUser.getMglgUser().getUserSnsId().substring(0,1));
 		
 
-		
-		
-		
 		ModelAndView mv = new ModelAndView();
 		MglgUserDTO user = MglgUserDTO.builder()
 								.userNick(customUser.getMglgUser().getUserNick())
@@ -70,6 +68,12 @@ public class UserController {
 								.build();
 		System.out.println("profile use" + user);
 		
+		
+		//맞팔로우 요청목록 보여주기
+		int userId = customUser.getMglgUser().getUserId();
+		Page<MglgUser> requestFollowList = userRelationService.requestFollowList(userId,pageable);
+		
+		mv.addObject("requestList", requestFollowList);
 		mv.addObject("user", user);
 		mv.setViewName("profile.html");
 		return mv;

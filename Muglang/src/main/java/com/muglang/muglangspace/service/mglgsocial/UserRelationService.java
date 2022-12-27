@@ -1,5 +1,8 @@
 package com.muglang.muglangspace.service.mglgsocial;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,5 +17,6 @@ public interface UserRelationService {
 
 	Page<MglgUser> followList(MglgUser user,Pageable pageable);
 	Page<MglgUser> followingList(MglgUser user,Pageable pageable);
-
+	Page<MglgUser> requestFollowList(int userId,Pageable pageable);
+	void followUser(int followId, int userId);
 }

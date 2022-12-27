@@ -6,7 +6,7 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
-
+				
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
@@ -206,28 +206,23 @@
 
 						<div class="card" style="text-align: center;">
 							<h5 class="card-title" style="font-weight: bold;">팔로잉 요청</h5>
-							<div class="card-body">
+							
+							<div class="card-body" th:each="requestList:${requestList}">
 								<!--팔로잉 요청1-->
 								<div class="follow_request mb-5">
 									<span style="float: left;"><img class="img-fluid rounded-circle"
 											th:src="@{/assets/img/messages-1.jpg}" style="width: 90px;"></span>
-									<span style="word-break: keep-all;"><b>보노보노</b>님이 당신을 팔로우 하셨어요!!</span>
+									<span style="word-break: keep-all;"><b th:text="${requestList.userName}"></b>님이 당신을  하셨어요!!</span>
 									<div>
-										<button class="btn mt-1"
-											style="background-color: 	#DCEBFF; color: 	#6e6e6e;">팔로우</button>
-									</div>
-								</div>
-								<!--팔로잉 요청2-->
-								<div class="follow_request mb-5">
-									<span style="float: left;"><img class="img-fluid rounded-circle"
-											th:src="@{/assets/img/messages-2.jpg}" style="width: 90px;"></span>
-									<span style="word-break: keep-all;"><b>six</b>님이 당신을 팔로우 하셨어요!!</span>
-									<div style="margin-top: 5px;">
-										<button class="btn mt-1"
-											style="background-color: 	#DCEBFF; color: 	#6e6e6e;">팔로우</button>
+									<form action="/social/followUser" method="post">
+										<input type="hidden" th:value="${requestList.userId}" name ="followerId">
+										<input type="hidden" th:value="${user.userId}" name ="userId">
+										<input type="submit" class="btn mt-1" style="background-color:#DCEBFF; color: #6e6e6e;" value="팔로우"></input>
+									</form>		
 									</div>
 								</div>
 							</div>
+							
 						</div>
 					</div>
 				</div>
