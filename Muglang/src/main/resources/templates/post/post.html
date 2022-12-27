@@ -17,6 +17,9 @@
 			//변경된 첨부파일 배열
 			let changedFiles = [];
 
+			//댓글 페이지수
+			let comment_page_num = 0;
+
 			//댓글 관련 전역변수
 			let postId;
 			let commentId;
@@ -44,6 +47,7 @@
 				}
 				console.log("게시글 : " + postIdList);
 				console.log(list.length);
+
 
 				//퀼 텍스트 에어리어 소환
 				new Quill('.quill-editor-default', {
@@ -159,6 +163,20 @@
 
 				//좋아요 이벤트 리스너 함수 호출
 				$.like_button();
+
+				//게시글에서 댓글버튼 이벤트 리스너
+				$.comment_button = function () {
+					text_comment = "";
+					$(".msg_icon").click(function (e) {
+						//여기도 댓글 아이콘 아이디를 포스트 id로 잡았음
+						postId = e.target.id;
+						$.comment_list();
+					});
+
+				}
+				//댓글버튼 이벤트 리스너 함수 호출
+				$.comment_button();
+				
 				//화면단에 최초로 뿌릴 때 해당 정보를 임시로 저장하는 변수
 				let thisCommentTotalPages = 0;
 				let thisCommentTotalElements = 0;
@@ -177,7 +195,7 @@
 							text_comment += `<textarea id="insert_text${postId}" style="width:80%; height: 30px; border:none; outline: none; overflow:hidden; resize: none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)" placeholder="댓글을 작성해주세요"]></textarea>`
 							text_comment += `<button class="btn" id="insert_btn${postId}">작성</button></div>`
 							text_comment += `<div class="modal-body overflow-auto" id="modal-body">`
-							text_comment += `<div id="comment${postId}" style="max-height: 30em;">`
+							text_comment += `<div id="comment${postId}" class="comments" style="max-height: 30em;">`
 							//받아온 객체의 내용을(댓글) 숫자만큼 반복
 							for (let comment of obj.content) {
 								let comment_date = new Date(comment.commentDate);
@@ -225,14 +243,19 @@
 							text_comment += `</div></div>`;
 							$("#modal-content").html(text_comment);
 							//작업 끝나고 이거 활성화
-							$('#msgModal').modal("show");
+
+							
 							//댓글 페이징을 위한 페이징 넘버를 최초 댓글 열때 저장.
 							thisCommentTotalPages = Number(obj.totalPages);
 							thisCommentTotalElements = Number(obj.totalElements);
 							console.log(thisCommentTotalPages);
-							//댓글 무한 스크롤 발생 이벤트
-
+							console.log(thisCommentTotalElements);
+							//댓글 무한 스크롤 발생 이벤트 시작
+							comment_page_num = 1;
+							
 							replyScroll(thisCommentTotalPages, thisCommentTotalElements);
+							
+							$('#msgModal').modal("show");
 							//이벤트 넣기
 							$.comment_insert();
 							$.comment_update();
@@ -246,19 +269,6 @@
 						
 					});
 				}
-
-				//게시글에서 댓글버튼 이벤트 리스너
-				$.comment_button = function () {
-					text_comment = "";
-					$(".msg_icon").click(function (e) {
-						//여기도 댓글 아이콘 아이디를 포스트 id로 잡았음
-						postId = e.target.id;
-						$.comment_list();
-					});
-
-				}
-				//댓글버튼 이벤트 리스너 함수 호출
-				$.comment_button();
 
 				//댓글 작성 함수
 				$.comment_insert = function () {
@@ -491,18 +501,17 @@
 				//아이디comment 태그의 스크롤에 다차서 내려가면, 다시 ajax비동기 처리로 댓글 목록 불러옴.
 			
 				function replyScroll(thisCommentTotalPages, thisCommentTotalElements) {
-					let comment_page_num = 1;
+
 					let comment_text_scroll = "";
 					$('.modal-body').scroll(function (e) {
-						console.log("댓글 목록 스크롤 이벤트 발생. " + postId + " 번 게시글");
-						let height = $('.modal-body').scrollTop();
-						console.log("맨위 수직 위치 : " + height);
-						let comHeight = $('.modal-body').height() - $('.comment_info').height() * 4;
-						console.log("안쪽 게시글 내용 크기 : " + comHeight);
+						//let comHeight = $('.modal-body').height() - $('.comment_info').height() * 4;
+						//console.log("안쪽 게시글 내용 크기 : " + comHeight);
 						//댓글 창을 끝까지 내릴 때쯤 이벤트가 발생.
 						if ($('.modal-body').scrollTop() > $('.modal-body').height() - $('.comment_info').height() * 4) {
 							//해당 댓글의 댓글 페이지수를 확인. 내용이 남아있을경우 추가 스크롤 활성화
+							console.log("페이징 댓글 시작" + comment_page_num);
 							if (comment_page_num < thisCommentTotalPages) {	
+								console.log("페이징 댓글 시작");
 								$.ajax({
 									url: '/comment/commentList',
 									type: 'post',
@@ -511,6 +520,8 @@
 										postId: postId
 									},
 									success: function (obj) {
+										//숨김처리후 다시 재출력
+										//$('#msgModal').modal("hide");
 										//한번 더 스크롤나오면 다음페이지를 데이터로 넘기고, 다시 스크롤을 늘려 다음 댓글을 갱신하여 표시.
 										comment_page_num++;
 
@@ -538,7 +549,7 @@
 											else if(comment_date / (1000*60*60) > 1){
 												comment_text_scroll += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60*60))}시간 전</a>`;
 											}
-											else{
+											else{ 
 												comment_text_scroll += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60))}분전</a>`;
 											}
 											
@@ -559,14 +570,9 @@
 											comment_text_scroll += `<button class="btn update_comment" id="update_comment${comment.commentId}" style="float:right; display:none;">수정</button></div></div>`;
 
 										}
-										//comment_text_scroll += `</div></div>`;
-										console.log(comment_text_scroll);	
-										//작업 끝나고 이거 활성화
+										//댓글을 화면에 뿌리는 상위 태그는 id가 comment인 div태그 따라서 그 자식 태그에 append한다.
 										//$("#comment_scroll_div").html(comment_text_scroll);
 										$("#comment" + postId).append(comment_text_scroll);
-										//$("#comment_scroll_div").appendTo(".modal-body");
-										
-										//$("#comment_scroll_div")
 										//$('#msgModal').modal("show");
 										//이벤트 리스너 함수 호출
 										//이벤트 넣기
@@ -971,7 +977,7 @@
 							<!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
 						</div>
 					</div>
-					<div id="comment_scroll_div"></div>
+					<div id="comment_scroll_div" class="col-12"></div>
 				</div>
 			</div>
 
