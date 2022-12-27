@@ -68,7 +68,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public Page<MglgPost> searchPostList(MglgPost mglgPost, Pageable pageable) {
 		if(mglgPost.getSearchKeyword() != null && !mglgPost.getSearchKeyword().equals("")) {
 			if(mglgPost.getSearchCondition().equals("ALL")) {
-				return mglgPostRepository.findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5OrSearchKeywordContaining(
+				return mglgPostRepository.findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5SearchKeywordContainingOrderByPostDateDesc(
 						mglgPost.getSearchKeyword(), 
 						mglgPost.getSearchKeyword(), 
 						mglgPost.getSearchKeyword(), 
@@ -79,11 +79,11 @@ public class MglgPostServiceImpl implements MglgPostService {
 						mglgPost.getSearchKeyword(),
 						pageable);
 			} else if (mglgPost.getSearchCondition().equals("POSTCONTENT")) {
-				return mglgPostRepository.findByPostContentContaining(mglgPost.getSearchKeyword(), pageable);
+				return mglgPostRepository.findByPostContentContainingOrderByPostDateDesc(mglgPost.getSearchKeyword(), pageable);
 			} else if (mglgPost.getSearchCondition().equals("RESTNM")) {
-				return mglgPostRepository.findByRestNmContaining(mglgPost.getSearchKeyword(), pageable);
+				return mglgPostRepository.findByRestNmContainingOrderByPostDateDesc(mglgPost.getSearchKeyword(), pageable);
 			} else if (mglgPost.getSearchCondition().equals("HASHTAG")) {
-				return mglgPostRepository.findByHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5Containing(
+				return mglgPostRepository.findByHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5ContainingOrderByPostDateDesc(
 						mglgPost.getSearchKeyword(), 
 						mglgPost.getSearchKeyword(), 
 						mglgPost.getSearchKeyword(), 

@@ -19,6 +19,7 @@ public class SearchController {
 	@Autowired
 	MglgPostService mglgPostService;
 	
+	//포스트 검색
 	@GetMapping("/searchPostList")
 	public ResponseEntity<?> searchPostList(MglgPost mglgPost, Pageable pageable) {
 		ResponseDTO<Page<MglgPostDTO>> responseDTO = new ResponseDTO<>();
