@@ -1,6 +1,7 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -325,7 +326,7 @@ public class UserController {
 																					.postId(pageMglgPost.getPostId())
 																					.userId(pageMglgPost.getMglgUser().getUserId())
 																					.postContent(pageMglgPost.getPostContent())
-																					.postDate(pageMglgPost.getPostDate().toString())
+																					.postDate((pageMglgPost.getPostDate()).toString())
 																					.restNm(pageMglgPost.getRestNm())
 																					.restRating(pageMglgPost.getRestRating())
 																					.postRating(pageMglgPost.getPostRating())
@@ -334,9 +335,18 @@ public class UserController {
 																					.hashTag3(pageMglgPost.getHashTag3())
 																					.hashTag4(pageMglgPost.getHashTag4())
 																					.hashTag5(pageMglgPost.getHashTag5())
+																					//.betweenDate(Duration.between(LocalDateTime.now(), pageMglgPost.getPostDate()).getSeconds())
 																					.build()
 														);
 			mv.addObject("postList", postListDTO);
+			
+			System.out.println(postListDTO.getContent().size());
+			
+			for(int i = 0; i < postListDTO.getContent().size(); i++) {
+				System.out.println("111111111111111111111111111111111");
+				System.out.println(postListDTO.getContent().get(i).getBetweenDate());
+			}
+			
 			mv.setViewName("post/post.html");
 			
 			return mv;

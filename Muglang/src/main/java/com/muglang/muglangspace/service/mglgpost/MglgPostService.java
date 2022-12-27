@@ -1,11 +1,7 @@
 package com.muglang.muglangspace.service.mglgpost;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import com.muglang.muglangspace.dto.MglgPostDTO;
 
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
@@ -19,7 +15,7 @@ public interface MglgPostService {
 	public void deletePost(MglgPost mglgpost);
 	
 	public void likePost(MglgPost mglgpost);
-
+	
 	public Page<MglgPost> getPagePostList(Pageable pageable);
 	
 	public int cntPost(int postId);
@@ -28,6 +24,7 @@ public interface MglgPostService {
 	
 	int postCnt(MglgUserRelation relUser);
 
-
 	
+	//검색
+	public Page<MglgPost> searchPostList(MglgPost mglgPost, Pageable pageable);
 }

@@ -2,9 +2,9 @@ package com.muglang.muglangspace.entity;
 
 
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,8 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import lombok.AllArgsConstructor;
@@ -57,4 +57,9 @@ public class MglgPost {
 //	@Column
 //	@ColumnDefault(LocalDateTime.now())
 	private LocalDateTime postDate;	//게시한 날짜
+	private Duration betweenDate;	//작성글 시간 계산을 위한 저장변수
+	@Transient	//테이블에 컬럼으로 구성할 필요가 없는 필드에 Transient Annotation 선언.
+	private String searchCondition;
+	@Transient
+	private String searchKeyword;
 }

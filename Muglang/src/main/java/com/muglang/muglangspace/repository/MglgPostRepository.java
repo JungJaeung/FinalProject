@@ -20,34 +20,37 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	@Query(value="UPDATE T_MGLG_POST SET POST_CONTENT = :#{#mglgPost.postContent} WHERE POST_ID = :#{#mglgPost.postId}", nativeQuery=true)
 	public void updateMglgPost(@Param("mglgPost") MglgPost mglgPost);
 	
-	//추후 논의 후 검색 추상메소드를 통일하거나 폐기 하겠음
-	//일단은 모두 검색을 기반으로 구현 2022/12/24
 	//내용 검색
-	Page<MglgPost> findByPostContentContaining(String searchKeyword, Pageable pageable);
+	Page<MglgPost> findByPostContentContainingOrderByPostDateDesc(String searchKeyword, Pageable pageable);
 	
 	//식당 검색
-	Page<MglgPost> findByRestNmContaining(String searchKeyword, Pageable pageable);
+	Page<MglgPost> findByRestNmContainingOrderByPostDateDesc(String searchKeyword, Pageable pageable);
 	
 	//해시태그 검색
-	Page<MglgPost> findByHashTag1Containing(String searchKeyword, Pageable pageable);
-	Page<MglgPost> findByHashTag2Containing(String searchKeyword, Pageable pageable);
-	Page<MglgPost> findByHashTag3Containing(String searchKeyword, Pageable pageable);
-	Page<MglgPost> findByHashTag4Containing(String searchKeyword, Pageable pageable);
-	Page<MglgPost> findByHashTag5Containing(String searchKeyword, Pageable pageable);
-	
-//	//모두 검색 - JPA 명명규칙 오류난듯 query 못만듬.
-//	Page<MglgPost> findByEntireSearchKeywordContaining(
-//			String searchKeyword1,
-//			String searchKeyword2,
-//			String searchKeyword3,
-//			String searchKeyword4,
-//			String searchKeyword5,
-//			String searchKeyword6,
-//			String searchKeyword7,
-//			Pageable pageable
-//			);
+	Page<MglgPost> findByHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5ContainingOrderByPostDateDesc(
+			String searchKeyword1, 
+			String searchKeyword2, 
+			String searchKeyword3,
+			String searchKeyword4, 
+			String searchKeyword5, 
+			Pageable pageable
+			);
 	
  	//포스트 갯수 세기
  	@Query(value="SELECT COUNT(*) AS postCount FROM T_MGLG_POST WHERE USER_ID = :userId", nativeQuery=true)
 	int cntPost(@Param("userId") int userId);
+
+	//모두 검색
+
+	Page<MglgPost> findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5OrSearchKeywordContainingOrderByPostDateDesc(
+			String searchKeyword1,
+			String searchKeyword2,
+			String searchKeyword3,
+			String searchKeyword4,
+			String searchKeyword5,
+			String searchKeyword6,
+			String searchKeyword7,
+			String searchKeyword8,
+			Pageable pageable
+			);
 }

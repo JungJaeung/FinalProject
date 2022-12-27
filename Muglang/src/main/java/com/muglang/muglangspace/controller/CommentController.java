@@ -1,12 +1,19 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +29,7 @@ import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
+import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
 @RestController
 @RequestMapping("/comment")
@@ -29,12 +37,14 @@ public class CommentController {
 	@Autowired
 	private MglgCommentService mglgCommentService;
 	@Autowired
+	private MglgUserService mglgUserService;
+	@Autowired
 	private AdminService adminService;
 	
 	
 	//커멘트 조회
 	@GetMapping("/comment")
-	public ResponseEntity<?> getComment(@RequestParam("commentId") int commentId,@RequestParam("postId") int postId) {
+	public ResponseEntity<?> getComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId) {
 		MglgResponseDTO<MglgCommentDTO> response = new MglgResponseDTO<>();
 		try {
 			MglgPost post = MglgPost.builder()
@@ -62,40 +72,85 @@ public class CommentController {
 		}
 	}
 
-	//커멘트 아이디로 삭제
 
+	// 댓글 리스트 불러오기
+//	@GetMapping("/commentList")
+//	public ResponseEntity<?> getCommentList(MglgComment comment, @PageableDefault(page = 0, size = 8) Pageable pageable,
+//			@RequestParam("postId") int postId) {
+//		Page<MglgComment> commentList = mglgCommentService.getCommentList(comment, pageable, postId);
+//		
+//		System.out.println("댓글 조회 ㄱㄱ");
+//		return ResponseEntity.ok().body(commentList);
+//	}
 	
-	@GetMapping("deleteComment")
-	public void deleteComment(@RequestParam("commentId") int commentId,@RequestParam("postId") int postId, HttpServletResponse response) throws IOException {
-		mglgCommentService.deleteComment(commentId,postId);
-		 adminService.deleteReport(commentId,postId);
-		 System.out.println("--------딜리트 끝--------");
+	//댓글 리스트 불러오기 - 불러온 댓글들을 다시 화면단으로 전송
+	@GetMapping("/commentList")
+	public ResponseEntity<?> getCommentList(HttpSession session ,MglgComment comment, @PageableDefault(page = 0, size = 8) Pageable pageable,
+			@RequestParam("postId") int postId) {
+		//이 객체에는 댓글이 현재 가지고 있는 유저 정보와 포스팅의 정보도 같이 가지고 있다.
+		Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable, postId);
+		//댓글 목록 테스트용
+		for(MglgComment comment1 :  pageCommentList) {
+			System.out.println(comment1);
+		}
+		try {
+			System.out.println("댓글 조회 ㄱㄱ");
+			return ResponseEntity.ok().body(pageCommentList);
+		} catch(Exception e) {
+			return ResponseEntity.badRequest().body(pageCommentList);
+		}
 
-		 response.sendRedirect("/admin/commentReport");
 	}
 	
-	//댓글 작성 쿼리 실행
+	//코멘트 리스트 페이징 무한 스크롤
+	@PostMapping("/commentList")
+	//스크롤시 데이터 불러오는 로직
+	//재웅이형이 작성한 바로 위 로직이랑 거의 동일
+	public ResponseEntity<?> getCommentListScroll(Pageable pageable, @RequestParam("page_num") int page_num,
+			@RequestParam("postId") int postId) {
+		pageable = PageRequest.of(page_num, 8);
+		
+		Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable, postId);
+		Page<MglgCommentDTO> pageCommentListDTO = pageCommentList.map(pageMglgComment->MglgCommentDTO.builder()
+																			.userId(pageMglgComment.getMglgUser().getUserId())
+																			.commentId(pageMglgComment.getCommentId())
+																			.commentContent(pageMglgComment.getCommentContent())
+																			.commentDate(pageMglgComment.getCommentDate().toString())
+																			.build()
+															);
+		
+	
+		return ResponseEntity.ok().body(pageCommentListDTO);
+	}
+	
+
+	// 댓글 작성 쿼리 실행
 	@PostMapping("/insertComment")
-	public void insertComment(HttpSession session, MglgCommentDTO commentDTO, HttpServletResponse response) throws IOException {
-		System.out.println("댓글을 작성합니다.");
-		MglgComment mglgComment = MglgComment.builder()
-											 .mglgPost(MglgPost.builder().postId(commentDTO.getPostId()).build())
-											 .mglgUser(MglgUser.builder().userId(commentDTO.getUserId()).build())
-											 .commentContent(commentDTO.getCommentContent())
-											 .commentDate(LocalDateTime.now())
-											 .build();
-		mglgCommentService.insertComment(mglgComment);
+	public void insertComment(@RequestParam("userId") int userId, @RequestParam("postId") int postId, @RequestParam("commentContent") String commentContent)
+			throws IOException {
+		System.out.println("댓글 입력 작업");
+		mglgCommentService.insertComment(userId, postId, commentContent);
+	}
+
+	// 댓글 삭제
+	@PostMapping("/deleteComment")
+	public void deleteComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
+			HttpServletResponse response, MglgComment comment)
+			throws IOException {
+		System.out.println("댓글 삭제");
+		mglgCommentService.deleteComment(commentId, postId);
+		adminService.deleteReport(commentId, postId);
+
 		response.sendRedirect("/post/mainPost");
 	}
-	
-	//댓글의 수정,삭제는 본인것만 할 수 있음.
+
+	// 댓글 업데이트
 	@PutMapping("/updateComment")
-	public void insertComment(HttpSession session, MglgCommentDTO commentDTO) {
-		System.out.println("댓글을 수정합니다.");
-		MglgComment mglgComment = MglgComment.builder()
-											 .commentContent(commentDTO.getCommentContent())
-											 .build();
-		mglgCommentService.updateComment(mglgComment);
+	public void updateComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
+			@RequestParam("commentContent") String commentContent) throws IOException {
+		System.out.println("댓글 수정");
+		mglgCommentService.updateComment(commentId, postId, commentContent);
 	}
+
 	
 }

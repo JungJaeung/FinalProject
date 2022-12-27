@@ -30,7 +30,7 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer>{
 	void uptUserBan(@Param("userBanYn") String userBanYn, @Param("userId") int userId);
 	
 	MglgUser findById(@Param("userId") int userId);
-
+	
 	//Sns계정이 가입 되어있는지 여부를 판단하는 간단한 검색쿼리
 	@Query(value="SELECT * FROM T_MGLG_USER WHERE USER_SNS_ID = :userSnsId", nativeQuery=true)
 	MglgUser findByUserSnsId(@Param("userSnsId") String userSnsId);

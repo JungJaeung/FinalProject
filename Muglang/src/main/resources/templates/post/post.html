@@ -1,450 +1,689 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-   layout:decorate="~{layouts/layout}">
+	layout:decorate="~{layouts/layout}">
 
 <!-- head 영역 시작 -->
 <!-- 개별적으로 사용할 css, js 링크 걸기 위해 남겨둠 -->
 
 <head>
-   <th:block layout:fragment="script">
-      <script th:inline="javascript">
-         //추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
-         let uploadFiles = [];
-         //기존 첨부파일 배열
-         let originFiles = [];
-         //변경된 첨부파일 배열
-         let changedFiles = [];
 
-         $(function () {
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+			const loginUserId = /*[[${loginUser.userId}]]*/;
+			//추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
+			let uploadFiles = [];
+			//기존 첨부파일 배열
+			let originFiles = [];
+			//변경된 첨부파일 배열
+			let changedFiles = [];
+
+			//댓글 관련 전역변수
+			let postId;
+			let commentId;
+			let text_comment;
+			
+			//현재시간
+			let now = new Date();
+
+			//댓글 수정 texteara 크기 자동 증가
+			function resize(obj) {
+				obj.style.height = "1px";
+				obj.style.height = (12 + obj.scrollHeight) + "px";
+			}
+
+			$(function () {
+
+				let list = $('.post').get();
+
+				let postIdList = [];
+				let flagList = [];
+
+				for (let i = 0; i < list.length; i++) {
+					flagList.push(false);
+					postIdList.push($($('.updateBtn')[i]).val());
+				}
+				console.log("게시글 : " + postIdList);
+				console.log(list.length);
+
+				//퀼 텍스트 에어리어 소환
+				new Quill('.quill-editor-default', {
+					modules: {
+						toolbar: [
+							[{
+								font: []
+							}, {
+								size: []
+							}],
+							["bold", "italic", "underline", "strike"],
+							[{
+								color: []
+							},
+							{
+								background: []
+							}
+							],
+							[{
+								script: "super"
+							},
+							{
+								script: "sub"
+							}
+							],
+							[{
+								list: "ordered"
+							},
+							{
+								list: "bullet"
+							},
+							{
+								indent: "-1"
+							},
+							{
+								indent: "+1"
+							}
+							],
+							["direction", {
+								align: []
+							}],
+							["image"],
+							["clean"]
+						]
+					},
+					theme: 'snow'
+
+				});
+
+				//해시태그 이벤트
+				for (let i = 1; i < 5; i++) {
+					$("#hashTag" + i).blur(function () {
+						if ($("#hashTag" + i).val() != "") {
+							$("#hashTag_label" + (i + 1)).css("display", "inline-block");
+						}
+					});
+				}
+
+				//작성 버튼
+				$("#insert_board").click(function () {
+					$("#postContent").val($(".ql-editor").html());
+					$("#insert_form").submit();
+				})
+
+
+				//좋아요 버튼 함수(innerHtml에도 먹이기 위해서 함수로 만듬)
+				$.like_button = function () {
+					$(".post_like").click(function (e) {
+						//하트 아이콘의 아이디를 게시물 아이디로 만들었음
+						let postId = e.target.id;
+						if ($(e.target).css("color") == "rgb(0, 0, 0)") {
+							console.log("좋아요 누른 포스트 id: " + postId);
+							$(e.target).css("color", "red");
+							//좋아요를 눌렀을때 ajax
+							$.ajax({
+								url: '',
+								type: 'get',
+								//포스트 아이디를 전송
+								//일단 생각한 방법으로 만들어뒀음(like 좋아요 1, 해제 0)
+								data: {
+									postId: postId,
+									like: 1
+								},
+								success: function (obj) {
+									//좋아요 개수를 like_num +아이디 로 만들었음
+									$("#like_num" + postId).html();
+								},
+								error: function (e) {
+									console.log(e);
+								}
+							});
+						} else {
+							$(e.target).css("color", "black");
+							console.log("좋아요 해제한 포스트 id: " + postId);
+							$.ajax({
+								url: '',
+								type: 'get',
+								data: {
+									postId: postId,
+									like: 0
+								},
+								success: function (obj) {
+									//좋아요 개수를 like_num +아이디 로 만들었음
+									$("#like_num" + postId).html();
+								},
+								error: function (e) {
+									console.log(e);
+								}
+							});
+						}
+					});
+				}
+
+				//좋아요 이벤트 리스너 함수 호출
+				$.like_button();
+
+				//전역변수인 게시글 id로 리스트 불러오는 로직
+				$.comment_list = function () {
+					
+					$.ajax({
+						url: '/comment/commentList',
+						type: 'get',
+						data: {
+							postId: postId,
+						},
+						success: function (obj) {
+							text_comment += `<div class="modal-header">`
+							text_comment += `<textarea id="insert_text${postId}" style="width:80%; height: 30px; border:none; outline: none; overflow:hidden; resize: none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)" placeholder="댓글을 작성해주세요"]></textarea>`
+							text_comment += `<button class="btn" id="insert_btn${postId}">작성</button></div>`
+							text_comment += `<div class="modal-body overflow-auto">`
+							text_comment += `<div id="comment" style="max-height: 30em;">`
+							//받아온 객체의 내용을(댓글) 숫자만큼 반복
+							for (let comment of obj.content) {
+								console.log(comment);
+								text_comment += `<div class="comment_info" style="margin-bottom: 30px;  position:relative;">`
+
+								text_comment += `<div class="filter" style="margin-top: 15px; position: absolute; top:-12px; right:10px;">`
+								text_comment += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
+								text_comment += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
+								if (/*[[${loginUser.userId}]]*/loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
+									text_comment += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`
+									text_comment += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`
+								} else {
+									text_comment += `<li><a class="dropdown-item" href="#" href="#"></i>&emsp;신고하기</a></li>`
+								}
+								text_comment += `</ul>`
+								text_comment += `</div>`
+								//프사 넣는부분
+								text_comment += `<img class="img-fluid rounded-circle" src="../assets/img/messages-2.jpg" style="width: 40px;">`
+								text_comment += `<span style="margin-left: 10px;"><a href="#" style="color: black; cursor:pointer;">${comment.mglgUser.userName}</a></span>`
+								text_comment += `<div style="word-break: keep-all;">${comment.commentContent}`
+								text_comment += `<br><textarea id="update_text${comment.commentId}" style="width:100%; overflow:hidden; resize: none; display:none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)">${comment.commentContent}</textarea>`
+								text_comment += `<button class="btn cancle_comment" id="cancle_comment${comment.commentId}" style="float:right; display:none;">취소</button>`
+								text_comment += `<button class="btn update_comment" id="update_comment${comment.commentId}" style="float:right; display:none;">수정</button></div></div>`
+							}
+							text_comment += `</div></div>`
+							$("#modal-content").html(text_comment);
+							//작업 끝나고 이거 활성화
+							$('#msgModal').modal("show");
+
+							//이벤트 넣기
+							$.comment_insert();
+							$.comment_update();
+							$.comment_delete();
+							
+						},
+						error: function (e) {
+							console.log("에러에러");
+						}
+						
+						
+					});
+				}
+
+				//게시글에서 댓글버튼 이벤트 리스너
+				$.comment_button = function () {
+					text_comment = "";
+					$(".msg_icon").click(function (e) {
+						//여기도 댓글 아이콘 아이디를 포스트 id로 잡았음
+						postId = e.target.id;
+						$.comment_list();
+					});
+
+				}
+				//댓글버튼 이벤트 리스너 함수 호출
+				$.comment_button();
+
+				//댓글 작성 함수
+				$.comment_insert = function () {
+					let text_comment = "";
+					$("#insert_btn" + postId).click(function (e) {
+						console.log($("#insert_text" + postId).val())
+						$.ajax({
+							url: '/comment/insertComment',
+							type: 'post',
+							data: {
+								userId: /*[[${loginUser.userId}]]*/loginUserId,
+								postId: postId,
+								commentContent: $("#insert_text" + postId).val()
+							},
+							success: function () {
+								$.comment_list();
+							},
+							error: function (e) {
+								console.log("에러에러");
+							}
+						});
+					});
+				}
+
+				//댓글 삭제 함수
+				$.comment_delete = function () {
+					$(".comment_delete").click(function (e) {
+						let commentId = e.target.id;
+						let text_comment = "";
+
+						$.ajax({
+							url: '/comment/deleteComment',
+							type: 'post',
+							data: {
+								commentId: commentId,
+								postId: postId
+							},
+							success: function () {
+								$.comment_list();
+							},
+							error: function (e) {
+								console.log("에러에러");
+							}
+						});
+					});
+				}
+
+				//댓글 수정 함수
+				$.comment_update = function () {
+					text_comment = "";
+					$(".comment_update").click(function (e) {
+						commentId = e.target.id;
+
+						$("#update_text" + commentId).css("display", "inline-block");
+						$("#update_comment" + commentId).css("display", "inline-block");
+						$("#cancle_comment" + commentId).css("display", "inline-block");
+					});
+
+					$(".update_comment").click(function (e) {
+						commentContent = $("#update_text" + commentId).val();
+						$.ajax({
+							url: '/comment/updateComment',
+							type: 'put',
+							data: {
+								commentId: commentId,
+								postId: postId,
+								commentContent: commentContent
+							},
+							success: function () {
+								$.comment_list();
+							},
+							error: function (e) {
+								console.log("에러에러");
+							}
+						});
+					})
+
+					$(".cancle_comment").click(function (e) {
+						$("#update_text" + commentId).css("display", "none");
+						$("#update_comment" + commentId).css("display", "none");
+						$("#cancle_comment" + commentId).css("display", "none");
+					})
+				}
+
+				//게시글 작성에서 사진 버튼 누르면 input-file 실행
+				//주석_창혁(quill쓰면 사진 필요 없어져서 일단 삭제)
+				//$("#file_select_btn").click(function (e) {
+				//   $("#file_select").click();
+				//});
+
+
+				//게시글 수정과 삭제를 활성화하는 버튼을 생성함. 게시글이 자기꺼인 것만 표시함.
+				for (let i = 0; i < list.length; i++) {
+
+					$($('.updateBtn')[i]).click(function (e) {
+
+						flagList[i] = !flagList[i];
+						if (flagList[i]) {
+							$(this).text("돌아가기");
+							$("<button id='deleteButton" + $(this).val() + "'>").appendTo($(this).parent());
+							$("#deleteButton" + $(this).val()).text("글 삭제");
+							$("<button id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
+							$("#updateButton" + $(this).val()).text("게시글 수정하기");
+						} else {
+							$(this).text("게시글 수정")
+							$("#deleteButton" + $(this).val()).remove();
+							$("#updateButton" + $(this).val()).remove();
+						}
+
+						$("#postContent" + $(this).val()).text();
+
+						if (!flagList[i]) {
+							$("#postContent" + $(this).val()).show();
+							$("#contentIn" + $(this).val()).hide();
+						} else {
+							$("#postContent" + $(this).val()).hide();
+							$("#contentIn" + $(this).val()).show();
+						}
+
+						$("#updateButton" + postIdList[i]).click(function (e) {
+							$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());
+							console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());
+							fnUpdatePost(postIdList[i], i);
+						});
+						$("#deleteButton" + postIdList[i]).click(function (e) {
+							console.log("delete");
+							$($('.data')[i]).submit();
+						});
+
+						//글 내용 수정하는 키입력을 받음.
+						$("#contentIn" + postIdList[i]).keyup(function (e) {
+							$("#postContent" + postIdList[i]).text($(this).val());
+							console.log($(this).val());
+							fnChangeContent(this);
+
+						});
+
+					});
+				}
+
+				//무한스크롤
+				let page_num = 1;
+				let text_scroll = "";
+				$(window).scroll(function () {
+					if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+						if (page_num < [[${postList.totalPages}]]) {
+							$.ajax({
+								url: '/post/mainPost',
+								type: 'post',
+								data: {page_num: page_num},
+								success: function (obj) {
+									//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
+									page_num++;
+									for (let post of obj.content) {
+										let post_date = new Date(post.postDate);
+										//날짜 데이터 밀리초
+										post_date = now - post_date;
+										
+										
+										console.log(post_date)
+										
+										text_scroll += `<div class="card recent-sales">`
+										text_scroll += `<div class="card-body">`
+										text_scroll += `<div class="filter" style="margin-top: 15px;">`
+										if(post_date / (1000*60*60*24*30*12) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24*30*12))}년 전</a>`
+										}
+										else if(post_date / (1000*60*60*24*30) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24*30))}달 전</a>`
+										}
+										else if(post_date / (1000*60*60*24) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24))}일 전</a>`
+										}
+										else if(post_date / (1000*60*60) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60))}시간 전</a>`
+										}
+										else{
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60))}분전</a>`
+										}
+										text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
+										text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
+										text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
+										text_scroll += `</ul></div>`
+										text_scroll += `<div class="card-title">`
+										text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
+										text_scroll += `<a href="#" class="card-title"> ${post.restNm}</a></div>`
+										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
+										text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;"></div>`
+										text_scroll += `<div class="activity">`
+										text_scroll += `<div th:id="'postContent' + ${post.postId}">${post.postContent}</div>`
+										//여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
+										text_scroll += `<br>`
+										text_scroll += `<a href="#" style="color: blue;">&emsp;#강남맛집</a>`
+										text_scroll += `<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>`
+										text_scroll += `<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>`
+										text_scroll += `</div>`
+										text_scroll += `<div class="activity">`
+										text_scroll += `<i class="ri-heart-3-line post_like" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+										text_scroll += `<i class="ri-message-3-line msg_icon" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+										text_scroll += `<i class="ri-send-plane-2-line" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+										text_scroll += `<br>`
+										text_scroll += `<a>좋아요 <span id="like_num${post.postId}">21</span>개</a>`
+										text_scroll += `<hr></div>`
+										//내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. 
+										text_scroll += `<form class="data" action="/post/deletePost" method="post">`
+										text_scroll += `<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">`
+										text_scroll += `<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">`
+										text_scroll += `<input type="hidden" id="userId" name="userId" value="''+${post.userId}">`
+										text_scroll += `<input type="hidden" id="postId" name="postId" value="''+${post.postId}">`
+										text_scroll += `<input type="hidden" id="postDate" name="postDate" value="''+${post.postDate}">`
+										text_scroll += `</form>`
+										text_scroll += `<div class="activity" style="text-align: center;">`
+										text_scroll += `<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>`
+										text_scroll += `<span>감성타코</span>에서 식사하셨어요!</a></div></div></div>`
+									}
+
+									$("#post_scroll_div").html(text_scroll);
+									//이벤트 리스너 함수 호출
+									$.like_button();
+									$.comment_button();
+								},
+								error: function (e) {
+									console.log(e);
+								}
+							});
+						}
+					}
+				});
+/*
+				//댓글 무한 스크롤 - 부분
+				let page_num = 1;
+				let text_scroll = "";
+				$(window).scroll(function () {
+					if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+						if (page_num < [[${postList.totalPages}]]) {
+							$.ajax({
+								url: '/post/mainPost',
+								type: 'post',
+								data: {page_num: page_num},
+								success: function (obj) {
+									//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
+									page_num++;
+									for (let post of obj.content) {
+										let post_date = new Date(post.postDate);
+										//날짜 데이터 밀리초
+										post_date = now - post_date;
+										
+										
+										console.log(post_date)
+										
+										text_scroll += `<div class="card recent-sales">`
+										text_scroll += `<div class="card-body">`
+										text_scroll += `<div class="filter" style="margin-top: 15px;">`
+										if(post_date / (1000*60*60*24*30*12) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24*30*12))}년 전</a>`
+										}
+										else if(post_date / (1000*60*60*24*30) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24*30))}달 전</a>`
+										}
+										else if(post_date / (1000*60*60*24) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24))}일 전</a>`
+										}
+										else if(post_date / (1000*60*60) > 1){
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60))}시간 전</a>`
+										}
+										else{
+											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60))}분전</a>`
+										}
+										text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
+										text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
+										text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
+										text_scroll += `</ul></div>`
+										text_scroll += `<div class="card-title">`
+										text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
+										text_scroll += `<a href="#" class="card-title"> ${post.restNm}</a></div>`
+										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
+										text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;"></div>`
+										text_scroll += `<div class="activity">`
+										text_scroll += `<div th:id="'postContent' + ${post.postId}">${post.postContent}</div>`
+										//여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
+										text_scroll += `<br>`
+										text_scroll += `<a href="#" style="color: blue;">&emsp;#강남맛집</a>`
+										text_scroll += `<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>`
+										text_scroll += `<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>`
+										text_scroll += `</div>`
+										text_scroll += `<div class="activity">`
+										text_scroll += `<i class="ri-heart-3-line post_like" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+										text_scroll += `<i class="ri-message-3-line msg_icon" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+										text_scroll += `<i class="ri-send-plane-2-line" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+										text_scroll += `<br>`
+										text_scroll += `<a>좋아요 <span id="like_num${post.postId}">21</span>개</a>`
+										text_scroll += `<hr></div>`
+										//내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. 
+										text_scroll += `<form class="data" action="/post/deletePost" method="post">`
+										text_scroll += `<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">`
+										text_scroll += `<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">`
+										text_scroll += `<input type="hidden" id="userId" name="userId" value="''+${post.userId}">`
+										text_scroll += `<input type="hidden" id="postId" name="postId" value="''+${post.postId}">`
+										text_scroll += `<input type="hidden" id="postDate" name="postDate" value="''+${post.postDate}">`
+										text_scroll += `</form>`
+										text_scroll += `<div class="activity" style="text-align: center;">`
+										text_scroll += `<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>`
+										text_scroll += `<span>감성타코</span>에서 식사하셨어요!</a></div></div></div>`
+									}
+
+									$("#post_scroll_div").html(text_scroll);
+									//이벤트 리스너 함수 호출
+									$.like_button();
+									$.comment_button();
+								},
+								error: function (e) {
+									console.log(e);
+								}
+							});
+						}
+					}
+				});
+				*/
+			});
+
+			//수정모드에서 제목변경시 실행될 메소드
+			function fnChangeContent(input) {
+				//글을 변경하기위해 텍스트박스를 수정할 경우 해당 텍스트박스의 내용을 숨겨진 태그들에 뿌려줌.
+				//$("#postContent").text($(input).text() + "");
+				$("#postContentIn").val($(input).val());
+				console.log($("#post").val($(input).val()));
+
+				/*
+				if($(input).val() != $(input).parent().attr("data-board-title")) {
+				   $(input).parent().attr("data-new-title", $(input).val());
+				   $("#statusTd" + $(input).parent().attr("data-board-no")).text("U");
+				   $("#status" + $(input).parent().attr("data-board-no")).val("U");
+				   $("#status" + $(input).parent().attr("data-board-no")).attr("data-new-title", $(input).val());
+				} else {
+				   $("#statusTd" + $(input).parent().attr("data-board-no")).text("");
+				   $("#status" + $(input).parent().attr("data-board-no")).val("");
+				}      
+				*/
+			}
+
+			function fnGetChangedFileInfo(boardFileNo, e) {
+				//변경된 파일 받아오기
+				const files = e.target.files;
+				//받아온 파일 배열 형태로 변경(싱글파일 업로드여서 파일배열 한개의 인자만 담김)
+				const fileArr = Array.prototype.slice.call(files);
+
+				//변경된 파일들은 변경된 파일 배열에 담아준다.
+				changedFiles.push(fileArr[0]);
+
+				//미리보기 화면에서 변경된 파일의 이미지 출력
+				const reader = new FileReader();
+
+				reader.onload = function (ee) {
+					const img = document.getElementById("img" + boardFileNo);
+					const p = document.getElementById("fileNm" + boardFileNo);
+
+					p.textContent = fileArr[0].name;
+
+					//이미지인지 체크
+					if (fileArr[0].name.match(/(.*?)\.(jpg|jpeg|png|gif|bmp|svg)$/))
+						img.src = ee.target.result;
+					else
+						img.src = "/images/defaultFileImg.png";
+				}
+
+				reader.readAsDataURL(fileArr[0]);
+
+				//기존 파일을 담고있는 배열에서 변경이 일어난 파일 수정
+				for (let i = 0; i < originFiles.length; i++) {
+					if (boardFileNo == originFiles[i].boardFileNo) {
+						originFiles[i].boardFileStatus = "U";
+						originFiles[i].newFileNm = fileArr[0].name;
+					}
+				}
+			}
+
+			function fnUpdatePost(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
+
+
+				/*
+				dt = new DataTransfer();
 	
-			 
+				for (f in uploadFiles) {
+				   let file = uploadFiles[f];
+				   dt.items.add(file);
+				}
+	
+				$("#btnAtt")[0].files = dt.files;
+	
+				//dt.clearData();
+				//clearData() 사용하면 배열의 모든 내용이 담기지 않고
+				//파일 하나씩만 담기는 현상이 발생해서 dt를 두 개로 분리하여 사용
+				dt2 = new DataTransfer();
+	
+				for (f in changedFiles) {
+				   let file = changedFiles[f];
+				   dt2.items.add(file);
+				}
+	
+				$("#changedFiles")[0].files = dt2.files;
+			    
+				//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
+				//배열 형태로 전송 시 백단(Java)에서 처리불가
+				//JSON String 형태로 변환하여 전송한다.
+				$("#originFiles").val(JSON.stringify(originFiles));
+				*/
+				//ajax에서 multipart/form-data형식을 전송하기 위해서는
+				//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
+				//form.serialize()는 multipart/form-data 전송불가
+				//let formData = new FormData($("#updateForm")[0]);
+				let formData = new FormData($($(".data")[index])[0]);
 
-            let list = $('.post').get();
+				//ajax에 enctype: multipart/form-data, 
+				//processData: false, contentType: false로 설정               
+				console.log("updating-service");
+				console.log("수정 할 내용 : " + $("#contentIn" + postId).val());
+				$.ajax({
+					enctype: 'multipart/form-data',
+					url: '/post/updatePost',
+					type: 'put',
+					data: formData,
+					processData: false,
+					contentType: false,
+					success: function (obj) {
+						console.log(obj.item);
+						alert("수정작업을 성공하였습니다.");
 
-            let postIdList = [];
-            let flagList = [];
-
-            for (let i = 0; i < list.length; i++) {
-               flagList.push(false);
-               postIdList.push($($('.updateBtn')[i]).val());
-            }
-            console.log("게시글 : " + postIdList);
-            console.log(list.length);
-
-            //퀼 텍스트 에어리어 소환
-            new Quill('.quill-editor-default', {
-               modules: {
-                  toolbar: [
-                     [{
-                        font: []
-                     }, {
-                        size: []
-                     }],
-                     ["bold", "italic", "underline", "strike"],
-                     [{
-                        color: []
-                     },
-                     {
-                        background: []
-                     }
-                     ],
-                     [{
-                        script: "super"
-                     },
-                     {
-                        script: "sub"
-                     }
-                     ],
-                     [{
-                        list: "ordered"
-                     },
-                     {
-                        list: "bullet"
-                     },
-                     {
-                        indent: "-1"
-                     },
-                     {
-                        indent: "+1"
-                     }
-                     ],
-                     ["direction", {
-                        align: []
-                     }],
-                     ["image"],
-                     ["clean"]
-                  ]
-               },
-               theme: 'snow'
-
-            });
-
-            //해시태그 이벤트
-            for (let i = 1; i < 5; i++) {
-               $("#hashTag" + i).blur(function () {
-                  if ($("#hashTag" + i).val() != "") {
-                     $("#hashTag_label" + (i + 1)).css("display", "inline-block");
-                  }
-               });
-            }
-
-            //작성 버튼
-            $("#insert_board").click(function () {
-               $("#postContent").val($(".ql-editor").html());
-               $("#insert_form").submit();
-            })
-            
-
-            //좋아요 버튼 함수(innerHtml에도 먹이기 위해서 함수로 만듬)
-            $.like_button = function () {
-               $(".post_like").click(function (e) {
-                  //하트 아이콘의 아이디를 게시물 아이디로 만들었음
-                  let postId = e.target.id;
-                  if ($(e.target).css("color") == "rgb(0, 0, 0)") {
-                     console.log("좋아요 누른 포스트 id: " + postId);
-                     $(e.target).css("color", "red");
-                     //좋아요를 눌렀을때 ajax
-                     $.ajax({
-                        url: '',
-                        type: 'get',
-                        //포스트 아이디를 전송
-                        //일단 생각한 방법으로 만들어뒀음(like 좋아요 1, 해제 0)
-                        data: {
-                           postId: postId,
-                           like: 1
-                        },
-                        success: function (obj) {
-                           //좋아요 개수를 like_num +아이디 로 만들었음
-                           $("#like_num" + postId).html();
-                        },
-                        error: function (e) {
-                           console.log(e);
-                        }
-                     });
-                  } else {
-                     $(e.target).css("color", "black");
-                     console.log("좋아요 해제한 포스트 id: " + postId);
-                     $.ajax({
-                        url: '',
-                        type: 'get',
-                        data: {
-                           postId: postId,
-                           like: 0
-                        },
-                        success: function (obj) {
-                           //좋아요 개수를 like_num +아이디 로 만들었음
-                           $("#like_num" + postId).html();
-                        },
-                        error: function (e) {
-                           console.log(e);
-                        }
-                     });
-                  }
-               });
-            }
-
-            //좋아요 이벤트 리스너 함수 호출
-            $.like_button();
-
-            //게시글에서 댓글버튼 이벤트 리스너
-            $.comment_button = function () {
-               $(".msg_icon").click(function (e) {
-                  //여기도 댓글 아이콘 아이디를 포스트 id로 잡았음
-                  let postId = e.target.id;
-                  let text_comment = "";
-                  
-                  //일단 보면서 모델 작성해야하니까 놔뒀어요 작업 끝나면 삭제해주세요
-                  $('#msgModal').modal("show");
-                  
-                  $.ajax({
-                     url: '',
-                     type: 'get',
-                     data: {
-                        postId: postId,
-                     },
-                     success: function (obj) {
-                        //받아온 객체의 내용을(댓글) 숫자만큼 반복
-                        for (let comment of obj.content) {
-                           text_comment += `<div class="comment_info" style="margin-bottom: 20px;">`
-                           //프사 넣는부분
-                           text_comment += `<img class="img-fluid rounded-circle" src="${comment.abc}" style="width: 40px;">`
-                           text_comment += `<span style="margin-left: 10px;"><a href="#" style="color: black; cursor:pointer;">${comment.abc}</a></span>`
-                           text_comment += `<div style="word-break: keep-all;">${comment.abc}</div></div>`
-                        }
-                        $(".comment").html(text_comment);
-                        //작업 끝나고 이거 활성화
-                        //$('#msgModal').modal("show");
-                     },
-                     error: function (e) {
-                        console.log(e);
-                     }
-                  });
-               });
-
-            }
-            //댓글버튼 이벤트 리스너 함수 호출
-            $.comment_button();
-
-            //게시글 작성에서 사진 버튼 누르면 input-file 실행
-            //주석_창혁(quill쓰면 사진 필요 없어져서 일단 삭제)
-            //$("#file_select_btn").click(function (e) {
-            //   $("#file_select").click();
-            //});
-
-
-			//게시글 수정과 삭제를 활성화하는 버튼을 생성함. 게시글이 자기꺼인 것만 표시함.
-            for (let i = 0; i < list.length; i++) {
-
-               $($('.updateBtn')[i]).click(function (e) {
-
-                  flagList[i] = !flagList[i];
-                  if (flagList[i]) {
-                     $(this).text("돌아가기");
-                     $("<button id='deleteButton" + $(this).val() + "'>").appendTo($(this).parent());
-                     $("#deleteButton" + $(this).val()).text("글 삭제");
-                     $("<button id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
-                     $("#updateButton" + $(this).val()).text("게시글 수정하기");
-                  } else {
-                     $(this).text("게시글 수정")
-                     $("#deleteButton" + $(this).val()).remove();
-                     $("#updateButton" + $(this).val()).remove();
-                  }
-
-                  $("#postContent" + $(this).val()).text();
-
-                  if (!flagList[i]) {
-                     $("#postContent" + $(this).val()).show();
-                     $("#contentIn" + $(this).val()).hide();
-                  } else {
-                     $("#postContent" + $(this).val()).hide();
-                     $("#contentIn" + $(this).val()).show();
-                  }
-
-                  $("#updateButton" + postIdList[i]).click(function (e) {
-                     $($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());
-                     console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());
-                     fnUpdatePost(postIdList[i], i);
-                  });
-                  $("#deleteButton" + postIdList[i]).click(function (e) {
-                     console.log("delete");
-                     $($('.data')[i]).submit();
-                  });
-
-                  //글 내용 수정하는 키입력을 받음.
-                  $("#contentIn" + postIdList[i]).keyup(function (e) {
-                     $("#postContent" + postIdList[i]).text($(this).val());
-                     console.log($(this).val());
-                     fnChangeContent(this);
-
-                  });
-
-               });
-            }
-
-            //무한스크롤
-            let page_num = 1;
-            let text_scroll = "";
-            $(window).scroll(function () {
-               if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-                  if (page_num < [[${postList.totalPages}]]) {
-                     $.ajax({
-                        url: '/post/mainPost',
-                        type: 'post',
-                        data: {page_num: page_num},
-                        success: function (obj) {
-                           //한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
-                           page_num++;
-                           for (let post of obj.content) {
-                              text_scroll += `<div class="card recent-sales">`
-                              text_scroll += `<div class="card-body">`
-                              text_scroll += `<div class="filter" style="margin-top: 15px;">`
-                              text_scroll += `<a style="margin-right: 20px;">30분전</a>`
-                              text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
-                              text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
-                              text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
-                              text_scroll += `</ul></div>`
-                              text_scroll += `<div class="card-title">`
-                              text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
-                              text_scroll += `<a href="#" class="card-title"> ${post.restNm}</a></div>`
-                              text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
-                              text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;"></div>`
-                              text_scroll += `<div class="activity">`
-                              text_scroll += `<div th:id="'postContent' + ${post.postId}" th:text="${post.postContent}"></div>`
-                              //여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
-                              text_scroll += `<br>`
-                              text_scroll += `<a href="#" style="color: blue;">&emsp;#강남맛집</a>`
-                              text_scroll += `<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>`
-                              text_scroll += `<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>`
-                              text_scroll += `</div>`
-                              text_scroll += `<div class="activity">`
-                              text_scroll += `<i class="ri-heart-3-line post_like" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
-                              text_scroll += `<i class="ri-message-3-line msg_icon" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
-                              text_scroll += `<i class="ri-send-plane-2-line" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
-                              text_scroll += `<br>`
-                              text_scroll += `<a>좋아요 <span id="like_num${post.postId}">21</span>개</a>`
-                              text_scroll += `<hr></div>`
-                              //내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. 
-                              text_scroll += `<form class="data" action="/post/deletePost" method="post">`
-                              text_scroll += `<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">`
-                              text_scroll += `<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">`
-                              text_scroll += `<input type="hidden" id="userId" name="userId" value="''+${post.userId}">`
-                              text_scroll += `<input type="hidden" id="postId" name="postId" value="''+${post.postId}">`
-                              text_scroll += `<input type="hidden" id="postDate" name="postDate" value="''+${post.postDate}">`
-                              text_scroll += `</form>`
-                              text_scroll += `<div class="activity" style="text-align: center;">`
-                              text_scroll += `<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>`
-                              text_scroll += `<span>감성타코</span>에서 식사하셨어요!</a></div></div></div>`
-                           }
-
-                           $("#post_scroll_div").html(text_scroll);
-                           //이벤트 리스너 함수 호출
-                           $.like_button();
-                           $.comment_button();
-                        },
-                        error: function (e) {
-                           console.log(e);
-                        }
-                     });
-                  }
-               }
-            })
-
-         });
-
-         //수정모드에서 제목변경시 실행될 메소드
-         function fnChangeContent(input) {
-            //글을 변경하기위해 텍스트박스를 수정할 경우 해당 텍스트박스의 내용을 숨겨진 태그들에 뿌려줌.
-            //$("#postContent").text($(input).text() + "");
-            $("#postContentIn").val($(input).val());
-            console.log($("#post").val($(input).val()));
-
-            /*
-            if($(input).val() != $(input).parent().attr("data-board-title")) {
-               $(input).parent().attr("data-new-title", $(input).val());
-               $("#statusTd" + $(input).parent().attr("data-board-no")).text("U");
-               $("#status" + $(input).parent().attr("data-board-no")).val("U");
-               $("#status" + $(input).parent().attr("data-board-no")).attr("data-new-title", $(input).val());
-            } else {
-               $("#statusTd" + $(input).parent().attr("data-board-no")).text("");
-               $("#status" + $(input).parent().attr("data-board-no")).val("");
-            }      
-            */
-         }
-
-         function fnGetChangedFileInfo(boardFileNo, e) {
-            //변경된 파일 받아오기
-            const files = e.target.files;
-            //받아온 파일 배열 형태로 변경(싱글파일 업로드여서 파일배열 한개의 인자만 담김)
-            const fileArr = Array.prototype.slice.call(files);
-
-            //변경된 파일들은 변경된 파일 배열에 담아준다.
-            changedFiles.push(fileArr[0]);
-
-            //미리보기 화면에서 변경된 파일의 이미지 출력
-            const reader = new FileReader();
-
-            reader.onload = function (ee) {
-               const img = document.getElementById("img" + boardFileNo);
-               const p = document.getElementById("fileNm" + boardFileNo);
-
-               p.textContent = fileArr[0].name;
-
-               //이미지인지 체크
-               if (fileArr[0].name.match(/(.*?)\.(jpg|jpeg|png|gif|bmp|svg)$/))
-                  img.src = ee.target.result;
-               else
-                  img.src = "/images/defaultFileImg.png";
-            }
-
-            reader.readAsDataURL(fileArr[0]);
-
-            //기존 파일을 담고있는 배열에서 변경이 일어난 파일 수정
-            for (let i = 0; i < originFiles.length; i++) {
-               if (boardFileNo == originFiles[i].boardFileNo) {
-                  originFiles[i].boardFileStatus = "U";
-                  originFiles[i].newFileNm = fileArr[0].name;
-               }
-            }
-         }
-
-         function fnUpdatePost(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
-
-
-            /*
-            dt = new DataTransfer();
-
-            for (f in uploadFiles) {
-               let file = uploadFiles[f];
-               dt.items.add(file);
-            }
-
-            $("#btnAtt")[0].files = dt.files;
-
-            //dt.clearData();
-            //clearData() 사용하면 배열의 모든 내용이 담기지 않고
-            //파일 하나씩만 담기는 현상이 발생해서 dt를 두 개로 분리하여 사용
-            dt2 = new DataTransfer();
-
-            for (f in changedFiles) {
-               let file = changedFiles[f];
-               dt2.items.add(file);
-            }
-
-            $("#changedFiles")[0].files = dt2.files;
-            
-            //변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
-            //배열 형태로 전송 시 백단(Java)에서 처리불가
-            //JSON String 형태로 변환하여 전송한다.
-            $("#originFiles").val(JSON.stringify(originFiles));
-            */
-            //ajax에서 multipart/form-data형식을 전송하기 위해서는
-            //new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
-            //form.serialize()는 multipart/form-data 전송불가
-            //let formData = new FormData($("#updateForm")[0]);
-            let formData = new FormData($($(".data")[index])[0]);
-
-            //ajax에 enctype: multipart/form-data, 
-            //processData: false, contentType: false로 설정               
-            console.log("updating-service");
-            console.log("수정 할 내용 : " + $("#contentIn" + postId).val());
-            $.ajax({
-               enctype: 'multipart/form-data',
-               url: '/post/updatePost',
-               type: 'put',
-               data: formData,
-               processData: false,
-               contentType: false,
-               success: function (obj) {
-                  console.log(obj.item);
-                  alert("수정작업을 성공하였습니다.");
-
-                  $("#postId").val('' + obj.item.getPost.postId);
-                  $("#userId").val('' + obj.item.getPost.userId);
-                  $("#postContentIn").val(obj.item.getPost.userId);
-                  $("#postContent").text(obj.item.getPost.postContent);
-                  $("#postContent" + postId).text(obj.item.getPost.postContent);
-                  $("#contentIn" + postId).text(obj.item.getPost.postContent);
-                  $("#restNmIn").val(obj.item.getPost.restNm);
-                  //수정 다하면 태그들을 다시 원래대로 돌린다.
-                  $("#postContent" + postId).show();
-                  $("#contentIn" + postId).hide();
-                  $("#deleteButton" + postId).remove();
-                  $("#updateButton" + postId).remove();
-                  $($(".updateBtn")[index]).text("게시글 수정");
-               },
-               error: function (e) {
-                  console.log(e);
-               },
-               done: function (result) {
-                  console.log(result);
-                  $("#attZone").replaceWith(result);
-               }
-            });
-            return false;
-         }
-      </script>
-   </th:block>
-   <!--#targetPost .post {
+						$("#postId").val('' + obj.item.getPost.postId);
+						$("#userId").val('' + obj.item.getPost.userId);
+						$("#postContentIn").val(obj.item.getPost.userId);
+						$("#postContent").text(obj.item.getPost.postContent);
+						$("#postContent" + postId).text(obj.item.getPost.postContent);
+						$("#contentIn" + postId).text(obj.item.getPost.postContent);
+						$("#restNmIn").val(obj.item.getPost.restNm);
+						//수정 다하면 태그들을 다시 원래대로 돌린다.
+						$("#postContent" + postId).show();
+						$("#contentIn" + postId).hide();
+						$("#deleteButton" + postId).remove();
+						$("#updateButton" + postId).remove();
+						$($(".updateBtn")[index]).text("게시글 수정");
+					},
+					error: function (e) {
+						console.log(e);
+					},
+					done: function (result) {
+						console.log(result);
+						$("#attZone").replaceWith(result);
+					}
+				});
+				return false;
+			}
+		</script>
+	</th:block>
+	<!--#targetPost .post {
    
    height: 100%; 
 }
@@ -463,164 +702,169 @@
 
 <body>
 
-   <main layout:fragment="main" id="main" class="main">
-      <div id="selectedPost">
+	<main layout:fragment="main" id="main" class="main">
+		<div id="selectedPost">
 
-      </div>
-      <div class="pagetitle">
-         <h1>HOME</h1>
-      </div><!-- End Page Title -->
+		</div>
+		<div class="pagetitle">
+			<h1>HOME</h1>
+		</div><!-- End Page Title -->
 
-      <section class="section dashboard">
-         <div class="row">
-            <!--왼쪽 라인을 8로 오른쪽 라인을 4 비율로 나눔(페이지 100% = 12)-->
-            <!-- Left side columns -->
-            <div class="col-lg-8">
-               <div class="row">
-                  <!-- Recent Sales -->
-                  <div class="col-12">
-                     <!-- 작성 하는 부분 -->
-    
-                     <div class="card recent-sales overflow-auto">
-                        <div class="card-body">
-                           <h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
-                           <!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
-                           <div class="quill-editor-default">
-                              <h2>write your daily life</h2>
-                              <h2> </h2>
-                              <p> </p>
-                           </div>
-                           <!-- End Quill Editor Default -->
-                           <!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임 -->
-                           <form id="insert_form" action="/post/insertPost" method="post">
-                              <input type="hidden" id="postContent" name="postContent" value="">
-                              <div style="margin-bottom: 5px;">
-                                 <label id="hashTag_label1">&emsp;# <input type="text" id=hashTag1
-                                       name="hashTag1" class="hashTag_text" placeholder="태그 입력"
-                                       onfocus="this.placeholder=''"
-                                       onblur="this.placeholder='태그 입력'"></label>
-                                 <label id="hashTag_label2" style="display: none;">&emsp;# <input type="text"
-                                       id=hashTag2 name="hashTag2" class="hashTag_text" placeholder="태그 입력"
-                                       onfocus="this.placeholder=''"
-                                       onblur="this.placeholder='태그 입력'"></label>
-                                 <label id="hashTag_label3" style="display: none;">&emsp;# <input type="text"
-                                       id=hashTag3 name="hashTag3" class="hashTag_text" placeholder="태그 입력"
-                                       onfocus="this.placeholder=''"
-                                       onblur="this.placeholder='태그 입력'"></label>
-                                 <label id="hashTag_label4" style="display: none;">&emsp;# <input type="text"
-                                       id=hashTag4 name="hashTag4" class="hashTag_text" placeholder="태그 입력"
-                                       onfocus="this.placeholder=''"
-                                       onblur="this.placeholder='태그 입력'"></label>
-                                 <label id="hashTag_label5" style="display: none;">&emsp;# <input type="text"
-                                       id=hashTag5 name="hashTag5" class="hashTag_text" placeholder="태그 입력"
-                                       onfocus="this.placeholder=''"
-                                       onblur="this.placeholder='태그 입력'"></label>
+		<section class="section dashboard">
+			<div class="row">
+				<!--왼쪽 라인을 8로 오른쪽 라인을 4 비율로 나눔(페이지 100% = 12)-->
+				<!-- Left side columns -->
+				<div class="col-lg-8">
+					<div class="row">
+						<!-- Recent Sales -->
+						<div class="col-12">
+							<!-- 작성 하는 부분 -->
 
-                              </div>
-                              <input type="button" class="btn" id="insert_board" value="작성"
-                                 style="background-color: #4154f1; color: white; float: right;">
-                           </form>
-                        </div>
-                     </div>
-                  </div><!-- End Recent Sales -->
-               </div>
-               <div class="row">
-                  <div th:each="post : ${postList}" class="col-12 post">
-                     <div class="card recent-sales">
-                        <div class="card-body">
-                           <!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
-                           <div class="filter" style="margin-top: 15px;">
-							  <!--인풋 히든을 이용해 지난 시간 구하기-->
-							  <input type="hidden" th:value="post.postDate" th:id="'timeInput_'+post.postId">
-                              <a style="margin-right: 20px;" th:id="'time_'+post.postId">30분전</a>
-                              
-                              <a class="icon" href="#" data-bs-toggle="dropdown"><i
-                                    class="bi bi-three-dots"></i></a>
-                              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                 <li><a class="dropdown-item" href="#"><i
-                                          class="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>
-                              </ul>
-                           </div>
-                           <!-- 이름부분 후에 스크립트로 for문 예정 -->
-                           <div class="card-title">
-                              <img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
-                                 style="width: 40px;">
-                              <a href="#" class="card-title" th:text="${post.restNm}"></a>
-                           </div>
-                           <!-- 게시글 사진 부분 -->
-                           <div class="activity" style="margin-bottom: 10px;">
-                              <img src="../assets/img/news-1.jpg" style="width: 100%;">
-                           </div>
-                           <div class="activity">
-                              <!-- 게시글 내용부분-->
+							<div class="card recent-sales overflow-auto">
+								<div class="card-body">
+									<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
+									<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
+									<div class="quill-editor-default">
+										<h2>write your daily life</h2>
+										<h2> </h2>
+										<p> </p>
+									</div>
+									<!-- End Quill Editor Default -->
+									<!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임 -->
+									<form id="insert_form" action="/post/insertPost" method="post">
+										<input type="hidden" id="postContent" name="postContent" value="">
+										<div style="margin-bottom: 5px;">
+											<label id="hashTag_label1">&emsp;# <input type="text" id=hashTag1
+													name="hashTag1" class="hashTag_text" placeholder="태그 입력"
+													onfocus="this.placeholder=''"
+													onblur="this.placeholder='태그 입력'"></label>
+											<label id="hashTag_label2" style="display: none;">&emsp;# <input type="text"
+													id=hashTag2 name="hashTag2" class="hashTag_text" placeholder="태그 입력"
+													onfocus="this.placeholder=''"
+													onblur="this.placeholder='태그 입력'"></label>
+											<label id="hashTag_label3" style="display: none;">&emsp;# <input type="text"
+													id=hashTag3 name="hashTag3" class="hashTag_text" placeholder="태그 입력"
+													onfocus="this.placeholder=''"
+													onblur="this.placeholder='태그 입력'"></label>
+											<label id="hashTag_label4" style="display: none;">&emsp;# <input type="text"
+													id=hashTag4 name="hashTag4" class="hashTag_text" placeholder="태그 입력"
+													onfocus="this.placeholder=''"
+													onblur="this.placeholder='태그 입력'"></label>
+											<label id="hashTag_label5" style="display: none;">&emsp;# <input type="text"
+													id=hashTag5 name="hashTag5" class="hashTag_text" placeholder="태그 입력"
+													onfocus="this.placeholder=''"
+													onblur="this.placeholder='태그 입력'"></label>
 
-                              <div th:id="'postContent' + ${post.postId}" th:text="${post.postContent}"></div>
-                              <textarea th:id="'contentIn' + ${post.postId}" name="contentIn" col="200"
-                                 row="40" th:text="${post.postContent}"
-                                 style="display: none; resize: none;"></textarea>
+										</div>
+										<input type="button" class="btn" id="insert_board" value="작성"
+											style="background-color: #4154f1; color: white; float: right;">
+									</form>
+								</div>
+							</div>
+						</div><!-- End Recent Sales -->
+					</div>
+					<div class="row">
+						<div th:each="post : ${postList}" class="col-12 post">
+							<input type="hidden" th:value="${post.betweenDate}">
+							<div class="card recent-sales">
+								<div class="card-body">
+									<!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
+									<div class="filter" style="margin-top: 15px;">
+										<a style="margin-right: 20px;">
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 / 24 / 30 / 12).intValue()} + '년 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 / 24 / 30).intValue()} + '달 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 < 1 && post.betweenDate / 60 / 60 / 24 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 / 24).intValue()} + '일 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 < 1 && post.betweenDate / 60 / 60 / 24 < 1 && post.betweenDate / 60 / 60 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 ).intValue()} + '시간 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 < 1
+														   && post.betweenDate / 60 / 60 / 24 < 1 && post.betweenDate / 60 / 60 < 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60).intValue()} + '분 전'"/>
+									    </a>
+										<a class="icon" href="#" data-bs-toggle="dropdown"><i
+												class="bi bi-three-dots"></i></a>
+										<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+											<li><a class="dropdown-item" href="#"><i
+														class="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>
+										</ul>
+									</div>
+									<!-- 이름부분 후에 스크립트로 for문 예정 -->
+									<div class="card-title">
+										<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
+											style="width: 40px;">
+										<a href="#" class="card-title" th:text="${post.restNm}"></a>
+									</div>
+									<!-- 게시글 사진 부분 -->
+									<div class="activity" style="margin-bottom: 10px;">
+										<img src="../assets/img/news-1.jpg" style="width: 100%;">
+									</div>
+									<div class="activity">
+										<!-- 게시글 내용부분-->
 
-                              <br>
-                              <!-- 해시태그 -->
-                              <a href="#" style="color: blue;">&emsp;#강남맛집</a>
-                              <a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>
-                              <a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>
-                           </div>
-                           <!-- 좋아요 댓글 아이콘 -->
-                           <div class="activity">
-                              <i class="ri-heart-3-line post_like" th:id="${post.postId}"
-                                 style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
-                              <i class="ri-message-3-line msg_icon" th:id="${post.postId}"
-                                 style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
-                              <i class="ri-send-plane-2-line"
-                                 style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
-                              <br>
-                              <!--좋아요 숫자 필드-->
-                              <a>좋아요 <span th:id="'like_num'+${post.postId}">21</span>개</a>
-                              <hr>
-                           </div>
+										<div th:id="'postContent' + ${post.postId}" th:text="${post.postContent}"></div>
+										<textarea th:id="'contentIn' + ${post.postId}" name="contentIn" col="200"
+											row="40" th:text="${post.postContent}"
+											style="display: none; resize: none;"></textarea>
 
-                           <!-- 내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. -->
-                           <form class="data" action="/post/deletePost" th:method="post">
-                              <input type="hidden" id="restNmIn" name="restNm" th:value="${post.restNm}">
-                              <input type="hidden" id="postContentIn" name="postContent"
-                                 th:value="${post.postContent}">
-                              <input type="hidden" id="userId" name="userId" th:value="''+${post.userId}">
-                              <input type="hidden" id="postId" name="postId" th:value="''+${post.postId}">
-                              <input type="hidden" id="postDate" name="postDate"
-                                 th:value="''+${post.postDate}">
+										<br>
+										<!-- 해시태그 -->
+										<a href="#" style="color: blue;">&emsp;#강남맛집</a>
+										<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>
+										<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>
+									</div>
+									<!-- 좋아요 댓글 아이콘 -->
+									<div class="activity">
+										<i class="ri-heart-3-line post_like" th:id="${post.postId}"
+											style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
+										<i class="ri-message-3-line msg_icon" th:id="${post.postId}"
+											style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
+										<i class="ri-send-plane-2-line"
+											style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
+										<br>
+										<!--좋아요 숫자 필드-->
+										<a>좋아요 <span th:id="'like_num'+${post.postId}">21</span>개</a>
+										<hr>
+									</div>
 
-                           </form>
-                           <!-- 친구 식사 했는지 확인 필드 -->
-                           <div class="activity" style="text-align: center;">
-                              <a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>
-                                 <span>감성타코</span>에서 식사하셨어요!</a>
+									<!-- 내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. -->
+									<form class="data" action="/post/deletePost" th:method="post">
+										<input type="hidden" id="restNmIn" name="restNm" th:value="${post.restNm}">
+										<input type="hidden" id="postContentIn" name="postContent"
+											th:value="${post.postContent}">
+										<input type="hidden" id="userId" name="userId" th:value="''+${post.userId}">
+										<input type="hidden" id="postId" name="postId" th:value="''+${post.postId}">
+										<input type="hidden" id="postDate" name="postDate"
+											th:value="''+${post.postDate}">
 
-                              <input type="hidden" class="test" value="">
-                              <button class="updateBtn" id="updateButton" th:value="${post.postId}"
-                                 th:if="${post.userId} eq ${loginUser.userId}">게시글 수정</button>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
-                  <div id="post_scroll_div" class="col-12"></div>
-               </div>
+									</form>
+									<!-- 친구 식사 했는지 확인 필드 -->
+									<div class="activity" style="text-align: center;">
+										<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>
+											<span>감성타코</span>에서 식사하셨어요!</a>
 
-            </div><!-- End Left side columns -->
+										<input type="hidden" class="test" value="">
+										<button class="updateBtn" id="updateButton" th:value="${post.postId}"
+											th:if="${post.userId} eq ${loginUser.userId}">게시글 수정</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
+						<div id="post_scroll_div" class="col-12"></div>
+					</div>
 
-            <!-- Right side columns -->
-            <div class="col-lg-4 col-xxl-3">
+				</div><!-- End Left side columns -->
 
-               <!-- Recent Activity -->
-               <div class="card">
-                  <div class="card-body">
-                     <h5 class="card-title"
-                        style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
-                        먹거리 <span>| Today</span></h5>
-                     <div class="activity">
-                        <div id="today_eat">
-                           <ol>
-                              <!--
+				<!-- Right side columns -->
+				<div class="col-lg-4 col-xxl-3">
+
+					<!-- Recent Activity -->
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title"
+								style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
+								먹거리 <span>| Today</span></h5>
+							<div class="activity">
+								<div id="today_eat">
+									<ol>
+										<!--
                               <li><a href="#">#치킨</a></li>
                               <li><a href="#">#보쌈</a></li>
                               <li><a href="#">#연어초밥</a></li>
@@ -632,58 +876,68 @@
                               <li><a href="#">#곱창</a></li>
                               <li><a href="#">#막창</a></li> -->
 
-                              <li><a href="#"><b>#치킨</b></a></li>
-                              <li><a href="#"><b>#보쌈</b></a></li>
-                              <li><a href="#"><b>#연어초밥</b></a></li>
-                              <li><a href="#"><b>#우육면</b></a></li>
-                              <li><a href="#"><b>#마라탕</b></a></li>
-                              <li><a href="#"><b>#짜장면</b></a></li>
-                              <li><a href="#"><b>#라멘</b></a></li>
-                              <li><a href="#"><b>#갈비</b></a></li>
-                              <li><a href="#"><b>#곱창</b></a></li>
-                              <li><a href="#"><b>#막창</b></a></li>
+										<li><a href="#"><b>#치킨</b></a></li>
+										<li><a href="#"><b>#보쌈</b></a></li>
+										<li><a href="#"><b>#연어초밥</b></a></li>
+										<li><a href="#"><b>#우육면</b></a></li>
+										<li><a href="#"><b>#마라탕</b></a></li>
+										<li><a href="#"><b>#짜장면</b></a></li>
+										<li><a href="#"><b>#라멘</b></a></li>
+										<li><a href="#"><b>#갈비</b></a></li>
+										<li><a href="#"><b>#곱창</b></a></li>
+										<li><a href="#"><b>#막창</b></a></li>
 
-                           </ol>
-                        </div>
+									</ol>
+								</div>
 
-                     </div>
+							</div>
 
-                  </div>
-               </div><!-- End Recent Activity -->
-            </div><!-- End Right side columns -->
-         </div>
-      </section>
-      <!-- 댓글 모델 -->
-      <div class="modal fade" id="msgModal" role="dialog">
-         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <!-- 댓글 작성 폼 -->
-                  <form class="form-inline" role="form">
-                     <input type="text" placeholder="댓글을 작성하세요!!" onfocus="this.placeholder=''"
-                        onblur="this.placeholder='댓글을 작성하세요!!'">
-                     <input type="submit" class="btn" value="작성">
-                  </form>
-               </div>
-               <!-- 댓글 들어가는곳 -->
-               <div class="modal-body overflow-auto">
-                  <div id="comment" style="max-height: 30em;">
-                     <div class="comment_info" style="margin-bottom: 20px;">
-                        <img class="img-fluid rounded-circle" src="../assets/img/messages-2.jpg"
-                           style="width: 40px;">
-                        <span style="margin-left: 10px;"><a href="#" style="color: black; cursor:pointer;">머글랭</a></span>
-                        <div style="word-break: keep-all;">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Velit, ullam recusandae
-                           odit suscipit cumque nihil nulla ipsam obcaecati doloremque temporibus vel magni et
-                           cupiditate repudiandae esse ea repellat, laudantium inventore!
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
+						</div>
+					</div><!-- End Recent Activity -->
+				</div><!-- End Right side columns -->
+			</div>
+		</section>
+		<!-- 댓글 모델 -->
+		<div class="modal fade" id="msgModal" role="dialog">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content" id="modal-content">
+					<div class="modal-header">
+						<!-- 댓글 작성 -->
+						<textarea id="" style="width:70%; height: 30px; overflow:hidden; resize: none;"
+							spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)">asdf</textarea>
+						<button class="btn">작성</button>
+					</div>
+					<!-- 댓글 들어가는곳 -->
+					<div class="modal-body overflow-auto">
+						<div style="max-height: 30em;">
+							<div class="comment_info" style="margin-bottom: 20px; position:relative">
+								<div class="filter"
+									style="margin-top: 15px; position: absolute; top:-12px; right:10px;">
+									<a class="icon" href="#" data-bs-toggle="dropdown"><i
+											class="bi bi-three-dots"></i></a>
+									<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+										<li><a class="dropdown-item" href="#">
+												</i>&emsp;신고하기</a></li>
+									</ul>
+								</div>
+								<img class="img-fluid rounded-circle" src="../assets/img/messages-2.jpg"
+									style="width: 40px;">
+								<span style="margin-left: 10px;"><a href="#"
+										style="color: black; cursor:pointer;">머글랭</a></span>
+								<div style="word-break: keep-all;">Lorem ipsum dolor, sit amet consectetur adipisicing
+									elit. Velit, ullam recusandae
+									odit suscipit cumque nihil nulla ipsam obcaecati doloremque temporibus vel magni et
+									cupiditate repudiandae esse ea repellat, laudantium inventore!
+								</div>
+							</div>
 
-   </main><!-- End #main -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</main><!-- End #main -->
 </body>
 
 
