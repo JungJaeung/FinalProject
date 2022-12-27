@@ -32,6 +32,8 @@ public class MglgPostDTO {
 	private String postDate;
 	private String searchCondition;
 	private String searchKeyword;
+
 	private long betweenDate;
+
 
 }

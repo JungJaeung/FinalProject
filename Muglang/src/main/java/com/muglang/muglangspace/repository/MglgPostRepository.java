@@ -20,8 +20,6 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	@Query(value="UPDATE T_MGLG_POST SET POST_CONTENT = :#{#mglgPost.postContent} WHERE POST_ID = :#{#mglgPost.postId}", nativeQuery=true)
 	public void updateMglgPost(@Param("mglgPost") MglgPost mglgPost);
 	
-	//추후 논의 후 검색 추상메소드를 통일하거나 폐기 하겠음
-	//일단은 모두 검색을 기반으로 구현 2022/12/24
 	//내용 검색
 	Page<MglgPost> findByPostContentContainingOrderByPostDateDesc(String searchKeyword, Pageable pageable);
 	

@@ -26,7 +26,7 @@ public class MglgCommentServiceImpl implements MglgCommentService{
 		}
 
 		@Override
-		public Page<MglgComment> getCommentList(MglgComment comment, Pageable pageable, int postId) {
+		public Page<MglgComment> getPageCommentList(Pageable pageable, int postId) {
 			// TODO Auto-generated method stub
 			return mglgCommentRepository.getCommentList(pageable, postId);
 		}

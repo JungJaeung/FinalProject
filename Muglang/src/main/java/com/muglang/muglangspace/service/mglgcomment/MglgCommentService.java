@@ -20,6 +20,8 @@ public interface MglgCommentService {
 
 	void insertComment(int userId, int postId, String commentContent);
 
-	Page<MglgComment> getCommentList(MglgComment comment, Pageable pageable, int postId);
+	Page<MglgComment> getPageCommentList(Pageable pageable, int postId);
 
+	//모든 게시물의 전체 댓글 리스트. 사실상 쓸수 없는 쿼리
+	//Page<MglgComment> getPageCommentList(Pageable pageable);
 }

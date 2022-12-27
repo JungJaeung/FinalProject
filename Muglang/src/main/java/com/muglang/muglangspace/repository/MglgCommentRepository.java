@@ -19,10 +19,16 @@ public interface MglgCommentRepository extends JpaRepository<MglgComment, MglgCo
 //	
 //	Optional<MglgComment> findAllByCommentId(MglgPost mglgPost);
 
-	// 댓글 리스트 불러오기
+	//해당 게시글의 댓글 리스트 불러오기
 	@Query(value = "SELECT * FROM T_MGLG_COMMENT WHERE POST_ID = :postId", nativeQuery = true)
 	Page<MglgComment> getCommentList(Pageable pageable, @Param("postId") int postId);
 
+	// 댓글 리스트 불러오기 2. 조인 쿼리로 해당 댓글의 유저 정보까지 같이 가져옴. MglgComment형만 가져오므로 사용 안됨.
+//	@Query(value = "SELECT * FROM T_MGLG_COMMENT A, T_MGLG_USER B"
+//			+ " WHERE A.USER_ID = B.USER_ID AND "
+//			+ " POST_ID = :postId", nativeQuery = true)
+//	Page<MglgComment> getCommentList(Pageable pageable, @Param("postId") int postId);
+	
 	// 댓글 작성하기
 	@Modifying
 	@Query(value = "INSERT INTO T_MGLG_COMMENT" + "(COMMENT_ID, POST_ID, COMMENT_CONTENT, COMMENT_DATE, USER_ID)"
@@ -42,6 +48,8 @@ public interface MglgCommentRepository extends JpaRepository<MglgComment, MglgCo
 	void updateComment(@Param("commentId") int commentId, @Param("postId") int postId,
 			@Param("commentContent") String commentContent);
 
+	
+	
 //	@Modifying
 //	@Query(value="UPDATE T_MGLG_COMMENT SET COMMENT_CONTENT = :#{#mglgComment.commentContent}"
 //			+ " WHERE COMMENT_ID = :#{#mglgComment.commentId}", nativeQuery=true)
