@@ -47,6 +47,10 @@
 				}
 				console.log("게시글 : " + postIdList);
 				console.log(list.length);
+				
+				//html단의 처리. html의 val값으로 태그들을 뺀 값을 넣을 수 있다.
+				console.log($("#postContentIn").val());
+				$("#postContent25").html($("#postContentIn").val())
 
 
 				//퀼 텍스트 에어리어 소환
@@ -106,25 +110,40 @@
 					});
 				}
 
+				//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
 				//작성 버튼 - 따로 다른 페이지로 이동하지 않고 현재 페이지에서 바로 입력 처리를 시작함.
-				$.insert_button = function () {
-					
-				}
+
 				$("#insert_board").click(function () {
-					$("#postContent").val($(".ql-editor").html());
+					let insert_post = "";
+					let boldText = $("#postContent").children("h2").text();
+					let letter = $("#postContent").children("p").text();
+					
+					//$("#postContent").val($(".ql-editor").html());
 					$.ajax({
-						url: 'post/insertPost',
+						url: '/post/insertPost',
 						type: 'post',
 						data: {
-							
+							restNm: $("input[name='restNm']").val(),
+							postContent: $("input[name='postContent']").val(),
+							viewCount: 0,
+							hashTag1: $("#hashTag1").val(),
+							hashTag2: $("#hashTag2").val(),
+							hashTag3: $("#hashTag3").val(),
+							hashTag4: $("#hashTag4").val(),
+							hashTag5: $("#hashTag5").val(),
 						},
 						success: function(obj) {
-							
-						}, error: function(obj) {
-							
+							alert("글 등록에 성공하였습니다.");
+							console.log(obj);
+							console.log("로그인한 계정 : " + loginUserId);
+							insert_post = post(obj.item);
+							$("#posts").prepend(insert_post);
+						}, error: function(e) {
+							console.log(e);
 						}
-					})
-					$("#insert_form").submit();
+					});
+					
+					//$("#insert_form").submit();
 				});
 				
 
@@ -668,7 +687,6 @@
 									<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
 									<div class="quill-editor-default">
 										<h2>write your daily life</h2>
-										<h2> </h2>
 										<p> </p>
 									</div>
 									<!-- End Quill Editor Default -->
@@ -706,7 +724,7 @@
 							</div>
 						</div><!-- End Recent Sales -->
 					</div>
-					<div class="row">
+					<div class="row" id="posts">
 						<div th:each="post : ${postList}" class="col-12 post">
 							<input type="hidden" th:value="${post.betweenDate}">
 							<div class="card recent-sales">

@@ -64,7 +64,6 @@ public class PostController {
 
 		System.out.println("가져온 내용 : " + mglgPostDTO);
 
-
 		try {
 			MglgPost mglgPost = MglgPost.builder()
 					.postId(mglgPostDTO.getPostId())
@@ -81,10 +80,30 @@ public class PostController {
 					.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
 					.build();
 
-			mglgPostService.insertPost(mglgPost);
+			mglgPost = mglgPostService.insertPost(mglgPost);
+			MglgPost.getSearchKeyword();
+			//화면단으로 넘길 DTO를 생성
+			MglgPostDTO returnDTO = MglgPostDTO.builder()
+												 .postId(mglgPost.getPostId())
+												 .userId(loginUser.getMglgUser().getUserId())
+												 .restNm(mglgPost.getRestNm())
+												 .postDate(mglgPost.getPostDate().toString())
+												 .postRating(mglgPost.getPostRating())
+												 .restRating(mglgPost.getRestRating())
+												 .hashTag1(mglgPost.getHashTag1() == ""? "0": mglgPost.getHashTag1())
+												 .hashTag2(mglgPost.getHashTag2() == ""? "0": mglgPost.getHashTag2())
+												 .hashTag3(mglgPost.getHashTag3() == ""? "0": mglgPost.getHashTag3())
+												 .hashTag4(mglgPost.getHashTag4() == ""? "0": mglgPost.getHashTag4())
+												 .hashTag5(mglgPost.getHashTag5() == ""? "0": mglgPost.getHashTag5())
+												 .postContent(mglgPost.getPostContent())
+												 .betweenDate(Duration.between(mglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
+												 .build();
+												 
+												 
+			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
-			returnMap.put("insertPost", mglgPost);
-			//returnMap.put("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
+			returnMap.put("insertPost", returnDTO);
+			returnMap.put("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
 			responseDTO.setItem(returnMap);
 			System.out.println("새로운 글을 추가합니다.");
 			return ResponseEntity.ok().body(responseDTO); 
@@ -92,9 +111,6 @@ public class PostController {
 			responseDTO.setErrorMessage(e.getMessage());
 			return ResponseEntity.badRequest().body(responseDTO);
 		}
-		
-		//response.sendRedirect("/post/mainPost");
-		
 	}
 	
 	@PutMapping("/updatePost")
