@@ -75,19 +75,10 @@ public class UserController {
 								.userSnsId(customUser.getMglgUser().getUserSnsId())
 								.build();
 		System.out.println("profile use" + user);
-		
-
-	
 
 		//맞팔로우 요청목록 보여주기
 		
-		System.out.println("리퀘스트 리스트;;;;;;;;;;;;;;;"+requestFollowDTOList.getTotalElements());
-		System.out.println("리퀘스트 리스트;;;;;;;;;;;;;;;"+requestFollowDTOList.getTotalPages());
-		System.out.println("리퀘스트 리스트투스;;;;;;;;;;;;;;;"+requestFollowDTOList.toString());
 
-
-		
-		
 		
 		mv.addObject("requestList", requestFollowDTOList);
 		mv.addObject("user", user);

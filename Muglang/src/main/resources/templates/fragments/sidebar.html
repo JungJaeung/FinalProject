@@ -15,12 +15,10 @@
 	    <div id="user_info">
 	      <img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg" style="margin-bottom: 20px;">
 	 		
-	      <h4 th:text="${loginUser.userName}" th:if="${loginUser} != null"></h4>
-	      <span th:text="${loginUser.email}" th:if="${loginUser} != null"></span>
-	      <h4 th:text="머글랭" th:if="${loginUser} == null"></h4>
-	      <span th:text="'muglang@naver.com'" th:if="${loginUser} == null"></span>
-	      
-	      <input type="hidden" th:value="${loginUser.userId}" id="userId_side" th:if="${loginUser} != null">
+	      <h4 id="loginUserId" ></h4>
+	      <span id="loginUserEmail" ></span>
+
+
 	      
 	      <div id="user_content">
 	        <div class="user_content">

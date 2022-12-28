@@ -53,4 +53,9 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			String searchKeyword8,
 			Pageable pageable
 			);
+	
+	//
+	///개인 작성글 조회
+ 	 @Query(value="SELECT * FROM T_MGLG_POST WHERE USER_ID = :userId", nativeQuery=true)
+	 Page<MglgPost> findByUserId(@Param("userId") int userId, Pageable pageable);
 }

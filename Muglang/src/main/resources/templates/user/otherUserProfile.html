@@ -10,6 +10,79 @@
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
 				})
+// 질문하기
+				$.ajax({
+					url: '/social/otherUserFollow',
+					type: 'get',
+					data: {userId: $("#hiddenId").val()},
+					success: function (obj) {
+						console.log(obj);
+						let htmlStr = '';
+						for (let i = 0; i < obj.pageItems.content.length; i++) {
+							htmlStr += `
+							<div class="card-body">
+								<div class=""
+									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+									<!--친구 사진-->
+									<div style="width: 30%; margin-top: 10px; float: left;"><img
+											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
+											style="width: 50px;"></div>
+									<!--친구 닉네임, 아이디-->
+									<div style="width: 60%; margin-top: 13px; float: left;">
+										<div><b>${obj.pageItems.content[i].userName}</b></div>
+										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+									</div>
+								</div>
+							</div>
+							`
+
+						}
+
+
+						$("#appendDiv").html(htmlStr);
+					},
+					error: function (e) {
+						console.log(e);
+					}
+				});
+				//팔로잉 리스트
+				$.ajax({
+					url: '/social/otherUserFollowing',
+					type: 'get',
+					data: {userId: $("#hiddenId").val()},
+					success: function (obj) {
+						let htmlStr = '';
+						for (let i = 0; i < obj.pageItems.content.length; i++) {
+							htmlStr += `
+							<div class="card-body">
+								<div class=""
+									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+									<!--친구 사진-->
+									<div style="width: 30%; margin-top: 10px; float: left;"><img
+											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
+											style="width: 50px;"></div>
+									<!--친구 닉네임, 아이디-->
+									<div style="width: 60%; margin-top: 13px; float: left;">
+										<div><b>${obj.pageItems.content[i].userName}</b></div>
+										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+									</div>
+								</div>
+							</div>
+							`
+
+						}
+
+						$("#appendDiv2").html(htmlStr);
+					},
+					error: function (e) {
+						console.log(e);
+					}
+				});
+
+
+
+
+
 			});
 		</script>
 	</th:block>
@@ -24,9 +97,10 @@
 				<div class="col-lg-8">
 					<div class="card-title profile-card pt-4 d-flex flex-column align-items-center">
 						<img th:src="@{/assets/img/messages-1.jpg}" alt="Profile" class="rounded-circle">
-						<h2 style="margin-top: 15px;">보노보노</h2>
-						<h6 style="color: #aaaaaa;">rlckdur123@naver.com</h6>
-						<h6>나는 똥이야...</h6>
+						<h2 style="margin-top: 15px;" th:text="${user.userName}"></h2>
+						<h6 style="color: #aaaaaa;" th:text="${user.email}"></h6>
+						<input type="hidden" id="hiddenId" th:value="${user.userId}">
+						<h6 th:text="${user.bio}"></h6>
 						<form style="position: absolute; right: 10%;">
 							<input type="button" class="btn" value="팔로우">
 						</form>
@@ -34,78 +108,37 @@
 					<div class="card-body">
 						<!-- 선택 버튼 -->
 						<ul class="nav nav-tabs nav-tabs-bordered">
-
 							<li class="nav-item">
-								<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-post">작성한
-									글</button>
-							</li>
-
-							<li class="nav-item">
-								<button class="nav-link" data-bs-toggle="tab"
-									data-bs-target="#profile-fallower">팔로워</button>
-							</li>
-
-							<li class="nav-item">
-								<button class="nav-link" data-bs-toggle="tab"
-									data-bs-target="#profile-fallowing">팔로잉</button>
 							</li>
 						</ul>
-
 						<!--버튼에 관한 각각의 창-->
 						<div class="tab-content pt-2">
 							<!--작성한 글-->
-							<div class="tab-pan fade active" id="profile-post">
+							<div class="tab-pane active" id="profile-post">
 								<div class="row">
 									<div class="col-12">
-										<div class="card recent-sales">
+										<div class="card recent-sales" th:if="${postList.totalElements == 0}">
 											<div class="card-body">
-												<div class="filter" style="margin-top: 30px; float: right;">
-													<a style="margin-right: 20px;">30분전</a>
-													<a class="icon" href="#" data-bs-toggle="dropdown"><i
-															class="bi bi-three-dots"></i></a>
-													<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-														<li><a class="dropdown-item" href="#"><i
-																	class="ri-alarm-warning-line"></i>&emsp;신고하기</a>
-														</li>
-													</ul>
-												</div>
 												<div class="card-title">
 													<img class="img-fluid rounded-circle"
 														th:src="@{/assets/img/messages-1.jpg}" style="width: 40px;">
-													<a href="#" class="card-title">asdf</a>
+													<a href="#" class="card-title" th:text="${user.userName}"></a>
 												</div>
 												<div class="activity" style="margin-bottom: 10px;">
-													<img th:src="@{/assets/img/news-1.jpg}" style="width: 100%;">
 												</div>
 												<div class="activity">
-													<div>
-														헤으응
-													</div>
+													<div>작성된 글이 없습니다.</div>
 													<br>
-													<a href="#" style="color: blue;">&emsp;#강남맛집</a>
-													<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>
-													<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>
 												</div>
 												<div class="activity">
-													<a href="#"><i class="ri-heart-3-line"
-															style="font-size: 30px; margin-right: 5px; color:black"></i></a>
-													<a href="#" id="msg_btn"><i class="ri-message-3-line"
-															style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
-													<a href="#"><i class="ri-send-plane-2-line"
-															style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
-													<br>
-													<a>좋아요 <span>21</span>개</a>
 													<hr>
 												</div>
 												<div class="activity" style="text-align: center;">
-													<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>
-														<span>감성타코</span>에서 식사하셨어요!</a>
 												</div>
 											</div>
 										</div>
 
-
-										<div class="card recent-sales">
+										<div class="card recent-sales" th:each="post:${postList}">
 											<div class="card-body">
 												<div class="filter" style="margin-top: 30px; float: right;">
 													<a style="margin-right: 20px;">30분전</a>
@@ -120,19 +153,19 @@
 												<div class="card-title">
 													<img class="img-fluid rounded-circle"
 														th:src="@{/assets/img/messages-1.jpg}" style="width: 40px;">
-													<a href="#" class="card-title">asdf</a>
+													<a href="#" class="card-title" th:text="${user.userName}"></a>
 												</div>
 												<div class="activity" style="margin-bottom: 10px;">
 													<img th:src="@{/assets/img/news-1.jpg}" style="width: 100%;">
 												</div>
 												<div class="activity">
-													<div>
-														헤으응
-													</div>
+													<div th:text="${post.postContent}"></div>
 													<br>
-													<a href="#" style="color: blue;">&emsp;#강남맛집</a>
-													<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>
-													<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>
+													<a href="#" style="color: blue;" th:text="${post.hashTag1}"></a>
+													<a href="#" style="color: blue;" th:text="${post.hashTag2}"></a>
+													<a href="#" style="color: blue;" th:text="${post.hashTag3}"></a>
+													<a href="#" style="color: blue;" th:text="${post.hashTag4}"></a>
+													<a href="#" style="color: blue;" th:text="${post.hashTag5}"></a>
 												</div>
 												<div class="activity">
 													<a href="#"><i class="ri-heart-3-line"
@@ -153,82 +186,16 @@
 										</div>
 									</div>
 								</div>
-
 							</div>
-							<!--팔로워-->
-							<div class="tab-pane fade" id="profile-fallower">
-								<div class="row">
-									<div class="card">
-										<!--팔로우 리스트-->
-										<div class="" style="width: 100%; height: 70px;">
-											<div class="col-2"
-												style="margin-top: 10px; float: left; text-align: center;"><img
-													class="img-fluid rounded-circle"
-													th:src="@{/assets/img/messages-2.jpg}" style="width: 50px;"></div>
-											<div class="col-10"
-												style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
-												<div><b>asdf</b></div>
-												<div style="color: #aaaaaa; font-size: x-small;">
-													rlckdur123@naver.com</div>
-											</div>
-										</div>
-
-										<div class="" style="width: 100%; height: 70px;">
-											<div class="col-2"
-												style="margin-top: 10px; float: left; text-align: center;"><img
-													class="img-fluid rounded-circle"
-													th:src="@{/assets/img/messages-3.jpg}" style="width: 50px;"></div>
-											<div class="col-10"
-												style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
-												<div><b>윽엑</b></div>
-												<div style="color: #aaaaaa; font-size: x-small;">
-													rlckdur123@naver.com</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!--팔로잉-->
-							<div class="tab-pane fade" id="profile-fallowing">
-								<div class="row">
-									<!--팔로잉 리스트-->
-									<div class="" style="width: 100%; height: 70px;">
-										<div class="col-2" style="margin-top: 10px; float: left; text-align: center;">
-											<img class="img-fluid rounded-circle" th:src="@{/assets/img/messages-2.jpg}"
-												style="width: 50px;"></div>
-										<div class="col-10"
-											style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
-											<div><b>asdf</b></div>
-											<div style="color: #aaaaaa; font-size: x-small;">rlckdur123@naver.com
-											</div>
-										</div>
-									</div>
-									<div class="" style="width: 100%; height: 70px;">
-										<div class="col-2" style="margin-top: 10px; float: left; text-align: center;">
-											<img class="img-fluid rounded-circle" th:src="@{/assets/img/messages-3.jpg}"
-												style="width: 50px;"></div>
-										<div class="col-10"
-											style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
-											<div><b>윽엑</b></div>
-											<div style="color: #aaaaaa; font-size: x-small;">rlckdur123@naver.com
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
 						</div>
-
-
-
 					</div>
-
 				</div>
 
 				<div class="col-lg-4 col-xxl-3">
+
+					<!--팔로우 리스트-->
 					<div class="card" style="text-align: center;">
-						<h5 class="card-title" style="font-weight: bold;">Fallowing</h5>
-						<!--검색-->
+						<h5 class="card-title" style="font-weight: bold;">Follow</h5>
 						<div class="card-body">
 							<form class="form-inline" role="form">
 								<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
@@ -236,39 +203,23 @@
 								<input type="button" value="검색">
 							</form>
 						</div>
-						<div class="card-body">
-							<!--팔로우 리스트-->
-							<div class=""
-								style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
-								<!--친구 사진-->
-								<div style="width: 30%; margin-top: 10px; float: left;"><img
-										class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
-										style="width: 50px;"></div>
-								<!--친구 닉네임, 아이디-->
-								<div style="width: 60%; margin-top: 13px; float: left;">
-									<div><b>보노보노</b></div>
-									<div style="color: #aaaaaa; font-size: x-small;">rlckdur123@naver.com</div>
-								</div>
-							</div>
+						<div id="appendDiv"></div>
 
-							<div class="" style="width: 100%; height: 70px; border-radius: 16px;">
-								<div style="width: 30%; margin-top: 10px; float: left;"><img
-										class="img-fluid rounded-circle" th:src="@{/assets/img/messages-2.jpg}"
-										style="width: 50px;"></div>
-								<div style="width: 60%; margin-top: 13px; float: left;">
-									<div><b>asdf</b></div>
-									<div style="color: #aaaaaa; font-size: x-small;">rlckdur123@naver.com</div>
-								</div>
-							</div>
-							<div class="" style="width: 100%; height: 70px; border-radius: 16px;">
-								<div style="width: 30%; margin-top: 10px; float: left;"><img
-										class="img-fluid rounded-circle" th:src="@{/assets/img/messages-2.jpg}"
-										style="width: 50px;"></div>
-								<div style="width: 60%; margin-top: 13px; float: left;">
-									<div><b>asdf</b></div>
-									<div style="color: #aaaaaa; font-size: x-small;">rlckdur123@naver.com</div>
-								</div>
-							</div>
+					</div>
+
+					<!--팔로우 리스트-->
+					<div class="card" style="text-align: center;">
+						<h5 class="card-title" style="font-weight: bold;">Following</h5>
+						<div class="card-body">
+							<form class="form-inline" role="form">
+								<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
+									onblur="this.placeholder='팔로워 검색'">
+								<input type="button" value="검색">
+							</form>
+						</div>
+
+						<div class="card-body">
+							<div id="appendDiv2"></div>
 						</div>
 					</div>
 				</div>

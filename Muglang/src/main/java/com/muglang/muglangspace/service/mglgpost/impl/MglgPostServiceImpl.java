@@ -102,4 +102,10 @@ public class MglgPostServiceImpl implements MglgPostService {
 		}
 
 	}
+
+	@Override
+	public Page<MglgPost> userPostList(int userId, Pageable pageable) {
+		
+		return mglgPostRepository.findByUserId(userId,pageable);
+	}
 }

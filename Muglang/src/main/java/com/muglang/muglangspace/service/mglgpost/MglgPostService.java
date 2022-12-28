@@ -22,6 +22,8 @@ public interface MglgPostService {
 	
 	public int postCnt(MglgUserRelation relUser);
 
+	//개인 유저에 대한 포스팅 불러오기
+	public Page<MglgPost> userPostList(int userId, Pageable pageable);
 	
 	//검색
 	public Page<MglgPost> searchPostList(MglgPost mglgPost, Pageable pageable);

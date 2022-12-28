@@ -121,13 +121,11 @@
 										style="width: 50px;"></div>
 								<!--친구 닉네임, 아이디-->
 								<div style="width: 60%; margin-top: 13px; float: left;">
-									<div><a th:text="${followList.userName}"></a></div>
+									<div><a th:href="@{/social/otherUser(userId =${followList.userId})}" style="font-weight: bold; color: black;" th:text="${followList.userName}"></a></div>
 									<div style="color: #aaaaaa; font-size: x-small;" th:text="${followList.email}">
 									</div>
 								</div>
-
-							</div>
-						
+							</div>			
 									<ul class="pagination" th:if="${followList.totalElements > 0}" th:with="pageNumber = ${followList.pageable.pageNumber},
 												    pageSize = ${followList.pageable.pageSize},
 												    totalPages = ${followList.totalPages},

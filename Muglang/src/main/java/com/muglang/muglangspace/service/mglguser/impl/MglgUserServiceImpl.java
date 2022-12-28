@@ -87,6 +87,8 @@ public class MglgUserServiceImpl implements MglgUserService{
 	}
 
 	//댓글의 특정 유저를 검색하는 쿼리
+	//타인 정보 조회시에도 사용하겠음 ^^
+	//사이드바에서도 쓰겠음 ^&^
 	@Override
 	public MglgUser findUser(int userId) {
 		// TODO Auto-generated method stub

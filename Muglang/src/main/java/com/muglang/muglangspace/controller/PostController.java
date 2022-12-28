@@ -184,7 +184,6 @@ public class PostController {
 		System.out.println(pagePostListDTO.getContent().size());
 		
 		for(int i = 0; i < pagePostListDTO.getContent().size(); i++) {
-			System.out.println("111111111111111111111111111111111");
 			System.out.println(pagePostListDTO.getContent().get(i).getBetweenDate());
 		}
 		
