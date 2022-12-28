@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.muglang.muglangspace.common.CamelHashMap;
+import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.mapper.MglgUserMapper;
 import com.muglang.muglangspace.repository.MglgUserRepository;
@@ -72,8 +73,11 @@ public class MglgUserServiceImpl implements MglgUserService{
 	
 	//소셜로그인 최종 완료
 	@Override
-	public void socialLoginProcess(MglgUser mglgUser) {
+	public MglgUser socialLoginProcess(MglgUser mglgUser) {
 		mglgUserRepository.save(mglgUser);
+		mglgUserRepository.flush();
+		
+		return mglgUser;
 	}
 
 	@Override
@@ -87,6 +91,28 @@ public class MglgUserServiceImpl implements MglgUserService{
 	public MglgUser findUser(int userId) {
 		// TODO Auto-generated method stub
 		return mglgUserRepository.findById(userId);
+	}
+
+	@Override
+	public CustomUserDetails loadByUserId(int userId) {
+		if(mglgUserRepository.findById(userId) == null) {
+			return null;
+		} else {
+			MglgUser user = mglgUserRepository.findById(userId);
+			
+			return CustomUserDetails.builder()
+									.mglgUser(user)
+									.build();
+		}
+	}
+
+	@Override
+	public MglgUser updateUser(MglgUser user) {
+		mglgUserRepository.save(user);
+		mglgUserRepository.flush();
+		
+		
+		return user;
 	}
 
 }

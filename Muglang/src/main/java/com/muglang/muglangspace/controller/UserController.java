@@ -1,7 +1,6 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,8 +47,34 @@ public class UserController {
 	private MglgPostService mglgPostService;
 
 	@GetMapping("/profile")
-	public ModelAndView profileView() {
+	public ModelAndView profileView(@AuthenticationPrincipal CustomUserDetails customUser,
+									@PageableDefault(page = 0, size = 10) Pageable pageable) {
+		System.out.println(customUser.getMglgUser().getUserSnsId().substring(0,1));
+		
+
 		ModelAndView mv = new ModelAndView();
+		MglgUserDTO user = MglgUserDTO.builder()
+								.userNick(customUser.getMglgUser().getUserNick())
+								.userName(customUser.getMglgUser().getUserName())
+								.email(customUser.getMglgUser().getEmail())
+								.firstName(customUser.getMglgUser().getFirstName())
+								.lastName(customUser.getMglgUser().getLastName())
+								.address(customUser.getMglgUser().getAddress())
+								.phone(customUser.getMglgUser().getPhone())
+								.userId(customUser.getMglgUser().getUserId())
+								.bio(customUser.getMglgUser().getBio())
+								.regDate(customUser.getMglgUser().getRegDate().toString())
+								.userSnsId(customUser.getMglgUser().getUserSnsId())
+								.build();
+		System.out.println("profile use" + user);
+		
+		
+		//맞팔로우 요청목록 보여주기
+		int userId = customUser.getMglgUser().getUserId();
+		Page<MglgUser> requestFollowList = userRelationService.requestFollowList(userId,pageable);
+		
+		mv.addObject("requestList", requestFollowList);
+		mv.addObject("user", user);
 		mv.setViewName("profile.html");
 		return mv;
 	}
@@ -97,11 +125,37 @@ public class UserController {
 
 	// 팔로워로 이동
 	@GetMapping("/following")
-	public ModelAndView follower(@PathVariable("userId") int userId) {
+	public ModelAndView followingList(MglgUserDTO userDTO,@PageableDefault(page = 0, size = 5) Pageable pageable,HttpSession session) {
+		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
+		
+		MglgUser user = MglgUser.builder()
+				   .searchKeyword(userDTO.getSearchKeyword())
+				   .userId(temp.getUserId())
+				   .build();
+		
 		ModelAndView mv = new ModelAndView();
-		System.out.println(userId+"유저 아이디 알려줌");
-		mv.setViewName("/user/follower.html");
-		return mv;
+		
+		Page<MglgUser> pagefollowingList = userRelationService.followingList(user, pageable);
+		Page<MglgUserDTO> pagefollowingDTOList = pagefollowingList.map(pageUser -> 
+													MglgUserDTO.builder()
+																.userId(pageUser.getUserId())
+																.userName(pageUser.getUserName())
+																.email(pageUser.getEmail())
+																.userNick(pageUser.getUserNick())
+																.build()
+														);
+
+					
+					mv.setViewName("/user/following.html");
+					
+					mv.addObject("followingList", pagefollowingDTOList);
+					
+					
+					if(userDTO.getSearchKeyword() != null && !userDTO.getSearchKeyword().equals("")) {
+						mv.addObject("searchKeyword", userDTO.getSearchKeyword());
+					}
+					
+					return mv;
 	}
 
 	// 유저 목록 불러오기 + 페이징
@@ -268,19 +322,28 @@ public class UserController {
 						   .userRole(userInfo.getMglgUser().getUserRole())
 						   .build();
 		
-		mglgUserService.socialLoginProcess(newUser);
+		newUser = mglgUserService.socialLoginProcess(newUser);
 		System.out.println("회원가입을 축하드립니다. 게시판으로 이동합니다.");
 		//로그인한 유저의 세션 정보는 엔티티가 아닌 DTO로 따로 저장하여 사용할것임.
-		MglgUser loginUser = mglgUserService.socialLoginUser(newUser);
-		MglgUserDTO loginUserDTO = MglgUserDTO.builder()
-											  .userId(loginUser.getUserId())
-											  .userName(loginUser.getUserName())
-											  .userSnsId(loginUser.getUserSnsId())
-											  .regDate(loginUser.getRegDate().toString())
-											  .email(loginUser.getEmail())
-											  .userRole(loginUser.getUserRole())
-											  .build();
-		session.setAttribute("loginUser", loginUserDTO);
+//		MglgUser loginUser = mglgUserService.socialLoginUser(newUser);
+//		MglgUserDTO loginUserDTO = MglgUserDTO.builder()
+//											  .userId(loginUser.getUserId())
+//											  .userName(loginUser.getUserName())
+//											  .userSnsId(loginUser.getUserSnsId())
+//											  .regDate(loginUser.getRegDate().toString())
+//											  .email(loginUser.getEmail())
+//											  .userRole(loginUser.getUserRole())
+//											  .build();
+//		session.setAttribute("loginUser", loginUserDTO);
+		//회원정보 수정시에도 삽입 필(수정 후 바로 반영하기 위함 )
+		CustomUserDetails customUserDetails = mglgUserService.loadByUserId(newUser.getUserId());
+		
+		Authentication authetication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+		
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		
+		securityContext.setAuthentication(authetication);
+		session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 		
 		response.sendRedirect("/post/mainPost");
 
@@ -364,5 +427,42 @@ public class UserController {
 	public void logout() {
 		
 	}
+	//유저 정보 업데이트 폼
+	@PostMapping("/updateUser")
+	public void updateUser(MglgUserDTO mglgUserDTO, HttpSession session,
+			HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails customUser) throws IOException {
+		System.out.println(mglgUserDTO);
+		MglgUser user = MglgUser.builder()
+						   .userNick(mglgUserDTO.getUserNick())
+						   .userName(customUser.getMglgUser().getUserName())
+						   .bio(mglgUserDTO.getBio())
+						   .address(mglgUserDTO.getAddress())
+						   .phone(mglgUserDTO.getPhone())
+						   .email(customUser.getMglgUser().getEmail())
+						   .firstName(customUser.getMglgUser().getFirstName())
+						   .lastName(customUser.getMglgUser().getLastName())
+						   .userId(customUser.getMglgUser().getUserId())
+						   .userSnsId(customUser.getMglgUser().getUserSnsId())
+						   .regDate(customUser.getMglgUser().getRegDate())
+						   .userRole(customUser.getMglgUser().getUserRole())
+						   .userBanYn(customUser.getMglgUser().getUserBanYn())				
+						   .build();
+
+		System.out.println(user);
+		MglgUser updateUser = mglgUserService.updateUser(user);
+
+		CustomUserDetails customUserDetails = mglgUserService.loadByUserId(updateUser.getUserId());
+		
+		Authentication authetication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+		
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		
+		securityContext.setAuthentication(authetication);
+		session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+		
+		response.sendRedirect("/user/profile");
+
+	}
+
 }//페이지 끝
 
