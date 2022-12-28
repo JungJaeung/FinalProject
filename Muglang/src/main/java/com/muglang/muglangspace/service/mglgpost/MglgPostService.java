@@ -8,7 +8,7 @@ import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserRelation;
 
 public interface MglgPostService {
-	public void insertPost(MglgPost mglgpost);
+	public MglgPost insertPost(MglgPost mglgpost);
 	
 	public MglgPost updatePost(MglgPost mglgpost);
 	

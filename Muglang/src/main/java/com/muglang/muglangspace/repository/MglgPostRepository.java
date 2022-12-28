@@ -53,4 +53,6 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			String searchKeyword8,
 			Pageable pageable
 			);
+	
+	Page<MglgPost> findAllByOrderByPostIdDesc(Pageable pageable);
 }
