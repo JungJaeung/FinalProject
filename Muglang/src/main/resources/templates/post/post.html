@@ -553,7 +553,7 @@
 												comment_text_scroll += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60))}분전</a>`;
 											}
 											
-											text_comment += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
+											comment_text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
 											if (/*[[${loginUser.userId}]]*/loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
 												comment_text_scroll += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`;
 												comment_text_scroll += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`;
