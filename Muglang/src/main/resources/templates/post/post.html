@@ -50,7 +50,9 @@
 				
 				//html단의 처리. html의 val값으로 태그들을 뺀 값을 넣을 수 있다.
 				console.log($("#postContentIn").val());
-				$("#postContent25").html($("#postContentIn").val())
+				$("#postContent25").html($("#postContentIn").val());
+				console.log($(".quill-editor-default").text());
+				$("#postContent").val($(".ql-editor").html());
 
 
 				//퀼 텍스트 에어리어 소환
@@ -115,8 +117,10 @@
 
 				$("#insert_board").click(function () {
 					let insert_post = "";
-					let boldText = $("#postContent").children("h2").text();
-					let letter = $("#postContent").children("p").text();
+					//$(".quill-editor-default").text();
+					$("#postContent").val($(".quill-editor-default").text());
+					//let boldText = $("#postContent").children("h2").text();
+					//let letter = $("#postContent").children("p").text();
 					
 					//$("#postContent").val($(".ql-editor").html());
 					$.ajax({
@@ -398,7 +402,7 @@
 				for (let i = 0; i < list.length; i++) {
 
 					$($('.updateBtn')[i]).click(function (e) {
-
+						console.log("회원의 수정버튼 입력");
 						flagList[i] = !flagList[i];
 						if (flagList[i]) {
 							$(this).text("돌아가기");
