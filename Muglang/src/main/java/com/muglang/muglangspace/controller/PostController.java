@@ -81,7 +81,6 @@ public class PostController {
 					.build();
 
 			mglgPost = mglgPostService.insertPost(mglgPost);
-			MglgPost.getSearchKeyword();
 			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = MglgPostDTO.builder()
 												 .postId(mglgPost.getPostId())
