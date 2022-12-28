@@ -95,6 +95,8 @@ public class CommentController {
 		}
 		try {
 			System.out.println("댓글 조회 ㄱㄱ");
+//			returnMap.put("commentList", pageCommentList);
+//			returnMap.put("", pageCommentList.getPageable().getPageNumber());
 			return ResponseEntity.ok().body(pageCommentList);
 		} catch(Exception e) {
 			return ResponseEntity.badRequest().body(pageCommentList);
@@ -111,16 +113,16 @@ public class CommentController {
 		pageable = PageRequest.of(page_num, 8);
 		
 		Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable, postId);
-		Page<MglgCommentDTO> pageCommentListDTO = pageCommentList.map(pageMglgComment->MglgCommentDTO.builder()
-																			.userId(pageMglgComment.getMglgUser().getUserId())
-																			.commentId(pageMglgComment.getCommentId())
-																			.commentContent(pageMglgComment.getCommentContent())
-																			.commentDate(pageMglgComment.getCommentDate().toString())
-																			.build()
-															);
-		
-	
-		return ResponseEntity.ok().body(pageCommentListDTO);
+//		Page<MglgCommentDTO> pageCommentListDTO = pageCommentList.map(pageMglgComment->MglgCommentDTO.builder()
+//																			.userId(pageMglgComment.getMglgUser().getUserId())
+//																			.commentId(pageMglgComment.getCommentId())
+//																			.commentContent(pageMglgComment.getCommentContent())
+//																			.commentDate(pageMglgComment.getCommentDate().toString())
+//																			.build()
+//															);
+//		
+//	
+		return ResponseEntity.ok().body(pageCommentList);
 	}
 	
 
