@@ -17,7 +17,7 @@
 			<!--서치바-->
 			<!-- 검색 기능 구현 김동현 작업중 2022/12/24-->
 		    <div class="search-bar w-">
-		      <form class="search-form d-flex align-items-center" method="GET" action="#" id="searchForm">
+		      <form class="search-form d-flex align-items-center" method="get" action="/search/searchPostList" id="searchForm">
 		        <input type="text" name="searchKeyword" placeholder="Search" title="Enter search keyword" th:value="${searchKeyword}">
 		        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
 		      </form>
