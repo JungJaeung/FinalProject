@@ -6,11 +6,13 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
+				var page_num = 1;
+				var page_num2 = 1;
+				console.log(page_num+"페이지넘 초기화??");
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
 				})
-// 질문하기
 				$.ajax({
 					url: '/social/otherUserFollow',
 					type: 'get',
@@ -39,12 +41,13 @@
 						}
 
 
-						$("#appendDiv").html(htmlStr);
+						$("#appendDiv1").html(htmlStr);
 					},
 					error: function (e) {
 						console.log(e);
 					}
 				});
+
 				//팔로잉 리스트
 				$.ajax({
 					url: '/social/otherUserFollowing',
@@ -79,9 +82,185 @@
 					}
 				});
 
+				//클릭시 사용 -- 팔로우 앞으로
+				$("#btn_next1").click(function () {
+					console.log("누르기전page_num===" + page_num)
 
+					$.ajax({
+						url: '/social/otherUserFollowPaging',
+						type: 'get',
+						data: {
+							userId: $("#hiddenId").val(),
+							page_num: page_num
+						},
+						success: function (obj) {
+							if(page_num == obj.pageItems.totalPages){
+								return
+							}
+							let htmlStr = '';
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+							<div class="card-body">
+								<div class=""
+									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+									<!--친구 사진-->
+									<div style="width: 30%; margin-top: 10px; float: left;"><img
+											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
+											style="width: 50px;"></div>
+									<!--친구 닉네임, 아이디-->
+									<div style="width: 60%; margin-top: 13px; float: left;">
+										<div><b>${obj.pageItems.content[i].userName}</b></div>
+										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+									</div>
+								</div>
+							</div>
+							`
+							}
 
+							$("#appendDiv1").html(htmlStr);
+						page_num=page_num+1;
+						console.log("누른후page_num===" + page_num);
 
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+				})
+				//클릭시 사용 -- 팔로우 뒤로
+				$("#btn_prev1").click(function () {
+					console.log("누르기전page_num===" + page_num);
+					if(page_num==1){
+						return;
+					}
+					page_num = page_num - 2;
+					console.log("누른후page_num===" + page_num);
+					$.ajax({
+						url: '/social/otherUserFollowPaging',
+						type: 'get',
+						data: {
+							userId: $("#hiddenId").val(),
+							page_num: page_num
+						},
+						success: function (obj) {
+							let htmlStr = '';
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+							<div class="card-body">
+								<div class=""
+									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+									<!--친구 사진-->
+									<div style="width: 30%; margin-top: 10px; float: left;"><img
+											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
+											style="width: 50px;"></div>
+									<!--친구 닉네임, 아이디-->
+									<div style="width: 60%; margin-top: 13px; float: left;">
+										<div><b>${obj.pageItems.content[i].userName}</b></div>
+										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+									</div>
+								</div>
+							</div>
+							`
+							}
+
+							$("#appendDiv1").html(htmlStr);
+							page_num = page_num +1;
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+				})
+
+				//클릭시 사용 -- 팔로잉 앞으로
+				$("#btn_next2").click(function () {
+					console.log("누르기전page_num2===" + page_num2)
+
+					$.ajax({
+						url: '/social/otherUserFollowingPaging',
+						type: 'get',
+						data: {
+							userId: $("#hiddenId").val(),
+							page_num: page_num2
+						},
+						success: function (obj) {
+							if(page_num2 == obj.pageItems.totalPages){
+								return
+							}
+							let htmlStr = '';
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+							<div class="card-body">
+								<div class=""
+									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+									<!--친구 사진-->
+									<div style="width: 30%; margin-top: 10px; float: left;"><img
+											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
+											style="width: 50px;"></div>
+									<!--친구 닉네임, 아이디-->
+									<div style="width: 60%; margin-top: 13px; float: left;">
+										<div><b>${obj.pageItems.content[i].userName}</b></div>
+										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+									</div>
+								</div>
+							</div>
+							`
+							}
+
+							$("#appendDiv2").html(htmlStr);
+						page_num2=page_num2+1;
+						console.log("누른후page_num2===" + page_num2);
+
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+				})
+				//클릭시 사용 -- 팔로잉 뒤로
+				$("#btn_prev2").click(function () {
+					console.log("누르기전page_num2===" + page_num2);
+					if(page_num2==1){
+						return;
+					}
+					page_num2 = page_num2 - 2;
+					console.log("누른후page_num2===" + page_num2);
+					$.ajax({
+						url: '/social/otherUserFollowingPaging',
+						type: 'get',
+						data: {
+							userId: $("#hiddenId").val(),
+							page_num: page_num2
+						},
+						success: function (obj) {
+							let htmlStr = '';
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+							<div class="card-body">
+								<div class=""
+									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+									<!--친구 사진-->
+									<div style="width: 30%; margin-top: 10px; float: left;"><img
+											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
+											style="width: 50px;"></div>
+									<!--친구 닉네임, 아이디-->
+									<div style="width: 60%; margin-top: 13px; float: left;">
+										<div><b>${obj.pageItems.content[i].userName}</b></div>
+										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+									</div>
+								</div>
+							</div>
+							`
+							}
+
+							$("#appendDiv2").html(htmlStr);
+							page_num2 = page_num2 +1;
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+				})
 
 			});
 		</script>
@@ -193,21 +372,24 @@
 
 				<div class="col-lg-4 col-xxl-3">
 
-					<!--팔로우 리스트-->
+					<!--Follow 리스트-->
 					<div class="card" style="text-align: center;">
 						<h5 class="card-title" style="font-weight: bold;">Follow</h5>
 						<div class="card-body">
 							<form class="form-inline" role="form">
-								<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
-									onblur="this.placeholder='팔로워 검색'">
+								<input type="text" placeholder="팔로우 검색" onfocus="this.placeholder=''"
+									onblur="this.placeholder='팔로우 검색'">
 								<input type="button" value="검색">
 							</form>
 						</div>
-						<div id="appendDiv"></div>
-
+						<div class="card-body">
+							<div id="appendDiv1"></div>
+							<button id="btn_prev1">이전</button>
+							<button id="btn_next1">다음</button>
+						</div>
 					</div>
 
-					<!--팔로우 리스트-->
+					<!--Following 리스트-->
 					<div class="card" style="text-align: center;">
 						<h5 class="card-title" style="font-weight: bold;">Following</h5>
 						<div class="card-body">
@@ -220,6 +402,8 @@
 
 						<div class="card-body">
 							<div id="appendDiv2"></div>
+							<button id="btn_prev2">이전</button>
+							<button id="btn_next2">다음</button>
 						</div>
 					</div>
 				</div>

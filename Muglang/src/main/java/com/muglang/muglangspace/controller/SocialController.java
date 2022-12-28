@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -189,5 +190,70 @@ public class SocialController {
 			
 			
 	}
+	////팔로우 페이징처리
+	@GetMapping("otherUserFollowPaging")
+	public ResponseEntity<?> otherUserFollow(@RequestParam("userId") int userId ,@RequestParam("page_num") int page_num ,Pageable pageable) {
+		pageable = PageRequest.of(page_num, 5);
+		System.out.println("팔로우로 넘어옴"+page_num);
+		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+		try {
+			MglgUser user = MglgUser.builder()
+									.userId(userId)
+									.build();
+			Page<MglgUser> pageUserFollow = userRelationService.followList(user, pageable);
+			Page<MglgUserDTO> pageUserFollowDTO = pageUserFollow.map(page->
+																	 MglgUserDTO.builder()
+																	             .userId(page.getUserId())
+																				 .email(page.getEmail())
+																				 .userName(page.getUserName())
+																				 .userNick(page.getUserNick())
+																				 .build()
+																				 );
+			
+			response.setPageItems(pageUserFollowDTO);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+
+				
+			
+			
+	}
+	////팔로잉 페이징처리
+	@GetMapping("otherUserFollowingPaging")
+	public ResponseEntity<?> otherUserFollowing(@RequestParam("userId") int userId ,@RequestParam("page_num") int page_num ,Pageable pageable) {
+		pageable = PageRequest.of(page_num, 5);
+		System.out.println("팔로우로 넘어옴"+page_num);
+		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+		try {
+			MglgUser user = MglgUser.builder()
+									.userId(userId)
+									.build();
+			Page<MglgUser> pageUserFollow = userRelationService.followingList(user, pageable);
+			Page<MglgUserDTO> pageUserFollowDTO = pageUserFollow.map(page->
+																	 MglgUserDTO.builder()
+																	             .userId(page.getUserId())
+																				 .email(page.getEmail())
+																				 .userName(page.getUserName())
+																				 .userNick(page.getUserNick())
+																				 .build()
+																				 );
+			
+			response.setPageItems(pageUserFollowDTO);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+
+				
+			
+			
+	}
+	
 	
 }
