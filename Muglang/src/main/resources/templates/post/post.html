@@ -17,6 +17,9 @@
 			//변경된 첨부파일 배열
 			let changedFiles = [];
 
+			//댓글 페이지수
+			let comment_page_num = 0;
+
 			//댓글 관련 전역변수
 			let postId;
 			let commentId;
@@ -44,6 +47,7 @@
 				}
 				console.log("게시글 : " + postIdList);
 				console.log(list.length);
+
 
 				//퀼 텍스트 에어리어 소환
 				new Quill('.quill-editor-default', {
@@ -106,7 +110,7 @@
 				$("#insert_board").click(function () {
 					$("#postContent").val($(".ql-editor").html());
 					$("#insert_form").submit();
-				})
+				});
 
 
 				//좋아요 버튼 함수(innerHtml에도 먹이기 위해서 함수로 만듬)
@@ -160,6 +164,22 @@
 				//좋아요 이벤트 리스너 함수 호출
 				$.like_button();
 
+				//게시글에서 댓글버튼 이벤트 리스너
+				$.comment_button = function () {
+					text_comment = "";
+					$(".msg_icon").click(function (e) {
+						//여기도 댓글 아이콘 아이디를 포스트 id로 잡았음
+						postId = e.target.id;
+						$.comment_list();
+					});
+
+				}
+				//댓글버튼 이벤트 리스너 함수 호출
+				$.comment_button();
+				
+				//화면단에 최초로 뿌릴 때 해당 정보를 임시로 저장하는 변수
+				let thisCommentTotalPages = 0;
+				let thisCommentTotalElements = 0;
 				//전역변수인 게시글 id로 리스트 불러오는 로직
 				$.comment_list = function () {
 					
@@ -170,19 +190,40 @@
 							postId: postId,
 						},
 						success: function (obj) {
+							console.log(obj);
 							text_comment += `<div class="modal-header">`
 							text_comment += `<textarea id="insert_text${postId}" style="width:80%; height: 30px; border:none; outline: none; overflow:hidden; resize: none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)" placeholder="댓글을 작성해주세요"]></textarea>`
 							text_comment += `<button class="btn" id="insert_btn${postId}">작성</button></div>`
-							text_comment += `<div class="modal-body overflow-auto">`
-							text_comment += `<div id="comment" style="max-height: 30em;">`
+							text_comment += `<div class="modal-body overflow-auto" id="modal-body">`
+							text_comment += `<div id="comment${postId}" class="comments" style="max-height: 30em;">`
 							//받아온 객체의 내용을(댓글) 숫자만큼 반복
 							for (let comment of obj.content) {
-								console.log(comment);
+								let comment_date = new Date(comment.commentDate);
+								console.log(obj);
+								//날짜 데이터 밀리초
+								comment_date = now - comment_date;
+								
+								console.log(comment_date);
 								text_comment += `<div class="comment_info" style="margin-bottom: 30px;  position:relative;">`
-
 								text_comment += `<div class="filter" style="margin-top: 15px; position: absolute; top:-12px; right:10px;">`
-								text_comment += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
-								text_comment += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
+								text_comment += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`;
+								//댓글에 시간 표시하는 로직.
+								if(comment_date / (1000*60*60*24*30*12) > 1){
+									text_comment += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60*60*24*30*12))}년 전</a>`;
+								}
+								else if(comment_date / (1000*60*60*24*30) > 1){
+									text_comment += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60*60*24*30))}달 전</a>`;
+								}
+								else if(comment_date / (1000*60*60*24) > 1){
+									text_comment += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60*60*24))}일 전</a>`;
+								}
+								else if(comment_date / (1000*60*60) > 1){
+									text_comment += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60*60))}시간 전</a>`;
+								}
+								else{
+									text_comment += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60))}분전</a>`;
+								}
+								text_comment += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
 								if (/*[[${loginUser.userId}]]*/loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
 									text_comment += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`
 									text_comment += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`
@@ -199,11 +240,22 @@
 								text_comment += `<button class="btn cancle_comment" id="cancle_comment${comment.commentId}" style="float:right; display:none;">취소</button>`
 								text_comment += `<button class="btn update_comment" id="update_comment${comment.commentId}" style="float:right; display:none;">수정</button></div></div>`
 							}
-							text_comment += `</div></div>`
+							text_comment += `</div></div>`;
 							$("#modal-content").html(text_comment);
 							//작업 끝나고 이거 활성화
-							$('#msgModal').modal("show");
 
+							
+							//댓글 페이징을 위한 페이징 넘버를 최초 댓글 열때 저장.
+							thisCommentTotalPages = Number(obj.totalPages);
+							thisCommentTotalElements = Number(obj.totalElements);
+							console.log(thisCommentTotalPages);
+							console.log(thisCommentTotalElements);
+							//댓글 무한 스크롤 발생 이벤트 시작
+							comment_page_num = 1;
+							
+							replyScroll(thisCommentTotalPages, thisCommentTotalElements);
+							
+							$('#msgModal').modal("show");
 							//이벤트 넣기
 							$.comment_insert();
 							$.comment_update();
@@ -217,19 +269,6 @@
 						
 					});
 				}
-
-				//게시글에서 댓글버튼 이벤트 리스너
-				$.comment_button = function () {
-					text_comment = "";
-					$(".msg_icon").click(function (e) {
-						//여기도 댓글 아이콘 아이디를 포스트 id로 잡았음
-						postId = e.target.id;
-						$.comment_list();
-					});
-
-				}
-				//댓글버튼 이벤트 리스너 함수 호출
-				$.comment_button();
 
 				//댓글 작성 함수
 				$.comment_insert = function () {
@@ -388,7 +427,6 @@
 										//날짜 데이터 밀리초
 										post_date = now - post_date;
 										
-										
 										console.log(post_date)
 										
 										text_scroll += `<div class="card recent-sales">`
@@ -458,96 +496,101 @@
 						}
 					}
 				});
-/*
-				//댓글 무한 스크롤 - 부분
-				let page_num = 1;
-				let text_scroll = "";
-				$(window).scroll(function () {
-					if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-						if (page_num < [[${postList.totalPages}]]) {
-							$.ajax({
-								url: '/post/mainPost',
-								type: 'post',
-								data: {page_num: page_num},
-								success: function (obj) {
-									//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
-									page_num++;
-									for (let post of obj.content) {
-										let post_date = new Date(post.postDate);
-										//날짜 데이터 밀리초
-										post_date = now - post_date;
-										
-										
-										console.log(post_date)
-										
-										text_scroll += `<div class="card recent-sales">`
-										text_scroll += `<div class="card-body">`
-										text_scroll += `<div class="filter" style="margin-top: 15px;">`
-										if(post_date / (1000*60*60*24*30*12) > 1){
-											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24*30*12))}년 전</a>`
-										}
-										else if(post_date / (1000*60*60*24*30) > 1){
-											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24*30))}달 전</a>`
-										}
-										else if(post_date / (1000*60*60*24) > 1){
-											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60*24))}일 전</a>`
-										}
-										else if(post_date / (1000*60*60) > 1){
-											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60*60))}시간 전</a>`
-										}
-										else{
-											text_scroll += `<a style="margin-right: 20px;">${parseInt(post_date / (1000*60))}분전</a>`
-										}
-										text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
-										text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
-										text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
-										text_scroll += `</ul></div>`
-										text_scroll += `<div class="card-title">`
-										text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
-										text_scroll += `<a href="#" class="card-title"> ${post.restNm}</a></div>`
-										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
-										text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;"></div>`
-										text_scroll += `<div class="activity">`
-										text_scroll += `<div th:id="'postContent' + ${post.postId}">${post.postContent}</div>`
-										//여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
-										text_scroll += `<br>`
-										text_scroll += `<a href="#" style="color: blue;">&emsp;#강남맛집</a>`
-										text_scroll += `<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>`
-										text_scroll += `<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>`
-										text_scroll += `</div>`
-										text_scroll += `<div class="activity">`
-										text_scroll += `<i class="ri-heart-3-line post_like" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
-										text_scroll += `<i class="ri-message-3-line msg_icon" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
-										text_scroll += `<i class="ri-send-plane-2-line" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
-										text_scroll += `<br>`
-										text_scroll += `<a>좋아요 <span id="like_num${post.postId}">21</span>개</a>`
-										text_scroll += `<hr></div>`
-										//내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. 
-										text_scroll += `<form class="data" action="/post/deletePost" method="post">`
-										text_scroll += `<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">`
-										text_scroll += `<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">`
-										text_scroll += `<input type="hidden" id="userId" name="userId" value="''+${post.userId}">`
-										text_scroll += `<input type="hidden" id="postId" name="postId" value="''+${post.postId}">`
-										text_scroll += `<input type="hidden" id="postDate" name="postDate" value="''+${post.postDate}">`
-										text_scroll += `</form>`
-										text_scroll += `<div class="activity" style="text-align: center;">`
-										text_scroll += `<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>`
-										text_scroll += `<span>감성타코</span>에서 식사하셨어요!</a></div></div></div>`
-									}
 
-									$("#post_scroll_div").html(text_scroll);
-									//이벤트 리스너 함수 호출
-									$.like_button();
-									$.comment_button();
-								},
-								error: function (e) {
-									console.log(e);
-								}
-							});
+				//댓글 부분 무한 스크롤 - 부분
+				//아이디comment 태그의 스크롤에 다차서 내려가면, 다시 ajax비동기 처리로 댓글 목록 불러옴.
+			
+				function replyScroll(thisCommentTotalPages, thisCommentTotalElements) {
+
+					let comment_text_scroll = "";
+					$('.modal-body').scroll(function (e) {
+						//let comHeight = $('.modal-body').height() - $('.comment_info').height() * 4;
+						//console.log("안쪽 게시글 내용 크기 : " + comHeight);
+						//댓글 창을 끝까지 내릴 때쯤 이벤트가 발생.
+						if ($('.modal-body').scrollTop() > $('.modal-body').height() - $('.comment_info').height() * 4) {
+							//해당 댓글의 댓글 페이지수를 확인. 내용이 남아있을경우 추가 스크롤 활성화
+							console.log("페이징 댓글 시작" + comment_page_num);
+							if (comment_page_num < thisCommentTotalPages) {	
+								console.log("페이징 댓글 시작");
+								$.ajax({
+									url: '/comment/commentList',
+									type: 'post',
+									data: {
+										page_num: comment_page_num,
+										postId: postId
+									},
+									success: function (obj) {
+										//숨김처리후 다시 재출력
+										//$('#msgModal').modal("hide");
+										//한번 더 스크롤나오면 다음페이지를 데이터로 넘기고, 다시 스크롤을 늘려 다음 댓글을 갱신하여 표시.
+										comment_page_num++;
+
+										for (let comment of obj.content) {
+											let comment_date = new Date(comment.commentDate);
+											console.log(comment);
+											//날짜 데이터 밀리초
+											comment_date = now - comment_date;
+											
+											console.log(comment_date);
+											
+											comment_text_scroll += `<div class="comment_info" style="margin-bottom: 30px;  position:relative;">`;
+											comment_text_scroll += `<div class="filter" style="margin-top: 15px; position: absolute; top:-12px; right:10px;">`;
+											comment_text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`;
+											//댓글에 시간 표시하는 로직.
+											if(comment_date / (1000*60*60*24*30*12) > 1){
+												comment_text_scroll += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60*60*24*30*12))}년 전</a>`;
+											}
+											else if(comment_date / (1000*60*60*24*30) > 1){
+												comment_text_scroll += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60*60*24*30))}달 전</a>`;
+											}
+											else if(comment_date / (1000*60*60*24) > 1){
+												comment_text_scroll += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60*60*24))}일 전</a>`;
+											}
+											else if(comment_date / (1000*60*60) > 1){
+												comment_text_scroll += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60*60))}시간 전</a>`;
+											}
+											else{ 
+												comment_text_scroll += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000*60))}분전</a>`;
+											}
+											
+											comment_text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
+											if (/*[[${loginUser.userId}]]*/loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
+												comment_text_scroll += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`;
+												comment_text_scroll += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`;
+											} else {
+												comment_text_scroll += `<li><a class="dropdown-item" href="#" href="#"></i>&emsp;신고하기</a></li>`;
+											}
+											comment_text_scroll += `</ul>`
+											comment_text_scroll += `</div>`
+											comment_text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-2.jpg" style="width: 40px;">`;
+											comment_text_scroll += `<span style="margin-left: 10px;"><a href="#" style="color: black; cursor:pointer;">${comment.mglgUser.userName}</a></span>`;
+											comment_text_scroll += `<div style="word-break: keep-all;">${comment.commentContent}`;
+											comment_text_scroll += `<br><textarea id="update_text${comment.commentId}" style="width:100%; overflow:hidden; resize: none; display:none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)">${comment.commentContent}</textarea>`;
+											comment_text_scroll += `<button class="btn cancle_comment" id="cancle_comment${comment.commentId}" style="float:right; display:none;">취소</button>`;
+											comment_text_scroll += `<button class="btn update_comment" id="update_comment${comment.commentId}" style="float:right; display:none;">수정</button></div></div>`;
+
+										}
+										//댓글을 화면에 뿌리는 상위 태그는 id가 comment인 div태그 따라서 그 자식 태그에 append한다.
+										//$("#comment_scroll_div").html(comment_text_scroll);
+										$("#comment" + postId).append(comment_text_scroll);
+										//$('#msgModal').modal("show");
+										//이벤트 리스너 함수 호출
+										//이벤트 넣기
+										$.comment_insert();
+										$.comment_update();
+										$.comment_delete();
+									},
+									error: function (e) {
+										console.log("댓글 무한 로딩 에러");
+										console.log(e);
+									}
+								});
+							}
 						}
-					}
-				});
-				*/
+					});
+				}
+
+				
 			});
 
 			//수정모드에서 제목변경시 실행될 메소드
@@ -912,7 +955,7 @@
 						<div style="max-height: 30em;">
 							<div class="comment_info" style="margin-bottom: 20px; position:relative">
 								<div class="filter"
-									style="margin-top: 15px; position: absolute; top:-12px; right:10px;">
+									style="margin-top: 15px; position: absolute; top:-12px; right:10p;">
 									<a class="icon" href="#" data-bs-toggle="dropdown"><i
 											class="bi bi-three-dots"></i></a>
 									<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -930,11 +973,14 @@
 									cupiditate repudiandae esse ea repellat, laudantium inventore!
 								</div>
 							</div>
-
+							<!--<div id="comment_scroll_div" class="overflow-auto"></div>-->
+							<!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
 						</div>
 					</div>
+					<div id="comment_scroll_div" class="col-12"></div>
 				</div>
 			</div>
+
 		</div>
 
 	</main><!-- End #main -->

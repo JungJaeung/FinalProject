@@ -44,8 +44,9 @@ public class SocialController {
 														.build();
 			
 			//질문하기 --- 포스트 cnt는 왜오류나는지
-		int postCnt = mglgPostService.postCnt(relUser);
+		  int postCnt = mglgPostService.postCnt(relUser);
 			System.out.println("postCnt ==" + postCnt);
+
 			int followCnt = userRelationService.cntFollow(relUser);
 			int followingCnt = userRelationService.cntFollowing(relUser);
 			

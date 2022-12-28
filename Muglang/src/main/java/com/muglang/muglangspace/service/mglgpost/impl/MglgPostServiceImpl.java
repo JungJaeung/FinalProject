@@ -53,7 +53,6 @@ public class MglgPostServiceImpl implements MglgPostService {
 		return mglgPostRepository.findAll(pageable);
 	}
 
-
 	@Override
 	public MglgPost getPost(MglgPost post) {
 		

@@ -17,10 +17,10 @@ public interface MglgPostService {
 	public void likePost(MglgPost mglgpost);
 	
 	public Page<MglgPost> getPagePostList(Pageable pageable);
-		
+
 	public MglgPost getPost(MglgPost post);
 	
-	int postCnt(MglgUserRelation relUser);
+	public int postCnt(MglgUserRelation relUser);
 
 	
 	//검색
