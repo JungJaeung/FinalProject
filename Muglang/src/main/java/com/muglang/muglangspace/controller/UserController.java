@@ -25,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
+import com.muglang.muglangspace.dto.MglgReportDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
@@ -47,9 +48,16 @@ public class UserController {
 	private MglgPostService mglgPostService;
 
 	@GetMapping("/profile")
-	public ModelAndView profileView(@AuthenticationPrincipal CustomUserDetails customUser,
-									@PageableDefault(page = 0, size = 10) Pageable pageable) {
-		System.out.println(customUser.getMglgUser().getUserSnsId().substring(0,1));
+	public ModelAndView profileView(@AuthenticationPrincipal CustomUserDetails customUser, @PageableDefault(page = 0, size = 5) Pageable pageable) {
+		int userId = customUser.getMglgUser().getUserId();
+		Page<MglgUser> requestFollowList = userRelationService.requestFollowList(userId,pageable);
+		Page<MglgUserDTO> requestFollowDTOList = requestFollowList.map(followList -> 
+																					MglgUserDTO.builder()
+																					 .userName(followList.getUserName())
+																					 .userId(followList.getUserId())
+																					 .build()
+		);
+		
 		
 
 		ModelAndView mv = new ModelAndView();
@@ -68,12 +76,20 @@ public class UserController {
 								.build();
 		System.out.println("profile use" + user);
 		
-		
+
+	
+
 		//맞팔로우 요청목록 보여주기
-		int userId = customUser.getMglgUser().getUserId();
-		Page<MglgUser> requestFollowList = userRelationService.requestFollowList(userId,pageable);
 		
-		mv.addObject("requestList", requestFollowList);
+		System.out.println("리퀘스트 리스트;;;;;;;;;;;;;;;"+requestFollowDTOList.getTotalElements());
+		System.out.println("리퀘스트 리스트;;;;;;;;;;;;;;;"+requestFollowDTOList.getTotalPages());
+		System.out.println("리퀘스트 리스트투스;;;;;;;;;;;;;;;"+requestFollowDTOList.toString());
+
+
+		
+		
+		
+		mv.addObject("requestList", requestFollowDTOList);
 		mv.addObject("user", user);
 		mv.setViewName("profile.html");
 		return mv;

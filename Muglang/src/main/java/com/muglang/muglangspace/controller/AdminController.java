@@ -49,7 +49,6 @@ public class AdminController {
 												.commentId(pageReport.getCommentId())
 												.build()
 		);
-
 		
 				ModelAndView mv = new ModelAndView();
 				mv.addObject("reportList",pageReportDTOList);
