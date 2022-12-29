@@ -273,6 +273,31 @@ public class PostController {
 		}
 	}
 
+	//팔로우 하고 있는사람 포스트만 불러오는 로직
+	@GetMapping("/getFollowerPost")
+	public ResponseEntity<?> getFollowerPost(Pageable pageable,@AuthenticationPrincipal CustomUserDetails loginUser) {
+
+		int userId = loginUser.getMglgUser().getUserId();
+		Page<MglgPost> pagePostList = mglgPostService.getFollowerPost(userId,pageable);
+		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
+																			.userId(pageMglgPost.getMglgUser().getUserId())
+																			.postId(pageMglgPost.getPostId())
+																			.postContent(pageMglgPost.getPostContent())
+																			.postDate(pageMglgPost.getPostDate().toString())
+																			.restNm(pageMglgPost.getRestNm())
+																			.restRating(pageMglgPost.getRestRating())
+																			.postRating(pageMglgPost.getPostRating())
+																			.hashTag1(pageMglgPost.getHashTag1())
+																			.hashTag2(pageMglgPost.getHashTag2())
+																			.hashTag3(pageMglgPost.getHashTag3())
+																			.hashTag4(pageMglgPost.getHashTag4())
+																			.hashTag5(pageMglgPost.getHashTag5())
+																			.build()
+															);
+		
+		return ResponseEntity.ok().body(pagePostListDTO);
+	}
+	
 	
 	
 //	// 코멘트 컨트롤러가 고장나서 잠시 실례하겠습니다

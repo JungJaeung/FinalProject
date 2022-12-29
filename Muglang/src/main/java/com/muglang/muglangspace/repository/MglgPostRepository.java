@@ -62,4 +62,17 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
    
    //게시글 최신순 페이징 처리
 	 Page<MglgPost> findAllByOrderByPostIdDesc(Pageable pageable);
+	 
+	//팔로잉 한 사람 포스팅만 가져옴
+	 @Query(
+					value = 
+					"SELECT A.* FROM T_MGLG_POST A WHERE A.USER_ID IN "
+				+ "(SELECT B.FOLLOWER_ID FROM T_MGLG_USER_RELATION B WHERE B.USER_ID = :userId)                 "
+				,	countQuery = "SELECT COUNT(*) FROM ("
+						+ "SELECT * FROM T_MGLG_POST B WHERE B.USER_ID IN "
+						+ "(SELECT C.FOLLOWER_ID FROM T_MGLG_USER_RELATION C WHERE C.USER_ID = :userId) ) A ",
+				nativeQuery = true)
+	 Page<MglgPost> getFollowerPost(@Param("userId") int userId, Pageable pageable);
+	 
+	 
 }
