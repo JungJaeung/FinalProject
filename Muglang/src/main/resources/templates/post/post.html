@@ -33,13 +33,15 @@
 				obj.style.height = "1px";
 				obj.style.height = (12 + obj.scrollHeight) + "px";
 			}
-
+			
+			//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
+			//포스팅 글들의 id를 관리하는데 사용함.
+			//해당 배열은 파일 처리 이벤트에서 많이 쓰게될 예정.
+			let postIdList = [];
+			let flagList = [];
 			$(function () {
 
 				let list = $('.post').get();
-
-				let postIdList = [];
-				let flagList = [];
 
 				for (let i = 0; i < list.length; i++) {
 					flagList.push(false);
@@ -119,8 +121,6 @@
 					let insert_post = "";
 					//$(".quill-editor-default").text();
 					$("#postContent").val($(".quill-editor-default").text());
-					//let boldText = $("#postContent").children("h2").text();
-					//let letter = $("#postContent").children("p").text();
 					
 					//$("#postContent").val($(".ql-editor").html());
 					$.ajax({
@@ -141,7 +141,19 @@
 							console.log(obj);
 							console.log("로그인한 계정 : " + loginUserId);
 							insert_post = post(obj.item);
-							$("#posts").prepend(insert_post);
+							
+							//$("#posts").html(insert_post);
+							//html단 뿌리기
+							$("#posts").prepend($(insert_post));
+							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
+							flagList.unshift(false);
+							postIdList.unshift($($('.updateBtn')[0]).val());
+							//이벤트 다시 적용
+							$.like_button();
+							$.comment_button();
+							$.update_post();
+							
+							
 						}, error: function(e) {
 							console.log(e);
 						}
@@ -396,56 +408,7 @@
 				//$("#file_select_btn").click(function (e) {
 				//   $("#file_select").click();
 				//});
-
-
-				//게시글 수정과 삭제를 활성화하는 버튼을 생성함. 게시글이 자기꺼인 것만 표시함.
-				for (let i = 0; i < list.length; i++) {
-
-					$($('.updateBtn')[i]).click(function (e) {
-						console.log("회원의 수정버튼 입력");
-						flagList[i] = !flagList[i];
-						if (flagList[i]) {
-							$(this).text("돌아가기");
-							$("<button id='deleteButton" + $(this).val() + "'>").appendTo($(this).parent());
-							$("#deleteButton" + $(this).val()).text("글 삭제");
-							$("<button id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
-							$("#updateButton" + $(this).val()).text("게시글 수정하기");
-						} else {
-							$(this).text("게시글 수정")
-							$("#deleteButton" + $(this).val()).remove();
-							$("#updateButton" + $(this).val()).remove();
-						}
-
-						$("#postContent" + $(this).val()).text();
-
-						if (!flagList[i]) {
-							$("#postContent" + $(this).val()).show();
-							$("#contentIn" + $(this).val()).hide();
-						} else {
-							$("#postContent" + $(this).val()).hide();
-							$("#contentIn" + $(this).val()).show();
-						}
-
-						$("#updateButton" + postIdList[i]).click(function (e) {
-							$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());
-							console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());
-							fnUpdatePost(postIdList[i], i);
-						});
-						$("#deleteButton" + postIdList[i]).click(function (e) {
-							console.log("delete");
-							$($('.data')[i]).submit();
-						});
-
-						//글 내용 수정하는 키입력을 받음.
-						$("#contentIn" + postIdList[i]).keyup(function (e) {
-							$("#postContent" + postIdList[i]).text($(this).val());
-							console.log($(this).val());
-							fnChangeContent(this);
-
-						});
-
-					});
-				}
+				
 				//게시글 입력 하는 입력창 조작
 				$("#inputRestNm").keyup(function(e) {
 					$("#restNm").val($(this).val());
@@ -641,7 +604,7 @@
 				//$("#postContent").text($(input).text() + "");
 				$("#postContentIn").val($(input).val());
 				console.log($("#post").val($(input).val()));
-				
+				$("#postContent").val()
 				/*
 				if($(input).val() != $(input).parent().attr("data-board-title")) {
 				   $(input).parent().attr("data-new-title", $(input).val());
@@ -757,7 +720,7 @@
 										<a href="#" class="card-title" th:text="${post.restNm}"></a>
 									</div>
 									<!-- 게시글 사진 부분 -->
-									<div class="activity" style="margin-bottom: 10px;">
+									<div class="activity" style="margin-bottom: 10px;" id="restImgBox">
 										<img src="../assets/img/news-1.jpg" style="width: 100%;">
 									</div>
 									<div class="activity">
