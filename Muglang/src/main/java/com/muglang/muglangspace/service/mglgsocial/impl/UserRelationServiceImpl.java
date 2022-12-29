@@ -69,6 +69,16 @@ public class UserRelationServiceImpl implements UserRelationService {
 		
 		mglgUserRelationRepository.followUser(followId, userId);
 	}
+	@Override
+	public int followingOrNot(int userId, int loginUserId) {
+		
+		return mglgUserRelationRepository.followingOrNot(userId, loginUserId);
+	}
+	@Override
+	public void unFollowUser(int userId, int loginUser) {
+		mglgUserRelationRepository.unFollowUser(userId, loginUser);
+
+	}
 	
 
 

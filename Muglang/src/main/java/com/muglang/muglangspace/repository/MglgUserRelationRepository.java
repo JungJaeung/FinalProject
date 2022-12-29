@@ -20,22 +20,37 @@ public interface MglgUserRelationRepository extends JpaRepository<MglgUser, Inte
 	@Query(value = "SELECT COUNT(*) AS followingCount FROM T_MGLG_USER_RELATION WHERE FOLLOWER_ID = :userId", nativeQuery = true)
 	public int cntFollowing(@Param("userId") int userId);
 
-	
-	
-	///질문하기 --- 페이징처리에서 디폴트 5 주고 갯수 추가하니 오류 발생
-	@Query(value = "	                  "
-			+ "			SELECT A.*\r\n" 
+	/// 질문하기 --- 페이징처리에서 디폴트 5 주고 갯수 추가하니 오류 발생
+	@Query(
+		value = "	                  "
+		+ "			SELECT A.*\r\n" 
 		+ "               FROM T_MGLG_USER A\r\n"
 		+ "               WHERE A.USER_ID \r\n" 
 		+ "               NOT IN \r\n"
-		+ "               (SELECT B.USER_ID FROM T_MGLG_USER_RELATION B WHERE B.FOLLOWER_ID = 33)\r\n"
+		+ "               (SELECT B.USER_ID FROM T_MGLG_USER_RELATION B WHERE B.FOLLOWER_ID = :userId)\r\n"
 		+ "               AND A.USER_ID IN \r\n"
-		+ "				  (SELECT C.FOLLOWER_ID FROM T_MGLG_USER_RELATION C WHERE C.USER_ID = 33)", nativeQuery = true)
+		+ "				  (SELECT C.FOLLOWER_ID FROM T_MGLG_USER_RELATION C WHERE C.USER_ID = :userId)",
+		countQuery = "SELECT COUNT(*) FROM ("
+		+ "			SELECT A.*\r\n" 
+		+ "               FROM T_MGLG_USER A\r\n"
+		+ "               WHERE A.USER_ID \r\n" 
+		+ "               NOT IN \r\n"
+		+ "               (SELECT B.USER_ID FROM T_MGLG_USER_RELATION B WHERE B.FOLLOWER_ID = :userId)\r\n"
+		+ "               AND A.USER_ID IN \r\n"
+		+ "				  (SELECT C.FOLLOWER_ID FROM T_MGLG_USER_RELATION C WHERE C.USER_ID = :userId)"
+		+ " 		) F",
+		nativeQuery = true)
 	public Page<MglgUser> requestFollowList(@Param("userId") int userId, Pageable pageable);
 
 	/// 맞팔
 	@Modifying
 	@Query(value = "INSERT INTO T_MGLG_USER_RELATION " + "	  VALUES(now(), :userId, :followId)", nativeQuery = true)
 	public void followUser(@Param("followId") int followId, @Param("userId") int userId);
+	/// 언팔
+	@Modifying
+	@Query(value = "DELETE FROM T_MGLG_USER_RELATION WHERE USER_ID= :userId AND FOLLOWER_ID= :loginUser", nativeQuery = true)
+	public void unFollowUser(@Param("userId") int userId, @Param("loginUser") int loginUser);
 
+	@Query(value = "SELECT COUNT(*) FROM T_MGLG_USER_RELATION WHERE USER_ID= :userId AND FOLLOWER_ID= :loginUserId", nativeQuery = true)	
+	public int followingOrNot(@Param("userId")int userId,@Param("loginUserId") int loginUserId); 
 }
