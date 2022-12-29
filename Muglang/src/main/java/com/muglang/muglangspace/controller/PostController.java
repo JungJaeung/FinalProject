@@ -205,12 +205,6 @@ public class PostController {
 		mv.addObject("postList", pagePostListDTO);
 		//세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
 		mv.addObject("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
-		
-		for(int i = 0; i < pagePostListDTO.getContent().size(); i++) {
-			System.out.println(pagePostListDTO.getContent().get(i).getBetweenDate());
-		}
-		
-		mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
 
 		return mv;
 	}
