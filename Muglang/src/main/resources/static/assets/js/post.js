@@ -3,7 +3,7 @@
 	$(function() {
 		//ajax로 이벤트 함수를 다시 빌드하는 객체를 따로 정의
 		$.update_post = function() {
-			$($(".updateBtn")[0]).click(function(e) {
+			$($(".updateBtn")[0]).click(function() {
 				console.log("회원의 수정버튼 이벤트 함수 적용 확인.");
 				flagList[0] = !flagList[0];
 				if (flagList[0]) {
@@ -28,23 +28,6 @@
 					$("#contentIn" + $(this).val()).show();
 				}
 	
-				$("#updateButton" + postIdList[0]).click(function (e) {
-					$($('.data')[0]).children('#postContentIn').val($("#contentIn" + postIdList[0]).val());
-					console.log("update될 내용 : " + $("#contentIn" + postIdList[0]).val());
-					fnUpdatePost(postIdList[0], 0);
-				});
-				$("#deleteButton" + postIdList[0]).click(function (e) {
-					console.log("delete");
-					$($('.data')[0]).submit();
-				});
-	
-				//글 내용 수정하는 키입력을 받음.
-				$("#contentIn" + postIdList[0]).keyup(function (e) {
-					$("#postContent" + postIdList[0]).text($(this).val());
-					console.log($(this).val());
-					fnChangeContent(this);
-	
-				});
 				console.log("버튼 이벤트 html단 활성화");
 				$("#updateButton" + postIdList[0]).click(function (e) {
 					$($('.data')[0]).children('#postContentIn').val($("#contentIn" + postIdList[0]).val());
@@ -91,23 +74,6 @@
 					$("#contentIn" + $(this).val()).show();
 				}
 
-				$("#updateButton" + postIdList[i]).click(function (e) {
-					$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());
-					console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());
-					fnUpdatePost(postIdList[i], i);
-				});
-				$("#deleteButton" + postIdList[i]).click(function (e) {
-					console.log("delete");
-					$($('.data')[i]).submit();
-				});
-
-				//글 내용 수정하는 키입력을 받음.
-				$("#contentIn" + postIdList[i]).keyup(function (e) {
-					$("#postContent" + postIdList[i]).text($(this).val());
-					console.log($(this).val());
-					fnChangeContent(this);
-
-				});
 				console.log("버튼 이벤트 html단 활성화");
 				$("#updateButton" + postIdList[i]).click(function (e) {
 					$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());
@@ -125,6 +91,7 @@
 					console.log(value);
 					fnChangeContent(this);
 				});
+	
 			});
 		});
 	
@@ -168,7 +135,7 @@
 						style="width: 40px;">
 					<a href="#" class="card-title">${item.insertPost.restNm}</a>
 				</div>`;
-		text += `<div class="activity" style="margin-bottom: 10px;">
+		text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox">
 					<img src="../assets/img/news-1.jpg" style="width: 100%;">
 				</div>`;
 		text += `<div class="activity">`;

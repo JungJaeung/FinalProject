@@ -34,6 +34,9 @@
 				obj.style.height = (12 + obj.scrollHeight) + "px";
 			}
 			
+			//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
+			//포스팅 글들의 id를 관리하는데 사용함.
+			//해당 배열은 파일 처리 이벤트에서 많이 쓰게될 예정.
 			let postIdList = [];
 			let flagList = [];
 			$(function () {
@@ -118,8 +121,6 @@
 					let insert_post = "";
 					//$(".quill-editor-default").text();
 					$("#postContent").val($(".quill-editor-default").text());
-					//let boldText = $("#postContent").children("h2").text();
-					//let letter = $("#postContent").children("p").text();
 					
 					//$("#postContent").val($(".ql-editor").html());
 					$.ajax({
@@ -140,13 +141,18 @@
 							console.log(obj);
 							console.log("로그인한 계정 : " + loginUserId);
 							insert_post = post(obj.item);
+							
 							//$("#posts").html(insert_post);
 							//html단 뿌리기
 							$("#posts").prepend($(insert_post));
+							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
+							flagList.unshift(false);
+							postIdList.unshift($($('.updateBtn')[0]).val());
 							//이벤트 다시 적용
 							$.like_button();
 							$.comment_button();
 							$.update_post();
+							
 							
 						}, error: function(e) {
 							console.log(e);
@@ -598,7 +604,7 @@
 				//$("#postContent").text($(input).text() + "");
 				$("#postContentIn").val($(input).val());
 				console.log($("#post").val($(input).val()));
-				$("#postContent")
+				$("#postContent").val()
 				/*
 				if($(input).val() != $(input).parent().attr("data-board-title")) {
 				   $(input).parent().attr("data-new-title", $(input).val());
@@ -714,7 +720,7 @@
 										<a href="#" class="card-title" th:text="${post.restNm}"></a>
 									</div>
 									<!-- 게시글 사진 부분 -->
-									<div class="activity" style="margin-bottom: 10px;">
+									<div class="activity" style="margin-bottom: 10px;" id="restImgBox">
 										<img src="../assets/img/news-1.jpg" style="width: 100%;">
 									</div>
 									<div class="activity">
