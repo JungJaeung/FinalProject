@@ -1,5 +1,135 @@
 	let title;
 	
+	$(function() {
+		//ajax로 이벤트 함수를 다시 빌드하는 객체를 따로 정의
+		$.update_post = function() {
+			$($(".updateBtn")[0]).click(function(e) {
+				console.log("회원의 수정버튼 이벤트 함수 적용 확인.");
+				flagList[0] = !flagList[0];
+				if (flagList[0]) {
+					$(this).text("돌아가기");
+					$("<button id='deleteButton" + $(this).val() + "'>").appendTo($(this).parent());
+					$("#deleteButton" + $(this).val()).text("글 삭제");
+					$("<button id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
+					$("#updateButton" + $(this).val()).text("게시글 수정하기");
+				} else {
+					$(this).text("게시글 수정")
+					$("#deleteButton" + $(this).val()).remove();
+					$("#updateButton" + $(this).val()).remove();
+				}
+	
+				$("#postContent" + $(this).val()).text();
+	
+				if (!flagList[0]) {
+					$("#postContent" + $(this).val()).show();
+					$("#contentIn" + $(this).val()).hide();
+				} else {
+					$("#postContent" + $(this).val()).hide();
+					$("#contentIn" + $(this).val()).show();
+				}
+	
+				$("#updateButton" + postIdList[0]).click(function (e) {
+					$($('.data')[0]).children('#postContentIn').val($("#contentIn" + postIdList[0]).val());
+					console.log("update될 내용 : " + $("#contentIn" + postIdList[0]).val());
+					fnUpdatePost(postIdList[0], 0);
+				});
+				$("#deleteButton" + postIdList[0]).click(function (e) {
+					console.log("delete");
+					$($('.data')[0]).submit();
+				});
+	
+				//글 내용 수정하는 키입력을 받음.
+				$("#contentIn" + postIdList[0]).keyup(function (e) {
+					$("#postContent" + postIdList[0]).text($(this).val());
+					console.log($(this).val());
+					fnChangeContent(this);
+	
+				});
+				console.log("버튼 이벤트 html단 활성화");
+				$("#updateButton" + postIdList[0]).click(function (e) {
+					$($('.data')[0]).children('#postContentIn').val($("#contentIn" + postIdList[0]).val());
+					console.log("update될 내용 : " + $("#contentIn" + postIdList[0]).val());
+					fnUpdatePost(postIdList[0], 0);
+				});
+				$("#deleteButton" + postIdList[0]).click(function (e) {
+					console.log("delete");
+					$($('.data')[0]).submit();
+				});
+		
+				//글 내용 수정하는 키입력을 받음.
+				$("#contentIn" + postIdList[0]).keyup(function (e) {
+					$("#postContent" + postIdList[0]).text(value);
+					console.log(value);
+					fnChangeContent(this);
+				});
+			});
+		}
+		//게시글 수정과 삭제를 활성화하는 버튼을 생성함. 게시글이 자기꺼인 것만 표시함.
+		$(".updateBtn").each(function(i, e) {
+			$(this).on('click', function() {
+				console.log("초기 화면 수정 버튼 활성화.");
+				flagList[i] = !flagList[i];
+				if (flagList[i]) {
+					$(this).text("돌아가기");
+					$("<button id='deleteButton" + $(this).val() + "'>").appendTo($(this).parent());
+					$("#deleteButton" + $(this).val()).text("글 삭제");
+					$("<button id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
+					$("#updateButton" + $(this).val()).text("게시글 수정하기");
+				} else {
+					$(this).text("게시글 수정")
+					$("#deleteButton" + $(this).val()).remove();
+					$("#updateButton" + $(this).val()).remove();
+				}
+
+				$("#postContent" + $(this).val()).text();
+
+				if (!flagList[i]) {
+					$("#postContent" + $(this).val()).show();
+					$("#contentIn" + $(this).val()).hide();
+				} else {
+					$("#postContent" + $(this).val()).hide();
+					$("#contentIn" + $(this).val()).show();
+				}
+
+				$("#updateButton" + postIdList[i]).click(function (e) {
+					$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());
+					console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());
+					fnUpdatePost(postIdList[i], i);
+				});
+				$("#deleteButton" + postIdList[i]).click(function (e) {
+					console.log("delete");
+					$($('.data')[i]).submit();
+				});
+
+				//글 내용 수정하는 키입력을 받음.
+				$("#contentIn" + postIdList[i]).keyup(function (e) {
+					$("#postContent" + postIdList[i]).text($(this).val());
+					console.log($(this).val());
+					fnChangeContent(this);
+
+				});
+				console.log("버튼 이벤트 html단 활성화");
+				$("#updateButton" + postIdList[i]).click(function (e) {
+					$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());
+					console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());
+					fnUpdatePost(postIdList[i], i);
+				});
+				$("#deleteButton" + postIdList[i]).click(function (e) {
+					console.log("delete");
+					$($('.data')[i]).submit();
+				});
+		
+				//글 내용 수정하는 키입력을 받음.
+				$("#contentIn" + postIdList[i]).keyup(function (e) {
+					$("#postContent" + postIdList[i]).text(value);
+					console.log(value);
+					fnChangeContent(this);
+				});
+			});
+		});
+	
+	});
+	
 	function inputTitle(title) {
 		$('#inputRestNm').val(title)
 	}
