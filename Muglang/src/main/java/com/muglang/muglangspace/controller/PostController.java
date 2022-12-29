@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,10 +25,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.muglang.muglangspace.common.LoginUserLoad;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
+import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
@@ -53,37 +56,60 @@ public class PostController {
 	
 	//글쓰기 버튼으로 적용되는 글 새로 작성
 	@PostMapping("/insertPost")
-	public void insertPost(MglgPostDTO mglgPostDTO, HttpSession session, 
-			HttpServletResponse response) throws IOException {
-		ModelAndView mv = new ModelAndView();
-		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
-		System.out.println(temp);
-		MglgUser mglgUser = MglgUser.builder()
-									.userId(temp.getUserId())
-									.build();
+	public ResponseEntity<?> insertPost(MglgPostDTO mglgPostDTO, 
+			HttpServletResponse response
+			,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		System.out.println(mglgPostDTO);
+		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
 
 		System.out.println("가져온 내용 : " + mglgPostDTO);
 
-		MglgPost mglgPost = MglgPost.builder()
-									.postId(mglgPostDTO.getPostId())
-									.mglgUser(mglgUser)
-									.postContent(mglgPostDTO.getPostContent())
-									.restNm(mglgPostDTO.getRestNm())
-									.postDate(LocalDateTime.now())
-									.postRating(mglgPostDTO.getPostRating())
-									.restRating(mglgPostDTO.getRestRating())
-									.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
-									.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
-									.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
-									.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
-									.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
-									.build();
-		
-		mglgPostService.insertPost(mglgPost);
-		mv.addObject("loginUser", temp);
-		mv.setViewName("post/post.html");
+		try {
+			MglgPost mglgPost = MglgPost.builder()
+					.postId(mglgPostDTO.getPostId())
+					.mglgUser(loginUser.getMglgUser())
+					.postContent(mglgPostDTO.getPostContent())
+					.restNm(mglgPostDTO.getRestNm())
+					.postDate(LocalDateTime.now())
+					.postRating(mglgPostDTO.getPostRating())
+					.restRating(mglgPostDTO.getRestRating())
+					.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
+					.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
+					.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
+					.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
+					.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
+					.build();
 
-		response.sendRedirect("/post/mainPost");
+			mglgPost = mglgPostService.insertPost(mglgPost);
+			//화면단으로 넘길 DTO를 생성
+			MglgPostDTO returnDTO = MglgPostDTO.builder()
+												 .postId(mglgPost.getPostId())
+												 .userId(loginUser.getMglgUser().getUserId())
+												 .restNm(mglgPost.getRestNm())
+												 .postDate(mglgPost.getPostDate().toString())
+												 .postRating(mglgPost.getPostRating())
+												 .restRating(mglgPost.getRestRating())
+												 .hashTag1(mglgPost.getHashTag1() == ""? "0": mglgPost.getHashTag1())
+												 .hashTag2(mglgPost.getHashTag2() == ""? "0": mglgPost.getHashTag2())
+												 .hashTag3(mglgPost.getHashTag3() == ""? "0": mglgPost.getHashTag3())
+												 .hashTag4(mglgPost.getHashTag4() == ""? "0": mglgPost.getHashTag4())
+												 .hashTag5(mglgPost.getHashTag5() == ""? "0": mglgPost.getHashTag5())
+												 .postContent(mglgPost.getPostContent())
+												 .betweenDate(Duration.between(mglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
+												 .build();
+												 
+												 
+			
+			Map<String, Object> returnMap = new HashMap<String, Object>();
+			returnMap.put("insertPost", returnDTO);
+			returnMap.put("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
+			responseDTO.setItem(returnMap);
+			System.out.println("새로운 글을 추가합니다.");
+			return ResponseEntity.ok().body(responseDTO); 
+		} catch(Exception e) {
+			responseDTO.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(responseDTO);
+		}
 	}
 	
 	@PutMapping("/updatePost")
@@ -152,10 +178,8 @@ public class PostController {
 	@GetMapping("/mainPost")
 	//로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드
 	public ModelAndView getPostList(@PageableDefault(page=0, size=5) Pageable pageable,
-			HttpSession session, HttpServletResponse response) throws IOException {
-		if(session.getAttribute("loginUser") == null) {
-			response.sendRedirect("/user/login");
-		}
+			HttpServletResponse response,
+			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		
 		Page<MglgPost> pagePostList = mglgPostService.getPagePostList(pageable);
 		
@@ -179,15 +203,15 @@ public class PostController {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostListDTO);
-
-		
-		System.out.println(pagePostListDTO.getContent().size());
+		//세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
+		mv.addObject("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
 		
 		for(int i = 0; i < pagePostListDTO.getContent().size(); i++) {
 			System.out.println(pagePostListDTO.getContent().get(i).getBetweenDate());
 		}
 		
 		mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
+
 		return mv;
 	}
 	

@@ -19,9 +19,13 @@ public class MglgPostServiceImpl implements MglgPostService {
 	
 	//포스팅 관련 서비스 제공
 	@Override
-	public void insertPost(MglgPost mglgPost) {
+	public MglgPost insertPost(MglgPost mglgPost) {
 		// TODO Auto-generated method stub
 		mglgPostRepository.save(mglgPost);
+		
+		mglgPostRepository.flush();
+		
+		return mglgPost;
 	}
 
 	@Override
@@ -38,6 +42,8 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public void deletePost(MglgPost mglgpost) {
 		// TODO Auto-generated method stub
 		mglgPostRepository.delete(mglgpost);
+		
+		mglgPostRepository.flush();
 	}
 
 	@Override
@@ -50,7 +56,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 	@Override
 	public Page<MglgPost> getPagePostList(Pageable pageable) {
 		
-		return mglgPostRepository.findAll(pageable);
+		return mglgPostRepository.findAllByOrderByPostIdDesc(pageable);
 	}
 
 	@Override
