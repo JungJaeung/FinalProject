@@ -650,7 +650,10 @@
 							<div class="card recent-sales overflow-auto">
 								<div class="card-body">
 									<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
-									<input type="text" id="inputRestNm" name="inputRestNm" value="">
+									<input type="text" id="inputRestNm" name="inputRestNm" value=""><br>
+									<div class="box" id="imagePrview"> <!-- 이미지를 따로 미리 임시 저장하는 공간 -->
+										
+									</div>
 									<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
 									<div class="quill-editor-default">
 										<h2>write your daily life</h2>
@@ -720,8 +723,14 @@
 										<a href="#" class="card-title" th:text="${post.restNm}"></a>
 									</div>
 									<!-- 게시글 사진 부분 -->
-									<div class="activity" style="margin-bottom: 10px;" id="restImgBox">
-										<img src="../assets/img/news-1.jpg" style="width: 100%;">
+									<div class="activity" style="margin-bottom: 10px;" id="restImgBox">			
+										<div class="box" th:id="'imageBox' + ${post.postId}">
+											<img src="../assets/img/news-1.jpg" style="width: 100%;">
+										</div>
+										<div class="buttons" th:id="'buttonBox' + ${post.postId}">
+											<button th:id="'fileRequest' + ${post.postId}">파일 추가</button>&emsp;
+											<button th:id="'fileRemove' + ${post.postId}">파일 삭제</button>
+										</div>
 									</div>
 									<div class="activity">
 										<!-- 게시글 내용부분-->

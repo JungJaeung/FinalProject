@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserRelation;
+import com.muglang.muglangspace.repository.MglgPostFileRepository;
 import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
@@ -16,6 +17,9 @@ import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 public class MglgPostServiceImpl implements MglgPostService {
 	@Autowired
 	private MglgPostRepository mglgPostRepository;
+	
+	@Autowired
+	private MglgPostFileRepository mglgPostFileRepository;
 	
 	//포스팅 관련 서비스 제공
 	@Override
