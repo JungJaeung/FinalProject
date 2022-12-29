@@ -114,4 +114,10 @@ public class MglgPostServiceImpl implements MglgPostService {
 		
 		return mglgPostRepository.findByUserId(userId,pageable);
 	}
+
+	@Override
+	public Page<MglgPost> getFollowerPost(int userId, Pageable pageable) {
+		
+		return mglgPostRepository.getFollowerPost(userId, pageable);
+	}
 }

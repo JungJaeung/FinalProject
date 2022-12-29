@@ -27,4 +27,6 @@ public interface MglgPostService {
 	
 	//검색
 	public Page<MglgPost> searchPostList(MglgPost mglgPost, Pageable pageable);
+	
+	public Page<MglgPost> getFollowerPost(int userId,Pageable pageable);
 }
