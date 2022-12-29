@@ -264,6 +264,7 @@
 					$("#contentIn" + postId).hide();
 					$("#deleteButton" + postId).remove();
 					$("#updateButton" + postId).remove();
+					flagList[index] = !flagList[index];
 					$($(".updateBtn")[index]).text("게시글 수정");
 				},
 				error: function (e) {

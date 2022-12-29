@@ -41,8 +41,8 @@
 		
 				//글 내용 수정하는 키입력을 받음.
 				$("#contentIn" + postIdList[0]).keyup(function (e) {
-					$("#postContent" + postIdList[0]).text(value);
-					console.log(value);
+					$("#postContent" + postIdList[0]).text($(this).val());
+					console.log($(this).val());
 					fnChangeContent(this);
 				});
 			});
@@ -87,8 +87,8 @@
 		
 				//글 내용 수정하는 키입력을 받음.
 				$("#contentIn" + postIdList[i]).keyup(function (e) {
-					$("#postContent" + postIdList[i]).text(value);
-					console.log(value);
+					$("#postContent" + postIdList[i]).text($(this).val());
+					console.log($(this).val());
 					fnChangeContent(this);
 				});
 	
