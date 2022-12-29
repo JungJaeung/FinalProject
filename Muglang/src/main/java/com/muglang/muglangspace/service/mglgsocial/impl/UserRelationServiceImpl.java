@@ -32,6 +32,7 @@ public class UserRelationServiceImpl implements UserRelationService {
 		 int userId = user.getUserId();
 		 return mglgUserRelationRepository.cntFollowing(userId);
 	}
+	
 	@Override
 	public Page<MglgUser> followList(MglgUser user, Pageable pageable) {
 		int userId = user.getUserId();

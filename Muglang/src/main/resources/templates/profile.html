@@ -6,11 +6,74 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
-				
+
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
 				})
+
+				$("#btn1").on("click", function () {
+					const totalElements = $("#totalElements").val();
+					const pageNumber = $("#pageNumber").val();
+					const pageSize = $("#pageSize").val();
+					const totalPages = $("#totalPages").val();
+					const startPage = $("#startPage").val();
+					const tempEndPage = $("#tempEndPage").val();
+					const endPage = $("#endPage").val();
+
+					if (totalElements > 0 && pageNumber > 0) {
+						$.ajax({
+							url: '/user/profile',
+							type: 'get',
+							data: {page: pageNumber - 1},
+							success: function (obj) {
+
+							},
+							error: function (e) {
+								console.log(e);
+							}
+						});
+					}
+				})
+				$("#btn2").on("click", function () {
+					const totalElements = $("#totalElements").val();
+					const pageNumber = $("#pageNumber").val();
+					const pageSize = $("#pageSize").val();
+					const startPage = $("#startPage").val();
+					const totalPages = $("#totalPages").val();
+					const tempEndPage = $("#tempEndPage").val();
+					const endPage = $("#endPage").val();
+						console.log("클릭 실행")
+						console.log("totalElements" + totalElements)
+						console.log("pageNumber" + pageNumber)
+						console.log("pageSize" + pageSize)
+						console.log("startPage" + startPage)
+						console.log("totalPages" + totalPages)
+						console.log("tempEndPage" + tempEndPage)
+						console.log("endPage" + endPage)
+
+
+					if (totalElements > 0 && pageNumber<totalPages-1) {
+						console.log("함수 실행")
+						$.ajax({
+							url: '/user/profile',
+							type: 'get',
+							data: {page:pageNumber+1},
+							success: function (obj) {
+
+							},
+							error: function (e) {
+								console.log(e);
+							}
+						});
+					}
+				})
+
+
+
+
+
+
 			});
 		</script>
 	</th:block>
@@ -89,9 +152,15 @@
 
 										<div class="row">
 											<div class="col-lg-3 col-md-4 label">Social Id Type</div>
-											<div class="col-lg-9 col-md-8" th:if="${#strings.substring(user.userSnsId, 0, 1)} eq 'k'" th:text="카카오" ></div>
-											<div class="col-lg-9 col-md-8" th:if="${#strings.substring(user.userSnsId, 0, 1)} eq 'g'" th:text="구글" ></div>
-											<div class="col-lg-9 col-md-8" th:if="${#strings.substring(user.userSnsId, 0, 1)} eq 'n'" th:text="네이버" ></div>
+											<div class="col-lg-9 col-md-8"
+												th:if="${#strings.substring(user.userSnsId, 0, 1)} eq 'k'"
+												th:text="카카오"></div>
+											<div class="col-lg-9 col-md-8"
+												th:if="${#strings.substring(user.userSnsId, 0, 1)} eq 'g'" th:text="구글">
+											</div>
+											<div class="col-lg-9 col-md-8"
+												th:if="${#strings.substring(user.userSnsId, 0, 1)} eq 'n'"
+												th:text="네이버"></div>
 										</div>
 
 										<div class="row">
@@ -121,10 +190,10 @@
 
 										<!-- Profile Edit Form -->
 										<form action="/user/updateUser" method="post">
-										<!--인풋 히든으로 낫널인 값들 주기-->
+											<!--인풋 히든으로 낫널인 값들 주기-->
 
 
-										
+
 											<div class="row mb-3">
 												<label for="profileImage"
 													class="col-md-4 col-lg-3 col-form-label">Profile
@@ -165,9 +234,8 @@
 												<label for="Address"
 													class="col-md-4 col-lg-3 col-form-label">Address</label>
 												<div class="col-md-8 col-lg-9">
-													<input th:if="${user.address != null}" 
-														name="address" type="text" class="form-control" id="Address"
-														th:value="${user.address}">
+													<input th:if="${user.address != null}" name="address" type="text"
+														class="form-control" id="Address" th:value="${user.address}">
 													<input th:if="${user.address == null}" name="address" type="text"
 														class="form-control" id="Address" value="주소를 입력해주세요">
 												</div>
@@ -178,7 +246,7 @@
 													class="col-md-4 col-lg-3 col-form-label">Phone</label>
 												<div class="col-md-8 col-lg-9">
 													<input th:if="${user.phone != null}" name="phone" type="text"
-														class="form-control" id="Phone" th:value="${user.phone}"}>
+														class="form-control" id="Phone" th:value="${user.phone}" }>
 													<input th:if="${user.phone == null}" name="phone" type="text"
 														class="form-control" id="Phone" value="전화번호를 입력해주세요">
 												</div>
@@ -206,23 +274,43 @@
 
 						<div class="card" style="text-align: center;">
 							<h5 class="card-title" style="font-weight: bold;">팔로잉 요청</h5>
-							
+
 							<div class="card-body" th:each="requestList:${requestList}">
 								<!--팔로잉 요청1-->
 								<div class="follow_request mb-5">
 									<span style="float: left;"><img class="img-fluid rounded-circle"
 											th:src="@{/assets/img/messages-1.jpg}" style="width: 90px;"></span>
-									<span style="word-break: keep-all;"><b th:text="${requestList.userName}"></b>님이 당신을  하셨어요!!</span>
+									<span style="word-break: keep-all;"><b th:text="${requestList.userName}"></b>님이 당신을
+										하셨어요!!</span>
 									<div>
-									<form action="/social/followUser" method="post">
-										<input type="hidden" th:value="${requestList.userId}" name ="followerId">
-										<input type="hidden" th:value="${user.userId}" name ="userId">
-										<input type="submit" class="btn mt-1" style="background-color:#DCEBFF; color: #6e6e6e;" value="팔로우"></input>
-									</form>		
+										<form action="/social/followUser" method="post">
+											<input type="hidden" th:value="${requestList.userId}" name="followerId">
+											<input type="hidden" th:value="${user.userId}" name="userId">
+											<input type="submit" class="btn mt-1"
+												style="background-color:#DCEBFF; color: #6e6e6e;" value="팔로우"></input>
+										</form>
 									</div>
 								</div>
 							</div>
-							
+							<button id="btn1"><</button>
+							<button id="btn2">></button>
+									
+
+									<ul class="pagination" th:if="${requestList.totalElements > 0}" th:with="pageNumber = ${requestList.pageable.pageNumber},
+												    pageSize = ${requestList.pageable.pageSize},
+												    totalPages = ${requestList.totalPages},
+												    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+												    tempEndPage = ${startPage + pageSize - 1},
+												    endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
+ 									<input type="hidden" id="totalElements" th:value="${requestList.totalElements}">
+									<input type="hidden" id="pageNumber" th:value="${requestList.pageable.pageNumber}">
+									<input type="hidden" id="pageSize" th:value="${requestList.pageable.pageSize}">
+									<input type="hidden" id="totalPages" th:value="${requestList.totalPages}">
+									<input type="hidden" id="tempEndPage" th:value="${startPage + pageSize - 1}">
+									<input type="hidden" id="endPage"th:value="${tempEndPage > totalPages ? totalPages : tempEndPage}">
+									<input type="hidden" id="startPage"th:value="${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1}">
+									</ul>
+
 						</div>
 					</div>
 				</div>

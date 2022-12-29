@@ -54,5 +54,12 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			Pageable pageable
 			);
 	
-	Page<MglgPost> findAllByOrderByPostIdDesc(Pageable pageable);
+
+	//
+	///개인 작성글 조회
+ 	 @Query(value="SELECT * FROM T_MGLG_POST WHERE USER_ID = :userId", nativeQuery=true)
+	 Page<MglgPost> findByUserId(@Param("userId") int userId, Pageable pageable);
+   
+   //게시글 최신순 페이징 처리
+	 Page<MglgPost> findAllByOrderByPostIdDesc(Pageable pageable);
 }

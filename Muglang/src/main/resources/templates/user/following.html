@@ -99,7 +99,7 @@
 				<div class="col-lg-4 col-xxl-3">
 
 					<div class="card" style="text-align: center;">
-						<h5 class="card-title" style="font-weight: bold;">Follower</h5>
+						<h5 class="card-title" style="font-weight: bold;">Following</h5>
 						<!--검색-->
 						<div class="card-body">
 							<form class="form-inline" role="form" action="/user/following" method="get">
@@ -121,7 +121,7 @@
 										style="width: 50px;"></div>
 								<!--친구 닉네임, 아이디-->
 								<div style="width: 60%; margin-top: 13px; float: left;">
-									<div><a th:href="@{#}" style="font-weight: bold; color: black;" th:text="${followingList.userName}"></a></div>
+									<div><a th:href="@{/social/otherUser(userId =${followingList.userId})}" style="font-weight: bold; color: black;" th:text="${followingList.userName}"></a></div>
 									<div style="color: #aaaaaa; font-size: x-small;" th:text="${followingList.email}">
 									</div>
 								</div>
