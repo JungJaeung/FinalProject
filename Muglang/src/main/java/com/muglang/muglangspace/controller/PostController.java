@@ -210,7 +210,6 @@ public class PostController {
 			System.out.println(pagePostListDTO.getContent().get(i).getBetweenDate());
 		}
 		
-		mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
 
 		return mv;
 	}

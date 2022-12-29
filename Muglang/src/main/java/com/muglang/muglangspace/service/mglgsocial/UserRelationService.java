@@ -19,4 +19,7 @@ public interface UserRelationService {
 	Page<MglgUser> followingList(MglgUser user,Pageable pageable);
 	Page<MglgUser> requestFollowList(int userId,Pageable pageable);
 	void followUser(int followId, int userId);
+	void unFollowUser(int userId,int loginUser);
+	int followingOrNot(int userId, int loginUserId);
+
 }

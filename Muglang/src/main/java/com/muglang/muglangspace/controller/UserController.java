@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -48,7 +50,7 @@ public class UserController {
 	private MglgPostService mglgPostService;
 
 	@GetMapping("/profile")
-	public ModelAndView profileView(@AuthenticationPrincipal CustomUserDetails customUser, @PageableDefault(page = 0, size = 5) Pageable pageable) {
+	public ModelAndView profileView(@AuthenticationPrincipal CustomUserDetails customUser,@PageableDefault(page = 0, size = 5) Pageable pageable) {
 		int userId = customUser.getMglgUser().getUserId();
 		Page<MglgUser> requestFollowList = userRelationService.requestFollowList(userId,pageable);
 		Page<MglgUserDTO> requestFollowDTOList = requestFollowList.map(followList -> 
@@ -85,7 +87,48 @@ public class UserController {
 		mv.setViewName("profile.html");
 		return mv;
 	}
+	//에이작스로 처리
+	@GetMapping("/profileAjax")
+	public ModelAndView profileAjax(@AuthenticationPrincipal CustomUserDetails customUser,@RequestParam("page_num") int page_num, Pageable pageable) {
+		pageable = PageRequest.of(page_num, 5);
+		int userId = customUser.getMglgUser().getUserId();
+		Page<MglgUser> requestFollowList = userRelationService.requestFollowList(userId,pageable);
+		Page<MglgUserDTO> requestFollowDTOList = requestFollowList.map(followList -> 
+																					MglgUserDTO.builder()
+																					 .userName(followList.getUserName())
+																					 .userId(followList.getUserId())
+																					 .build()
+		);
+		
+		
 
+		ModelAndView mv = new ModelAndView();
+		MglgUserDTO user = MglgUserDTO.builder()
+								.userNick(customUser.getMglgUser().getUserNick())
+								.userName(customUser.getMglgUser().getUserName())
+								.email(customUser.getMglgUser().getEmail())
+								.firstName(customUser.getMglgUser().getFirstName())
+								.lastName(customUser.getMglgUser().getLastName())
+								.address(customUser.getMglgUser().getAddress())
+								.phone(customUser.getMglgUser().getPhone())
+								.userId(customUser.getMglgUser().getUserId())
+								.bio(customUser.getMglgUser().getBio())
+								.regDate(customUser.getMglgUser().getRegDate().toString())
+								.userSnsId(customUser.getMglgUser().getUserSnsId())
+								.build();
+		System.out.println("profile use" + user);
+
+		//맞팔로우 요청목록 보여주기
+		
+
+		
+		mv.addObject("requestList", requestFollowDTOList);
+		mv.addObject("user", user);
+		mv.setViewName("profile.html");
+		return mv;
+	}
+	
+	
 	// 내 게시물으로 이동
 	@GetMapping("/myBoard")
 	public ModelAndView myBoard() {

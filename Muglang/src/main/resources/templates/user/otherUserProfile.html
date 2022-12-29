@@ -8,38 +8,53 @@
 			$(function () {
 				var page_num = 1;
 				var page_num2 = 1;
-				console.log(page_num+"페이지넘 초기화??");
+				let totalPages = 0;
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
 				})
+				userId = $("#hiddenId").val();
 				$.ajax({
 					url: '/social/otherUserFollow',
 					type: 'get',
 					data: {userId: $("#hiddenId").val()},
 					success: function (obj) {
-						console.log(obj);
+						let formStr = `
+						<a href="/social/followOtherUser?userId=${userId}">
+						팔로우 하기
+						</a>
+						`
+						let formStr2 = `
+						<a href="/social/unFollowOtherUser?userId=${userId}">
+						언팔로우 하기
+						</a>
+						`
+
+						if(obj.pageItems.content[0].reportCnt ==0){
+							$("#followYn").html(formStr);
+								console.log(formStr)
+							}else{
+							$("#followYn").html(formStr2);
+								console.log(formStr)
+
+							}
+						console.log(obj.pageItems.content[0].reportCnt);
 						let htmlStr = '';
 						for (let i = 0; i < obj.pageItems.content.length; i++) {
+							totalPages = obj.pageItems.totalPages;
+
 							htmlStr += `
-							<div class="card-body">
-								<div class=""
-									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
-									<!--친구 사진-->
-									<div style="width: 30%; margin-top: 10px; float: left;"><img
-											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
-											style="width: 50px;"></div>
-									<!--친구 닉네임, 아이디-->
-									<div style="width: 60%; margin-top: 13px; float: left;">
-										<div><b>${obj.pageItems.content[i].userName}</b></div>
-										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
-									</div>
-								</div>
-							</div>
-							`
+							<div class="" style="width: 100%; height: 70px;">
+                                <div class="col-2" style="margin-top: 10px; float: left; text-align: center;"><img class="img-fluid rounded-circle" src="assets/img/messages-2.jpg" style="width: 50px;"></div>
+                                <div class="col-10" style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
+                                    <div><a style="font-size" href="/social/otherUser?userId=${obj.pageItems.content[i].userId}">${obj.pageItems.content[i].userName}</a></div>
+                                    <div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+                                </div>
+                            </div>
+	
+                    	 `
 
 						}
-
 
 						$("#appendDiv1").html(htmlStr);
 					},
@@ -57,21 +72,14 @@
 						let htmlStr = '';
 						for (let i = 0; i < obj.pageItems.content.length; i++) {
 							htmlStr += `
-							<div class="card-body">
-								<div class=""
-									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
-									<!--친구 사진-->
-									<div style="width: 30%; margin-top: 10px; float: left;"><img
-											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
-											style="width: 50px;"></div>
-									<!--친구 닉네임, 아이디-->
-									<div style="width: 60%; margin-top: 13px; float: left;">
-										<div><b>${obj.pageItems.content[i].userName}</b></div>
-										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
-									</div>
-								</div>
-							</div>
-							`
+                     <div class="" style="width: 100%; height: 70px;">
+                                <div class="col-2" style="margin-top: 10px; float: left; text-align: center;"><img class="img-fluid rounded-circle" src="assets/img/messages-2.jpg" style="width: 50px;"></div>
+                                <div class="col-10" style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
+                                    <div><a style="font-size" href="/social/otherUser?userId=${obj.pageItems.content[i].userId}">${obj.pageItems.content[i].userName}</a></div>
+                                    <div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+                                </div>
+                            </div>
+                     `
 
 						}
 
@@ -84,42 +92,38 @@
 
 				//클릭시 사용 -- 팔로우 앞으로
 				$("#btn_next1").click(function () {
+					page_num = page_num + 1;
 					console.log("누르기전page_num===" + page_num)
 
+					if (page_num > totalPages) {
+						page_num = totalPages;
+						return;
+					}
+
 					$.ajax({
-						url: '/social/otherUserFollowPaging',
+						url: '/social/otherUserFollow',
 						type: 'get',
 						data: {
 							userId: $("#hiddenId").val(),
-							page_num: page_num
+							page: page_num - 1
 						},
 						success: function (obj) {
-							if(page_num == obj.pageItems.totalPages){
-								return
-							}
+							console.log(obj);
 							let htmlStr = '';
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-							<div class="card-body">
-								<div class=""
-									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
-									<!--친구 사진-->
-									<div style="width: 30%; margin-top: 10px; float: left;"><img
-											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
-											style="width: 50px;"></div>
-									<!--친구 닉네임, 아이디-->
-									<div style="width: 60%; margin-top: 13px; float: left;">
-										<div><b>${obj.pageItems.content[i].userName}</b></div>
-										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
-									</div>
-								</div>
-							</div>
-							`
+                     <div class="" style="width: 100%; height: 70px;">
+                                <div class="col-2" style="margin-top: 10px; float: left; text-align: center;"><img class="img-fluid rounded-circle" src="assets/img/messages-2.jpg" style="width: 50px;"></div>
+                                <div class="col-10" style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
+                                    <div><a style="font-size" href="/social/otherUser?userId=${obj.pageItems.content[i].userId}">${obj.pageItems.content[i].userName}</a></div>
+                                    <div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+                                </div>
+                            </div>
+                     `
 							}
 
 							$("#appendDiv1").html(htmlStr);
-						page_num=page_num+1;
-						console.log("누른후page_num===" + page_num);
+							console.log("누른후page_num===" + page_num);
 
 						},
 						error: function (e) {
@@ -130,41 +134,33 @@
 				//클릭시 사용 -- 팔로우 뒤로
 				$("#btn_prev1").click(function () {
 					console.log("누르기전page_num===" + page_num);
-					if(page_num==1){
+					if (page_num < 2) {
 						return;
 					}
-					page_num = page_num - 2;
+					page_num = page_num - 1;
 					console.log("누른후page_num===" + page_num);
 					$.ajax({
-						url: '/social/otherUserFollowPaging',
+						url: '/social/otherUserFollow',
 						type: 'get',
 						data: {
 							userId: $("#hiddenId").val(),
-							page_num: page_num
+							page_num: page_num - 1
 						},
 						success: function (obj) {
 							let htmlStr = '';
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-							<div class="card-body">
-								<div class=""
-									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
-									<!--친구 사진-->
-									<div style="width: 30%; margin-top: 10px; float: left;"><img
-											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
-											style="width: 50px;"></div>
-									<!--친구 닉네임, 아이디-->
-									<div style="width: 60%; margin-top: 13px; float: left;">
-										<div><b>${obj.pageItems.content[i].userName}</b></div>
-										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
-									</div>
-								</div>
-							</div>
-							`
+                     <div class="" style="width: 100%; height: 70px;">
+                                <div class="col-2" style="margin-top: 10px; float: left; text-align: center;"><img class="img-fluid rounded-circle" src="assets/img/messages-2.jpg" style="width: 50px;"></div>
+                                <div class="col-10" style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
+                                    <div><a style="font-size" href="/social/otherUser?userId=${obj.pageItems.content[i].userId}">${obj.pageItems.content[i].userName}</a></div>
+                                    <div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+                                </div>
+                            </div>
+                     `
 							}
 
 							$("#appendDiv1").html(htmlStr);
-							page_num = page_num +1;
 						},
 						error: function (e) {
 							console.log(e);
@@ -184,32 +180,25 @@
 							page_num: page_num2
 						},
 						success: function (obj) {
-							if(page_num2 == obj.pageItems.totalPages){
+							if (page_num2 == obj.pageItems.totalPages) {
 								return
 							}
 							let htmlStr = '';
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-							<div class="card-body">
-								<div class=""
-									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
-									<!--친구 사진-->
-									<div style="width: 30%; margin-top: 10px; float: left;"><img
-											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
-											style="width: 50px;"></div>
-									<!--친구 닉네임, 아이디-->
-									<div style="width: 60%; margin-top: 13px; float: left;">
-										<div><b>${obj.pageItems.content[i].userName}</b></div>
-										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
-									</div>
-								</div>
-							</div>
-							`
+                     <div class="" style="width: 100%; height: 70px;">
+                                <div class="col-2" style="margin-top: 10px; float: left; text-align: center;"><img class="img-fluid rounded-circle" src="assets/img/messages-2.jpg" style="width: 50px;"></div>
+                                <div class="col-10" style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
+                                    <div><a style="font-size" href="/social/otherUser?userId=${obj.pageItems.content[i].userId}">${obj.pageItems.content[i].userName}</a></div>
+                                    <div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+                                </div>
+                            </div>
+                     `
 							}
 
 							$("#appendDiv2").html(htmlStr);
-						page_num2=page_num2+1;
-						console.log("누른후page_num2===" + page_num2);
+							page_num2 = page_num2 + 1;
+							console.log("누른후page_num2===" + page_num2);
 
 						},
 						error: function (e) {
@@ -220,7 +209,7 @@
 				//클릭시 사용 -- 팔로잉 뒤로
 				$("#btn_prev2").click(function () {
 					console.log("누르기전page_num2===" + page_num2);
-					if(page_num2==1){
+					if (page_num2 == 1) {
 						return;
 					}
 					page_num2 = page_num2 - 2;
@@ -236,25 +225,17 @@
 							let htmlStr = '';
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-							<div class="card-body">
-								<div class=""
-									style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
-									<!--친구 사진-->
-									<div style="width: 30%; margin-top: 10px; float: left;"><img
-											class="img-fluid rounded-circle" th:src="@{/assets/img/messages-1.jpg}"
-											style="width: 50px;"></div>
-									<!--친구 닉네임, 아이디-->
-									<div style="width: 60%; margin-top: 13px; float: left;">
-										<div><b>${obj.pageItems.content[i].userName}</b></div>
-										<div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
-									</div>
-								</div>
-							</div>
-							`
+                     <div class="" style="width: 100%; height: 70px;">
+                                <div class="col-2" style="margin-top: 10px; float: left; text-align: center;"><img class="img-fluid rounded-circle" src="assets/img/messages-2.jpg" style="width: 50px;"></div>
+                                <div class="col-10" style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
+                                    <div><a style="font-size" href="/social/otherUser?userId=${obj.pageItems.content[i].userId}">${obj.pageItems.content[i].userName}</a></div>
+                                    <div style="color: #aaaaaa; font-size: x-small;" >${obj.pageItems.content[i].email}</div>
+                                </div>
+                            </div>
+                     `
 							}
-
 							$("#appendDiv2").html(htmlStr);
-							page_num2 = page_num2 +1;
+							page_num2 = page_num2 + 1;
 						},
 						error: function (e) {
 							console.log(e);
@@ -273,27 +254,40 @@
 	<main layout:fragment="main" id="main" class="main">
 		<section class="section">
 			<div class="row">
-				<div class="col-lg-8">
-					<div class="card-title profile-card pt-4 d-flex flex-column align-items-center">
+				<div class="col-lg-12">
+					<div class="card-title profile-card pt-4 d-flex flex-column align-items-center"
+						style="position: relative;">
 						<img th:src="@{/assets/img/messages-1.jpg}" alt="Profile" class="rounded-circle">
 						<h2 style="margin-top: 15px;" th:text="${user.userName}"></h2>
 						<h6 style="color: #aaaaaa;" th:text="${user.email}"></h6>
 						<input type="hidden" id="hiddenId" th:value="${user.userId}">
 						<h6 th:text="${user.bio}"></h6>
-						<form style="position: absolute; right: 10%;">
-							<input type="button" class="btn" value="팔로우">
-						</form>
+						<div id="followYn">
+						</div>
+						
 					</div>
 					<div class="card-body">
 						<!-- 선택 버튼 -->
 						<ul class="nav nav-tabs nav-tabs-bordered">
 							<li class="nav-item">
+								<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-post">작성한
+									글</button>
+							</li>
+
+							<li class="nav-item">
+								<button class="nav-link" data-bs-toggle="tab"
+									data-bs-target="#profile-fallower">팔로워</button>
+							</li>
+
+							<li class="nav-item">
+								<button class="nav-link" data-bs-toggle="tab"
+									data-bs-target="#profile-fallowing">팔로잉</button>
 							</li>
 						</ul>
 						<!--버튼에 관한 각각의 창-->
 						<div class="tab-content pt-2">
 							<!--작성한 글-->
-							<div class="tab-pane active" id="profile-post">
+							<div class="tab-pane fade show active" id="profile-post">
 								<div class="row">
 									<div class="col-12">
 										<div class="card recent-sales" th:if="${postList.totalElements == 0}">
@@ -366,47 +360,33 @@
 									</div>
 								</div>
 							</div>
+							<!--팔로워-->
+							<div class="tab-pane fade" id="profile-fallower">
+								<div class="row">
+									<div class="card" id="appendDiv1">
+										<!--팔로우 리스트-->
+									</div>
+								</div>
+								<button id="btn_prev1">이전</button>
+								<button id="btn_next1">다음</button>
+							</div>
+							<!--팔로잉-->
+							<div class="tab-pane fade" id="profile-fallowing">
+								<div class="row">
+									<div class="card" id="appendDiv2">
+
+										<!--팔로잉 리스트-->
+
+									</div>
+								</div>
+								<button id="btn_prev2">이전</button>
+								<button id="btn_next2">다음</button>
+							</div>
 						</div>
 					</div>
+
 				</div>
-
-				<div class="col-lg-4 col-xxl-3">
-
-					<!--Follow 리스트-->
-					<div class="card" style="text-align: center;">
-						<h5 class="card-title" style="font-weight: bold;">Follow</h5>
-						<div class="card-body">
-							<form class="form-inline" role="form">
-								<input type="text" placeholder="팔로우 검색" onfocus="this.placeholder=''"
-									onblur="this.placeholder='팔로우 검색'">
-								<input type="button" value="검색">
-							</form>
-						</div>
-						<div class="card-body">
-							<div id="appendDiv1"></div>
-							<button id="btn_prev1">이전</button>
-							<button id="btn_next1">다음</button>
-						</div>
-					</div>
-
-					<!--Following 리스트-->
-					<div class="card" style="text-align: center;">
-						<h5 class="card-title" style="font-weight: bold;">Following</h5>
-						<div class="card-body">
-							<form class="form-inline" role="form">
-								<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
-									onblur="this.placeholder='팔로워 검색'">
-								<input type="button" value="검색">
-							</form>
-						</div>
-
-						<div class="card-body">
-							<div id="appendDiv2"></div>
-							<button id="btn_prev2">이전</button>
-							<button id="btn_next2">다음</button>
-						</div>
-					</div>
-				</div>
+			</div>
 		</section>
 	</main><!-- End #main -->
 </body>

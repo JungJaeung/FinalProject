@@ -6,72 +6,47 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
-
+				var page_num = 1;
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
 				})
 
-				$("#btn1").on("click", function () {
-					const totalElements = $("#totalElements").val();
-					const pageNumber = $("#pageNumber").val();
-					const pageSize = $("#pageSize").val();
-					const totalPages = $("#totalPages").val();
-					const startPage = $("#startPage").val();
-					const tempEndPage = $("#tempEndPage").val();
-					const endPage = $("#endPage").val();
+				$("#btnNext").click(function () {
 
-					if (totalElements > 0 && pageNumber > 0) {
-						$.ajax({
-							url: '/user/profile',
-							type: 'get',
-							data: {page: pageNumber - 1},
-							success: function (obj) {
-
-							},
-							error: function (e) {
-								console.log(e);
+					$.ajax({
+						url: '/user/profileAjax',
+						type: 'get',
+						data: {page_num: page_num},
+						success: function (obj) {
+							console.log(obj)
+							var htmlStr = "";
+							for (let i = 0; i < obj.items.length;i++) {
+								htmlStr += `
+								<div class="follow_request mb-5">
+									<span style="float: left;"><img class="img-fluid rounded-circle"
+											th:src="@{/assets/img/messages-1.jpg}" style="width: 90px;"></span>
+									<span style="word-break: keep-all;"><b th:text="${requestList.userName}"></b>님이 당신을
+										하셨어요!!</span>
+									<div>
+										<form action="/social/followUser" method="post">
+											<input type="hidden" th:value="${requestList.userId}" name="followerId">
+											<input type="hidden" th:value="${user.userId}" name="userId">
+											<input type="submit" class="btn mt-1"
+												style="background-color:#DCEBFF; color: #6e6e6e;" value="팔로우"></input>
+										</form>
+									</div>
+								</div>						
+							`
 							}
-						});
-					}
+							$("#followingCard").html(htmlStr)
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+
 				})
-				$("#btn2").on("click", function () {
-					const totalElements = $("#totalElements").val();
-					const pageNumber = $("#pageNumber").val();
-					const pageSize = $("#pageSize").val();
-					const startPage = $("#startPage").val();
-					const totalPages = $("#totalPages").val();
-					const tempEndPage = $("#tempEndPage").val();
-					const endPage = $("#endPage").val();
-						console.log("클릭 실행")
-						console.log("totalElements" + totalElements)
-						console.log("pageNumber" + pageNumber)
-						console.log("pageSize" + pageSize)
-						console.log("startPage" + startPage)
-						console.log("totalPages" + totalPages)
-						console.log("tempEndPage" + tempEndPage)
-						console.log("endPage" + endPage)
-
-
-					if (totalElements > 0 && pageNumber<totalPages-1) {
-						console.log("함수 실행")
-						$.ajax({
-							url: '/user/profile',
-							type: 'get',
-							data: {page:pageNumber+1},
-							success: function (obj) {
-
-							},
-							error: function (e) {
-								console.log(e);
-							}
-						});
-					}
-				})
-
-
-
-
 
 
 			});
@@ -272,19 +247,19 @@
 
 					<div class="col-lg-4 col-xxl-3">
 
-						<div class="card" style="text-align: center;">
+						<div class="card" style="text-align: center;" id="followingCard">
 							<h5 class="card-title" style="font-weight: bold;">팔로잉 요청</h5>
 
-							<div class="card-body" th:each="requestList:${requestList}">
+							<div class="card-body" th:id="'bodyHtml' + ${requestStat.index}" th:each="request : ${requestList}">
 								<!--팔로잉 요청1-->
 								<div class="follow_request mb-5">
 									<span style="float: left;"><img class="img-fluid rounded-circle"
 											th:src="@{/assets/img/messages-1.jpg}" style="width: 90px;"></span>
-									<span style="word-break: keep-all;"><b th:text="${requestList.userName}"></b>님이 당신을
+									<span style="word-break: keep-all;"><b th:text="${request.userName}"></b>님이 당신을
 										하셨어요!!</span>
 									<div>
 										<form action="/social/followUser" method="post">
-											<input type="hidden" th:value="${requestList.userId}" name="followerId">
+											<input type="hidden" th:value="${request.userId}" name="followerId">
 											<input type="hidden" th:value="${user.userId}" name="userId">
 											<input type="submit" class="btn mt-1"
 												style="background-color:#DCEBFF; color: #6e6e6e;" value="팔로우"></input>
@@ -292,24 +267,8 @@
 									</div>
 								</div>
 							</div>
-							<button id="btn1"><</button>
-							<button id="btn2">></button>
-									
-
-									<ul class="pagination" th:if="${requestList.totalElements > 0}" th:with="pageNumber = ${requestList.pageable.pageNumber},
-												    pageSize = ${requestList.pageable.pageSize},
-												    totalPages = ${requestList.totalPages},
-												    startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
-												    tempEndPage = ${startPage + pageSize - 1},
-												    endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
- 									<input type="hidden" id="totalElements" th:value="${requestList.totalElements}">
-									<input type="hidden" id="pageNumber" th:value="${requestList.pageable.pageNumber}">
-									<input type="hidden" id="pageSize" th:value="${requestList.pageable.pageSize}">
-									<input type="hidden" id="totalPages" th:value="${requestList.totalPages}">
-									<input type="hidden" id="tempEndPage" th:value="${startPage + pageSize - 1}">
-									<input type="hidden" id="endPage"th:value="${tempEndPage > totalPages ? totalPages : tempEndPage}">
-									<input type="hidden" id="startPage"th:value="${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1}">
-									</ul>
+							<button id="btnPrev"><</button>
+									<button id="btnNext">></button>
 
 						</div>
 					</div>
