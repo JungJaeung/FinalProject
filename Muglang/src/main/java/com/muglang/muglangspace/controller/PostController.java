@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -205,11 +206,6 @@ public class PostController {
 		mv.addObject("postList", pagePostListDTO);
 		//세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
 		mv.addObject("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
-		
-		for(int i = 0; i < pagePostListDTO.getContent().size(); i++) {
-			System.out.println(pagePostListDTO.getContent().get(i).getBetweenDate());
-		}
-		
 
 		return mv;
 	}
