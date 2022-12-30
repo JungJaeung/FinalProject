@@ -656,8 +656,16 @@
 								<div class="card-body">
 									<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
 									<input type="text" id="inputRestNm" name="inputRestNm" value=""><br>
+									<input type="hidden" id="userName" name="userName" th:value="${loginUser.userName}">
 									<div class="box" id="imagePrview"> <!-- 이미지를 따로 미리 임시 저장하는 공간 -->
-										
+										<div id="image_preview">
+											<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple">
+											<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>
+										</div>
+									</div>
+									<div class="buttons" id="postFileButton">
+										<button id="postFileRequest">파일 관리창 열기</button>&emsp;
+										<button id="postFileUpdate" >파일 업로드 하기</button>
 									</div>
 									<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
 									<div class="quill-editor-default">
@@ -666,7 +674,7 @@
 									</div>
 									<!-- End Quill Editor Default -->
 									<!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임 -->
-									<form id="insert_form" action="/post/insertPost" method="post">
+									<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">
 										<input type="hidden" id="restNm" name="restNm" value="">
 										<input type="hidden" id="postContent" name="postContent" value="">
 										<div style="margin-bottom: 5px;">
@@ -695,7 +703,6 @@
 										<input type="button" class="btn" id="insert_board" value="작성"
 											style="background-color: #4154f1; color: white; float: right;">
 									</form>
-								</div>
 							</div>
 						</div><!-- End Recent Sales -->
 					</div>
@@ -732,8 +739,9 @@
 										<div class="box" th:id="'imageBox' + ${post.postId}">
 											<img src="../assets/img/news-1.jpg" style="width: 100%;">
 										</div>
-										<div class="buttons" th:id="'buttonBox' + ${post.postId}">
-											<button th:id="'fileRequest' + ${post.postId}">파일 추가</button>&emsp;
+
+										<div class="buttons" th:id="'buttonBox' + ${post.postId}" th:if="${post.userId} eq ${loginUser.userId}">
+											<button th:id="'fileRequest' + ${post.postId}">파일 관리창 열기</button>&emsp;
 											<button th:id="'fileRemove' + ${post.postId}">파일 삭제</button>
 										</div>
 									</div>
