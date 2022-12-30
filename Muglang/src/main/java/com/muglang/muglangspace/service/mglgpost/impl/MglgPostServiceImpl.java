@@ -135,4 +135,21 @@ public class MglgPostServiceImpl implements MglgPostService {
 		
 		return (Integer)mglgPostRepository.boardLikeCnt(postId);
 	}
+
+	@Override
+	public String reportPost(int postId,int userId) {
+		//자신의 게시물을 신고시 리턴시킴
+		if(0 != mglgPostRepository.reportPostSelfCheck(postId,userId)) {
+			return "self";
+		}
+		//동일 신고가 존재하면 리턴시킴
+		if(0 != mglgPostRepository.reportPostCheck(postId,userId)) {
+			return "fail";
+		}
+		
+		
+		//신고하는 로직
+		mglgPostRepository.reportPost(postId,userId);
+		return "success";
+	}
 }

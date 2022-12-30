@@ -1,6 +1,7 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -322,8 +323,31 @@ public class PostController {
 				return ResponseEntity.ok().body(0);
 			}
 		}
-	
-	
+		
+		@GetMapping("reportPost")
+		public void reportPost(String msg, String url,HttpServletResponse response,@RequestParam("postId") int postId,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+			int userId = loginUser.getMglgUser().getUserId();
+			msg = mglgPostService.reportPost(postId,userId);
+			url = "/post/mainPost";
+			
+			if(msg.equals("self")) {
+				msg= "자신의 글은 신고할 수 없습니다.";
+			}else if(msg.equals("success")) {
+				msg= postId+"번 포스트를 신고했습니다.";
+			}else {
+				msg= "중복해서 신고할 수 없습니다.";
+			}
+		    try {
+				response.setContentType("text/html; charset=utf-8");
+				PrintWriter w = response.getWriter();
+		        w.write("<script>alert('"+msg+"');location.href='"+url+"';</script>");
+				w.flush();
+				w.close();
+		    } catch(Exception e) {
+				e.printStackTrace();
+		    }
+		}
+
 	
 //	// 코멘트 컨트롤러가 고장나서 잠시 실례하겠습니다
 //
