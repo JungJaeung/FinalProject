@@ -1,16 +1,30 @@
 			
 	$(function() {
+		let flagList = false;
 		//파일 추가 입력단 생성.
 		$("#postFileRequest").click(function() {
-			//새 태그 생성
+			//숨어있던 파일 조작 메뉴 등장.
 			//이벤트 새로 생성.
-			$("#imagePrview").html(fileTag());
-			$.btnAtt();
-			$("#btnAtt").click();
+			if(!flagList) {
+				//$("#imagePrview").html(fileTag());
+				$.btnAtt();
+				$("#imagePrview").show();
+				$(this).text("파일 업로드 닫기");
+				$("#postFileUpdate").show();
+				flagList = !flagList;
+			} else {
+				$(this).text("파일 업로드 열기");
+				$("#imagePrview").hide();
+				//$("#image_preview").remove();
+				$("#postFileUpdate").hide();
+				flagList = !flagList;
+			}
 		});
-		
-		$("#postFileRemove").click(function() {
-			
+		$("#imagePrview").hide();
+		$("#postFileUpdate").hide();
+		//파일 리스트 변경 버튼 이벤트 대신 처리.
+		$("#postFileUpdate").click(function() {
+			$("#btnAtt").click();
 		});
 		
 		$.btnAtt = function() {
@@ -44,7 +58,6 @@
 		}
 	});
 	//파일 추가창을 활성화하는 이벤트 생성 함수
-	
 	function fileTag() {
 		let text = "";
 		text += `<div id="image_preview">

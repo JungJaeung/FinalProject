@@ -651,13 +651,16 @@
 								<div class="card-body">
 									<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
 									<input type="text" id="inputRestNm" name="inputRestNm" value=""><br>
-									
+									<input type="hidden" id="userName" name="userName" th:value="${loginUser.userName}">
 									<div class="box" id="imagePrview"> <!-- 이미지를 따로 미리 임시 저장하는 공간 -->
-										
+										<div id="image_preview">
+											<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple">
+											<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>
+										</div>
 									</div>
 									<div class="buttons" id="postFileButton">
 										<button id="postFileRequest">파일 관리창 열기</button>&emsp;
-										<button id="postFileRemove">파일 삭제</button>
+										<button id="postFileUpdate" >파일 업로드 하기</button>
 									</div>
 									<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
 									<div class="quill-editor-default">
