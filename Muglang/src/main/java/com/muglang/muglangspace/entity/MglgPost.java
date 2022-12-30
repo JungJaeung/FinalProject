@@ -62,4 +62,8 @@ public class MglgPost {
 	private String searchCondition;
 	@Transient
 	private String searchKeyword;
+	@Transient
+	private int likeCnt;
+	@Transient
+	private int postLike;
 }

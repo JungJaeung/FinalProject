@@ -401,76 +401,76 @@ public class UserController {
 
 	
 	//로그인 시도하는 임시 url
-	@PostMapping("/login")
-	public ModelAndView loginProcess(@PageableDefault(page=0, size=5) Pageable pageable, MglgUserDTO userDTO, HttpSession session) {
-		ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>();
-		Map<String, String> returnMap = new HashMap<String, String>();
-		ModelAndView mv = new ModelAndView();
-		
-		System.out.println(userDTO);
-		//로그인 과정 수행하는 부분
-		try {
-			MglgUser user = MglgUser.builder()
-							.userId(userDTO.getUserId())
-							.build();
-			MglgUser checkedUser = mglgUserService.loginUser(user);
-			System.out.println("비교군 계정 : " + checkedUser);
-			if(checkedUser == null) {
-				System.out.println("로그인을 실패함.");
-				returnMap.put("msg", "idFail");
-			} else {
-				MglgUserDTO loginUser = MglgUserDTO.builder()
-									 	.userId(checkedUser.getUserId())
-									 	.userName(checkedUser.getUserName())
-									 	.password(checkedUser.getPassword())
-									 	.email(checkedUser.getEmail())
-									 	.phone(checkedUser.getPhone())
-									 	.userRole(checkedUser.getUserRole())
-									 	.build();
-					
-				session.setAttribute("loginUser", loginUser);
-				System.out.println("로그인한 유저 아이디 : " + loginUser);
-			}
-			responseDTO.setItem(returnMap);
-			mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
-			//로그인후 게시글 페이지로 이동함. 게시글의 정보를 조회하고 이 정보를 다음 화면단에 넘김.
-			Page<MglgPost> postList = mglgPostService.getPagePostList(pageable);
-			Page<MglgPostDTO> postListDTO = postList.map(pageMglgPost -> MglgPostDTO.builder()
-																					.postId(pageMglgPost.getPostId())
-																					.userId(pageMglgPost.getMglgUser().getUserId())
-																					.postContent(pageMglgPost.getPostContent())
-																					.postDate((pageMglgPost.getPostDate()).toString())
-																					.restNm(pageMglgPost.getRestNm())
-																					.restRating(pageMglgPost.getRestRating())
-																					.postRating(pageMglgPost.getPostRating())
-																					.hashTag1(pageMglgPost.getHashTag1())
-																					.hashTag2(pageMglgPost.getHashTag2())
-																					.hashTag3(pageMglgPost.getHashTag3())
-																					.hashTag4(pageMglgPost.getHashTag4())
-																					.hashTag5(pageMglgPost.getHashTag5())
-																					//.betweenDate(Duration.between(LocalDateTime.now(), pageMglgPost.getPostDate()).getSeconds())
-																					.build()
-														);
-			mv.addObject("postList", postListDTO);
-			
-			System.out.println(postListDTO.getContent().size());
-			
-			for(int i = 0; i < postListDTO.getContent().size(); i++) {
-				System.out.println("111111111111111111111111111111111");
-				System.out.println(postListDTO.getContent().get(i).getBetweenDate());
-			}
-			
-			mv.setViewName("post/post.html");
-			
-			return mv;
-		} catch(Exception e) {
-			responseDTO.setErrorMessage(e.getMessage());
-			
-			mv.setViewName("user/login.html");
-			
-			return mv;
-		}
-	}
+//	@PostMapping("/login")
+//	public ModelAndView loginProcess(@PageableDefault(page=0, size=5) Pageable pageable, MglgUserDTO userDTO, HttpSession session) {
+//		ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>();
+//		Map<String, String> returnMap = new HashMap<String, String>();
+//		ModelAndView mv = new ModelAndView();
+//		
+//		System.out.println(userDTO);
+//		//로그인 과정 수행하는 부분
+//		try {
+//			MglgUser user = MglgUser.builder()
+//							.userId(userDTO.getUserId())
+//							.build();
+//			MglgUser checkedUser = mglgUserService.loginUser(user);
+//			System.out.println("비교군 계정 : " + checkedUser);
+//			if(checkedUser == null) {
+//				System.out.println("로그인을 실패함.");
+//				returnMap.put("msg", "idFail");
+//			} else {
+//				MglgUserDTO loginUser = MglgUserDTO.builder()
+//									 	.userId(checkedUser.getUserId())
+//									 	.userName(checkedUser.getUserName())
+//									 	.password(checkedUser.getPassword())
+//									 	.email(checkedUser.getEmail())
+//									 	.phone(checkedUser.getPhone())
+//									 	.userRole(checkedUser.getUserRole())
+//									 	.build();
+//					
+//				session.setAttribute("loginUser", loginUser);
+//				System.out.println("로그인한 유저 아이디 : " + loginUser);
+//			}
+//			responseDTO.setItem(returnMap);
+//			mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
+//			//로그인후 게시글 페이지로 이동함. 게시글의 정보를 조회하고 이 정보를 다음 화면단에 넘김.
+//			Page<MglgPost> postList = mglgPostService.getPagePostList(pageable);
+//			Page<MglgPostDTO> postListDTO = postList.map(pageMglgPost -> MglgPostDTO.builder()
+//																					.postId(pageMglgPost.getPostId())
+//																					.userId(pageMglgPost.getMglgUser().getUserId())
+//																					.postContent(pageMglgPost.getPostContent())
+//																					.postDate((pageMglgPost.getPostDate()).toString())
+//																					.restNm(pageMglgPost.getRestNm())
+//																					.restRating(pageMglgPost.getRestRating())
+//																					.postRating(pageMglgPost.getPostRating())
+//																					.hashTag1(pageMglgPost.getHashTag1())
+//																					.hashTag2(pageMglgPost.getHashTag2())
+//																					.hashTag3(pageMglgPost.getHashTag3())
+//																					.hashTag4(pageMglgPost.getHashTag4())
+//																					.hashTag5(pageMglgPost.getHashTag5())
+//																					//.betweenDate(Duration.between(LocalDateTime.now(), pageMglgPost.getPostDate()).getSeconds())
+//																					.build()
+//														);
+//			mv.addObject("postList", postListDTO);
+//			
+//			System.out.println(postListDTO.getContent().size());
+//			
+//			for(int i = 0; i < postListDTO.getContent().size(); i++) {
+//				System.out.println("111111111111111111111111111111111");
+//				System.out.println(postListDTO.getContent().get(i).getBetweenDate());
+//			}
+//			
+//			mv.setViewName("post/post.html");
+//			
+//			return mv;
+//		} catch(Exception e) {
+//			responseDTO.setErrorMessage(e.getMessage());
+//			
+//			mv.setViewName("user/login.html");
+//			
+//			return mv;
+//		}
+//	}
 
 	//로그아웃을 하는 매핑 메소드(아무것도 없어도 securityFilter에 정의 되어 있음.)
 	@GetMapping("/logout")
