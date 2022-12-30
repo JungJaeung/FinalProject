@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,10 +28,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.muglang.muglangspace.common.LoginUserLoad;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
-import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
-import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
@@ -271,29 +268,35 @@ public class PostController {
 
 	//팔로우 하고 있는사람 포스트만 불러오는 로직
 	@GetMapping("/getFollowerPost")
-	public ResponseEntity<?> getFollowerPost(Pageable pageable,@AuthenticationPrincipal CustomUserDetails loginUser) {
-
+	public ResponseEntity<?> getFollowerPost(@PageableDefault(page=0,size=5) Pageable pageable,@AuthenticationPrincipal CustomUserDetails loginUser) {
+		MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
 		int userId = loginUser.getMglgUser().getUserId();
+		try {		
+			
 		Page<MglgPost> pagePostList = mglgPostService.getFollowerPost(userId,pageable);
 		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
-																			.userId(pageMglgPost.getMglgUser().getUserId())
-																			.postId(pageMglgPost.getPostId())
-																			.postContent(pageMglgPost.getPostContent())
-																			.postDate(pageMglgPost.getPostDate().toString())
-																			.restNm(pageMglgPost.getRestNm())
-																			.restRating(pageMglgPost.getRestRating())
-																			.postRating(pageMglgPost.getPostRating())
-																			.hashTag1(pageMglgPost.getHashTag1())
-																			.hashTag2(pageMglgPost.getHashTag2())
-																			.hashTag3(pageMglgPost.getHashTag3())
-																			.hashTag4(pageMglgPost.getHashTag4())
-																			.hashTag5(pageMglgPost.getHashTag5())
-																			.build()
-															);
-		
-		return ResponseEntity.ok().body(pagePostListDTO);
-	}
-	
+																						.userId(pageMglgPost.getMglgUser().getUserId())
+																						.postId(pageMglgPost.getPostId())
+																						.postContent(pageMglgPost.getPostContent())
+																						.postDate(pageMglgPost.getPostDate().toString())
+																						.restNm(pageMglgPost.getRestNm())
+																						.restRating(pageMglgPost.getRestRating())
+																							.postRating(pageMglgPost.getPostRating())
+																						.hashTag1(pageMglgPost.getHashTag1())
+																						.hashTag2(pageMglgPost.getHashTag2())
+																						.hashTag3(pageMglgPost.getHashTag3())
+																						.hashTag4(pageMglgPost.getHashTag4())
+																						.hashTag5(pageMglgPost.getHashTag5())
+																						.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
+																						.build()
+		);
+				response.setPageItems(pagePostListDTO);
+				return ResponseEntity.ok().body(response);
+			} catch (Exception e) {
+				response.setErrorMessage(e.getMessage());
+				return ResponseEntity.badRequest().body(response);
+			}
+		}
 	
 	
 //	// 코멘트 컨트롤러가 고장나서 잠시 실례하겠습니다

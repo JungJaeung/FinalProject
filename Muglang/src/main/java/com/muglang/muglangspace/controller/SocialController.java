@@ -3,6 +3,7 @@ package com.muglang.muglangspace.controller;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -180,40 +181,6 @@ public class SocialController {
 
 	}
 
-//	////팔로우 페이징처리
-//	@GetMapping("otherUserFollowPaging")
-//	public ResponseEntity<?> otherUserFollow(@RequestParam("userId") int userId ,@RequestParam("page_num") int page_num ,Pageable pageable) {
-//		System.out.println(pageable.getPageNumber());
-//		pageable = PageRequest.of(page_num, 5);
-//		System.out.println("팔로우로 넘어옴"+page_num);
-//		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-//		try {
-//			MglgUser user = MglgUser.builder()
-//									.userId(userId)
-//									.build();
-//			Page<MglgUser> pageUserFollow = userRelationService.followList(user, pageable);
-//			Page<MglgUserDTO> pageUserFollowDTO = pageUserFollow.map(page->
-//																	 MglgUserDTO.builder()
-//																	             .userId(page.getUserId())
-//																				 .email(page.getEmail())
-//																				 .userName(page.getUserName())
-//																				 .userNick(page.getUserNick())
-//																				 .build()
-//																				 );
-//			
-//			response.setPageItems(pageUserFollowDTO);
-//			return ResponseEntity.ok().body(response);
-//		} catch (Exception e) {
-//			response.setErrorMessage(e.getMessage());
-//			return ResponseEntity.badRequest().body(response);
-//		}
-//		
-//
-//				
-//			
-//			
-//	}
-	//// 팔로잉 페이징처리
 	@GetMapping("otherUserFollowingPaging")
 	public ResponseEntity<?> otherUserFollowing(@RequestParam("userId") int userId,
 			@RequestParam("page_num") int page_num, Pageable pageable) {
@@ -257,5 +224,34 @@ public class SocialController {
 		response.sendRedirect("/social/otherUser?userId=" + userId);
 
 	}
+	
+	//에이작스로 이름 바꿔치기 위한 로직(유저를 팔로잉한사람 이름 다 가져옴)
+	//유저 오더 윈도우 
+		@GetMapping("/followUserName")
+		public ResponseEntity<?> followUserName(@PageableDefault(page = 0, size = 10000)Pageable pageable) {
+			MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+			try {
+				Page<MglgUser> getUser = mglguserService.getUserLists(pageable);
+				
+			
+				Page<MglgUserDTO> pageUserFollowDTO = getUser.map(page -> MglgUserDTO.builder()
+																						.userId(page.getUserId())
+																						.userName(page.getUserName())
+																						.userNick(page.getUserNick())
+																						.build());
+													
+				
+				response.setPageItems(pageUserFollowDTO);
+				return ResponseEntity.ok().body(response);
+			} catch (Exception e) {
+				response.setErrorMessage(e.getMessage());
+				return ResponseEntity.badRequest().body(response);
+			}
+			
+
+					
+				
+				
+		}
 
 }
