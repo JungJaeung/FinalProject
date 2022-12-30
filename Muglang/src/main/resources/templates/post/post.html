@@ -701,18 +701,18 @@
 					</div>
 					<div class="row" id="posts">
 						<div th:each="post : ${postList}" class="col-12 post">
-							<input type="hidden" th:value="${post.betweendate}">
+							<input type="hidden" th:value="${post.betweenDate}">
 							<div class="card recent-sales">
 								<div class="card-body">
 									<!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
 									<div class="filter" style="margin-top: 15px;">
 										<a style="margin-right: 20px;">
-											<span th:if="${post.betweendate / 60 / 60 / 24 / 30 / 12 >= 1}" th:text="${T(java.lang.Math).floor(post.betweendate / 60 / 60 / 24 / 30 / 12).intValue()} + '년 전'"/>
-											<span th:if="${post.betweendate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweendate / 60 / 60 / 24 / 30 >= 1}" th:text="${T(java.lang.Math).floor(post.betweendate / 60 / 60 / 24 / 30).intValue()} + '달 전'"/>
-											<span th:if="${post.betweendate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweendate / 60 / 60 / 24 / 30 < 1 && post.betweendate / 60 / 60 / 24 >= 1}" th:text="${T(java.lang.Math).floor(post.betweendate / 60 / 60 / 24).intValue()} + '일 전'"/>
-											<span th:if="${post.betweendate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweendate / 60 / 60 / 24 / 30 < 1 && post.betweendate / 60 / 60 / 24 < 1 && post.betweendate / 60 / 60 >= 1}" th:text="${T(java.lang.Math).floor(post.betweendate / 60 / 60 ).intValue()} + '시간 전'"/>
-											<span th:if="${post.betweendate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweendate / 60 / 60 / 24 / 30 < 1
-														   && post.betweendate / 60 / 60 / 24 < 1 && post.betweendate / 60 / 60 < 1}" th:text="${T(java.lang.Math).floor(post.betweendate / 60).intValue()} + '분 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 / 24 / 30 / 12).intValue()} + '년 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 / 24 / 30).intValue()} + '달 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 < 1 && post.betweenDate / 60 / 60 / 24 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 / 24).intValue()} + '일 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 < 1 && post.betweenDate / 60 / 60 / 24 < 1 && post.betweenDate / 60 / 60 >= 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60 / 60 ).intValue()} + '시간 전'"/>
+											<span th:if="${post.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && post.betweenDate / 60 / 60 / 24 / 30 < 1
+														   && post.betweenDate / 60 / 60 / 24 < 1 && post.betweenDate / 60 / 60 < 1}" th:text="${T(java.lang.Math).floor(post.betweenDate / 60).intValue()} + '분 전'"/>
 									    </a>
 										<a class="icon" href="#" data-bs-toggle="dropdown"><i
 												class="bi bi-three-dots"></i></a>

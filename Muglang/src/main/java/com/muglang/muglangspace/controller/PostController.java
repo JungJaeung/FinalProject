@@ -184,16 +184,20 @@ public class PostController {
 
 
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
+		
+		for (int i = 0; i < pagePostList.getContent().size(); i++) {
+			System.out.println(pagePostList.getContent().get(i).toString());
+		}
 
 		for (int i = 0; i < pagePostList.getContent().size(); i++) {
 			pagePostList.getContent().get(i).put(
-				"betweenDate", Duration.between(
+				"between_date", Duration.between(
 						((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
 						LocalDateTime.now()).getSeconds()
 			);
 			
 			pagePostList.getContent().get(i).put(
-					"postDate",
+					"post_date",
 					String.valueOf(
 							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
 					)
@@ -203,6 +207,7 @@ public class PostController {
 		for (int i = 0; i < pagePostList.getContent().size(); i++) {
 			System.out.println(pagePostList.getContent().get(i).toString());
 		}
+		
 		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
