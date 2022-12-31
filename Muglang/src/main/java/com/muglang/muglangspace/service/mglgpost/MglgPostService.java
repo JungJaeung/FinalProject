@@ -33,4 +33,6 @@ public interface MglgPostService {
 	public int likeUp(int userId, int postId);
 
 	public int likeDown(int userId, int postId);
+	
+	public String reportPost(int postId,int userId);
 }

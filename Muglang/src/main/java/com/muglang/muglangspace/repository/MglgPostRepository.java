@@ -112,4 +112,26 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	@Query(value = "SELECT IFNULL(COUNT(A.POST_ID), 0) AS LIKE_CNT FROM T_MGLG_POST_LIKES A "
 			+ "WHERE A.POST_ID = :postId", nativeQuery = true)
 	int boardLikeCnt(@Param("postId") int postId);
+	
+	
+	//포스트 신고 로직
+	@Modifying
+	@Query(value = ""
+			+ "INSERT INTO T_MGLG_REPORT VALUES("
+			+ "(SELECT IFNULL(MAX(A.REPORT_ID), 0) + 1 FROM T_MGLG_REPORT A),2,0,:postId,NOW(),:userId,0"
+			+ ")", nativeQuery = true)
+	void reportPost(@Param("postId") int postId,@Param("userId") int userId);		
+	
+	//포스트 다중 신고 방지 로직
+	@Query(value = ""
+			+ "SELECT COUNT(*) FROM T_MGLG_REPORT "
+			+ "WHERE SOURCE_USER_ID= :userId AND POST_Id = :postId", nativeQuery = true)
+	int reportPostCheck(@Param("postId") int postId,@Param("userId") int userId);	
+	//자기자신의 포스트 신고 방지 로직 
+	@Query(value = ""
+			+ "SELECT COUNT(*) FROM T_MGLG_POST WHERE POST_ID =:postId AND USER_ID=:userId"
+			+ "", nativeQuery = true)
+	int reportPostSelfCheck(@Param("postId") int postId,@Param("userId") int userId);	
+	
+	
 }

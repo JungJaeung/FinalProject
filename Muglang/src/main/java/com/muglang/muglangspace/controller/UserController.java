@@ -1,6 +1,7 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -397,6 +398,28 @@ public class UserController {
 		
 		response.sendRedirect("/post/mainPost");
 
+	}
+	@GetMapping("reportUser")
+	public void reportUser(String msg, String url,HttpServletResponse response,@RequestParam("userId") int postUserId,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		int userId = loginUser.getMglgUser().getUserId();
+		msg = mglgUserService.reportUser(postUserId,userId);
+		url = "/post/mainPost";
+		if(msg.equals("self")) {
+			msg="자기 자신을 신고할 수 없습니다.";
+		}else if(msg.equals("success")) {
+			msg= postUserId+"번 유저를 신고했습니다.";
+		}else {
+			msg= "한 유저를 중복해서 신고할 수 없습니다.";
+		}
+	    try {
+			response.setContentType("text/html; charset=utf-8");
+			PrintWriter w = response.getWriter();
+	        w.write("<script>alert('"+msg+"');location.href='"+url+"';</script>");
+			w.flush();
+			w.close();
+	    } catch(Exception e) {
+			e.printStackTrace();
+	    }
 	}
 
 	
