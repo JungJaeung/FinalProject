@@ -20,7 +20,7 @@ public interface MglgCommentRepository extends JpaRepository<MglgComment, MglgCo
 //	Optional<MglgComment> findAllByCommentId(MglgPost mglgPost);
 
 	//해당 게시글의 댓글 리스트 불러오기
-	@Query(value = "SELECT * FROM T_MGLG_COMMENT WHERE POST_ID = :postId", nativeQuery = true)
+	@Query(value = "SELECT * FROM T_MGLG_COMMENT WHERE POST_ID = :postId ORDER BY COMMENT_DATE DESC", nativeQuery = true)
 	Page<MglgComment> getCommentList(Pageable pageable, @Param("postId") int postId);
 
 	// 댓글 리스트 불러오기 2. 조인 쿼리로 해당 댓글의 유저 정보까지 같이 가져옴. MglgComment형만 가져오므로 사용 안됨.

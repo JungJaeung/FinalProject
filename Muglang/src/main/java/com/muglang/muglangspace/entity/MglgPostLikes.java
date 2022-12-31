@@ -8,6 +8,7 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,10 +25,15 @@ import lombok.NoArgsConstructor;
 public class MglgPostLikes {
 	//userId는 foreign키 해제하였음 20221221 - 김동현
 	@Id
-	private int userId;
+	@ManyToOne
+	@JoinColumn(name="USER_ID")
+	private MglgUser mglgUser;
 	@Id
 	@ManyToOne
 	@JoinColumn(name="POST_ID")
 	private MglgPost mglgPost;
 	private LocalDateTime likeDate = LocalDateTime.now();
+	
+	@Transient
+	private int likeCnt;
 }

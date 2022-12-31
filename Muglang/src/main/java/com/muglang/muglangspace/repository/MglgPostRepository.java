@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgPost;
 
 @Transactional
@@ -16,6 +17,30 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	
 	public MglgPost findByPostId(@Param("postId") int postId);
 
+	@Query(value = "SELECT D.*\r\n"
+			+ "	 , IFNULL(E.POST_LIKE, 'N') AS POST_LIKE\r\n"
+			+ "	FROM (\r\n"
+			+ "			SELECT A.*, IFNULL(C.LIKE_CNT, 0) AS LIKE_CNT \r\n"
+			+ "				FROM T_MGLG_POST A \r\n"
+			+ "				LEFT OUTER JOIN (\r\n"
+			+ "									SELECT COUNT(B.POST_ID) AS LIKE_CNT\r\n"
+			+ "										  , B.POST_ID\r\n"
+			+ "										FROM T_MGLG_POST_LIKES B\r\n"
+			+ "										GROUP BY B.POST_ID\r\n"
+			+ "								) C\r\n"
+			+ "			  ON A.POST_ID = C.POST_ID\r\n"
+			+ "		  ) D\r\n"
+			+ "	 LEFT OUTER JOIN (\r\n"
+			+ "						SELECT F.POST_ID, 'Y' AS POST_LIKE \r\n"
+			+ "							FROM T_MGLG_POST_LIKES F\r\n"
+			+ "							WHERE F.USER_ID = :userId \r\n"
+			+ "					 ) E\r\n"
+			+ "	 ON D.POST_ID = E.POST_ID\r\n"
+			+ "     ORDER BY D.POST_ID DESC",
+			countQuery = " SELECT COUNT(*) FROM (SELECT * FROM T_MGLG_POST) D", nativeQuery = true)
+	Page<CamelHashMap> getPagePostList(Pageable pageable, @Param("userId") int userId);
+
+	
 	@Modifying
 	@Query(value="UPDATE T_MGLG_POST SET POST_CONTENT = :#{#mglgPost.postContent} WHERE POST_ID = :#{#mglgPost.postId}", nativeQuery=true)
 	public void updateMglgPost(@Param("mglgPost") MglgPost mglgPost);
@@ -74,5 +99,39 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 				nativeQuery = true)
 	 Page<MglgPost> getFollowerPost(@Param("userId") int userId, Pageable pageable);
 	 
-	 
+	//좋아요 선택
+	@Modifying
+	@Query(value = "INSERT INTO T_MGLG_POST_LIKES VALUES(:postId, :userId, NOW())", nativeQuery = true)
+	void likeUp(@Param("userId") int usreId, @Param("postId") int postId);
+	
+	//좋아요 해제
+	@Modifying
+	@Query(value = "DELETE FROM T_MGLG_POST_LIKES WHERE USER_ID = :userId AND POST_ID = :postId", nativeQuery = true)
+	void likeDown(@Param("userId") int usreId, @Param("postId") int postId);
+	
+	@Query(value = "SELECT IFNULL(COUNT(A.POST_ID), 0) AS LIKE_CNT FROM T_MGLG_POST_LIKES A "
+			+ "WHERE A.POST_ID = :postId", nativeQuery = true)
+	int boardLikeCnt(@Param("postId") int postId);
+	
+	
+	//포스트 신고 로직
+	@Modifying
+	@Query(value = ""
+			+ "INSERT INTO T_MGLG_REPORT VALUES("
+			+ "(SELECT IFNULL(MAX(A.REPORT_ID), 0) + 1 FROM T_MGLG_REPORT A),2,0,:postId,NOW(),:userId,0"
+			+ ")", nativeQuery = true)
+	void reportPost(@Param("postId") int postId,@Param("userId") int userId);		
+	
+	//포스트 다중 신고 방지 로직
+	@Query(value = ""
+			+ "SELECT COUNT(*) FROM T_MGLG_REPORT "
+			+ "WHERE SOURCE_USER_ID= :userId AND POST_Id = :postId", nativeQuery = true)
+	int reportPostCheck(@Param("postId") int postId,@Param("userId") int userId);	
+	//자기자신의 포스트 신고 방지 로직 
+	@Query(value = ""
+			+ "SELECT COUNT(*) FROM T_MGLG_POST WHERE POST_ID =:postId AND USER_ID=:userId"
+			+ "", nativeQuery = true)
+	int reportPostSelfCheck(@Param("postId") int postId,@Param("userId") int userId);	
+	
+	
 }

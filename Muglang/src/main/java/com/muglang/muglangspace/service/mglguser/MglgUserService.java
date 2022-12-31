@@ -30,4 +30,7 @@ public interface MglgUserService {
 	CustomUserDetails loadByUserId(int userId);
 	
 	MglgUser updateUser(MglgUser user);
+	
+	String reportUser(int postUserId,int userId);
+
 }

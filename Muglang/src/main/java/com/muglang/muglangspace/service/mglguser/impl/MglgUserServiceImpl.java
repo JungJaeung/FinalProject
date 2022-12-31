@@ -116,6 +116,23 @@ public class MglgUserServiceImpl implements MglgUserService{
 		
 		return user;
 	}
+	
+	@Override
+	public String reportUser(int postUserId,int userId) {
+		//자기 자신을 신고하려고 할시 못하게함.
+		if(postUserId==userId) {
+			return "self";
+		}
+		//동일 신고가 존재하면 리턴시킴
+		if(0 != mglgUserRepository.reportUserCheck(postUserId,userId)) {
+			return "fail";
+		}
+		
+		
+		//신고하는 로직
+		mglgUserRepository.reportUser(postUserId,userId);
+		return "success";
+	}
 
 	@Override
 	public Page<MglgUser> getUserLists(Pageable pageable) {

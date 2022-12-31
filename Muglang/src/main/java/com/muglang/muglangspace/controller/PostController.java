@@ -1,6 +1,8 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.common.LoginUserLoad;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
@@ -169,40 +172,54 @@ public class PostController {
 		response.sendRedirect("/post/mainPost");
 	}
 	
-	public void likePost(MglgPost mglgpost) {
-		
-	}
 	
 	@GetMapping("/mainPost")
-	//로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드
-	public ModelAndView getPostList(@PageableDefault(page=0, size=5) Pageable pageable,
-			HttpServletResponse response,
-			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+	// 로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드
+	public ModelAndView getPostList(@PageableDefault(page = 0, size = 5) Pageable pageable,
+			HttpServletResponse response, HttpSession session, @AuthenticationPrincipal CustomUserDetails loginUser)
+			throws IOException {
 		
-		Page<MglgPost> pagePostList = mglgPostService.getPagePostList(pageable);
 		
-		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
-																			.userId(pageMglgPost.getMglgUser().getUserId())
-																			.postId(pageMglgPost.getPostId())
-																			.postContent(pageMglgPost.getPostContent())
-																			.postDate(pageMglgPost.getPostDate().toString())
-																			.restNm(pageMglgPost.getRestNm())
-																			.restRating(pageMglgPost.getRestRating())
-																			.postRating(pageMglgPost.getPostRating())
-																			.hashTag1(pageMglgPost.getHashTag1())
-																			.hashTag2(pageMglgPost.getHashTag2())
-																			.hashTag3(pageMglgPost.getHashTag3())
-																			.hashTag4(pageMglgPost.getHashTag4())
-																			.hashTag5(pageMglgPost.getHashTag5())
-																			.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
-																			.build()
-															);
-		//화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
+		int userId = loginUser.getMglgUser().getUserId();
+
+
+		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
+		
+		for (int i = 0; i < pagePostList.getContent().size(); i++) {
+			System.out.println(pagePostList.getContent().get(i).toString());
+		}
+
+		for (int i = 0; i < pagePostList.getContent().size(); i++) {
+			pagePostList.getContent().get(i).put(
+				"between_date", Duration.between(
+						((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
+						LocalDateTime.now()).getSeconds()
+			);
+			
+			pagePostList.getContent().get(i).put(
+					"post_date",
+					String.valueOf(
+							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
+					)
+			);
+		}
+		
+		for (int i = 0; i < pagePostList.getContent().size(); i++) {
+			System.out.println(pagePostList.getContent().get(i).toString());
+		}
+		
+		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
-		mv.addObject("postList", pagePostListDTO);
-		//세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
+		mv.addObject("postList", pagePostList);
+		// 세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
 		mv.addObject("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
+
+//		for(int i = 0; i < pagePostListDTO.getContent().size(); i++) {
+//			System.out.println(pagePostListDTO.getContent().get(i).getBetweenDate());
+//		}
+
+		mv.addObject("loginUser", (MglgUserDTO) session.getAttribute("loginUser"));
 
 		return mv;
 	}
@@ -210,27 +227,16 @@ public class PostController {
 	@PostMapping("/mainPost")
 	//스크롤시 데이터 불러오는 로직
 	//재웅이형이 작성한 바로 위 로직이랑 거의 동일
-	public ResponseEntity<?> getPostListScroll(Pageable pageable, @RequestParam("page_num") int page_num) {
+	public ResponseEntity<?> getPostListScroll(Pageable pageable, @RequestParam("page_num") int page_num, 
+			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException  {
+		
+		int userId = loginUser.getMglgUser().getUserId();
 		pageable = PageRequest.of(page_num, 5);
 		
-		Page<MglgPost> pagePostList = mglgPostService.getPagePostList(pageable);
-		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
-																			.userId(pageMglgPost.getMglgUser().getUserId())
-																			.postId(pageMglgPost.getPostId())
-																			.postContent(pageMglgPost.getPostContent())
-																			.postDate(pageMglgPost.getPostDate().toString())
-																			.restNm(pageMglgPost.getRestNm())
-																			.restRating(pageMglgPost.getRestRating())
-																			.postRating(pageMglgPost.getPostRating())
-																			.hashTag1(pageMglgPost.getHashTag1())
-																			.hashTag2(pageMglgPost.getHashTag2())
-																			.hashTag3(pageMglgPost.getHashTag3())
-																			.hashTag4(pageMglgPost.getHashTag4())
-																			.hashTag5(pageMglgPost.getHashTag5())
-																			.build()
-															);
+		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		
-		return ResponseEntity.ok().body(pagePostListDTO);
+		
+		return ResponseEntity.ok().body(pagePostList);
 	}
 	
 	public List<MglgPost> getYourPost() {
@@ -298,42 +304,54 @@ public class PostController {
 			}
 		}
 	
-	
-//	// 코멘트 컨트롤러가 고장나서 잠시 실례하겠습니다
-//
-//		// 댓글 리스트 불러오기
-//		@GetMapping("commentList")
-//		public ResponseEntity<?> commentList(MglgComment comment, @PageableDefault(page = 0, size = 10) Pageable pageable,
-//				@RequestParam("postId") int postId) {
-//			Page<MglgComment> commentList = mglgCommentService.getCommentList(comment, pageable, postId);
-//
-//			return ResponseEntity.ok().body(commentList);
-//		}
-//
-//		// 댓글 작성 쿼리 실행
-//		@GetMapping("insertComment")
-//		public void insertComment(@RequestParam("userId") int userId, @RequestParam("postId") int postId, @RequestParam("commentContent") String commentContent)
-//				throws IOException {
-//
-//			mglgCommentService.insertComment(userId, postId, commentContent);
-//		}
-//
-//		// 댓글 삭제
-//		@GetMapping("deleteComment")
-//		public void deleteComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
-//				HttpServletResponse response, MglgComment comment)
-//				throws IOException {
-//			mglgCommentService.deleteComment(commentId, postId);
-//			adminService.deleteReport(commentId, postId);
-//
-//			response.sendRedirect("/admin/commentReport");
-//		}
-//
-//		// 댓글 업데이트
-//		@GetMapping("updateComment")
-//		public void updateComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
-//				@RequestParam("commentContent") String commentContent) throws IOException {
-//			mglgCommentService.updateComment(commentId, postId, commentContent);
-//		}
+	// 좋아요 눌렀을때 ajax
+		@GetMapping("likeUp")
+		public ResponseEntity<?> likeUp(@RequestParam("userId") int userId, @RequestParam("postId") int postId) {
+			try {
+				int likeCnt = mglgPostService.likeUp(userId, postId);
+				return ResponseEntity.ok().body(likeCnt);
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				return ResponseEntity.ok().body(0);
+			}
+
+		}
+
+		@GetMapping("likeDown")
+		public ResponseEntity<?> likeDown(@RequestParam("userId") int userId, @RequestParam("postId") int postId) throws IOException{
+			try {
+				int likeCnt = mglgPostService.likeDown(userId, postId);
+				return ResponseEntity.ok().body(likeCnt);
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				return ResponseEntity.ok().body(0);
+			}
+		}
+		
+		@GetMapping("reportPost")
+		public void reportPost(String msg, String url,HttpServletResponse response,@RequestParam("postId") int postId,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+			int userId = loginUser.getMglgUser().getUserId();
+			msg = mglgPostService.reportPost(postId,userId);
+			url = "/post/mainPost";
+			
+			if(msg.equals("self")) {
+				msg= "자신의 글은 신고할 수 없습니다.";
+			}else if(msg.equals("success")) {
+				msg= postId+"번 포스트를 신고했습니다.";
+			}else {
+				msg= "중복해서 신고할 수 없습니다.";
+			}
+		    try {
+				response.setContentType("text/html; charset=utf-8");
+				PrintWriter w = response.getWriter();
+		        w.write("<script>alert('"+msg+"');location.href='"+url+"';</script>");
+				w.flush();
+				w.close();
+		    } catch(Exception e) {
+				e.printStackTrace();
+		    }
+		}
 
 }

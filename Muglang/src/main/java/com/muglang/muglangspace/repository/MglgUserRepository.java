@@ -105,4 +105,18 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer> {
 	Page<MglgUser> searchFollowingList(@Param("searchKeyword") String searchKeyword, @Param("userId") int userId,
 			Pageable pageable);
 
+	//유저 신고 로직
+	@Modifying
+	@Query(value = ""
+			+ "INSERT INTO T_MGLG_REPORT VALUES("
+			+ "(SELECT IFNULL(MAX(A.REPORT_ID), 0) + 1 FROM T_MGLG_REPORT A),1,0,0,NOW(),:userId,:postUserId"
+			+ ")", nativeQuery = true)
+	void reportUser(@Param("postUserId") int postUserId,@Param("userId") int userId);		
+	
+	
+	@Query(value = ""
+			+ "SELECT COUNT(*) FROM T_MGLG_REPORT "
+			+ "WHERE SOURCE_USER_ID= :userId AND TARGET_USER_ID = :postUserId", nativeQuery = true)
+	int reportUserCheck(@Param("postUserId") int postUserId,@Param("userId") int userId);	
+	
 }
