@@ -31,7 +31,6 @@ import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.common.LoginUserLoad;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
-import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
@@ -275,28 +274,35 @@ public class PostController {
 
 	//팔로우 하고 있는사람 포스트만 불러오는 로직
 	@GetMapping("/getFollowerPost")
-	public ResponseEntity<?> getFollowerPost(Pageable pageable,@AuthenticationPrincipal CustomUserDetails loginUser) {
-
+	public ResponseEntity<?> getFollowerPost(@PageableDefault(page=0,size=5) Pageable pageable,@AuthenticationPrincipal CustomUserDetails loginUser) {
+		MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
 		int userId = loginUser.getMglgUser().getUserId();
+		try {		
+			
 		Page<MglgPost> pagePostList = mglgPostService.getFollowerPost(userId,pageable);
 		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
-																			.userId(pageMglgPost.getMglgUser().getUserId())
-																			.postId(pageMglgPost.getPostId())
-																			.postContent(pageMglgPost.getPostContent())
-																			.postDate(pageMglgPost.getPostDate().toString())
-																			.restNm(pageMglgPost.getRestNm())
-																			.restRating(pageMglgPost.getRestRating())
-																			.postRating(pageMglgPost.getPostRating())
-																			.hashTag1(pageMglgPost.getHashTag1())
-																			.hashTag2(pageMglgPost.getHashTag2())
-																			.hashTag3(pageMglgPost.getHashTag3())
-																			.hashTag4(pageMglgPost.getHashTag4())
-																			.hashTag5(pageMglgPost.getHashTag5())
-																			.build()
-															);
-		
-		return ResponseEntity.ok().body(pagePostListDTO);
-	}
+																						.userId(pageMglgPost.getMglgUser().getUserId())
+																						.postId(pageMglgPost.getPostId())
+																						.postContent(pageMglgPost.getPostContent())
+																						.postDate(pageMglgPost.getPostDate().toString())
+																						.restNm(pageMglgPost.getRestNm())
+																						.restRating(pageMglgPost.getRestRating())
+																							.postRating(pageMglgPost.getPostRating())
+																						.hashTag1(pageMglgPost.getHashTag1())
+																						.hashTag2(pageMglgPost.getHashTag2())
+																						.hashTag3(pageMglgPost.getHashTag3())
+																						.hashTag4(pageMglgPost.getHashTag4())
+																						.hashTag5(pageMglgPost.getHashTag5())
+																						.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
+																						.build()
+		);
+				response.setPageItems(pagePostListDTO);
+				return ResponseEntity.ok().body(response);
+			} catch (Exception e) {
+				response.setErrorMessage(e.getMessage());
+				return ResponseEntity.badRequest().body(response);
+			}
+		}
 	
 	// 좋아요 눌렀을때 ajax
 		@GetMapping("likeUp")
@@ -347,43 +353,5 @@ public class PostController {
 				e.printStackTrace();
 		    }
 		}
-
-	
-//	// 코멘트 컨트롤러가 고장나서 잠시 실례하겠습니다
-//
-//		// 댓글 리스트 불러오기
-//		@GetMapping("commentList")
-//		public ResponseEntity<?> commentList(MglgComment comment, @PageableDefault(page = 0, size = 10) Pageable pageable,
-//				@RequestParam("postId") int postId) {
-//			Page<MglgComment> commentList = mglgCommentService.getCommentList(comment, pageable, postId);
-//
-//			return ResponseEntity.ok().body(commentList);
-//		}
-//
-//		// 댓글 작성 쿼리 실행
-//		@GetMapping("insertComment")
-//		public void insertComment(@RequestParam("userId") int userId, @RequestParam("postId") int postId, @RequestParam("commentContent") String commentContent)
-//				throws IOException {
-//
-//			mglgCommentService.insertComment(userId, postId, commentContent);
-//		}
-//
-//		// 댓글 삭제
-//		@GetMapping("deleteComment")
-//		public void deleteComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
-//				HttpServletResponse response, MglgComment comment)
-//				throws IOException {
-//			mglgCommentService.deleteComment(commentId, postId);
-//			adminService.deleteReport(commentId, postId);
-//
-//			response.sendRedirect("/admin/commentReport");
-//		}
-//
-//		// 댓글 업데이트
-//		@GetMapping("updateComment")
-//		public void updateComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
-//				@RequestParam("commentContent") String commentContent) throws IOException {
-//			mglgCommentService.updateComment(commentId, postId, commentContent);
-//		}
 
 }

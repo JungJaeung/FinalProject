@@ -134,4 +134,9 @@ public class MglgUserServiceImpl implements MglgUserService{
 		return "success";
 	}
 
+	@Override
+	public Page<MglgUser> getUserLists(Pageable pageable) {
+		return mglgUserRepository.findAll(pageable);
+	}
+
 }

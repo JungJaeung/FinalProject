@@ -92,7 +92,7 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	 @Query(
 					value = 
 					"SELECT A.* FROM T_MGLG_POST A WHERE A.USER_ID IN "
-				+ "(SELECT B.FOLLOWER_ID FROM T_MGLG_USER_RELATION B WHERE B.USER_ID = :userId)                 "
+				+ "(SELECT B.FOLLOWER_ID FROM T_MGLG_USER_RELATION B WHERE B.USER_ID = :userId) ORDER BY A.POST_DATE DESC "
 				,	countQuery = "SELECT COUNT(*) FROM ("
 						+ "SELECT * FROM T_MGLG_POST B WHERE B.USER_ID IN "
 						+ "(SELECT C.FOLLOWER_ID FROM T_MGLG_USER_RELATION C WHERE C.USER_ID = :userId) ) A ",
