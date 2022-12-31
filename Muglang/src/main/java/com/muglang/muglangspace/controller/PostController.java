@@ -281,7 +281,7 @@ public class PostController {
 																						.postDate(pageMglgPost.getPostDate().toString())
 																						.restNm(pageMglgPost.getRestNm())
 																						.restRating(pageMglgPost.getRestRating())
-																							.postRating(pageMglgPost.getPostRating())
+																						.postRating(pageMglgPost.getPostRating())
 																						.hashTag1(pageMglgPost.getHashTag1())
 																						.hashTag2(pageMglgPost.getHashTag2())
 																						.hashTag3(pageMglgPost.getHashTag3())
