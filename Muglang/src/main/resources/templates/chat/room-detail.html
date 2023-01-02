@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout_admin}">
+
+<head>
+
+	<th:block layout:fragment="script">
+		<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+		<script th:inline="javascript">
+			$(document).ready(function () {
+
+				var roomName = /*[[${room.name}]]*/;
+				var roomId = /*[[${room.id}]]*/;
+				var username = /*[[${#authentication.principal.mglgUser.userName}]]*/;
+
+				console.log(roomName + ", " + roomId + ", " + username);
+
+				var sockJs = new SockJS("/stomp/chat");
+				var stomp = Stomp.over(sockJs);
+
+				stomp.connect({}, function () {
+					console.log("STOMP Connection")
+
+					stomp.subscribe("/subscribe/chat/room/" + roomId, function (chat) {
+						var content = JSON.parse(chat.body);
+
+						var writer = content.writer;
+						var str = '';
+
+						if (writer === username) {
+							str = "<div class='col-6'>";
+							str += "<div class='alert alert-secondary'>";
+							str += "<b>" + writer + " : " + message + "</b>";
+							str += "</div></div>";
+							$("#msgArea").append(str);
+						}
+						else {
+							str = "<div class='col-6'>";
+							str += "<div class='alert alert-warning'>";
+							str += "<b>" + writer + " : " + message + "</b>";
+							str += "</div></div>";
+							$("#msgArea").append(str);
+						}
+						$("#msgArea").append(str);
+					});
+
+					stomp.send('/publish/chat/join', {}, JSON.stringify({roomId: roomId, writer: username}))
+				});
+
+				$("#button-send").on("click", function (e) {
+					var msg = document.getElementById("msg");
+
+					console.log(username + ":" + msg.value);
+					stomp.send('/publish/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value}));
+					msg.value = '';
+				});
+			});
+		</script>
+	</th:block>
+</head>
+
+
+<body>
+	<main layout:fragment="main" id="main" class="main">
+		<h1 th:text="${room.name}"></h1>
+		<div>
+			<div id="msgArea" class="col"></div>
+			<div class="col-6">
+				<div class="input-group mb-3">
+					<input type="text" id="msg" class="form-control">
+					<div class="input-group-append">
+						<button class="btn btn-outline-secondary" type="button" id="button-send">전송</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-6"></div>
+	</main>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout_admin}">
+
+<head>
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+		</script>
+	</th:block>
+</head>
+
+<body>
+	<main layout:fragment="main" id="main" class="main">
+		<div>
+			<div>
+				<ul>
+					<li th:each="room : ${rooms}">
+						<a th:href="@{/chat/rooms/{id} (id=${room.id})}" th:text="${room.name}"></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</main>
+</body>
+
+</html>
