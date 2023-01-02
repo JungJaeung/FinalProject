@@ -17,6 +17,7 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	
 	public MglgPost findByPostId(@Param("postId") int postId);
 
+	//좋아요 버튼 조작을 조회하는 쿼리.
 	@Query(value = "SELECT D.*\r\n"
 			+ "	 , IFNULL(E.POST_LIKE, 'N') AS POST_LIKE\r\n"
 			+ "	FROM (\r\n"
