@@ -1,11 +1,10 @@
 package com.muglang.muglangspace.service.mglgpostfile;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgPostFile;
-import com.muglang.muglangspace.entity.MglgPostFileId;
+
 
 public interface MglgPostFileService {
 	//게시글의 파일들을 수정할 수 있게 로드하는 메소드

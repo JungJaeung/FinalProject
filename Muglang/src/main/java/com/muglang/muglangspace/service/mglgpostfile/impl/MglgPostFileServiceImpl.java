@@ -39,6 +39,7 @@ public class MglgPostFileServiceImpl implements MglgPostFileService{
 		mglgPostFileRepository.flush();
 	}
 
+	//해당 게시글의 파일 정보를 수정한다.
 	@Override
 	public void updatePostFileList(MglgPostFile fileList) {
 		// TODO Auto-generated method stub

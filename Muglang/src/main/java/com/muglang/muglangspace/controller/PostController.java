@@ -28,8 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
-import com.muglang.muglangspace.common.LoginUserLoad;
+import com.muglang.muglangspace.common.Load;
 import com.muglang.muglangspace.dto.MglgPostDTO;
+import com.muglang.muglangspace.dto.MglgPostFileDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
@@ -38,6 +39,7 @@ import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
+import com.muglang.muglangspace.service.mglgpostfile.MglgPostFileService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
 @RestController
@@ -51,13 +53,17 @@ public class PostController {
 
 	@Autowired
 	private MglgCommentService mglgCommentService;
-
+	
 	@Autowired
 	private AdminService adminService;
 	
-	//글쓰기 버튼으로 적용되는 글 새로 작성
+//	@Autowired
+//	private MglgPostFileService mglgPostFileService;
+
+	
+	//글쓰기 버튼으로 적용되는 글 새로 작성, 새로 작성되는 글에 파일을 같이 넣음.
 	@PostMapping("/insertPost")
-	public ResponseEntity<?> insertPost(MglgPostDTO mglgPostDTO, 
+	public ResponseEntity<?> insertPost(MglgPostDTO mglgPostDTO, MglgPostFileDTO mglgPostFileDTO,
 			HttpServletResponse response
 			,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		System.out.println(mglgPostDTO);
@@ -103,7 +109,7 @@ public class PostController {
 			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
-			returnMap.put("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
+			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
 			responseDTO.setItem(returnMap);
 			System.out.println("새로운 글을 추가합니다.");
 			return ResponseEntity.ok().body(responseDTO); 
@@ -114,7 +120,7 @@ public class PostController {
 	}
 	
 	@PutMapping("/updatePost")
-	public ResponseEntity<?> updatePost(MglgPostDTO mglgPostDTO, HttpSession session) {
+	public ResponseEntity<?> updatePost(MglgPostDTO mglgPostDTO, MglgPostFileDTO mglgPostFileDTO) {
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
 		MglgUser mglgUser = new MglgUser();
 		mglgUser.setUserId(mglgPostDTO.getUserId());
@@ -174,7 +180,7 @@ public class PostController {
 	
 	
 	@GetMapping("/mainPost")
-	// 로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드
+	// 로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드, 게시글의 파일은 따로 테이블에서 가져옴.
 	public ModelAndView getPostList(@PageableDefault(page = 0, size = 5) Pageable pageable,
 			HttpServletResponse response, HttpSession session, @AuthenticationPrincipal CustomUserDetails loginUser)
 			throws IOException {
@@ -213,7 +219,7 @@ public class PostController {
 		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostList);
 		// 세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
-		mv.addObject("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
+		mv.addObject("loginUser", Load.toHtml(loginUser.getMglgUser()));
 
 		return mv;
 	}
@@ -268,7 +274,7 @@ public class PostController {
 
 	//팔로우 하고 있는사람 포스트만 불러오는 로직
 	@GetMapping("/getFollowerPost")
-	public ResponseEntity<?> getFollowerPost(@PageableDefault(page=0,size=5) Pageable pageable,@AuthenticationPrincipal CustomUserDetails loginUser) {
+	public ResponseEntity<?> getFollowerPost(@PageableDefault(page=0,size=5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
 		MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
 		int userId = loginUser.getMglgUser().getUserId();
 		try {		
