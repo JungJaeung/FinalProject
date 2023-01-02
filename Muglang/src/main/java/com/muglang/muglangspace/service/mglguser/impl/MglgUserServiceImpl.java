@@ -1,5 +1,6 @@
 package com.muglang.muglangspace.service.mglguser.impl;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +120,7 @@ public class MglgUserServiceImpl implements MglgUserService{
 	
 	@Override
 	public String reportUser(int postUserId,int userId) {
-		//자기 자신을 신고하려고 할시 못하게함.
+//		//자기 자신을 신고하려고 할시 못하게함.
 		if(postUserId==userId) {
 			return "self";
 		}
