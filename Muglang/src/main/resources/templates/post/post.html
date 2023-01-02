@@ -114,57 +114,7 @@
 					});
 				}
 
-				//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
-				//작성 버튼 - 따로 다른 페이지로 이동하지 않고 현재 페이지에서 바로 입력 처리를 시작함.
-
-				$("#insert_board").click(function () {
-					let insert_post = "";
-					//$(".quill-editor-default").text();
-					$("#postContent").val($(".quill-editor-default").text());
-					
-					//$("#postContent").val($(".ql-editor").html());
-					$.ajax({
-						enctype: 'multipart/form-data',
-						url: '/post/insertPost',
-						type: 'post',
-						processData: false,
-						contentType: false,
-						data: {
-							restNm: $("input[name='restNm']").val(),
-							postContent: $("input[name='postContent']").val(),
-							viewCount: 0,
-							hashTag1: $("#hashTag1").val(),
-							hashTag2: $("#hashTag2").val(),
-							hashTag3: $("#hashTag3").val(),
-							hashTag4: $("#hashTag4").val(),
-							hashTag5: $("#hashTag5").val(),
-							//파일도 같이 다 보내야함. 배열을 다 옮겨서 보내면됨.
-						},
-						success: function(obj) {
-							alert("글 등록에 성공하였습니다.");
-							console.log(obj);
-							console.log("로그인한 계정 : " + loginUserId);
-							insert_post = post(obj.item);
-							
-							//$("#posts").html(insert_post);
-							//html단 뿌리기
-							$("#posts").prepend($(insert_post));
-							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
-							flagList.unshift(false);
-							postIdList.unshift($($('.updateBtn')[0]).val());
-							//이벤트 다시 적용
-							$.like_button();
-							$.comment_button();
-							$.update_post();
-							
-							
-						}, error: function(e) {
-							console.log(e);
-						}
-					});
-
-				});
-				
+				//게시글 등록은 file.js로 이관. 게시글 insertPost
 
 				//좋아요 버튼 함수(innerHtml에도 먹이기 위해서 함수로 만듬)
 				$.like_button = function () {
