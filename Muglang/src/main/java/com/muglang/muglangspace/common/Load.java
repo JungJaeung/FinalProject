@@ -31,7 +31,7 @@ public class Load {
 		return info;
 	}
 	
-	//Post관련 DTO로 변환하는 메소드. 화면단에 출력하기 위해 HTML에서 임시로 사용하라는 DTO 데이터.
+	//Post관련 DTO로 변환하는 메소드. 화면단에 출력하기 위해 HTML에서 임시로 사용하라는 DTO 데이터 반환.
 	public static MglgPostDTO toHtml(MglgPost mglgPost, MglgUser loginUser) {
 		MglgPostDTO info = MglgPostDTO.builder()
 					 .postId(mglgPost.getPostId())

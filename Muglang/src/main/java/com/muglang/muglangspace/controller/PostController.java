@@ -1,14 +1,17 @@
 package com.muglang.muglangspace.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -25,9 +28,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
+import com.muglang.muglangspace.common.FileUtils;
 import com.muglang.muglangspace.common.Load;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgPostFileDTO;
@@ -35,6 +40,7 @@ import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgPostFile;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
@@ -57,14 +63,14 @@ public class PostController {
 	@Autowired
 	private AdminService adminService;
 	
-//	@Autowired
-//	private MglgPostFileService mglgPostFileService;
+	@Autowired
+	private MglgPostFileService mglgPostFileService;
 
 	
 	//글쓰기 버튼으로 적용되는 글 새로 작성, 새로 작성되는 글에 파일을 같이 넣음.
 	@PostMapping("/insertPost")
-	public ResponseEntity<?> insertPost(MglgPostDTO mglgPostDTO, MglgPostFileDTO mglgPostFileDTO,
-			HttpServletResponse response
+	public ResponseEntity<?> insertPost(MglgPostDTO mglgPostDTO, MultipartFile[] uploadFiles,
+			HttpServletRequest request
 			,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		System.out.println(mglgPostDTO);
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
@@ -88,24 +94,55 @@ public class PostController {
 					.build();
 
 			mglgPost = mglgPostService.insertPost(mglgPost);
+			
+			System.out.println("파일 정보를 확인하고 있습니다." + uploadFiles);
+			
+			//파일 리스트를 생성하여 해당 게시글의 파일들을 등록하기 위한 사전작업을 함.
+			List<MglgPostFile> uploadFileList = new ArrayList<MglgPostFile>();		
+			if(uploadFiles.length > 0) {
+				String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
+				
+				System.out.println("attachPath====================" + attachPath);
+				
+				File directory = new File(attachPath);
+				
+				if(!directory.exists()) {
+					directory.mkdir();
+				}
+				//파일의 개수 만큼 하나씩 파일을 DB에 저장함.
+				for(int i=0; i < uploadFiles.length; i++) {
+					MultipartFile file = uploadFiles[i];
+					
+					if(!file.getOriginalFilename().equals("") && file.getOriginalFilename() != null) {
+						MglgPostFile mglgPostFile = new MglgPostFile();
+						
+						mglgPostFile = FileUtils.parseFileInfo(file, attachPath);
+						System.out.println("등록하려는 파일의 원래 이름 : " + mglgPostFile.getPostFileOriginNm());
+						uploadFileList.add(mglgPostFile);
+						mglgPostFileService.insertPostFile(mglgPostFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
+					}
+				}
+				
+			}
 			//화면단으로 넘길 DTO를 생성
-			MglgPostDTO returnDTO = MglgPostDTO.builder()
-												 .postId(mglgPost.getPostId())
-												 .userId(loginUser.getMglgUser().getUserId())
-												 .restNm(mglgPost.getRestNm())
-												 .postDate(mglgPost.getPostDate().toString())
-												 .postRating(mglgPost.getPostRating())
-												 .restRating(mglgPost.getRestRating())
-												 .hashTag1(mglgPost.getHashTag1() == ""? "0": mglgPost.getHashTag1())
-												 .hashTag2(mglgPost.getHashTag2() == ""? "0": mglgPost.getHashTag2())
-												 .hashTag3(mglgPost.getHashTag3() == ""? "0": mglgPost.getHashTag3())
-												 .hashTag4(mglgPost.getHashTag4() == ""? "0": mglgPost.getHashTag4())
-												 .hashTag5(mglgPost.getHashTag5() == ""? "0": mglgPost.getHashTag5())
-												 .postContent(mglgPost.getPostContent())
-												 .betweenDate(Duration.between(mglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
-												 .build();
-												 
-												 
+			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
+//			MglgPostDTO returnDTO = MglgPostDTO.builder()
+//												 .postId(mglgPost.getPostId())
+//												 .userId(loginUser.getMglgUser().getUserId())
+//												 .restNm(mglgPost.getRestNm())
+//												 .postDate(mglgPost.getPostDate().toString())
+//												 .postRating(mglgPost.getPostRating())
+//												 .restRating(mglgPost.getRestRating())
+//												 .hashTag1(mglgPost.getHashTag1() == ""? "0": mglgPost.getHashTag1())
+//												 .hashTag2(mglgPost.getHashTag2() == ""? "0": mglgPost.getHashTag2())
+//												 .hashTag3(mglgPost.getHashTag3() == ""? "0": mglgPost.getHashTag3())
+//												 .hashTag4(mglgPost.getHashTag4() == ""? "0": mglgPost.getHashTag4())
+//												 .hashTag5(mglgPost.getHashTag5() == ""? "0": mglgPost.getHashTag5())
+//												 .postContent(mglgPost.getPostContent())
+//												 .betweenDate(Duration.between(mglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
+//												 .build();
+
+			
 			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);

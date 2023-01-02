@@ -1,32 +1,48 @@
 			
 	$(function() {
+		
 		let flagList = false;
 		//파일 추가 입력단 생성.
-		$("#postFileRequest").click(function() {
+
+		$("#postFileRequest").click(function(e) {
+			e.preventDefault();
 			//숨어있던 파일 조작 메뉴 등장.
 			//이벤트 새로 생성.
 			if(!flagList) {
 				//$("#imagePrview").html(fileTag());
 				$.btnAtt();
-				$("#imagePrview").show();
+				$("#imagePreview").show();
 				$(this).text("파일 업로드 닫기");
 				$("#postFileUpdate").show();
 				flagList = !flagList;
 			} else {
 				$(this).text("파일 업로드 열기");
-				$("#imagePrview").hide();
+				$("#imagePreview").hide();
 				//$("#image_preview").remove();
 				$("#postFileUpdate").hide();
 				flagList = !flagList;
 			}
 		});
-		$("#imagePrview").hide();
+		
+		$("#imagePreview").hide();
 		$("#postFileUpdate").hide();
+		//$("#btnAttForm").hide();
 		//파일 리스트 변경 버튼 이벤트 대신 처리.
-		$("#postFileUpdate").click(function() {
+		$("#postFileUpdate").click(function(e) {
+			e.preventDefault();
 			$("#btnAtt").click();
 		});
+		/*
+		$("#btnAtt").on("change", function() {
+			console.log("업로드하는 파일 변경 감지.");
+			$.btnAttForm();
+		});
 		
+		$.btnAttForm = function() {
+			$.btnAtt();
+			console.log("업로드하는 파일의 변경이 반영되었습니다.");
+		}
+		*/
 		$.btnAtt = function() {
 			$("#btnAtt").on("change", function(e) {
 				console.log("파일 변경을 감지.");
@@ -42,7 +58,19 @@
 			});
 		}
 		
-		// 게시글 조회에서 사용함.
+		$("#insertForm").on("submit", function() {
+			//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
+			dt = new DataTransfer();
+			
+			for(f in uploadFiles) {
+				const file = uploadFiles[f];
+				dt.items.add(file);
+			}
+			
+			$("#btnAtt")[0].files = dt.files;
+		});
+		
+		//게시글 조회에서 사용함.
 		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
 		for(let i = 0; i < $("#boardFileCnt").val(); i++) {
 			const originFileObj = {
@@ -66,7 +94,6 @@
 				</div>`;
 		return text;
 	}
-	
 	
 	//미리보기 영역에 들어갈 img태그 생성 및 선택된 파일을 Base64 인코딩된 문자열 형태로 변환하여
 	//미리보기가 가능하게 해줌
@@ -166,8 +193,6 @@
 
 	//게시글을 수정하는 로직 함수.
 	function fnUpdatePost(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
-
-
 		/*
 		dt = new DataTransfer();
 

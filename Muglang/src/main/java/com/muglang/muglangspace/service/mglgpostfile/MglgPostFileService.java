@@ -14,7 +14,7 @@ public interface MglgPostFileService {
 	public MglgPostFile getPostFile(MglgPost mglgPost, MglgPostFile MglgPostFile);
 	
 	//게시글의 파일1개를 등록하는 메소드.
-	public void insertPostFileList(MglgPostFile fileList);
+	public void insertPostFile(MglgPostFile file);
 	
 	//게시글에 올린 파일 목록을 수정하는 메소드.
 	public void updatePostFileList(MglgPostFile fileList);

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgPostFile;
@@ -11,6 +12,7 @@ import com.muglang.muglangspace.entity.MglgPostFileId;
 import com.muglang.muglangspace.repository.MglgPostFileRepository;
 import com.muglang.muglangspace.service.mglgpostfile.MglgPostFileService;
 
+@Service
 public class MglgPostFileServiceImpl implements MglgPostFileService{
 	@Autowired
 	private MglgPostFileRepository mglgPostFileRepository;
@@ -30,9 +32,9 @@ public class MglgPostFileServiceImpl implements MglgPostFileService{
 		return targetFile.get();
 	}
 
-	//해당 게시글의 파일 1개씩 DB에 저장하여 입력한다.
+	//해당 게시글의 파일 1개씩 DB에 저장하여 입력한다. controller 에서 반복문을 통해 여러개의 파일을 입력하게됨.
 	@Override
-	public void insertPostFileList(MglgPostFile fileList) {
+	public void insertPostFile(MglgPostFile fileList) {
 		// TODO Auto-generated method stub
 		mglgPostFileRepository.save(fileList);
 		
