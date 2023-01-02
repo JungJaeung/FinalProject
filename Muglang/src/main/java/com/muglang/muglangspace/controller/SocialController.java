@@ -116,8 +116,7 @@ public class SocialController {
 				.postRating(pageMglgPost.getPostRating()).hashTag1(pageMglgPost.getHashTag1())
 				.hashTag2(pageMglgPost.getHashTag2()).hashTag3(pageMglgPost.getHashTag3())
 				.hashTag4(pageMglgPost.getHashTag4()).hashTag5(pageMglgPost.getHashTag5())
-				.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
-				.build());
+				.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds()).build());
 
 		// System.out.println(postList.getContent().get(0).getBetweenDate());
 		ModelAndView mv = new ModelAndView();
@@ -143,11 +142,8 @@ public class SocialController {
 			MglgUser user = MglgUser.builder().userId(userId).build();
 			Page<MglgUser> pageUserFollow = userRelationService.followList(user, pageable);
 			Page<MglgUserDTO> pageUserFollowDTO = pageUserFollow
-					.map(page -> MglgUserDTO.builder()
-							.userId(page.getUserId())
-							.email(page.getEmail())
-							.userName(page.getUserName())
-							.userNick(page.getUserNick())
+					.map(page -> MglgUserDTO.builder().userId(page.getUserId()).email(page.getEmail())
+							.userName(page.getUserName()).userNick(page.getUserNick())
 							// 리포트 cnt는 안쓰니까 yn받아와서 쓰겠음 ㅎㅎㅎㅎ
 							.reportCnt(followYn).build());
 
@@ -205,53 +201,71 @@ public class SocialController {
 
 	// 유저를 팔로잉하는 로직
 	@GetMapping("/followOtherUser")
-	public void followUser(@RequestParam("userId") int followId, HttpServletResponse response,@AuthenticationPrincipal CustomUserDetails customUser) throws IOException {
+	public void followUser(@RequestParam("userId") int followId, HttpServletResponse response,
+			@AuthenticationPrincipal CustomUserDetails customUser) throws IOException {
 		int userId = customUser.getMglgUser().getUserId();
-		
+
 		userRelationService.followUser(followId, userId);
-		
+
 		response.sendRedirect("/social/otherUser?userId=" + followId);
 	}
 
 	@GetMapping("/unFollowOtherUser")
-	public void unFollowUser(@RequestParam("userId") int userId, HttpServletResponse response,@AuthenticationPrincipal CustomUserDetails customUser) throws IOException {
+	public void unFollowUser(@RequestParam("userId") int userId, HttpServletResponse response,
+			@AuthenticationPrincipal CustomUserDetails customUser) throws IOException {
 		int loginUser = customUser.getMglgUser().getUserId();
 
 		userRelationService.unFollowUser(userId, loginUser);
 
-		
-		
 		response.sendRedirect("/social/otherUser?userId=" + userId);
 
 	}
-	
-	//에이작스로 이름 바꿔치기 위한 로직(유저를 팔로잉한사람 이름 다 가져옴)
-	//유저 오더 윈도우 
-		@GetMapping("/followUserName")
-		public ResponseEntity<?> followUserName(@PageableDefault(page = 0, size = 10000)Pageable pageable) {
-			MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-			try {
-				Page<MglgUser> getUser = mglguserService.getUserLists(pageable);
-				
-			
-				Page<MglgUserDTO> pageUserFollowDTO = getUser.map(page -> MglgUserDTO.builder()
-																						.userId(page.getUserId())
-																						.userName(page.getUserName())
-																						.userNick(page.getUserNick())
-																						.build());
-													
-				
-				response.setPageItems(pageUserFollowDTO);
-				return ResponseEntity.ok().body(response);
-			} catch (Exception e) {
-				response.setErrorMessage(e.getMessage());
-				return ResponseEntity.badRequest().body(response);
-			}
-			
 
-					
-				
-				
+	// 에이작스로 이름 바꿔치기 위한 로직(유저를 팔로잉한사람 이름 다 가져옴)
+	// 유저 오더 윈도우
+	@GetMapping("/followUserName")
+	public ResponseEntity<?> followUserName(@PageableDefault(page = 0, size = 10000) Pageable pageable) {
+		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+		try {
+			Page<MglgUser> getUser = mglguserService.getUserLists(pageable);
+
+			Page<MglgUserDTO> pageUserFollowDTO = getUser.map(page -> MglgUserDTO.builder().userId(page.getUserId())
+					.userName(page.getUserName()).userNick(page.getUserNick()).build());
+
+			response.setPageItems(pageUserFollowDTO);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
 		}
 
+	}
+
+	// 팔로워 유저 에이작스 처리를 위한 전부 수정함
+	@GetMapping("/follower")
+	public ResponseEntity<?> followerList(@RequestParam("searchKeyword") String searchKeyword 
+			,@PageableDefault(page = 0, size = 5) Pageable pageable,@AuthenticationPrincipal CustomUserDetails customUser) {
+		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+
+		try {
+		MglgUser user = MglgUser.builder().searchKeyword(searchKeyword)
+										  .userId(customUser.getMglgUser().getUserId())
+									      .build();
+
+		Page<MglgUser> pagefollowList = userRelationService.followList(user, pageable);
+		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> MglgUserDTO.builder()
+														.userId(pageUser.getUserId())
+														.userName(pageUser.getUserName())
+														.email(pageUser.getEmail())
+														.userNick(pageUser.getUserNick())
+														.build());
+		
+
+			response.setPageItems(pagefollowDTOList);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+	}
 }

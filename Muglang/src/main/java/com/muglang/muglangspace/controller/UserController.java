@@ -141,36 +141,14 @@ public class UserController {
 	// 팔로잉으로 이동
 	// 유저 목록 불러오기 + 페이징
 	@GetMapping("/follower")
-	public ModelAndView followList(MglgUserDTO userDTO,@PageableDefault(page = 0, size = 5) Pageable pageable,HttpSession session) {
-		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
-		
-		MglgUser user = MglgUser.builder()
-				   .searchKeyword(userDTO.getSearchKeyword())
-				   .userId(temp.getUserId())
-				   .build();
-		
-		ModelAndView mv = new ModelAndView();
-		
-		Page<MglgUser> pagefollowList = userRelationService.followList(user, pageable);
-		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> 
-													MglgUserDTO.builder()
-																.userId(pageUser.getUserId())
-																.userName(pageUser.getUserName())
-																.email(pageUser.getEmail())
-																.userNick(pageUser.getUserNick())
-																.build()
-														);
+	public ModelAndView followList() {
+
+			ModelAndView mv = new ModelAndView();
 
 					
 					mv.setViewName("/user/follower.html");
 					
-					mv.addObject("followList", pagefollowDTOList);
-					
-					
-					if(userDTO.getSearchKeyword() != null && !userDTO.getSearchKeyword().equals("")) {
-						mv.addObject("searchKeyword", userDTO.getSearchKeyword());
-					}
-					
+				
 					return mv;
 	}
 
@@ -399,11 +377,23 @@ public class UserController {
 		response.sendRedirect("/post/mainPost");
 
 	}
-	@GetMapping("reportUser")
+	//유저 신고 -----메인 포스트에서 사용
+	@PostMapping("reportUser")
 	public void reportUser(String msg, String url,HttpServletResponse response,@RequestParam("userId") int postUserId,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		System.out.println("포스트 매핑 탔음");
+		url = "/post/mainPost";
+		reportUserBase(msg,url,response,postUserId,loginUser);
+	}
+	//유저 신고 ----- 아더유저 팔로워에서 사용
+	@GetMapping("reportUserFollow")
+	public void reportUserFollow(String msg, String url,HttpServletResponse response,@RequestParam("userId") int postUserId,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		url = "/social/otherUser?userId="+postUserId;
+		reportUserBase(msg,url,response,postUserId,loginUser);
+	}
+	//유저 신고 메소드 베이스
+	public void reportUserBase(String msg, String url,HttpServletResponse response,int postUserId,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		int userId = loginUser.getMglgUser().getUserId();
 		msg = mglgUserService.reportUser(postUserId,userId);
-		url = "/post/mainPost";
 		if(msg.equals("self")) {
 			msg="자기 자신을 신고할 수 없습니다.";
 		}else if(msg.equals("success")) {
@@ -421,7 +411,6 @@ public class UserController {
 			e.printStackTrace();
 	    }
 	}
-
 	
 	//로그인 시도하는 임시 url
 //	@PostMapping("/login")

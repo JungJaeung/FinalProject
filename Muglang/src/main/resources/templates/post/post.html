@@ -724,8 +724,8 @@
 										<a class="icon" href="#" data-bs-toggle="dropdown"><i
 												class="bi bi-three-dots"></i></a>
 										<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-											<li><a class="dropdown-item" th:href="@{/user/reportUser(userId=${post.userId})}"><i
-														class="ri-alarm-warning-line"></i>&emsp;유저 신고하기</a></li>
+											<form th:action="@{/user/reportUser(userId=${post.userId})}" method="post"><li><input type="submit" class="dropdown-item" value="유저 신고하기">
+											</form>
 											<li><a class="dropdown-item" th:href="@{/post/reportPost(postId=${post.postId})}"><i
 														class="ri-alarm-warning-line"></i>&emsp;포스트 신고하기</a></li>			
 										</ul>
