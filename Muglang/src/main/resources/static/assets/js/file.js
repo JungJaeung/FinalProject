@@ -1,6 +1,6 @@
 			
 	$(function() {
-		
+		let formData;
 		let flagList = false;
 		//파일 추가 입력단 생성.
 
@@ -45,11 +45,18 @@
 				}
 			});
 		}
-		
+		/*
+		$("#insert_board").on("click", function(e) {
+			e.preventDefault();
+			fnInsertPost(formData);
+		});
+		*/
 		//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
 		//작성 버튼 - 따로 다른 페이지로 이동하지 않고 현재 페이지에서 바로 입력 처리를 시작함.
-
-		$("#insert_form").on("submit", function () {
+		
+		$("#insert_board").on("click", function(e) {
+			e.preventDefault();
+			console.log("파일을 전송하는 중입니다.");
 			//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
 			dt = new DataTransfer();
 			
@@ -59,28 +66,33 @@
 			}
 			
 			$("#btnAtt")[0].files = dt.files;
+
 			let insert_post = "";
 			//$(".quill-editor-default").text();
 			$("#postContent").val($(".quill-editor-default").text());
 			//$("#postContent").val($(".ql-editor").html());
-			
+			let content = $("#postContent").val();
+			let restNm = $("#restNm").val();
+			console.log("내용 : " + content + "식당명 : " + restNm);
+			//$("#insert_form").submit();
 			$.ajax({
 				enctype: 'multipart/form-data',
 				url: '/post/insertPost',
 				type: 'post',
-				processData: false,
-				contentType: false,
 				data: {
-					restNm: $("input[name='restNm']").val(),
-					postContent: $("input[name='postContent']").val(),
+					restNm: restNm,
+					postContent: content,
 					viewCount: 0,
 					hashTag1: $("#hashTag1").val(),
 					hashTag2: $("#hashTag2").val(),
 					hashTag3: $("#hashTag3").val(),
 					hashTag4: $("#hashTag4").val(),
 					hashTag5: $("#hashTag5").val(),
-					//파일도 같이 다 보내야함. 배열을 다 옮겨서 보내면됨.
+					//파일도 같이 다 화면단으로 보내야함. 배열을 다 옮겨서 보내면됨.
+					
 				},
+				processData: false,
+				contentType: false,
 				success: function(obj) {
 					alert("글 등록에 성공하였습니다.");
 					console.log(obj);
@@ -103,9 +115,70 @@
 					console.log(e);
 				}
 			});
-
+			
 		});
-		
+		/*
+		$("#insert_board").on("click", function(e) {
+			//e.preventDefault();
+			console.log("파일을 전송하는 중입니다.");
+			//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
+			dt = new DataTransfer();
+			
+			for(f in uploadFiles) {
+				const file = uploadFiles[f];
+				dt.items.add(file);
+			}
+			
+			$("#btnAtt")[0].files = dt.files;
+			let insert_post = "";
+			//$(".quill-editor-default").text();
+			$("#postContent").val($(".quill-editor-default").text());
+			//$("#postContent").val($(".ql-editor").html());
+			console.log($("#postContent").val());
+			formData = new formData($("#insertForm")[0]); 
+			$.ajax({
+				enctype: 'multipart/form-data',
+				url: '/post/insertPost',
+				type: 'post',
+				data: {
+					restNm: $("input[name='restNm']").val(),
+					postContent: $("input[name='postContent']").val(),
+					viewCount: 0,
+					hashTag1: $("#hashTag1").val(),
+					hashTag2: $("#hashTag2").val(),
+					hashTag3: $("#hashTag3").val(),
+					hashTag4: $("#hashTag4").val(),
+					hashTag5: $("#hashTag5").val(),
+					//파일도 같이 다 화면단으로 보내야함. 배열을 다 옮겨서 보내면됨.
+					
+				}
+				formData,
+				processData: false,
+				contentType: false,
+				success: function(obj) {
+					alert("글 등록에 성공하였습니다.");
+					console.log(obj);
+					console.log("로그인한 계정 : " + loginUserId);
+					insert_post = post(obj.item);
+					
+					//$("#posts").html(insert_post);
+					//html단 뿌리기
+					$("#posts").prepend($(insert_post));
+					//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
+					flagList.unshift(false);
+					postIdList.unshift($($('.updateBtn')[0]).val());
+					//이벤트 다시 적용
+					$.like_button();
+					$.comment_button();
+					$.update_post();
+					
+					
+				}, error: function(e) {
+					console.log(e);
+				}
+			});
+		});
+		*/
 		//게시글 조회에서 사용함.
 		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
 		for(let i = 0; i < $("#boardFileCnt").val(); i++) {
@@ -303,6 +376,70 @@
 		return false;
 	}
 	
+	function fnInsertPost(formData) {
+		//e.preventDefault();
+		console.log("파일을 전송하는 중입니다.");
+		//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
+		let content = "";
+		let restNm = "";
+		dt = new DataTransfer();
+		
+		for(f in uploadFiles) {
+			const file = uploadFiles[f];
+			dt.items.add(file);
+		}
+		
+		$("#btnAtt")[0].files = dt.files;
+		let insert_post = "";
+		//$(".quill-editor-default").text();
+		$("#postContent").val($(".quill-editor-default").text());
+		//$("#postContent").val($(".ql-editor").html());
+		content = $("#postContent").val();
+		restNm = $("#restNm").val();
+		console.log("내용 : " + content + "식당명 : " + restNm);
+		$.ajax({
+			enctype: 'multipart/form-data',
+			url: '/post/insertPost',
+			type: 'post',
+			data: {
+				restNm: restNm,
+				postContent: content,
+				viewCount: 0,
+				hashTag1: $("#hashTag1").val(),
+				hashTag2: $("#hashTag2").val(),
+				hashTag3: $("#hashTag3").val(),
+				hashTag4: $("#hashTag4").val(),
+				hashTag5: $("#hashTag5").val(),
+				//파일도 같이 다 화면단으로 보내야함. 배열을 다 옮겨서 보내면됨.
+				
+			},
+			processData: false,
+			contentType: false,
+			success: function(obj) {
+				alert("글 등록에 성공하였습니다.");
+				console.log(obj);
+				console.log("로그인한 계정 : " + loginUserId);
+				insert_post = post(obj.item);
+				
+				//$("#posts").html(insert_post);
+				//html단 뿌리기
+				$("#posts").prepend($(insert_post));
+				//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
+				flagList.unshift(false);
+				postIdList.unshift($($('.updateBtn')[0]).val());
+				//이벤트 다시 적용
+				$.like_button();
+				$.comment_button();
+				$.update_post();
+				
+				
+			}, error: function(e) {
+				console.log(e);
+			}
+		});
+
+	}
+	
 	//미리보기 영역에 들어가 div(img+button+p)를 생성하고 리턴
 	function makeDiv(img, file) {
 		//div 생성
@@ -367,3 +504,5 @@
 		//완성된 div 리턴
 		return div;
 	}
+	
+	
