@@ -378,8 +378,9 @@ public class UserController {
 
 	}
 	//유저 신고 -----메인 포스트에서 사용
-	@GetMapping("reportUser")
+	@PostMapping("reportUser")
 	public void reportUser(String msg, String url,HttpServletResponse response,@RequestParam("userId") int postUserId,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		System.out.println("포스트 매핑 탔음");
 		url = "/post/mainPost";
 		reportUserBase(msg,url,response,postUserId,loginUser);
 	}
