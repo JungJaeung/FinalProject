@@ -58,70 +58,6 @@
 			});
 		}
 		
-		//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
-		//작성 버튼 - 따로 다른 페이지로 이동하지 않고 현재 페이지에서 바로 입력 처리를 시작함.
-		/*
-		$("#insert_board").on("click", function(e) {
-			let insert_post = "";
-			//$(".quill-editor-default").text();
-			$("#postContent").val($(".quill-editor-default").text());
-			
-			//$("#postContent").val($(".ql-editor").html());
-			//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
-			dt = new DataTransfer();
-			
-			for(f in uploadFiles) {
-				const file = uploadFiles[f];
-				dt.items.add(file);
-			}
-			console.log("파일 입력 내용을 입력 중입니다." + $("input[name='postContent']").val());
-			$("#btnAtt")[0].files = dt.files;
-			$("#insert_form").submit();
-			//ajax는 추후에 구현할 예정.
-			//insertPostAndFile();
-			$.ajax({
-				enctype: 'multipart/form-data',
-				url: '/post/insertPost',
-				type: 'post',
-				processData: false,
-				contentType: false,
-				data: {
-					restNm: $("input[name='restNm']").val(),
-					postContent: $("input[name='postContent']").val(),
-					viewCount: 0,
-					hashTag1: $("#hashTag1").val(),
-					hashTag2: $("#hashTag2").val(),
-					hashTag3: $("#hashTag3").val(),
-					hashTag4: $("#hashTag4").val(),
-					hashTag5: $("#hashTag5").val(),
-					//파일도 같이 다 보내야함. 배열을 다 옮겨서 보내면됨.
-				},
-				success: function(obj) {
-					alert("글 등록에 성공하였습니다.");
-					console.log(obj);
-					console.log("로그인한 계정 : " + loginUserId);
-					insert_post = post(obj.item);
-					
-					//$("#posts").html(insert_post);
-					//html단 뿌리기
-					$("#posts").prepend($(insert_post));
-					//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
-					flagList.unshift(false);
-					postIdList.unshift($($('.updateBtn')[0]).val());
-					//이벤트 다시 적용
-					$.like_button();
-					$.comment_button();
-					$.update_post();
-					
-					
-				}, error: function(e) {
-					console.log(e);
-				}
-			});
-
-		});*/
-		
-		
 		$("#insertForm").on("submit", function() {
 			//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
 			dt = new DataTransfer();
@@ -134,20 +70,24 @@
 			$("#btnAtt")[0].files = dt.files;
 		});
 		
-		//게시글 조회에서 사용함.
+		//게시글 조회에서 사용함. 해당 게시글의 업로드된 파일을 확인.
 		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
-		for(let i = 0; i < $("#boardFileCnt").val(); i++) {
-			const originFileObj = {
-				boardNo: $("#boardNo").val(),
-				boardFileNo: $("#boardFileNo" + i).val(),
-				boardFileNm: $("#boardFileNm" + i).val(),
-				//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
-				//파일 상태값(수정되거나 삭제된 파일은 변경)
-				boardFileStatus: "N"
-			};
-			
-			originFiles.push(originFileObj);
+		//수업 때 했던 게시글은 1개이고, 지금 이건 여러개를 뿌려야하기 때문에 게시된 데이터를 다 가지고 와야함.
+		for(let i = 0; i < postIdList.length; i++) {
+			for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
+				const originFileObj = {
+					postId: postIdList[i],
+					postFileId: $("#postFileId" + postIdList[i]).val(),
+					PostFileNm: $("#postFileNm" + postIdList[i]).val(),
+					//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
+					//파일 상태값(수정되거나 삭제된 파일은 변경)
+					boardFileStatus: "N"
+				};
+				
+				originFiles.push(originFileObj);
+			}
 		}
+
 	});
 	//파일 추가창을 활성화하는 이벤트 생성 함수
 	function fileTag() {

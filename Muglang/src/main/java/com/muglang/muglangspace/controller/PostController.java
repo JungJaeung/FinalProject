@@ -220,9 +220,6 @@ public class PostController {
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		
 		System.out.println(pagePostList);
-//		for (int i = 0; i < pagePostList.getContent().size(); i++) {
-//			System.out.println(pagePostList);
-//		}
 
 		for (int i = 0; i < pagePostList.getContent().size(); i++) {
 			pagePostList.getContent().get(i).put(
@@ -238,25 +235,29 @@ public class PostController {
 					)
 			);
 		}
-		
+		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열
 		for(CamelHashMap file : pagePostList) {
 			System.out.println("변경된 맵 : " + file);
 			int findId = (int)file.get("postId");
 			//한 게시글의 모든 파일들을 생성함.
+			//파일을 등록하지 않은 경우 파일 없이 수행. if문의 조건에 만족하지 못하면 file 데이터는 없는것.
 			List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
+			System.out.println("파일의 개수 : " + fileList.size());
 			List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
-			for(int j=0; j < fileList.size(); j++) {
-				fileListDTO.get(j).setPostId(findId);
-				fileListDTO.add(Load.toHtml(fileList.get(j)));
-				System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
+			if(!fileList.isEmpty()) {
+				for(int j = 0; j < fileList.size(); j++) {
+					//리스트에 먼저 추가를하고 키 값을 그후에 넣어야함. 없는 객체에 뭘 넣는건 불가능함.
+					fileListDTO.add(Load.toHtml(fileList.get(j)));
+					fileListDTO.get(j).setPostId(findId);
+					System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
+				}
+				file.put("file_length", fileList.size());	//게시글의 파일 개수 저장.
+				file.put("file_list", fileListDTO);	//camel형으로 키값을 자동으로 바꿈.
 			}
-			file.put("fileList", fileListDTO);
-			
+
 		}
-		
-//		for (int i = 0; i < pagePostList.getContent().size(); i++) {
-//			System.out.println(pagePostList.getContent().get(i).toString());
-//		}
+		System.out.println("파일 리스트 정보 담기 완료..... 화면단으로 넘길 준비를 합니다." );
+		System.out.println("파일 한개의 담긴 형태 : " + pagePostList.getContent().get(0));
 		
 		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
@@ -270,7 +271,7 @@ public class PostController {
 	
 	@PostMapping("/mainPost")
 	//스크롤시 데이터 불러오는 로직
-	//재웅이형이 작성한 바로 위 로직이랑 거의 동일
+	//재웅이형이 작성한 바로 위 로직이랑 거의 동일, 파일도 마찬가지로 다시 로딩해야함.
 	public ResponseEntity<?> getPostListScroll(Pageable pageable, @RequestParam("page_num") int page_num, 
 			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException  {
 		
@@ -279,6 +280,22 @@ public class PostController {
 		
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		
+		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열
+		for(CamelHashMap file : pagePostList) {
+			System.out.println("변경된 맵 : " + file);
+			int findId = (int)file.get("postId");
+			//한 게시글의 모든 파일들을 생성함.
+			List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
+			List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
+			if(!fileList.isEmpty()) {
+				for(int j=0; j < fileList.size(); j++) {
+					fileListDTO.get(j).setPostId(findId);
+					fileListDTO.add(Load.toHtml(fileList.get(j)));
+					System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
+				}
+				file.put("fileList", fileListDTO);
+			}
+		}
 		
 		return ResponseEntity.ok().body(pagePostList);
 	}
