@@ -208,6 +208,7 @@ public class PostController {
 	
 	@GetMapping("/mainPost")
 	// 로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드, 게시글의 파일은 따로 테이블에서 가져옴.
+	// 메인 페이지도 파일 목록을 불러서 같이 화면에 표시해야하므로, 두개 이상의 객체를 같이 보냄.
 	public ModelAndView getPostList(@PageableDefault(page = 0, size = 5) Pageable pageable,
 			HttpServletResponse response, HttpSession session, @AuthenticationPrincipal CustomUserDetails loginUser)
 			throws IOException {
@@ -218,9 +219,10 @@ public class PostController {
 
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		
-		for (int i = 0; i < pagePostList.getContent().size(); i++) {
-			System.out.println(pagePostList.getContent().get(i).toString());
-		}
+		System.out.println(pagePostList);
+//		for (int i = 0; i < pagePostList.getContent().size(); i++) {
+//			System.out.println(pagePostList);
+//		}
 
 		for (int i = 0; i < pagePostList.getContent().size(); i++) {
 			pagePostList.getContent().get(i).put(
@@ -237,9 +239,24 @@ public class PostController {
 			);
 		}
 		
-		for (int i = 0; i < pagePostList.getContent().size(); i++) {
-			System.out.println(pagePostList.getContent().get(i).toString());
+		for(CamelHashMap file : pagePostList) {
+			System.out.println("변경된 맵 : " + file);
+			int findId = (int)file.get("postId");
+			//한 게시글의 모든 파일들을 생성함.
+			List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
+			List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
+			for(int j=0; j < fileList.size(); j++) {
+				fileListDTO.get(j).setPostId(findId);
+				fileListDTO.add(Load.toHtml(fileList.get(j)));
+				System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
+			}
+			file.put("fileList", fileListDTO);
+			
 		}
+		
+//		for (int i = 0; i < pagePostList.getContent().size(); i++) {
+//			System.out.println(pagePostList.getContent().get(i).toString());
+//		}
 		
 		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();

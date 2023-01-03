@@ -18,9 +18,9 @@ public class MglgPostFileServiceImpl implements MglgPostFileService{
 	private MglgPostFileRepository mglgPostFileRepository;
 	//해당 게시글의 모든 파일들을 불러오는 메소드
 	@Override
-	public List<MglgPostFile> getPostFileList(MglgPost mglgPost) {
+	public List<MglgPostFile> getPostFileList(int postId) {
 		// TODO Auto-generated method stub
-		return mglgPostFileRepository.findAllByMglgPost(mglgPost);
+		return mglgPostFileRepository.findAllByMglgPost(postId);
 	}
 	
 	//해당 게시글의 파일 1개를 로드하는 메소드.
