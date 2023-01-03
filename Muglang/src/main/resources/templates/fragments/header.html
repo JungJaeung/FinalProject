@@ -17,9 +17,9 @@
 			<!--서치바-->
 			<!-- 검색 기능 구현 김동현 작업중 2022/12/24-->
 		    <div class="search-bar w-">
-		      <form class="search-form d-flex align-items-center" method="get" action="/search/searchPostList" id="searchForm">
+		      <form class="search-form d-flex align-items-center" method="GET" action="/search/searchByPost" id="searchForm">
 		        <input type="text" name="searchKeyword" placeholder="Search" title="Enter search keyword" th:value="${searchKeyword}">
-		        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+		        <button type="submit" title="Search" id="searchBtn"><i class="bi bi-search"></i></button>
 		      </form>
 		    </div><!-- End Search Bar -->
 		
@@ -171,7 +171,7 @@
 		            </li>
 		
 		            <li class="dropdown-footer">
-		              <a href="#">Show all messages</a>
+		              <a th:href="@{/chat/rooms}">Show all messages</a>
 		            </li>
 		
 		          </ul><!-- End Messages Dropdown Items -->
@@ -184,6 +184,16 @@
 		</header>
 	</body>
 	
+	<!-- 검색을 위한 버튼 실행 jQuery -->
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+			$(function()  {
+				$("#searchBtn").on("click", function() {
+					$("#searchForm").submit();
+				});
+			});
+		</script>
+	</th:block>
 	
 	
 	

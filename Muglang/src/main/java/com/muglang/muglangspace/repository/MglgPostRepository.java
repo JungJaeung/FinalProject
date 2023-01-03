@@ -47,18 +47,18 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	public void updateMglgPost(@Param("mglgPost") MglgPost mglgPost);
 	
 	//내용 검색
-	Page<MglgPost> findByPostContentContainingOrderByPostDateDesc(String searchKeyword, Pageable pageable);
+	Page<MglgPost> findByPostContentContainingOrderByPostDateDesc(@Param("searchKeyword") String searchKeyword, Pageable pageable);
 	
 	//식당 검색
-	Page<MglgPost> findByRestNmContainingOrderByPostDateDesc(String searchKeyword, Pageable pageable);
+	Page<MglgPost> findByRestNmContainingOrderByPostDateDesc(@Param("searchKeyword") String searchKeyword, Pageable pageable);
 	
 	//해시태그 검색
 	Page<MglgPost> findByHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5ContainingOrderByPostDateDesc(
-			String searchKeyword1, 
-			String searchKeyword2, 
-			String searchKeyword3,
-			String searchKeyword4, 
-			String searchKeyword5, 
+			@Param("searchKeyword") String searchKeyword1, 
+			@Param("searchKeyword") String searchKeyword2, 
+			@Param("searchKeyword") String searchKeyword3,
+			@Param("searchKeyword") String searchKeyword4, 
+			@Param("searchKeyword") String searchKeyword5, 
 			Pageable pageable
 			);
 	
@@ -69,14 +69,14 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	//모두 검색
 
 	Page<MglgPost> findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5OrSearchKeywordContainingOrderByPostDateDesc(
-			String searchKeyword1,
-			String searchKeyword2,
-			String searchKeyword3,
-			String searchKeyword4,
-			String searchKeyword5,
-			String searchKeyword6,
-			String searchKeyword7,
-			String searchKeyword8,
+			@Param("searchKeyword") String searchKeyword1,
+			@Param("searchKeyword") String searchKeyword2,
+			@Param("searchKeyword") String searchKeyword3,
+			@Param("searchKeyword") String searchKeyword4,
+			@Param("searchKeyword") String searchKeyword5,
+			@Param("searchKeyword") String searchKeyword6,
+			@Param("searchKeyword") String searchKeyword7,
+			@Param("searchKeyword") String searchKeyword8,
 			Pageable pageable
 			);
 	

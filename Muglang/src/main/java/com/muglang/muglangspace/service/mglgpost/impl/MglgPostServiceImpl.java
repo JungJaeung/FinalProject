@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.muglang.muglangspace.common.CamelHashMap;
+import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserRelation;
@@ -77,37 +78,6 @@ public class MglgPostServiceImpl implements MglgPostService {
 		return mglgPostRepository.postCnt(userId);
 	}
 
-	// 검색 - 쿼리 이름 다 안적어서 오류남. keyword가 아니고 searchKeyword임.그리고 매개변수랑 이름 적은 거랑 일치하게
-	// 줘야함.
-	@Override
-	public Page<MglgPost> searchPostList(MglgPost mglgPost, Pageable pageable) {
-		if (mglgPost.getSearchKeyword() != null && !mglgPost.getSearchKeyword().equals("")) {
-			if (mglgPost.getSearchCondition().equals("ALL")) {
-				return mglgPostRepository
-						.findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5OrSearchKeywordContainingOrderByPostDateDesc(
-								mglgPost.getSearchKeyword(), mglgPost.getSearchKeyword(), mglgPost.getSearchKeyword(),
-								mglgPost.getSearchKeyword(), mglgPost.getSearchKeyword(), mglgPost.getSearchKeyword(),
-								mglgPost.getSearchKeyword(), mglgPost.getSearchKeyword(), pageable);
-			} else if (mglgPost.getSearchCondition().equals("POSTCONTENT")) {
-				return mglgPostRepository.findByPostContentContainingOrderByPostDateDesc(mglgPost.getSearchKeyword(),
-						pageable);
-			} else if (mglgPost.getSearchCondition().equals("RESTNM")) {
-				return mglgPostRepository.findByRestNmContainingOrderByPostDateDesc(mglgPost.getSearchKeyword(),
-						pageable);
-			} else if (mglgPost.getSearchCondition().equals("HASHTAG")) {
-				return mglgPostRepository
-						.findByHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5ContainingOrderByPostDateDesc(
-								mglgPost.getSearchKeyword(), mglgPost.getSearchKeyword(), mglgPost.getSearchKeyword(),
-								mglgPost.getSearchKeyword(), mglgPost.getSearchKeyword(), pageable);
-			} else {
-				return mglgPostRepository.findAll(pageable);
-			}
-		} else {
-			return mglgPostRepository.findAll(pageable);
-		}
-
-	}
-
 	@Override
 	public Page<MglgPost> userPostList(int userId, Pageable pageable) {
 
@@ -151,5 +121,36 @@ public class MglgPostServiceImpl implements MglgPostService {
 		//신고하는 로직
 		mglgPostRepository.reportPost(postId,userId);
 		return "success";
+	}
+	
+	// 포스트 내용을 기준으로 검색
+	@Override
+	public Page<MglgPostDTO> searchByPostDTO(String searchKeyword, Pageable pageable) {
+		//받은 키워드로 레포지토리를 이용하여 entity를 가져옴
+		Page<MglgPost> mglgPosts = mglgPostRepository.findByPostContentContainingOrderByPostDateDesc(searchKeyword, pageable);
+		
+		//entity를 dto로 변환
+		Page<MglgPostDTO> mglgPostDTOs = mglgPosts.map(mglgPost ->
+													   MglgPostDTO.builder()
+													   			  .postId(mglgPost.getPostId())
+													   			  .userId(mglgPost.getMglgUser().getUserId())
+													   			  .postRating(mglgPost.getPostRating())
+													   			  .postContent(mglgPost.getPostContent())
+													   			  .restNm(mglgPost.getRestNm())
+													   			  .restRating(mglgPost.getRestRating())
+													   			  .hashTag1(mglgPost.getHashTag1())
+														   		  .hashTag2(mglgPost.getHashTag2())
+														   		  .hashTag3(mglgPost.getHashTag3())
+														   		  .hashTag4(mglgPost.getHashTag4())
+														   		  .hashTag5(mglgPost.getHashTag5())
+														   		  .postDate(mglgPost.getPostDate() == null ? 
+														   				  							  null :
+														   				  							  mglgPost.getPostDate().toString())
+														   		  .searchKeyword(mglgPost.getSearchKeyword())
+													   			  .build()
+													   			  );
+		
+		// DTO로 바뀐 ENTITY를 리턴
+		return mglgPostDTOs;
 	}
 }

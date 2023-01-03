@@ -114,7 +114,70 @@
 					});
 				}
 
-				//게시글 등록은 file.js로 이관. 게시글 insertPost
+				//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
+				//작성 버튼 - 따로 다른 페이지로 이동하지 않고 현재 페이지에서 바로 입력 처리를 시작함.
+
+				$("#insert_board").on("click", function(e) {
+					e.preventDefault();
+					let insert_post = "";
+					//$(".quill-editor-default").text();
+					$("#postContent").val($(".quill-editor-default").text());
+					
+					//$("#postContent").val($(".ql-editor").html());
+					//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
+					dt = new DataTransfer();
+					
+					for(f in uploadFiles) {
+						const file = uploadFiles[f];
+						dt.items.add(file);
+					}
+					console.log("파일 입력 내용을 입력 중입니다." + $("input[name='postContent']").val());
+					$("#btnAtt")[0].files = dt.files;
+					//$("#insert_form").submit();
+					//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
+					//배열 형태로 전송 시 백단(Java)에서 처리불가
+					//JSON String 형태로 변환하여 전송한다.
+					//$("#originFiles").val(JSON.stringify(originFiles));
+					
+					//ajax에서 multipart/form-data형식을 전송하기 위해서는
+					//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
+					//form.serialize()는 multipart/form-data 전송불가
+					let formData = new FormData($("#insert_form")[0]);
+					
+					//ajax는 추후에 구현할 예정.
+					//insertPostAndFile();
+					$.ajax({
+						enctype: 'multipart/form-data',
+						url: '/post/insertPost',
+						type: 'post',
+						processData: false,
+						contentType: false,
+						data: formData,
+						success: function(obj) {
+							alert("글 등록에 성공하였습니다.");
+							console.log(obj);
+							console.log("로그인한 계정 : " + loginUserId);
+							insert_post = post(obj.item);
+							
+							//$("#posts").html(insert_post);
+							//html단 뿌리기
+							$("#posts").prepend($(insert_post));
+							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
+							flagList.unshift(false);
+							postIdList.unshift($($('.updateBtn')[0]).val());
+							//이벤트 다시 적용
+							$.like_button();
+							$.comment_button();
+							$.update_post();
+							
+							return false;
+						}, error: function(e) {
+							console.log(e);
+						}
+					});
+
+				});
+				
 
 				//좋아요 버튼 함수(innerHtml에도 먹이기 위해서 함수로 만듬)
 				$.like_button = function () {
@@ -665,6 +728,10 @@
 					<div class="row" id="posts">
 						<div th:each="post : ${postList}" class="col-12 post">
 							<input type="hidden" th:value="${post.betweenDate}">
+							<!-- 파일의 개수가 몇개 오는지 테스트 하는 임시 자료 추후에 숨김 처리 할 예정 -->
+							<input type="text" th:id="'fileListSize' + ${post.postId}" th:value="${post.fileLength}">
+							<input type="text" th:id="'postFileNm' + ${post.postId}" value="''">
+							<input type="text" th:id="'postFileId' + ${post.postId}" value="''">
 							<div class="card recent-sales">
 								<div class="card-body">
 									<!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
@@ -680,10 +747,16 @@
 										<a class="icon" href="#" data-bs-toggle="dropdown"><i
 												class="bi bi-three-dots"></i></a>
 										<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-											<li><a class="dropdown-item" th:href="@{/user/reportUser(userId=${post.userId})}"><i
-														class="ri-alarm-warning-line"></i>&emsp;유저 신고하기</a></li>
-											<li><a class="dropdown-item" th:href="@{/post/reportPost(postId=${post.postId})}"><i
-														class="ri-alarm-warning-line"></i>&emsp;포스트 신고하기</a></li>			
+											<form th:action="@{/user/reportUser(userId=${post.userId})}" method="post">
+											<li>
+											<input type="submit" class="dropdown-item" value="유저 신고하기">
+											</li>
+											</form>
+											<form th:action="@{/post/reportPost(postId=${post.postId})}" method="post">
+											<li>
+											<input type="submit" class="dropdown-item" value="포스트 신고하기">
+											</li>
+											</form>	
 										</ul>
 									</div>
 									<!-- 이름부분 후에 스크립트로 for문 예정 -->

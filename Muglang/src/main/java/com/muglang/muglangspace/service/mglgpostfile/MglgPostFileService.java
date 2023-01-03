@@ -8,7 +8,7 @@ import com.muglang.muglangspace.entity.MglgPostFile;
 
 public interface MglgPostFileService {
 	//게시글의 파일들을 수정할 수 있게 로드하는 메소드
-	public List<MglgPostFile> getPostFileList(MglgPost mglgPost);
+	public List<MglgPostFile> getPostFileList(int postId);
 	
 	//게시글의 파일 1개를 불러오는 메소드.
 	public MglgPostFile getPostFile(MglgPost mglgPost, MglgPostFile MglgPostFile);
