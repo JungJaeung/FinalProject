@@ -724,10 +724,16 @@
 										<a class="icon" href="#" data-bs-toggle="dropdown"><i
 												class="bi bi-three-dots"></i></a>
 										<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-											<form th:action="@{/user/reportUser(userId=${post.userId})}" method="post"><li><input type="submit" class="dropdown-item" value="유저 신고하기">
+											<form th:action="@{/user/reportUser(userId=${post.userId})}" method="post">
+											<li>
+											<input type="submit" class="dropdown-item" value="유저 신고하기">
+											</li>
 											</form>
-											<li><a class="dropdown-item" th:href="@{/post/reportPost(postId=${post.postId})}"><i
-														class="ri-alarm-warning-line"></i>&emsp;포스트 신고하기</a></li>			
+											<form th:action="@{/post/reportPost(postId=${post.postId})}" method="post">
+											<li>
+											<input type="submit" class="dropdown-item" value="포스트 신고하기">
+											</li>
+											</form>	
 										</ul>
 									</div>
 									<!-- 이름부분 후에 스크립트로 for문 예정 -->

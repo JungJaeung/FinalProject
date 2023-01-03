@@ -385,7 +385,7 @@ public class UserController {
 		reportUserBase(msg,url,response,postUserId,loginUser);
 	}
 	//유저 신고 ----- 아더유저 팔로워에서 사용
-	@GetMapping("reportUserFollow")
+	@PostMapping("reportUserFollow")
 	public void reportUserFollow(String msg, String url,HttpServletResponse response,@RequestParam("userId") int postUserId,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		url = "/social/otherUser?userId="+postUserId;
 		reportUserBase(msg,url,response,postUserId,loginUser);

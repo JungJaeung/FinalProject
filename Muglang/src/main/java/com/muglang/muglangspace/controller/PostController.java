@@ -331,7 +331,7 @@ public class PostController {
 			}
 		}
 		
-		@GetMapping("reportPost")
+		@PostMapping("reportPost")
 		public void reportPost(String msg, String url,HttpServletResponse response,@RequestParam("postId") int postId,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 			int userId = loginUser.getMglgUser().getUserId();
 			msg = mglgPostService.reportPost(postId,userId);
