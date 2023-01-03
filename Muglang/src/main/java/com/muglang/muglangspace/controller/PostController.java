@@ -1,14 +1,17 @@
 package com.muglang.muglangspace.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -25,20 +28,27 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muglang.muglangspace.common.CamelHashMap;
-import com.muglang.muglangspace.common.LoginUserLoad;
+import com.muglang.muglangspace.common.FileUtils;
+import com.muglang.muglangspace.common.Load;
 import com.muglang.muglangspace.dto.MglgPostDTO;
+import com.muglang.muglangspace.dto.MglgPostFileDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgPostFile;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
+import com.muglang.muglangspace.service.mglgpostfile.MglgPostFileService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
 @RestController
@@ -52,19 +62,27 @@ public class PostController {
 
 	@Autowired
 	private MglgCommentService mglgCommentService;
-
+	
 	@Autowired
 	private AdminService adminService;
 	
-	//글쓰기 버튼으로 적용되는 글 새로 작성
+	@Autowired
+	private MglgPostFileService mglgPostFileService;
+
+	
+	//글쓰기 버튼으로 적용되는 글 새로 작성, 새로 작성되는 글에 파일을 같이 넣음.
 	@PostMapping("/insertPost")
-	public ResponseEntity<?> insertPost(MglgPostDTO mglgPostDTO, 
-			HttpServletResponse response
+	public ResponseEntity<?> insertPost(MglgPostDTO mglgPostDTO, MultipartFile[] uploadFiles,
+			HttpServletRequest request
 			,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		System.out.println(mglgPostDTO);
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
-
+		
+//		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles,
+//													new TypeReference<List<MglgPostFileDTO>>() {});
+		
 		System.out.println("가져온 내용 : " + mglgPostDTO);
+		System.out.println("가져온 파일의 정보 : " + uploadFiles);
 
 		try {
 			MglgPost mglgPost = MglgPost.builder()
@@ -83,28 +101,43 @@ public class PostController {
 					.build();
 
 			mglgPost = mglgPostService.insertPost(mglgPost);
+			
+			System.out.println("파일 정보를 확인하고 있습니다." + uploadFiles);
+			
+			//파일 리스트를 생성하여 해당 게시글의 파일들을 등록하기 위한 사전작업을 함.
+			List<MglgPostFile> uploadFileList = new ArrayList<MglgPostFile>();		
+			if(uploadFiles.length > 0) {
+				String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
+				
+				System.out.println("attachPath====================" + attachPath);
+				
+				File directory = new File(attachPath);
+				
+				if(!directory.exists()) {
+					directory.mkdir();
+				}
+				//파일의 개수 만큼 하나씩 파일을 DB에 저장함.
+				for(int i=0; i < uploadFiles.length; i++) {
+					MultipartFile file = uploadFiles[i];
+					
+					if(!file.getOriginalFilename().equals("") && file.getOriginalFilename() != null) {
+						MglgPostFile mglgPostFile = FileUtils.parseFileInfo(file, attachPath);
+						mglgPostFile.setMglgPost(mglgPost);	//파일의 게시글 id 정보를 담음.
+						System.out.println("등록하려는 파일의 원래 이름 : " + mglgPostFile.getPostFileOriginNm());
+						uploadFileList.add(mglgPostFile);
+						mglgPostFileService.insertPostFile(mglgPostFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
+					}
+				}
+				
+			}
+			System.out.println("파일 자료 입력 완료");
 			//화면단으로 넘길 DTO를 생성
-			MglgPostDTO returnDTO = MglgPostDTO.builder()
-												 .postId(mglgPost.getPostId())
-												 .userId(loginUser.getMglgUser().getUserId())
-												 .restNm(mglgPost.getRestNm())
-												 .postDate(mglgPost.getPostDate().toString())
-												 .postRating(mglgPost.getPostRating())
-												 .restRating(mglgPost.getRestRating())
-												 .hashTag1(mglgPost.getHashTag1() == ""? "0": mglgPost.getHashTag1())
-												 .hashTag2(mglgPost.getHashTag2() == ""? "0": mglgPost.getHashTag2())
-												 .hashTag3(mglgPost.getHashTag3() == ""? "0": mglgPost.getHashTag3())
-												 .hashTag4(mglgPost.getHashTag4() == ""? "0": mglgPost.getHashTag4())
-												 .hashTag5(mglgPost.getHashTag5() == ""? "0": mglgPost.getHashTag5())
-												 .postContent(mglgPost.getPostContent())
-												 .betweenDate(Duration.between(mglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
-												 .build();
-												 
-												 
+			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
 			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
-			returnMap.put("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
+			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
+			System.out.println("반환하는 포스팅 데이터 : " + returnMap.get("insertPost"));
 			responseDTO.setItem(returnMap);
 			System.out.println("새로운 글을 추가합니다.");
 			return ResponseEntity.ok().body(responseDTO); 
@@ -115,7 +148,7 @@ public class PostController {
 	}
 	
 	@PutMapping("/updatePost")
-	public ResponseEntity<?> updatePost(MglgPostDTO mglgPostDTO, HttpSession session) {
+	public ResponseEntity<?> updatePost(MglgPostDTO mglgPostDTO, MglgPostFileDTO mglgPostFileDTO) {
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
 		MglgUser mglgUser = new MglgUser();
 		mglgUser.setUserId(mglgPostDTO.getUserId());
@@ -175,7 +208,8 @@ public class PostController {
 	
 	
 	@GetMapping("/mainPost")
-	// 로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드
+	// 로그인후 메인페이지로 이동하여 게시글의 내용을 최종적으로 html화면단에 넘기는 메소드, 게시글의 파일은 따로 테이블에서 가져옴.
+	// 메인 페이지도 파일 목록을 불러서 같이 화면에 표시해야하므로, 두개 이상의 객체를 같이 보냄.
 	public ModelAndView getPostList(@PageableDefault(page = 0, size = 5) Pageable pageable,
 			HttpServletResponse response, HttpSession session, @AuthenticationPrincipal CustomUserDetails loginUser)
 			throws IOException {
@@ -186,9 +220,7 @@ public class PostController {
 
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		
-		for (int i = 0; i < pagePostList.getContent().size(); i++) {
-			System.out.println(pagePostList.getContent().get(i).toString());
-		}
+		System.out.println(pagePostList);
 
 		for (int i = 0; i < pagePostList.getContent().size(); i++) {
 			pagePostList.getContent().get(i).put(
@@ -204,24 +236,43 @@ public class PostController {
 					)
 			);
 		}
-		
-		for (int i = 0; i < pagePostList.getContent().size(); i++) {
-			System.out.println(pagePostList.getContent().get(i).toString());
+		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열
+		for(CamelHashMap file : pagePostList) {
+			System.out.println("변경된 맵 : " + file);
+			int findId = (int)file.get("postId");
+			//한 게시글의 모든 파일들을 생성함.
+			//파일을 등록하지 않은 경우 파일 없이 수행. if문의 조건에 만족하지 못하면 file 데이터는 없는것.
+			List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
+			System.out.println("파일의 개수 : " + fileList.size());
+			List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
+			if(!fileList.isEmpty()) {
+				for(int j = 0; j < fileList.size(); j++) {
+					//리스트에 먼저 추가를하고 키 값을 그후에 넣어야함. 없는 객체에 뭘 넣는건 불가능함.
+					fileListDTO.add(Load.toHtml(fileList.get(j)));
+					fileListDTO.get(j).setPostId(findId);
+					System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
+				}
+				file.put("file_length", fileList.size());	//게시글의 파일 개수 저장.
+				file.put("file_list", fileListDTO);	//camel형으로 키값을 자동으로 바꿈.
+			}
+
 		}
+		System.out.println("파일 리스트 정보 담기 완료..... 화면단으로 넘길 준비를 합니다." );
+		System.out.println("파일 한개의 담긴 형태 : " + pagePostList.getContent().get(0));
 		
 		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostList);
 		// 세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
-		mv.addObject("loginUser", LoginUserLoad.toHtml(loginUser.getMglgUser()));
+		mv.addObject("loginUser", Load.toHtml(loginUser.getMglgUser()));
 
 		return mv;
 	}
 	
 	@PostMapping("/mainPost")
 	//스크롤시 데이터 불러오는 로직
-	//재웅이형이 작성한 바로 위 로직이랑 거의 동일
+	//재웅이형이 작성한 바로 위 로직이랑 거의 동일, 파일도 마찬가지로 다시 로딩해야함.
 	public ResponseEntity<?> getPostListScroll(Pageable pageable, @RequestParam("page_num") int page_num, 
 			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException  {
 		
@@ -230,6 +281,22 @@ public class PostController {
 		
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		
+		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열
+		for(CamelHashMap file : pagePostList) {
+			System.out.println("변경된 맵 : " + file);
+			int findId = (int)file.get("postId");
+			//한 게시글의 모든 파일들을 생성함.
+			List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
+			List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
+			if(!fileList.isEmpty()) {
+				for(int j=0; j < fileList.size(); j++) {
+					fileListDTO.get(j).setPostId(findId);
+					fileListDTO.add(Load.toHtml(fileList.get(j)));
+					System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
+				}
+				file.put("fileList", fileListDTO);
+			}
+		}
 		
 		return ResponseEntity.ok().body(pagePostList);
 	}
@@ -269,7 +336,7 @@ public class PostController {
 
 	//팔로우 하고 있는사람 포스트만 불러오는 로직
 	@GetMapping("/getFollowerPost")
-	public ResponseEntity<?> getFollowerPost(@PageableDefault(page=0,size=5) Pageable pageable,@AuthenticationPrincipal CustomUserDetails loginUser) {
+	public ResponseEntity<?> getFollowerPost(@PageableDefault(page=0,size=5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
 		MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
 		int userId = loginUser.getMglgUser().getUserId();
 		try {		
