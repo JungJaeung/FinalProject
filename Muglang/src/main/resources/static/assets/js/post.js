@@ -142,8 +142,8 @@
 					<img src="../assets/img/news-1.jpg" style="width: 100%;">
 				</div>
 				<div class="buttons" id="buttonBox${post.postId}">
-					<button id="fileRequest${post.postId}"></button>&emsp;
-					<button id="fileRemove${post.postId}"></button>
+					<button id="fileRequest${post.postId}">파일 관리창 열기</button>&emsp;
+					<button id="fileRemove${post.postId}">파일 삭제</button>
 				</div></div>`;
 		text += `<div class="activity">`;
 		text += `<div id="postContent${item.insertPost.postId}">${item.insertPost.postContent}</div>

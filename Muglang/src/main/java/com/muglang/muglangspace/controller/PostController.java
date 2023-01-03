@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.common.FileUtils;
 import com.muglang.muglangspace.common.Load;
@@ -74,8 +76,12 @@ public class PostController {
 			,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		System.out.println(mglgPostDTO);
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
-
+		
+//		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles,
+//													new TypeReference<List<MglgPostFileDTO>>() {});
+		
 		System.out.println("가져온 내용 : " + mglgPostDTO);
+		System.out.println("가져온 파일의 정보 : " + uploadFiles);
 
 		try {
 			MglgPost mglgPost = MglgPost.builder()
@@ -114,9 +120,8 @@ public class PostController {
 					MultipartFile file = uploadFiles[i];
 					
 					if(!file.getOriginalFilename().equals("") && file.getOriginalFilename() != null) {
-						MglgPostFile mglgPostFile = new MglgPostFile();
-						
-						mglgPostFile = FileUtils.parseFileInfo(file, attachPath);
+						MglgPostFile mglgPostFile = FileUtils.parseFileInfo(file, attachPath);
+						mglgPostFile.setMglgPost(mglgPost);	//파일의 게시글 id 정보를 담음.
 						System.out.println("등록하려는 파일의 원래 이름 : " + mglgPostFile.getPostFileOriginNm());
 						uploadFileList.add(mglgPostFile);
 						mglgPostFileService.insertPostFile(mglgPostFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
@@ -124,29 +129,14 @@ public class PostController {
 				}
 				
 			}
+			System.out.println("파일 자료 입력 완료");
 			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
-//			MglgPostDTO returnDTO = MglgPostDTO.builder()
-//												 .postId(mglgPost.getPostId())
-//												 .userId(loginUser.getMglgUser().getUserId())
-//												 .restNm(mglgPost.getRestNm())
-//												 .postDate(mglgPost.getPostDate().toString())
-//												 .postRating(mglgPost.getPostRating())
-//												 .restRating(mglgPost.getRestRating())
-//												 .hashTag1(mglgPost.getHashTag1() == ""? "0": mglgPost.getHashTag1())
-//												 .hashTag2(mglgPost.getHashTag2() == ""? "0": mglgPost.getHashTag2())
-//												 .hashTag3(mglgPost.getHashTag3() == ""? "0": mglgPost.getHashTag3())
-//												 .hashTag4(mglgPost.getHashTag4() == ""? "0": mglgPost.getHashTag4())
-//												 .hashTag5(mglgPost.getHashTag5() == ""? "0": mglgPost.getHashTag5())
-//												 .postContent(mglgPost.getPostContent())
-//												 .betweenDate(Duration.between(mglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
-//												 .build();
-
-			
 			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
 			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
+			System.out.println("반환하는 포스팅 데이터 : " + returnMap.get("insertPost"));
 			responseDTO.setItem(returnMap);
 			System.out.println("새로운 글을 추가합니다.");
 			return ResponseEntity.ok().body(responseDTO); 
