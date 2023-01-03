@@ -32,7 +32,4 @@ public class ChatRoomRepository {
         return chatRoomMap.get(id);
     }
 
-    public void remove(WebSocketSession session) {
-        this.chatRooms.parallelStream().forEach(chatRoom -> chatRoom.remove(session));
-    }
 }
