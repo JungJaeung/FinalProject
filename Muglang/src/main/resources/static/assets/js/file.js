@@ -78,14 +78,16 @@
 				const originFileObj = {
 					postId: postIdList[i],
 					postFileId: $("#postFileId" + postIdList[i]).val(),
-					PostFileNm: $("#postFileNm" + postIdList[i]).val(),
+					postFileNm: $("#postFileNm" + postIdList[i]).val(),
 					//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
-					//파일 상태값(수정되거나 삭제된 파일은 변경)
-					boardFileStatus: "N"
+					//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
+					postFileStatus: "N"
 				};
 				
 				originFiles.push(originFileObj);
 			}
+			//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
+			originFileList.push(originFiles);
 		}
 
 	});
@@ -161,12 +163,15 @@
 		reader.readAsDataURL(fileArr[0]);
 
 		//기존 파일을 담고있는 배열에서 변경이 일어난 파일 수정
-		for (let i = 0; i < originFiles.length; i++) {
-			if (boardFileNo == originFiles[i].boardFileNo) {
-				originFiles[i].boardFileStatus = "U";
-				originFiles[i].newFileNm = fileArr[0].name;
+		for (let i = 0; i < originFileList.length; i++) {
+			for (let j = 0; j < originFileList[i].originFiles.length; j++) {
+				if (postFileId == originFiles[j].postFileId) {
+					originFiles[j].postFileStatus = "U";
+					originFiles[j].newFileNm = fileArr[0].name;
+				}
 			}
 		}
+
 		console.log("변경된 파일 다시 정렬 중");
 	}
 	
@@ -178,8 +183,8 @@
 		let delFile = ele.getAttribute("data-del-file");	
 		
 		for(let i = 0; i < originFiles.length; i++) {
-			if(delFile == originFiles[i].boardFileNo) {
-				originFiles[i].boardFileStatus = "D";
+			if(delFile == originFiles[i].postFileId) {
+				originFiles[i].postFileStatus = "D";
 			}
 		}
 		
@@ -188,9 +193,9 @@
 		$(div).remove();
 	}	
 	
-	function fnImgChange(boardFileNo) {
+	function fnImgChange(postFileId) {
 		//기존 파일의 이미지를 클릭했을 때 같은 레벨의 input type="file"을 가져온다.
-		let changedFile = document.getElementById("changedFile" + boardFileNo);
+		let changedFile = document.getElementById("changedFile" + postFileId);
 		//위에서 가져온 input 강제클릭 이벤트 발생시킴
 		changedFile.click();
 	}

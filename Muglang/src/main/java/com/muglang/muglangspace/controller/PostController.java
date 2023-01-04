@@ -109,7 +109,7 @@ public class PostController {
 			if(uploadFiles.length > 0) {
 				String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
 				
-				System.out.println("attachPath====================" + attachPath);
+				System.out.println("attachPath====================!====" + attachPath);
 				
 				File directory = new File(attachPath);
 				
@@ -236,7 +236,7 @@ public class PostController {
 					)
 			);
 		}
-		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열
+		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열처럼 사용됨.
 		for(CamelHashMap file : pagePostList) {
 			System.out.println("변경된 맵 : " + file);
 			int findId = (int)file.get("postId");
@@ -255,7 +255,7 @@ public class PostController {
 				file.put("file_length", fileList.size());	//게시글의 파일 개수 저장.
 				file.put("file_list", fileListDTO);	//camel형으로 키값을 자동으로 바꿈.
 			}
-
+			System.out.println("멥에 다 넣은 결과 : " + file);
 		}
 		System.out.println("파일 리스트 정보 담기 완료..... 화면단으로 넘길 준비를 합니다." );
 		System.out.println("파일 한개의 담긴 형태 : " + pagePostList.getContent().get(0));
@@ -290,11 +290,12 @@ public class PostController {
 			List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
 			if(!fileList.isEmpty()) {
 				for(int j=0; j < fileList.size(); j++) {
-					fileListDTO.get(j).setPostId(findId);
 					fileListDTO.add(Load.toHtml(fileList.get(j)));
+					fileListDTO.get(j).setPostId(findId);
 					System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
 				}
-				file.put("fileList", fileListDTO);
+				file.put("file_length", fileList.size());
+				file.put("file_list", fileListDTO);
 			}
 		}
 		
