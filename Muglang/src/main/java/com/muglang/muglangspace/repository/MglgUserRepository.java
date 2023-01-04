@@ -90,8 +90,12 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer> {
 	Page<MglgUser> followList(@Param("userId") int userId, Pageable pageable);
 
 	// 팔로워 서치
-	@Query(value = "SELECT A.* FROM T_MGLG_USER A WHERE A.USER_ID IN (SELECT FOLLOWER_ID FROM T_MGLG_USER_RELATION WHERE USER_ID= :userId) "
-			+ "	   AND A.USER_NAME = :searchKeyword", nativeQuery = true)
+	@Query(value = "SELECT A.* FROM T_MGLG_USER A WHERE A.USER_ID "
+			+ "		IN (SELECT B.FOLLOWER_ID FROM T_MGLG_USER_RELATION B WHERE B.USER_ID= :userId) "
+			+ "	    AND A.USER_NAME = :searchKeyword",
+			countQuery ="SELECT count(*) FROM T_MGLG_USER A WHERE A.USER_ID IN (SELECT B.FOLLOWER_ID FROM T_MGLG_USER_RELATION B WHERE B.USER_ID= :userId)"
+					+ "	 AND A.USER_NAME = :searchKeyword" ,
+			nativeQuery = true)
 	Page<MglgUser> searchFollowList(@Param("searchKeyword") String searchKeyword, @Param("userId") int userId,
 			Pageable pageable);
 

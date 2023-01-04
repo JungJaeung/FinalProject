@@ -247,8 +247,10 @@ public class SocialController {
 	public ResponseEntity<?> followerList(@RequestParam("searchKeyword") String searchKeyword 
 			,@PageableDefault(page = 0, size = 5) Pageable pageable,@AuthenticationPrincipal CustomUserDetails customUser) {
 		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-
+		System.out.println("트라이 들어가기전");
 		try {
+		System.out.println("트라이 들어감");
+
 		MglgUser user = MglgUser.builder().searchKeyword(searchKeyword)
 										  .userId(customUser.getMglgUser().getUserId())
 									      .build();
@@ -261,10 +263,16 @@ public class SocialController {
 														.userNick(pageUser.getUserNick())
 														.build());
 		
-
+		for(int i =0;i<pagefollowDTOList.getContent().size();i++) {
+			System.out.println(pagefollowDTOList.getContent().get(i));
+		}
+		
+		
+		
 			response.setPageItems(pagefollowDTOList);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
+
 			response.setErrorMessage(e.getMessage());
 			return ResponseEntity.badRequest().body(response);
 		}

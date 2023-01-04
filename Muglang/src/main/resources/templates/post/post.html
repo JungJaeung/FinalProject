@@ -731,7 +731,7 @@
 						<div th:each="post : ${postList}" class="col-12 post">
 							<input type="hidden" th:value="${post.betweenDate}">
 							<!-- 파일의 개수가 몇개 오는지 테스트 하는 임시 자료 추후에 숨김 처리 할 예정 -->
-							<input type="text" th:id="'fileListSize' + ${post.postId}" th:value="${post.fileLength}">
+							<input type="text" th:id="'fileListSize' + ${post.postId}">
 							<input type="text" th:id="'postFileNm' + ${post.postId}" value="''">
 							<input type="text" th:id="'postFileId' + ${post.postId}" value="''">
 							<div class="card recent-sales">

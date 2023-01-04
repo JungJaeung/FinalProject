@@ -37,6 +37,10 @@ public class UserRelationServiceImpl implements UserRelationService {
 	public Page<MglgUser> followList(MglgUser user, Pageable pageable) {
 		int userId = user.getUserId();
 		String searchKeyword = user.getSearchKeyword();
+		System.out.println("searchKeyword----------"+searchKeyword);
+		System.out.println("userId----------"+userId);
+		
+		
 		if(user.getSearchKeyword() != null && !user.getSearchKeyword().equals("")) {
 			return mglgUserRepository.searchFollowList(searchKeyword,userId, pageable);
 			
