@@ -49,7 +49,10 @@
 				for (let i = 0; i < list.length; i++) {
 					flagList.push(false);
 					postIdList.push($($('.updateBtn')[i]).val());
-					postFileIdList.push($($('.fileList')[0]).val());
+					postFileIdList.push(new Array());
+					for(let j = 0; j < $("fileListSize" + postIdList[i]).val(); j++) {
+						postFileIdList[i].push($($('.fileList')[j]).val());
+					}
 				}
 				
 				console.log("게시글 : " + postIdList);
@@ -128,8 +131,8 @@
 					for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
 						const originFileObj = {
 							postId: postIdList[i],
-							postFileId: $("#postFileId" + postIdList[i]).val(),
-							postFileNm: $("#postFileNm" + postIdList[i]).val(),
+							postFileId: $("#postFileId" + postFileIdList[i]).val(),
+							postFileNm: $("#postFileNm" + postFileIdList[i]).val(),
 							//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
 							//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
 							postFileStatus: "N"
