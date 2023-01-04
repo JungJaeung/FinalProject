@@ -178,8 +178,6 @@
 
 				});
 				
-				
-				
 
 				//좋아요 버튼 함수(innerHtml에도 먹이기 위해서 함수로 만듬)
 				$.like_button = function () {
@@ -672,11 +670,11 @@
 
 							<div class="card recent-sales overflow-auto">
 								<div class="card-body">
-									<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">
+									<form id="insert_form" name="insertForm" enctype="multipart/form-data" action="/post/insertPost" method="post">
 										<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
 										
-										<!--<input type="text" id="inputRestNm" name="inputRestNm" value=""><br>
-										<input type="hidden" id="userName" name="userName" th:value="${loginUser.userName}">-->
+										<input type="text" id="inputRestNm" name="inputRestNm" value="기본레스토랑"><br>
+										<input type="hidden" id="userName" name="userName" th:value="${loginUser.userName}">
 										<div class="box" id="imagePreview"> <!-- 이미지를 따로 미리 임시 저장하는 공간 -->
 											<div id="image_preview">
 												<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple">
