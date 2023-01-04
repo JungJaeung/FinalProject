@@ -6,8 +6,9 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
-				var searchKeyword = $("#searchKeyword").val();
+				var searchKeyword = "";
 				var page_num = 1;
+				let totalPages = 0;
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
@@ -147,20 +148,19 @@
 						}
 					});
 				}
-					//시작시 팔로워 리스트 불러옴
+				//시작시 팔로워 리스트 불러옴
 				$.ajax({
-						url: '/social/follower',
-						type: 'get',
-						data: {
-							page: page_num,
-							searchKeyword: ""
-						},
-						success: function (obj) {
-							let htmlStr = '';
-							for (let i = 0; i < obj.pageItems.content.length; i++) {
-								htmlStr += `
-							<button id="btn_next1" style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%);"><</button>
-							<button id="btn_prev1" style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%);">></button>
+					url: '/social/follower',
+					type: 'get',
+					data: {
+						page: page_num,
+						searchKeyword: $("#searchKeyword").val()
+					},
+					success: function (obj) {
+						let htmlStr = '';
+						for (let i = 0; i < obj.pageItems.content.length; i++) {
+							htmlStr += `
+
                      			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
@@ -176,16 +176,152 @@
 										</div>
 									</div>
                      `
-							}
+						}
 
-							$("#div_body").html(htmlStr);
+						$("#div_body").html(htmlStr);
+						totalPages = obj.pageItems.totalPages;
+					},
+					error: function (e) {
+						console.log("ㅁㄴㅇㅁㄴㅇ실패")
+						console.log(e);
+					}
+				});
+				$("#btn_next").click(function () {
+					searchKeyword = $("#searchKeyword").val();
+					console.log("누르기전page_num===" + page_num)
+					if(page_num==totalPages-1){
+						return;
+					}
+					page_num = page_num + 1;
+
+					$.ajax({
+						url: '/social/follower',
+						type: 'get',
+						data: {
+							page: page_num,
+							searchKeyword: searchKeyword
+						},
+						success: function (obj) {
+							console.log(obj)
+							var htmlStr = "";
+							totalPages = obj.pageItems.totalPages;
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+										<!--친구 사진-->
+										<div style="width: 30%; margin-top: 10px; float: left;"><img
+												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
+												style="width: 50px;"></div>
+										<!--친구 닉네임, 아이디-->
+										<div style="width: 60%; margin-top: 13px; float: left;">
+											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
+											style="font-weight: bold; color: black;">${obj.pageItems.content[i].userName}</a></div>
+											<div style="color: #aaaaaa; font-size: x-small;">
+											${obj.pageItems.content[i].email}
+											</div>
+										</div>
+									</div>
+							`
+							}
+							$("#div_body").html(htmlStr)
+
 						},
 						error: function (e) {
-							console.log("ㅁㄴㅇㅁㄴㅇ실패")
 							console.log(e);
 						}
 					});
-				
+
+				})
+				$("#btn_prev").click(function () {
+					searchKeyword = $("#searchKeyword").val();
+					console.log("누르기전page_num===" + page_num);
+					if (page_num < 2) {
+						return;
+					}
+					page_num = page_num - 1;
+					console.log("누른후page_num===" + page_num);
+					$.ajax({
+						url: '/social/follower',
+						type: 'get',
+						data: {
+							page: page_num,
+							searchKeyword: searchKeyword
+						},
+						success: function (obj) {
+							console.log(obj)
+							var htmlStr = "";
+							totalPages = obj.pageItems.totalPages;
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+										<!--친구 사진-->
+										<div style="width: 30%; margin-top: 10px; float: left;"><img
+												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
+												style="width: 50px;"></div>
+										<!--친구 닉네임, 아이디-->
+										<div style="width: 60%; margin-top: 13px; float: left;">
+											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
+											style="font-weight: bold; color: black;">${obj.pageItems.content[i].userName}</a></div>
+											<div style="color: #aaaaaa; font-size: x-small;">
+											${obj.pageItems.content[i].email}
+											</div>
+										</div>
+									</div>
+							`
+							}
+							$("#div_body").html(htmlStr)
+
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+
+				})
+				//검색 이벤트 //질문
+				$("#btn_search").click(function(){
+						searchKeyword = $("#searchKeyword").val();
+						$.ajax({
+						url: '/social/follower',
+						type: 'get',
+						data: {
+							page: page_num,
+							searchKeyword: searchKeyword
+						},
+						success: function (obj) {
+							console.log(obj)
+							var htmlStr = "";
+							totalPages = obj.pageItems.totalPages;
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+										<!--친구 사진-->
+										<div style="width: 30%; margin-top: 10px; float: left;"><img
+												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
+												style="width: 50px;"></div>
+										<!--친구 닉네임, 아이디-->
+										<div style="width: 60%; margin-top: 13px; float: left;">
+											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
+											style="font-weight: bold; color: black;">${obj.pageItems.content[i].userName}</a></div>
+											<div style="color: #aaaaaa; font-size: x-small;">
+											${obj.pageItems.content[i].email}
+											</div>
+										</div>
+									</div>
+							`
+							}
+							$("#div_body").html(htmlStr)
+
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+					
+				})
+
+
+
 			});
 		</script>
 	</th:block>
@@ -277,28 +413,18 @@
 						<h5 class="card-title" style="font-weight: bold;">Follower</h5>
 						<!--검색-->
 						<div class="card-body">
-							<form class="form-inline" role="form" action="/social/follower" method="get">
 								<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
 									onblur="this.placeholder='이름으로 검색'" id="searchKeyword">
 								<input type="button" value="검색" id="btn_search">
-							</form>
 						</div>
-						<div class="card-body" style="position: relative;" id="div_body">
-
-									<!--팔로우 리스트-->
-									<div style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
-										<!--친구 사진-->
-										<div style="width: 30%; margin-top: 10px; float: left;"><img
-												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
-												style="width: 50px;"></div>
-										<!--친구 닉네임, 아이디-->
-										<div style="width: 60%; margin-top: 13px; float: left;">
-											<div><a style="font-weight: bold; color: black;">유저네임</a></div>
-											<div style="color: #aaaaaa; font-size: x-small;">이메일</div>
-										</div>
-									</div>
+						<!--붙여넣는곳-->
+						<div class="card-body" style="position: relative;">
+							<button id="btn_prev"
+								style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%);">&#60;</button>
+							<button id="btn_next"
+								style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%);">&#62;</button>
+							<div id="div_body"></div>
 						</div>
-
 					</div>
 				</div>
 
