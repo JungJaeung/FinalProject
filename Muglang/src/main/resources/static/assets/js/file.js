@@ -74,6 +74,7 @@
 		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
 		//수업 때 했던 게시글은 1개이고, 지금 이건 여러개를 뿌려야하기 때문에 게시된 데이터를 다 가지고 와야함.
 		for(let i = 0; i < postIdList.length; i++) {
+			console.log("파일 정보 입력 시작하기 : " + i);
 			for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
 				const originFileObj = {
 					postId: postIdList[i],
@@ -83,7 +84,7 @@
 					//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
 					postFileStatus: "N"
 				};
-				
+				console.log("파일의 정보 : " + originFileObj);
 				originFiles.push(originFileObj);
 			}
 			//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
