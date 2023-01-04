@@ -2,10 +2,12 @@ package com.muglang.muglangspace.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Id;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class MglgReportId implements Serializable{
 	private int reportId;

@@ -35,7 +35,9 @@
 
 	<link th:href="@{/assets/css/style.css}" rel="stylesheet" />
 	
-	<!-- 모든 페이지에서 사용할 공통 js링크 -->
+	<!-- 모든 페이지에서 사용할 공통 js링크 -  
+	script 파일을 참조 해서 연결하려고 할때 여기다가 경로명 입력해서 사용한다.
+	post.html에 스크립트를 넣으면 우리 모두가 관리힘들기 때문에 비추천함.-->
 	<script th:src="@{/js/jquery-3.6.1.min.js}"></script>
 	<script th:src="@{/assets/js/file.js}"></script>
 	<script th:src="@{/assets/js/post.js}"></script>

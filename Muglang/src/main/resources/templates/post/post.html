@@ -117,25 +117,42 @@
 				//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
 				//작성 버튼 - 따로 다른 페이지로 이동하지 않고 현재 페이지에서 바로 입력 처리를 시작함.
 
-				$("#insert_board").click(function () {
+				$("#insert_board").on("click", function(e) {
+					e.preventDefault();
 					let insert_post = "";
 					//$(".quill-editor-default").text();
 					$("#postContent").val($(".quill-editor-default").text());
 					
 					//$("#postContent").val($(".ql-editor").html());
+					//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
+					dt = new DataTransfer();
+					
+					for(f in uploadFiles) {
+						const file = uploadFiles[f];
+						dt.items.add(file);
+					}
+					console.log("파일 입력 내용을 입력 중입니다." + $("input[name='postContent']").val());
+					$("#btnAtt")[0].files = dt.files;
+					//$("#insert_form").submit();
+					//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
+					//배열 형태로 전송 시 백단(Java)에서 처리불가
+					//JSON String 형태로 변환하여 전송한다.
+					//$("#originFiles").val(JSON.stringify(originFiles));
+					
+					//ajax에서 multipart/form-data형식을 전송하기 위해서는
+					//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
+					//form.serialize()는 multipart/form-data 전송불가
+					let formData = new FormData($("#insert_form")[0]);
+					
+					//ajax는 추후에 구현할 예정.
+					//insertPostAndFile();
 					$.ajax({
+						enctype: 'multipart/form-data',
 						url: '/post/insertPost',
 						type: 'post',
-						data: {
-							restNm: $("input[name='restNm']").val(),
-							postContent: $("input[name='postContent']").val(),
-							viewCount: 0,
-							hashTag1: $("#hashTag1").val(),
-							hashTag2: $("#hashTag2").val(),
-							hashTag3: $("#hashTag3").val(),
-							hashTag4: $("#hashTag4").val(),
-							hashTag5: $("#hashTag5").val(),
-						},
+						processData: false,
+						contentType: false,
+						data: formData,
 						success: function(obj) {
 							alert("글 등록에 성공하였습니다.");
 							console.log(obj);
@@ -153,14 +170,15 @@
 							$.comment_button();
 							$.update_post();
 							
-							
+							return false;
 						}, error: function(e) {
 							console.log(e);
 						}
 					});
-					
-					//$("#insert_form").submit();
+
 				});
+				
+				
 				
 
 				//좋아요 버튼 함수(innerHtml에도 먹이기 위해서 함수로 만듬)
@@ -654,27 +672,30 @@
 
 							<div class="card recent-sales overflow-auto">
 								<div class="card-body">
-									<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
-									<input type="text" id="inputRestNm" name="inputRestNm" value=""><br>
-									<input type="hidden" id="userName" name="userName" th:value="${loginUser.userName}">
-									<div class="box" id="imagePrview"> <!-- 이미지를 따로 미리 임시 저장하는 공간 -->
-										<div id="image_preview">
-											<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple">
-											<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>
-										</div>
-									</div>
-									<div class="buttons" id="postFileButton">
-										<button id="postFileRequest">파일 관리창 열기</button>&emsp;
-										<button id="postFileUpdate" >파일 업로드 하기</button>
-									</div>
-									<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
-									<div class="quill-editor-default">
-										<h2>write your daily life</h2>
-										<p> </p>
-									</div>
-									<!-- End Quill Editor Default -->
-									<!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임 -->
 									<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">
+										<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
+										
+										<!--<input type="text" id="inputRestNm" name="inputRestNm" value=""><br>
+										<input type="hidden" id="userName" name="userName" th:value="${loginUser.userName}">-->
+										<div class="box" id="imagePreview"> <!-- 이미지를 따로 미리 임시 저장하는 공간 -->
+											<div id="image_preview">
+												<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple">
+												<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>
+											</div>
+										</div>
+										<div class="buttons" id="postFileButton">
+											<button id="postFileRequest">파일 관리창 열기</button>&emsp;
+											<button id="postFileUpdate" >파일 업로드 하기</button>
+										</div>
+										<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
+										<div class="quill-editor-default">
+											<h2>write your daily life</h2>
+											<p> </p>
+										</div>
+										<!-- End Quill Editor Default -->
+										<!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임.
+										 버튼을 두개로 따로 처리하기보단 위에서 한번에 바로처리 하기위해 폼을 올림. -->
+										<!--<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">-->
 										<input type="hidden" id="restNm" name="restNm" value="">
 										<input type="hidden" id="postContent" name="postContent" value="">
 										<div style="margin-bottom: 5px;">
@@ -709,6 +730,10 @@
 					<div class="row" id="posts">
 						<div th:each="post : ${postList}" class="col-12 post">
 							<input type="hidden" th:value="${post.betweenDate}">
+							<!-- 파일의 개수가 몇개 오는지 테스트 하는 임시 자료 추후에 숨김 처리 할 예정 -->
+							<input type="text" th:id="'fileListSize' + ${post.postId}" th:value="${post.fileLength}">
+							<input type="text" th:id="'postFileNm' + ${post.postId}" value="''">
+							<input type="text" th:id="'postFileId' + ${post.postId}" value="''">
 							<div class="card recent-sales">
 								<div class="card-body">
 									<!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
@@ -811,39 +836,39 @@
 					</div>
 
 				</div><!-- End Left side columns -->
+			</div>
+			<!-- Right side columns -->
+			<div class="col-lg-4 col-xxl-3">
 
-				<!-- Right side columns -->
-				<div class="col-lg-4 col-xxl-3">
+				<!-- Recent Activity -->
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title"
+							style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
+							먹거리 <span>| Today</span></h5>
+						<div class="activity">
+							<div id="today_eat">
+								<ol>
+									<li><a href="#"><b>#치킨</b></a></li>
+									<li><a href="#"><b>#보쌈</b></a></li>
+									<li><a href="#"><b>#연어초밥</b></a></li>
+									<li><a href="#"><b>#우육면</b></a></li>
+									<li><a href="#"><b>#마라탕</b></a></li>
+									<li><a href="#"><b>#짜장면</b></a></li>
+									<li><a href="#"><b>#라멘</b></a></li>
+									<li><a href="#"><b>#갈비</b></a></li>
+									<li><a href="#"><b>#곱창</b></a></li>
+									<li><a href="#"><b>#막창</b></a></li>
 
-					<!-- Recent Activity -->
-					<div class="card">
-						<div class="card-body">
-							<h5 class="card-title"
-								style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
-								먹거리 <span>| Today</span></h5>
-							<div class="activity">
-								<div id="today_eat">
-									<ol>
-										<li><a href="#"><b>#치킨</b></a></li>
-										<li><a href="#"><b>#보쌈</b></a></li>
-										<li><a href="#"><b>#연어초밥</b></a></li>
-										<li><a href="#"><b>#우육면</b></a></li>
-										<li><a href="#"><b>#마라탕</b></a></li>
-										<li><a href="#"><b>#짜장면</b></a></li>
-										<li><a href="#"><b>#라멘</b></a></li>
-										<li><a href="#"><b>#갈비</b></a></li>
-										<li><a href="#"><b>#곱창</b></a></li>
-										<li><a href="#"><b>#막창</b></a></li>
-
-									</ol>
-								</div>
-
+								</ol>
 							</div>
 
 						</div>
-					</div><!-- End Recent Activity -->
-				</div><!-- End Right side columns -->
-			</div>
+
+					</div>
+				</div><!-- End Recent Activity -->
+			</div><!-- End Right side columns -->
+		</div>
 		</section>
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">

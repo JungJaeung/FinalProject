@@ -46,5 +46,7 @@ public class MglgPostFile {
 	private String postFileOriginNm;
 	private String postFilePath;
 	private LocalDateTime postFileRegdate = LocalDateTime.now();
+	private String postFileCate;
+
 	
 }

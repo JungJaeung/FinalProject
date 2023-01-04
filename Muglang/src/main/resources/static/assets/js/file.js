@@ -1,32 +1,48 @@
 			
 	$(function() {
+		
 		let flagList = false;
 		//파일 추가 입력단 생성.
-		$("#postFileRequest").click(function() {
+
+		$("#postFileRequest").click(function(e) {
+			e.preventDefault();
 			//숨어있던 파일 조작 메뉴 등장.
 			//이벤트 새로 생성.
 			if(!flagList) {
 				//$("#imagePrview").html(fileTag());
 				$.btnAtt();
-				$("#imagePrview").show();
+				$("#imagePreview").show();
 				$(this).text("파일 업로드 닫기");
 				$("#postFileUpdate").show();
 				flagList = !flagList;
 			} else {
 				$(this).text("파일 업로드 열기");
-				$("#imagePrview").hide();
+				$("#imagePreview").hide();
 				//$("#image_preview").remove();
 				$("#postFileUpdate").hide();
 				flagList = !flagList;
 			}
 		});
-		$("#imagePrview").hide();
+		
+		$("#imagePreview").hide();
 		$("#postFileUpdate").hide();
+		//$("#btnAttForm").hide();
 		//파일 리스트 변경 버튼 이벤트 대신 처리.
-		$("#postFileUpdate").click(function() {
+		$("#postFileUpdate").click(function(e) {
+			e.preventDefault();
 			$("#btnAtt").click();
 		});
+		/*
+		$("#btnAtt").on("change", function() {
+			console.log("업로드하는 파일 변경 감지.");
+			$.btnAttForm();
+		});
 		
+		$.btnAttForm = function() {
+			$.btnAtt();
+			console.log("업로드하는 파일의 변경이 반영되었습니다.");
+		}
+		*/
 		$.btnAtt = function() {
 			$("#btnAtt").on("change", function(e) {
 				console.log("파일 변경을 감지.");
@@ -42,20 +58,36 @@
 			});
 		}
 		
-		// 게시글 조회에서 사용함.
-		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
-		for(let i = 0; i < $("#boardFileCnt").val(); i++) {
-			const originFileObj = {
-				boardNo: $("#boardNo").val(),
-				boardFileNo: $("#boardFileNo" + i).val(),
-				boardFileNm: $("#boardFileNm" + i).val(),
-				//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
-				//파일 상태값(수정되거나 삭제된 파일은 변경)
-				boardFileStatus: "N"
-			};
+		$("#insertForm").on("submit", function() {
+			//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
+			dt = new DataTransfer();
 			
-			originFiles.push(originFileObj);
+			for(f in uploadFiles) {
+				const file = uploadFiles[f];
+				dt.items.add(file);
+			}
+			
+			$("#btnAtt")[0].files = dt.files;
+		});
+		
+		//게시글 조회에서 사용함. 해당 게시글의 업로드된 파일을 확인.
+		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
+		//수업 때 했던 게시글은 1개이고, 지금 이건 여러개를 뿌려야하기 때문에 게시된 데이터를 다 가지고 와야함.
+		for(let i = 0; i < postIdList.length; i++) {
+			for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
+				const originFileObj = {
+					postId: postIdList[i],
+					postFileId: $("#postFileId" + postIdList[i]).val(),
+					PostFileNm: $("#postFileNm" + postIdList[i]).val(),
+					//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
+					//파일 상태값(수정되거나 삭제된 파일은 변경)
+					boardFileStatus: "N"
+				};
+				
+				originFiles.push(originFileObj);
+			}
 		}
+
 	});
 	//파일 추가창을 활성화하는 이벤트 생성 함수
 	function fileTag() {
@@ -66,7 +98,6 @@
 				</div>`;
 		return text;
 	}
-	
 	
 	//미리보기 영역에 들어갈 img태그 생성 및 선택된 파일을 Base64 인코딩된 문자열 형태로 변환하여
 	//미리보기가 가능하게 해줌
@@ -166,8 +197,6 @@
 
 	//게시글을 수정하는 로직 함수.
 	function fnUpdatePost(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
-
-
 		/*
 		dt = new DataTransfer();
 
@@ -305,4 +334,47 @@
 		
 		//완성된 div 리턴
 		return div;
+	}
+	
+	function insertPostAndFile() {
+		console.log("데이터 입력중...")
+		$.ajax({
+			enctype: 'multipart/form-data',
+			url: '/post/insertPost',
+			type: 'post',
+			data: {
+				restNm: $("input[name='restNm']").val(),
+				postContent: $("input[name='postContent']").val(),
+				viewCount: 0,
+				hashTag1: $("#hashTag1").val(),
+				hashTag2: $("#hashTag2").val(),
+				hashTag3: $("#hashTag3").val(),
+				hashTag4: $("#hashTag4").val(),
+				hashTag5: $("#hashTag5").val(),
+				//파일도 같이 다 보내야함. 배열을 다 옮겨서 보내면됨.
+			},
+			processData: false,
+			contentType: false,
+			success: function(obj) {
+				alert("글 등록에 성공하였습니다.");
+				console.log(obj);
+				console.log("로그인한 계정 : " + loginUserId);
+				insert_post = post(obj.item);
+				
+				//$("#posts").html(insert_post);
+				//html단 뿌리기
+				$("#posts").prepend($(insert_post));
+				//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
+				flagList.unshift(false);
+				postIdList.unshift($($('.updateBtn')[0]).val());
+				//이벤트 다시 적용
+				$.like_button();
+				$.comment_button();
+				$.update_post();
+				
+				
+			}, error: function(e) {
+				console.log(e);
+			}
+		});
 	}

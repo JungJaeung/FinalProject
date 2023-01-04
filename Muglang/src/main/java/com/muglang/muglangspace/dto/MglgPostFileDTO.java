@@ -17,4 +17,5 @@ public class MglgPostFileDTO {
 	private String postFileOriginNm;
 	private String postFilePath;
 	private String postFileRegdate;
+	private String postFileCate;
 }

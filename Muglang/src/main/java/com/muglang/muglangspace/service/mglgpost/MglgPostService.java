@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.muglang.muglangspace.common.CamelHashMap;
+import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUserRelation;
 
@@ -25,9 +26,6 @@ public interface MglgPostService {
 	// 개인 유저에 대한 포스팅 불러오기
 	public Page<MglgPost> userPostList(int userId, Pageable pageable);
 
-	// 검색
-	public Page<MglgPost> searchPostList(MglgPost mglgPost, Pageable pageable);
-
 	public Page<MglgPost> getFollowerPost(int userId, Pageable pageable);
 
 	public int likeUp(int userId, int postId);
@@ -35,4 +33,7 @@ public interface MglgPostService {
 	public int likeDown(int userId, int postId);
 	
 	public String reportPost(int postId,int userId);
+	
+	// 포스트 내용을 기준으로 검색
+	public Page<MglgPostDTO> searchByPostDTO(String searchKeyword, Pageable pageable);
 }
