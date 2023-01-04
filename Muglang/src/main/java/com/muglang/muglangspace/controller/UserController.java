@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgReportDTO;
+import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
@@ -60,7 +62,8 @@ public class UserController {
 																					 .userId(followList.getUserId())
 																					 .build()
 		);
-		
+		long followCnt = requestFollowDTOList.getTotalElements();
+		System.out.println("리퀘스트 개수 "+ followCnt);
 		
 
 		ModelAndView mv = new ModelAndView();
@@ -77,12 +80,10 @@ public class UserController {
 								.regDate(customUser.getMglgUser().getRegDate().toString())
 								.userSnsId(customUser.getMglgUser().getUserSnsId())
 								.build();
-		System.out.println("profile use" + user);
-
 		//맞팔로우 요청목록 보여주기
 		
 
-		
+		mv.addObject("followCnt", followCnt);
 		mv.addObject("requestList", requestFollowDTOList);
 		mv.addObject("user", user);
 		mv.setViewName("profile.html");
@@ -90,43 +91,24 @@ public class UserController {
 	}
 	//에이작스로 처리
 	@GetMapping("/profileAjax")
-	public ModelAndView profileAjax(@AuthenticationPrincipal CustomUserDetails customUser,@RequestParam("page_num") int page_num, Pageable pageable) {
-		pageable = PageRequest.of(page_num, 5);
+	public ResponseEntity<?> profileAjax(@AuthenticationPrincipal CustomUserDetails customUser,@PageableDefault(page = 0, size = 5)Pageable pageable) {
 		int userId = customUser.getMglgUser().getUserId();
-		Page<MglgUser> requestFollowList = userRelationService.requestFollowList(userId,pageable);
-		Page<MglgUserDTO> requestFollowDTOList = requestFollowList.map(followList -> 
-																					MglgUserDTO.builder()
-																					 .userName(followList.getUserName())
-																					 .userId(followList.getUserId())
-																					 .build()
-		);
+		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+		try {
+			Page<MglgUser> requestFollowList = userRelationService.requestFollowList(userId,pageable);
+			Page<MglgUserDTO> requestFollowDTOList = requestFollowList.map(followList -> 
+																				MglgUserDTO.builder()
+																				 .userName(followList.getUserName())
+																				 .userId(followList.getUserId())
+																				 .build()
+			);
+			response.setPageItems(requestFollowDTOList);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
 		
-		
-
-		ModelAndView mv = new ModelAndView();
-		MglgUserDTO user = MglgUserDTO.builder()
-								.userNick(customUser.getMglgUser().getUserNick())
-								.userName(customUser.getMglgUser().getUserName())
-								.email(customUser.getMglgUser().getEmail())
-								.firstName(customUser.getMglgUser().getFirstName())
-								.lastName(customUser.getMglgUser().getLastName())
-								.address(customUser.getMglgUser().getAddress())
-								.phone(customUser.getMglgUser().getPhone())
-								.userId(customUser.getMglgUser().getUserId())
-								.bio(customUser.getMglgUser().getBio())
-								.regDate(customUser.getMglgUser().getRegDate().toString())
-								.userSnsId(customUser.getMglgUser().getUserSnsId())
-								.build();
-		System.out.println("profile use" + user);
-
-		//맞팔로우 요청목록 보여주기
-		
-
-		
-		mv.addObject("requestList", requestFollowDTOList);
-		mv.addObject("user", user);
-		mv.setViewName("profile.html");
-		return mv;
 	}
 	
 	

@@ -90,7 +90,8 @@ public class SocialController {
 
 	// 맞팔
 	@PostMapping("followUser")
-	public void followUser(int followerId, int userId, HttpServletResponse response) throws IOException {
+	public void followUser(int followerId,@AuthenticationPrincipal CustomUserDetails loginUser, HttpServletResponse response) throws IOException {
+		int userId = loginUser.getMglgUser().getUserId();
 		userRelationService.followUser(followerId, userId);
 
 		response.sendRedirect("/user/profile");

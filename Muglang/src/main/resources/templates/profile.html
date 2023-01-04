@@ -7,39 +7,102 @@
 		<script th:inline="javascript">
 			$(function () {
 				var page_num = 1;
+				let totalPages = 0;
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
 				})
 
-				$("#btnNext").click(function () {
+				$("#btn_next").click(function () {
+					page_num = page_num + 1;
+					console.log("누르기전page_num===" + page_num)
+
+					if (page_num > totalPages) {
+						page_num = totalPages;
+						return;
+					}
 
 					$.ajax({
 						url: '/user/profileAjax',
 						type: 'get',
-						data: {page_num: page_num},
+						data: {page: page_num - 1},
 						success: function (obj) {
 							console.log(obj)
 							var htmlStr = "";
-							for (let i = 0; i < obj.items.length;i++) {
+							totalPages = obj.pageItems.totalPages;
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-								<div class="follow_request mb-5">
-									<span style="float: left;"><img class="img-fluid rounded-circle"
-											th:src="@{/assets/img/messages-1.jpg}" style="width: 90px;"></span>
-									<span style="word-break: keep-all;"><b th:text="${requestList.userName}"></b>님이 당신을
-										하셨어요!!</span>
-									<div>
-										<form action="/social/followUser" method="post">
-											<input type="hidden" th:value="${requestList.userId}" name="followerId">
-											<input type="hidden" th:value="${user.userId}" name="userId">
-											<input type="submit" class="btn mt-1"
-												style="background-color:#DCEBFF; color: #6e6e6e;" value="팔로우"></input>
-										</form>
-									</div>
-								</div>						
+											<div class="card-body">
+												<div class="follow_request mb-5">
+													<span style="float: left;">
+													<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg" style="width: 90px;">
+													</span>
+													<span style="word-break: keep-all;">
+														<b>${obj.pageItems.content[i].userName}</b>님이 당신을 팔로우
+														하셨어요!!</span>
+													<div>
+														<form action="/social/followUser" method="post">
+															<input type="hidden" value="${obj.pageItems.content[i].userId}"
+																name="followerId">
+															<input type="submit" class="btn mt-1"
+																style="background-color:#DCEBFF; color: #6e6e6e;"
+																value="팔로우"></input>
+														</form>
+													</div>
+												</div>
+											</div>			
 							`
 							}
-							$("#followingCard").html(htmlStr)
+							$("#modalBody").html(htmlStr)
+
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+
+				})
+				
+				$("#btn_prev").click(function () {
+					console.log("누르기전page_num===" + page_num);
+					if (page_num < 2) {
+						return;
+					}
+					page_num = page_num - 1;
+					console.log("누른후page_num===" + page_num);
+					$.ajax({
+						url: '/user/profileAjax',
+						type: 'get',
+						data: {page: page_num - 1},
+						success: function (obj) {
+							console.log(obj)
+							var htmlStr = "";
+							totalPages = obj.pageItems.totalPages;
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+											<div class="card-body">
+												<div class="follow_request mb-5">
+													<span style="float: left;">
+													<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg" style="width: 90px;">
+													</span>
+													<span style="word-break: keep-all;">
+														<b>${obj.pageItems.content[i].userName}</b>님이 당신을 팔로우
+														하셨어요!!</span>
+													<div>
+														<form action="/social/followUser" method="post">												
+															<input type="hidden" value="${obj.pageItems.content[i].userId}"
+																name="followerId">
+															<input type="submit" class="btn mt-1"
+																style="background-color:#DCEBFF; color: #6e6e6e;"
+																value="팔로우"></input>
+														</form>
+													</div>
+												</div>
+											</div>			
+							`
+							}
+							$("#modalBody").html(htmlStr)
+
 						},
 						error: function (e) {
 							console.log(e);
@@ -48,7 +111,50 @@
 
 				})
 
+				//모달 처리
+				$("#btnFull").click(function () {
+					$.ajax({
+						url: '/user/profileAjax',
+						type: 'get',
+						data: {page: page_num - 1},
+						success: function (obj) {
+							console.log(obj)
+							var userId = $("#followerId").val()
+							var htmlStr = "";
+							totalPages = obj.pageItems.totalPages;
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+											<div class="card-body">
+												<div class="follow_request mb-5">
+													<span style="float: left;">
+													<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg" style="width: 90px;">
+													</span>
+													<span style="word-break: keep-all;">
+														<b>${obj.pageItems.content[i].userName}</b>님이 당신을 팔로우
+														하셨어요!!</span>
+													<div>
+														<form action="/social/followUser" method="post">
+															<input type="hidden" value="${obj.pageItems.content[i].userId}"
+																name="followerId">
+															<input type="submit" class="btn mt-1"
+																style="background-color:#DCEBFF; color: #6e6e6e;"
+																value="팔로우"></input>
+														</form>
+													</div>
+												</div>
+											</div>			
+							`
+							}
+							$("#modalBody").html(htmlStr)
+							$('#followModal').modal("show");
 
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+
+				})
 			});
 		</script>
 	</th:block>
@@ -249,8 +355,10 @@
 
 						<div class="card" style="text-align: center;" id="followingCard">
 							<h5 class="card-title" style="font-weight: bold;">팔로잉 요청</h5>
+							<a style="color:lightgray; font-size: small;" th:text="'총 '+${followCnt}+'개의 요청'"></a>
 
-							<div class="card-body" th:id="'bodyHtml' + ${requestStat.index}" th:each="request : ${requestList}">
+							<div class="card-body" th:id="'bodyHtml' + ${requestStat.index}"
+								th:each="request : ${requestList}">
 								<!--팔로잉 요청1-->
 								<div class="follow_request mb-5">
 									<span style="float: left;"><img class="img-fluid rounded-circle"
@@ -260,16 +368,27 @@
 									<div>
 										<form action="/social/followUser" method="post">
 											<input type="hidden" th:value="${request.userId}" name="followerId">
-											<input type="hidden" th:value="${user.userId}" name="userId">
 											<input type="submit" class="btn mt-1"
 												style="background-color:#DCEBFF; color: #6e6e6e;" value="팔로우"></input>
 										</form>
 									</div>
 								</div>
 							</div>
-							<button id="btnPrev"><</button>
-									<button id="btnNext">></button>
+							<button id="btnFull">전체 요청 보기</button>
+							<!--모달 처리-->
+							<div class="modal fade" id="followModal" role="dialog">
+								<div class="modal-dialog modal-dialog-centered">
+									<div class="modal-content" id="modal-content">
+										<div class="modal-body overflow-auto" id="modalBody">
 
+
+										</div>
+									<button id="btn_prev">&#60;</button>
+									<button id="btn_next">&#62;</button>					
+									</div>
+								</div>
+
+							</div>
 						</div>
 					</div>
 				</div>

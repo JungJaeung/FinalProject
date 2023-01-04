@@ -20,7 +20,6 @@ public interface MglgUserRelationRepository extends JpaRepository<MglgUser, Inte
 	@Query(value = "SELECT COUNT(*) AS followingCount FROM T_MGLG_USER_RELATION WHERE FOLLOWER_ID = :userId", nativeQuery = true)
 	public int cntFollowing(@Param("userId") int userId);
 
-	/// 질문하기 --- 페이징처리에서 디폴트 5 주고 갯수 추가하니 오류 발생
 	@Query(
 		value = "	                  "
 		+ "			SELECT A.*\r\n" 
