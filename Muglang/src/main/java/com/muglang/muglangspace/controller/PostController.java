@@ -252,9 +252,10 @@ public class PostController {
 					fileListDTO.get(j).setPostId(findId);
 					System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
 				}
-				file.put("file_length", fileList.size());	//게시글의 파일 개수 저장.
-				file.put("file_list", fileListDTO);	//camel형으로 키값을 자동으로 바꿈.
+
 			}
+			file.put("file_length", fileList.size());	//게시글의 파일 개수 저장.
+			file.put("file_list", fileListDTO);	//camel형으로 키값을 자동으로 바꿈.
 			System.out.println("멥에 다 넣은 결과 : " + file);
 		}
 		System.out.println("파일 리스트 정보 담기 완료..... 화면단으로 넘길 준비를 합니다." );

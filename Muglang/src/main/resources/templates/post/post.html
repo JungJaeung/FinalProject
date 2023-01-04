@@ -45,14 +45,18 @@
 			$(function () {
 
 				let list = $('.post').get();
-
+					
 				for (let i = 0; i < list.length; i++) {
 					flagList.push(false);
 					postIdList.push($($('.updateBtn')[i]).val());
 					postFileIdList.push(new Array());
-					for(let j = 0; j < $("fileListSize" + postIdList[i]).val(); j++) {
-						postFileIdList[i].push($($('.fileList')[j]).val());
+					console.log(postIdList[i] + " 게시글의 파일의 길이 : " + $("#fileListSize" + postIdList[i]).val());
+					for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
+						let id = $($('.postFileId')[j]).val();
+						console.log(id);
+						postFileIdList[i].push(id);
 					}
+					console.log("파일들의 리스트 목록 배열 : " + postFileIdList[i]);
 				}
 				
 				console.log("게시글 : " + postIdList);
@@ -131,17 +135,19 @@
 					for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
 						const originFileObj = {
 							postId: postIdList[i],
-							postFileId: $("#postFileId" + postFileIdList[i]).val(),
-							postFileNm: $("#postFileNm" + postFileIdList[i]).val(),
+							postFileId: postFileIdList[i][j],
+							postFileNm: $($(".postFileNm")[i]).val(),
 							//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
 							//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
 							postFileStatus: "N"
 						};
-						console.log("파일의 정보 : " + originFileObj.postFileId);
+						console.log("파일의 아이디번호 : " + originFileObj.postFileId);
+						console.log("파일의 이름 : " + originFileObj.postFileNm);
 						originFiles.push(originFileObj);
 					}
 					//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
 					originFileList.push(originFiles);
+					console.log("게시글의 파일 정보 : " + originFileList[i]);
 				}
 
 				//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
@@ -798,14 +804,14 @@
 									<!-- 게시글 사진 부분 -->
 									<!-- imgBox는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
 									<div class="activity" style="margin-bottom: 10px;" id="restImgBox">			
-										<div th:each="file : ${post.fileList}" class="fileList" th:value="${file.postFileId}">
+										<div th:each="file : ${post.fileList}" class="fileList" th:value="${file.postId}">
 										<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
 											<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-											<input type="hidden" th:id="'postFileId' + ${file.postFileId}" 
-													th:name="'postFileId' + ${file.postFileId}" 
+											<input type="hidden" id="postFileId" class="postFileId" 
+													name="postFileId" 
 													th:value="${file.postFileId}">
-											<input type="hidden" th:id="'postFileNm' + ${file.postFileId}" 
-													th:name="'postFileNm' + ${file.postFileId}" 
+											<input type="hidden" id="postFileNm" class="postFileNm" 
+													name="postFileNm" 
 													th:value="${file.postFileNm}">
 											<input type="file" th:id="'changedFile' + ${file.postFileId}" 
 												   th:name="'changedFile' + ${file.postFileId}"
