@@ -73,7 +73,7 @@
 					$("#postContent" + $(this).val()).hide();
 					$("#contentIn" + $(this).val()).show();
 				}
-
+				
 				console.log("버튼 이벤트 html단 활성화");
 				$("#updateButton" + postIdList[i]).click(function (e) {
 					$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());

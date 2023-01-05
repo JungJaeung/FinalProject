@@ -14,6 +14,8 @@
 			let uploadFiles = [];
 			//기존 첨부파일 배열
 			let originFiles = [];
+			//각 게시글들의 첨부파일들을 모은 것을 따로 담을 것임..
+			let originFileList = [];
 			//변경된 첨부파일 배열
 			let changedFiles = [];
 
@@ -39,15 +41,26 @@
 			//해당 배열은 파일 처리 이벤트에서 많이 쓰게될 예정.
 			let postIdList = [];
 			let flagList = [];
+			let postFileIdList = [];
 			$(function () {
 
 				let list = $('.post').get();
-
+					
 				for (let i = 0; i < list.length; i++) {
 					flagList.push(false);
 					postIdList.push($($('.updateBtn')[i]).val());
+					postFileIdList.push(new Array());
+					console.log(postIdList[i] + " 게시글의 파일의 길이 : " + $("#fileListSize" + postIdList[i]).val());
+					for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
+						let id = $($('.postFileId')[j]).val();
+						console.log(id);
+						postFileIdList[i].push(id);
+					}
+					console.log("파일들의 리스트 목록 배열 : " + postFileIdList[i]);
 				}
+				
 				console.log("게시글 : " + postIdList);
+				console.log("파일들의 리스트 목록 배열 : " + postFileIdList);
 				console.log(list.length);
 				
 				//html단의 처리. html의 val값으로 태그들을 뺀 값을 넣을 수 있다.
@@ -112,6 +125,29 @@
 							$("#hashTag_label" + (i + 1)).css("display", "inline-block");
 						}
 					});
+				}
+
+				//게시글 조회에서 사용함. 해당 게시글의 업로드된 파일을 확인.
+				//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
+				//수업 때 했던 게시글은 1개이고, 지금 이건 여러개를 뿌려야하기 때문에 게시된 데이터를 다 가지고 와야함.
+				for(let i = 0; i < postIdList.length; i++) {
+					console.log("파일 정보 입력 시작하기 : " + $("#fileListSize" + postIdList[i]).val());
+					for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
+						const originFileObj = {
+							postId: postIdList[i],
+							postFileId: postFileIdList[i][j],
+							postFileNm: $($(".postFileNm")[i]).val(),
+							//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
+							//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
+							postFileStatus: "N"
+						};
+						console.log("파일의 아이디번호 : " + originFileObj.postFileId);
+						console.log("파일의 이름 : " + originFileObj.postFileNm);
+						originFiles.push(originFileObj);
+					}
+					//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
+					originFileList.push(originFiles);
+					console.log("게시글의 파일 정보 : " + originFileList[i]);
 				}
 
 				//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
@@ -730,8 +766,8 @@
 							<input type="hidden" th:value="${post.betweenDate}">
 							<!-- 파일의 개수가 몇개 오는지 테스트 하는 임시 자료 추후에 숨김 처리 할 예정 -->
 							<input type="text" th:id="'fileListSize' + ${post.postId}" th:value="${post.fileLength}">
-							<input type="text" th:id="'postFileNm' + ${post.postId}" value="''">
-							<input type="text" th:id="'postFileId' + ${post.postId}" value="''">
+							<input type="hidden" id="changedFiles" name="changedFiles"> 
+							<input type="hidden" name="originFiles" id="originFiles">
 							<div class="card recent-sales">
 								<div class="card-body">
 									<!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
@@ -766,11 +802,40 @@
 										<a href="#" class="card-title" th:text="${post.restNm}"></a>
 									</div>
 									<!-- 게시글 사진 부분 -->
+									<!-- imgBox는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
 									<div class="activity" style="margin-bottom: 10px;" id="restImgBox">			
-										<div class="box" th:id="'imageBox' + ${post.postId}">
-											<img src="../assets/img/news-1.jpg" style="width: 100%;">
+										<div th:each="file : ${post.fileList}" class="fileList" th:value="${file.postId}">
+										<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
+											<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
+											<input type="hidden" id="postFileId" class="postFileId" 
+													name="postFileId" 
+													th:value="${file.postFileId}">
+											<input type="hidden" id="postFileNm" class="postFileNm" 
+													name="postFileNm" 
+													th:value="${file.postFileNm}">
+											<input type="file" th:id="'changedFile' + ${file.postFileId}" 
+												   th:name="'changedFile' + ${file.postFileId}"
+												   style="display: none;" 
+												   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], event)">
+											<img th:if="${file.postFileCate} == 'img'" 
+													 th:id="'img' + ${file.postFileId}" 
+													 th:src="@{'/upload/' + ${file.postFileNm}}"
+												 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+													 class="fileImg" 
+													 th:onclick="fnImgChange([[${file.postFileId}]])">
+											<img th:unless="${file.postFileCate} == 'img'" 
+													 th:id="'img' + ${file.postFileId}"
+													 th:src="@{/assets/img/defaultFileImg.png}"
+													 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+													 class="fileImg" 
+													 th:onclick="fnImgChange([[${file.postFileId}]])">
+											<input th:if="${post.userId} eq ${loginUser.userId}" type="button" class="btnDel" value="x" th:data-del-file="${file.postFileId}"
+													   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+													   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+													   onclick="fnImgDel(event)">
+											
 										</div>
-
+										<img src="../assets/img/news-1.jpg" style="width: 100%;">
 										<div class="buttons" th:id="'buttonBox' + ${post.postId}" th:if="${post.userId} eq ${loginUser.userId}">
 											<button th:id="'fileRequest' + ${post.postId}">파일 관리창 열기</button>&emsp;
 											<button th:id="'fileRemove' + ${post.postId}">파일 삭제</button>
@@ -783,7 +848,6 @@
 										<textarea th:id="'contentIn' + ${post.postId}" name="contentIn" col="200"
 											row="40" th:text="${post.postContent}"
 											style="display: none; resize: none;"></textarea>
-
 										<br>
 										<!-- 해시태그 -->
 										<a href="#" style="color: blue;">&emsp;#강남맛집</a>
