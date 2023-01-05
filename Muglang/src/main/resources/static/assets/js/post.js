@@ -135,11 +135,12 @@ function post(item) {
 						style="width: 40px;">
 					<a href="#" class="card-title">${item.insertPost.restNm}</a>
 				</div>`;
-	text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox">`;
-	//text += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`;
-	//text +=	`</div>`;
-	text += `<div class="box" id="imageBox${post.postId}">
-					<img src="../assets/img/news-1.jpg" style="width: 100%;">
+
+		text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox">`;
+		//text += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`;
+		//text +=	`</div>`;
+		text += `<div class="box" id="imageBox${post.postId}">
+
 				</div>
 				<div class="buttons" id="buttonBox${post.postId}">
 					<button id="fileRequest${post.postId}">파일 관리창 열기</button>&emsp;

@@ -60,11 +60,27 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	@Query(value="UPDATE T_MGLG_POST SET POST_CONTENT = :#{#mglgPost.postContent} WHERE POST_ID = :#{#mglgPost.postId}", nativeQuery=true)
 	public void updateMglgPost(@Param("mglgPost") MglgPost mglgPost);
 	
-	//내용 검색
-	Page<MglgPost> findByPostContentContainingOrderByPostDateDesc(@Param("searchKeyword") String searchKeyword, Pageable pageable);
+   // 내용을 기준으로 검색
+   @Query(value="SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\r\n"
+   			+ "POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
+            + "FROM T_MGLG_POST P\r\n"
+            + "   INNER JOIN T_MGLG_USER U\r\n"
+            + "   ON P.USER_ID = U.USER_ID \r\n"
+            + "WHERE P.POST_CONTENT LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
+            + "ORDER BY P.POST_DATE DESC",
+		   countQuery = " SELECT COUNT(*) FROM T_MGLG_POST P WHERE P.POST_CONTENT LIKE '%:#{#searchKeyword}%'", nativeQuery=true)
+	Page<CamelHashMap> searchByPost(@Param("searchKeyword") String searchKeyword, Pageable pageable);
 	
-	//식당 검색
-	Page<MglgPost> findByRestNmContainingOrderByPostDateDesc(@Param("searchKeyword") String searchKeyword, Pageable pageable);
+   	// 닉네임을 기준으로 검색
+   @Query(value="SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\r\n"
+  			+ "POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
+           + "FROM T_MGLG_POST P\r\n"
+           + "   INNER JOIN T_MGLG_USER U\r\n"
+           + "   ON P.USER_ID = U.USER_ID \r\n"
+           + "WHERE U.USER_NICK LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
+           + "ORDER BY P.POST_DATE DESC",
+		   countQuery = " SELECT COUNT(*) FROM T_MGLG_POST P WHERE P.POST_CONTENT LIKE '%:#{#searchKeyword}%'", nativeQuery=true)
+	Page<CamelHashMap> searchByNick(@Param("searchKeyword") String searchKeyword, Pageable pageable);
 	
 	//해시태그 검색
 	Page<MglgPost> findByHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5ContainingOrderByPostDateDesc(
