@@ -30,6 +30,9 @@ public interface MglgPostService {
 
 	public Page<MglgPost> getFollowerPost(int userId, Pageable pageable);
 
+	public Page<MglgPost> getFollowingPost(int userId, Pageable pageable);
+
+	
 	public int likeUp(int userId, int postId);
 
 	public int likeDown(int userId, int postId);

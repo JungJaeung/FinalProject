@@ -37,6 +37,8 @@ public class UserRelationServiceImpl implements UserRelationService {
 	public Page<MglgUser> followList(MglgUser user, Pageable pageable) {
 		int userId = user.getUserId();
 		String searchKeyword = user.getSearchKeyword();
+
+		
 		if(user.getSearchKeyword() != null && !user.getSearchKeyword().equals("")) {
 			return mglgUserRepository.searchFollowList(searchKeyword,userId, pageable);
 			
@@ -50,6 +52,9 @@ public class UserRelationServiceImpl implements UserRelationService {
 	public Page<MglgUser> followingList(MglgUser user, Pageable pageable) {
 		int userId = user.getUserId();
 		String searchKeyword = user.getSearchKeyword();
+
+		
+		
 		if(user.getSearchKeyword() != null && !user.getSearchKeyword().equals("")) {
 			return mglgUserRepository.searchFollowingList(searchKeyword,userId, pageable);
 			

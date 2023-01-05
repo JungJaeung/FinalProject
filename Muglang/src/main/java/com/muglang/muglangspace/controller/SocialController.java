@@ -90,7 +90,8 @@ public class SocialController {
 
 	// 맞팔
 	@PostMapping("followUser")
-	public void followUser(int followerId, int userId, HttpServletResponse response) throws IOException {
+	public void followUser(int followerId,@AuthenticationPrincipal CustomUserDetails loginUser, HttpServletResponse response) throws IOException {
+		int userId = loginUser.getMglgUser().getUserId();
 		userRelationService.followUser(followerId, userId);
 
 		response.sendRedirect("/user/profile");
@@ -246,24 +247,138 @@ public class SocialController {
 	public ResponseEntity<?> followerList(@RequestParam("searchKeyword") String searchKeyword 
 			,@PageableDefault(page = 0, size = 5) Pageable pageable,@AuthenticationPrincipal CustomUserDetails customUser) {
 		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-
+		System.out.println("트라이 들어가기전");
 		try {
+		System.out.println("트라이 들어감");
+
 		MglgUser user = MglgUser.builder().searchKeyword(searchKeyword)
 										  .userId(customUser.getMglgUser().getUserId())
 									      .build();
 
 		Page<MglgUser> pagefollowList = userRelationService.followList(user, pageable);
+		System.out.println("pagefollowList ====" + pagefollowList.getContent());
 		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> MglgUserDTO.builder()
 														.userId(pageUser.getUserId())
 														.userName(pageUser.getUserName())
 														.email(pageUser.getEmail())
 														.userNick(pageUser.getUserNick())
 														.build());
+		for(int i =0;i<pagefollowDTOList.getContent().size();i++) {
+			System.out.println(pagefollowDTOList.getContent().get(i));
+		}
 		
-
+		
+		
 			response.setPageItems(pagefollowDTOList);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
+
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+	}
+	
+	// 팔로워 유저 에이작스 처리를 위한 전부 수정함
+	@GetMapping("/followerSearch")
+	public ResponseEntity<?> followerSearch(@RequestParam("searchKeyword") String searchKeyword 
+			,@PageableDefault(page = 0, size = 10000) Pageable pageable,@AuthenticationPrincipal CustomUserDetails customUser) {
+		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+		System.out.println("트라이 들어가기전");
+		try {
+		System.out.println("트라이 들어감");
+
+		MglgUser user = MglgUser.builder().searchKeyword(searchKeyword)
+										  .userId(customUser.getMglgUser().getUserId())
+									      .build();
+
+		Page<MglgUser> pagefollowList = userRelationService.followList(user, pageable);
+		System.out.println("pagefollowList ====" + pagefollowList.getContent());
+		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> MglgUserDTO.builder()
+														.userId(pageUser.getUserId())
+														.userName(pageUser.getUserName())
+														.email(pageUser.getEmail())
+														.userNick(pageUser.getUserNick())
+														.build());
+		for(int i =0;i<pagefollowDTOList.getContent().size();i++) {
+			System.out.println(pagefollowDTOList.getContent().get(i));
+		}
+			
+		
+			response.setPageItems(pagefollowDTOList);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+	}
+	
+	// 팔로잉 유저 에이작스 처리를 위한 전부 수정함
+	@GetMapping("/following")
+	public ResponseEntity<?> followingList(@RequestParam("searchKeyword") String searchKeyword 
+			,@PageableDefault(page = 0, size = 5) Pageable pageable,@AuthenticationPrincipal CustomUserDetails customUser) {
+		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+		System.out.println("트라이 들어가기전");
+		try {
+		System.out.println("트라이 들어감");
+
+		MglgUser user = MglgUser.builder().searchKeyword(searchKeyword)
+										  .userId(customUser.getMglgUser().getUserId())
+									      .build();
+
+		Page<MglgUser> pagefollowList = userRelationService.followingList(user, pageable);
+		System.out.println("pagefollowList ====" + pagefollowList.getContent());
+		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> MglgUserDTO.builder()
+														.userId(pageUser.getUserId())
+														.userName(pageUser.getUserName())
+														.email(pageUser.getEmail())
+														.userNick(pageUser.getUserNick())
+														.build());
+		for(int i =0;i<pagefollowDTOList.getContent().size();i++) {
+			System.out.println(pagefollowDTOList.getContent().get(i));
+		}
+		
+		
+		
+			response.setPageItems(pagefollowDTOList);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+	}
+	
+	// 팔로잉 유저 에이작스 처리를 위한 전부 수정함
+	@GetMapping("/followingSearch")
+	public ResponseEntity<?> followingSearch(@RequestParam("searchKeyword") String searchKeyword 
+			,@PageableDefault(page = 0, size = 10000) Pageable pageable,@AuthenticationPrincipal CustomUserDetails customUser) {
+		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+		System.out.println("트라이 들어가기전");
+		try {
+		System.out.println("트라이 들어감");
+
+		MglgUser user = MglgUser.builder().searchKeyword(searchKeyword)
+										  .userId(customUser.getMglgUser().getUserId())
+									      .build();
+
+		Page<MglgUser> pagefollowList = userRelationService.followingList(user, pageable);
+		System.out.println("pagefollowList ====" + pagefollowList.getContent());
+		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> MglgUserDTO.builder()
+														.userId(pageUser.getUserId())
+														.userName(pageUser.getUserName())
+														.email(pageUser.getEmail())
+														.userNick(pageUser.getUserNick())
+														.build());
+		for(int i =0;i<pagefollowDTOList.getContent().size();i++) {
+			System.out.println(pagefollowDTOList.getContent().get(i));
+		}
+			
+		
+			response.setPageItems(pagefollowDTOList);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+
 			response.setErrorMessage(e.getMessage());
 			return ResponseEntity.badRequest().body(response);
 		}
