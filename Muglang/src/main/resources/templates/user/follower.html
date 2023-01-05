@@ -7,7 +7,7 @@
 		<script th:inline="javascript">
 			$(function () {
 				var searchKeyword = "";
-				var page_num = 1;
+				var page_num = 0;
 				let totalPages = 0;
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -154,7 +154,7 @@
 					type: 'get',
 					data: {
 						page: page_num,
-						searchKeyword: $("#searchKeyword").val()
+						searchKeyword: ""
 					},
 					success: function (obj) {
 						let htmlStr = '';
@@ -187,7 +187,7 @@
 					}
 				});
 				$("#btn_next").click(function () {
-					searchKeyword = $("#searchKeyword").val();
+					searchKeyword = ""
 					console.log("누르기전page_num===" + page_num)
 					if(page_num==totalPages-1){
 						return;
@@ -233,9 +233,9 @@
 
 				})
 				$("#btn_prev").click(function () {
-					searchKeyword = $("#searchKeyword").val();
+					searchKeyword =""
 					console.log("누르기전page_num===" + page_num);
-					if (page_num < 2) {
+					if (page_num < 1) {
 						return;
 					}
 					page_num = page_num - 1;
@@ -280,12 +280,13 @@
 				})
 				//검색 이벤트 //질문
 				$("#btn_search").click(function(){
-						searchKeyword = $("#searchKeyword").val();
+						
+						searchKeyword = $("#searchKeyword").val()
 						$.ajax({
-						url: '/social/follower',
+						url: '/social/followerSearch',
 						type: 'get',
 						data: {
-							page: page_num,
+							page: 0,
 							searchKeyword: searchKeyword
 						},
 						success: function (obj) {
@@ -310,7 +311,8 @@
 									</div>
 							`
 							}
-							$("#div_body").html(htmlStr)
+							$("#modalBody").html(htmlStr)
+							$('#followModal').modal("show");
 
 						},
 						error: function (e) {
@@ -431,6 +433,18 @@
 
 			</div>
 		</section>
+		<!--모달모달-->
+		<div class="modal fade" id="followModal" role="dialog">
+								<div class="modal-dialog modal-dialog-centered">
+									<div class="modal-content" id="modal-content">
+										<div class="modal-body overflow-auto" id="modalBody">
+
+
+										</div>					
+									</div>
+								</div>
+
+							</div>
 
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">

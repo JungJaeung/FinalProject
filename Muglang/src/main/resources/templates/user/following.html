@@ -6,10 +6,323 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
+				var searchKeyword = "";
+				var page_num = 0;
+				let totalPages = 0;
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
 				})
+
+				//시작시 포스트 리스트 불러오는 로직
+				$.ajax({
+					url: '/post/getFollowingPost',
+					type: 'get',
+					data: {page: page_num},
+					success: function (obj) {
+						console.log(obj);
+						htmlStr = '';
+
+						for (let i = 0; i < obj.pageItems.content.length; i++) {
+
+							//시간 바꾸기
+							let timeVel;
+							if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 >= 1) {
+								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12) + '년 전'
+							} else if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 >= 1) {
+								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30) + '달 전'
+							} else if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 >= 1) {
+								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60 / 24) + '일 전'
+							} else if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 >= 1) {
+								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60) + '시간 전'
+							} else {
+								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60) + '분 전'
+							}
+							//해쉬태그 공백화
+							let hash1 = obj.pageItems.content[i].hashTag1;
+							let hash2 = obj.pageItems.content[i].hashTag2;
+							let hash3 = obj.pageItems.content[i].hashTag3;
+							let hash4 = obj.pageItems.content[i].hashTag4;
+							let hash5 = obj.pageItems.content[i].hashTag5;
+							if (obj.pageItems.content[i].hashTag1 == null) {
+								hash1 = "";
+							}
+							if (obj.pageItems.content[i].hashTag2 == null) {
+								hash2 = "";
+							}
+							if (obj.pageItems.content[i].hashTag3 == null) {
+								hash3 = "";
+							}
+							if (obj.pageItems.content[i].hashTag4 == null) {
+								hash4 = "";
+							}
+							if (obj.pageItems.content[i].hashTag5 == null) {
+								hash5 = "";
+							}
+
+							htmlStr += `
+							<div class="card recent-sales" >
+								<div class="card-body">
+									<div class="filter" style="margin-top: 15px;">
+										<!--위에 시간-->
+										<a style="margin-right: 20px;">
+											<span>${timeVel}</span>				
+									    </a>
+										<!--신고하기 있는 버튼-->
+										<a class="icon" href="#" data-bs-toggle="dropdown"><i
+												class="bi bi-three-dots"></i></a>
+										<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+											<li><a class="dropdown-item" href="#"><i
+														class="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>
+										</ul>
+									</div>
+									<div class="card-title">
+										<!--프로필 사진-->
+										<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
+											style="width: 40px;">
+										<!--이름-->
+										<a href="#" class="card-title" name ="${obj.pageItems.content[i].userId}">아이디는 어카지</a>
+									</div>
+									<div class="activity" style="margin-bottom: 10px;">
+										<!--내용 사진-->
+										<img src="/assets/img/news-1.jpg" style="width: 100%;">
+									</div>
+									<div class="activity">
+										<div>
+											<b>${obj.pageItems.content[i].postContent}</b>
+										</div>
+										<br>
+										<!--태그-->
+										<a href="#" style="color: blue;">&emsp;${hash1}</a>
+										<a href="#" style="color: blue;">&emsp;${hash2}</a>
+										<a href="#" style="color: blue;">&emsp;${hash3}</a>
+										<a href="#" style="color: blue;">&emsp;${hash4}</a>
+										<a href="#" style="color: blue;">&emsp;${hash5}</a>
+					
+									</div>
+									<!--아이콘들-->
+									<div class="activity">
+										<a href="#"><i class="ri-heart-3-line"
+												style="font-size: 30px; margin-right: 5px; color:black"></i></a>
+										<a href="#" id="msg_btn"><i class="ri-message-3-line"
+												style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
+										<a href="#"><i class="ri-send-plane-2-line"
+												style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
+										<br>
+										<!--좋아요 숫자 넣는곳-->
+										<a>좋아요 <span>21</span>개</a>
+										<hr>
+									</div>
+									<!--친구, 외 몇명, 위치, 상호명-->
+									<div class="activity" style="text-align: center;">
+										<a href="#"><span>six</span>님 외 <span>16</span>명이 <span>서울 강남구 강남대로 36</span>
+											<span>감성타코</span>에서 식사하셨어요!</a>
+									</div>
+								</div>
+							</div>
+					`
+						}
+						$("#divContent").html(htmlStr);
+						nameChange();
+					}
+
+					,
+					error: function (e) {
+						console.log("실패")
+						console.log(e);
+					}
+				});
+				let nameChange = function () {
+					$.ajax({
+						url: '/social/followUserName',
+						type: 'get',
+						success: function (obj) {
+							console.log(obj);
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								$(`a[name=${obj.pageItems.content[i].userId}]`).text(obj.pageItems.content[i].userName)
+							}
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+				}
+				//시작시 팔로워 리스트 불러옴
+				$.ajax({
+					url: '/social/following',
+					type: 'get',
+					data: {
+						page: page_num,
+						searchKeyword: ""
+					},
+					success: function (obj) {
+						let htmlStr = '';
+						for (let i = 0; i < obj.pageItems.content.length; i++) {
+							htmlStr += `
+
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+										<!--친구 사진-->
+										<div style="width: 30%; margin-top: 10px; float: left;"><img
+												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
+												style="width: 50px;"></div>
+										<!--친구 닉네임, 아이디-->
+										<div style="width: 60%; margin-top: 13px; float: left;">
+											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
+											style="font-weight: bold; color: black;">${obj.pageItems.content[i].userName}</a></div>
+											<div style="color: #aaaaaa; font-size: x-small;">
+											${obj.pageItems.content[i].email}
+											</div>
+										</div>
+									</div>
+                     `
+						}
+
+						$("#div_body").html(htmlStr);
+						totalPages = obj.pageItems.totalPages;
+					},
+					error: function (e) {
+						console.log("ㅁㄴㅇㅁㄴㅇ실패")
+						console.log(e);
+					}
+				});
+				$("#btn_next").click(function () {
+					searchKeyword = ""
+					console.log("누르기전page_num===" + page_num)
+					if(page_num==totalPages-1){
+						return;
+					}
+					page_num = page_num + 1;
+
+					$.ajax({
+						url: '/social/following',
+						type: 'get',
+						data: {
+							page: page_num,
+							searchKeyword: searchKeyword
+						},
+						success: function (obj) {
+							console.log(obj)
+							var htmlStr = "";
+							totalPages = obj.pageItems.totalPages;
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+										<!--친구 사진-->
+										<div style="width: 30%; margin-top: 10px; float: left;"><img
+												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
+												style="width: 50px;"></div>
+										<!--친구 닉네임, 아이디-->
+										<div style="width: 60%; margin-top: 13px; float: left;">
+											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
+											style="font-weight: bold; color: black;">${obj.pageItems.content[i].userName}</a></div>
+											<div style="color: #aaaaaa; font-size: x-small;">
+											${obj.pageItems.content[i].email}
+											</div>
+										</div>
+									</div>
+							`
+							}
+							$("#div_body").html(htmlStr)
+
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+
+				})
+				$("#btn_prev").click(function () {
+					searchKeyword =""
+					console.log("누르기전page_num===" + page_num);
+					if (page_num < 1) {
+						return;
+					}
+					page_num = page_num - 1;
+					console.log("누른후page_num===" + page_num);
+					$.ajax({
+						url: '/social/following',
+						type: 'get',
+						data: {
+							page: page_num,
+							searchKeyword: searchKeyword
+						},
+						success: function (obj) {
+							console.log(obj)
+							var htmlStr = "";
+							totalPages = obj.pageItems.totalPages;
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+										<!--친구 사진-->
+										<div style="width: 30%; margin-top: 10px; float: left;"><img
+												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
+												style="width: 50px;"></div>
+										<!--친구 닉네임, 아이디-->
+										<div style="width: 60%; margin-top: 13px; float: left;">
+											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
+											style="font-weight: bold; color: black;">${obj.pageItems.content[i].userName}</a></div>
+											<div style="color: #aaaaaa; font-size: x-small;">
+											${obj.pageItems.content[i].email}
+											</div>
+										</div>
+									</div>
+							`
+							}
+							$("#div_body").html(htmlStr)
+
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+
+				})
+				//검색 이벤트 //질문
+				$("#btn_search").click(function(){
+						
+						searchKeyword = $("#searchKeyword").val()
+						$.ajax({
+						url: '/social/followingSearch',
+						type: 'get',
+						data: {
+							page: 0,
+							searchKeyword: searchKeyword
+						},
+						success: function (obj) {
+							console.log(obj)
+							var htmlStr = "";
+							totalPages = obj.pageItems.totalPages;
+							for (let i = 0; i < obj.pageItems.content.length; i++) {
+								htmlStr += `
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+										<!--친구 사진-->
+										<div style="width: 30%; margin-top: 10px; float: left;"><img
+												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
+												style="width: 50px;"></div>
+										<!--친구 닉네임, 아이디-->
+										<div style="width: 60%; margin-top: 13px; float: left;">
+											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
+											style="font-weight: bold; color: black;">${obj.pageItems.content[i].userName}</a></div>
+											<div style="color: #aaaaaa; font-size: x-small;">
+											${obj.pageItems.content[i].email}
+											</div>
+										</div>
+									</div>
+							`
+							}
+							$("#modalBody").html(htmlStr)
+							$('#followModal').modal("show");
+
+						},
+						error: function (e) {
+							console.log(e);
+						}
+					});
+					
+				})
+
+
+
 			});
 		</script>
 	</th:block>
@@ -20,11 +333,11 @@
 <body>
 	<main layout:fragment="main" id="main" class="main">
 		<div class="pagetitle">
-			<h1>Following</h1>
+			<h1>Follower</h1>
 			<nav>
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
-					<li class="breadcrumb-item active">Following</li>
+					<li class="breadcrumb-item active">Follower</li>
 				</ol>
 			</nav>
 		</div><!-- End Page Title -->
@@ -35,7 +348,7 @@
 				<!-- Left side columns -->
 				<div class="col-lg-8">
 					<div class="row">
-						<div class="col-12">
+						<div class="col-12" id="divContent">
 							<div class="card recent-sales">
 								<div class="card-body">
 									<div class="filter" style="margin-top: 15px;">
@@ -97,17 +410,15 @@
 
 				<!-- Right side columns -->
 				<div class="col-lg-4 col-xxl-3">
-
 					<div class="card" style="text-align: center;">
-						<h5 class="card-title" style="font-weight: bold;">Following</h5>
+						<h5 class="card-title" style="font-weight: bold;">Follower</h5>
 						<!--검색-->
 						<div class="card-body">
-							<form class="form-inline" role="form" action="/user/following" method="get">
 								<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
-									onblur="this.placeholder='이름으로 검색'" name="searchKeyword">
-								<input type="submit" value="검색">
-							</form>
+									onblur="this.placeholder='이름으로 검색'" id="searchKeyword">
+								<input type="button" value="검색" id="btn_search">
 						</div>
+						<!--붙여넣는곳-->
 						<div class="card-body" style="position: relative;">
 							<button id="btn_prev"
 								style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%);">&#60;</button>
@@ -115,13 +426,24 @@
 								style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%);">&#62;</button>
 							<div id="div_body"></div>
 						</div>
-						</div>
 					</div>
 				</div>
 
 
 			</div>
 		</section>
+		<!--모달모달-->
+		<div class="modal fade" id="followModal" role="dialog">
+								<div class="modal-dialog modal-dialog-centered">
+									<div class="modal-content" id="modal-content">
+										<div class="modal-body overflow-auto" id="modalBody">
+
+
+										</div>					
+									</div>
+								</div>
+
+							</div>
 
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">

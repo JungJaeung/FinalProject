@@ -91,6 +91,12 @@ public class MglgPostServiceImpl implements MglgPostService {
 	}
 	
 	@Override
+	public Page<MglgPost> getFollowingPost(int userId, Pageable pageable) {
+
+		return mglgPostRepository.getFollowingPost(userId, pageable);
+	}
+	
+	@Override
 	public int likeUp(int userId, int postId) {
 		mglgPostRepository.likeUp(userId, postId);
 		
