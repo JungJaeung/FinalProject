@@ -41,6 +41,8 @@ public interface MglgPostService {
 	
 	// 닉네임을 기준으로 검색
 	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable);
-
+	
+	// 해시태그를 기준으로 검색
+	public Page<CamelHashMap> searchByHashtag(String searchKeyword, Pageable pageable);
 	
 }

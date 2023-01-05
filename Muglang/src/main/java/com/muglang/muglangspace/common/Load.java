@@ -59,6 +59,7 @@ public class Load {
 											  .postFilePath(mglgPostFile.getPostFilePath())
 											  .postFileRegdate(mglgPostFile.getPostFileRegdate().toString())
 											  .postFileOriginNm(mglgPostFile.getPostFileOriginNm())
+											  .postFileCate(mglgPostFile.getPostFileCate())
 											  .build();
 		return info;
 	}

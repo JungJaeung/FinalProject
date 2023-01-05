@@ -141,4 +141,13 @@ public class MglgPostServiceImpl implements MglgPostService {
 		
 		return mglgPosts;
 	}
+	
+	// 해시태그를 기준으로 검색
+	@Override
+	public Page<CamelHashMap> searchByHashtag(String searchKeyword, Pageable pageable) {
+		
+		Page<CamelHashMap> mglgPosts = mglgPostRepository.searchByHashtag(searchKeyword, pageable);
+		
+		return mglgPosts;
+	}
 }

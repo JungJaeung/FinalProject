@@ -39,6 +39,25 @@
 				}
 				$.post_hover();
 			});
+
+		    // 포스트, 태그, 유저 닉네임 버튼을 위한 jQuery
+			$(function()  {
+				// searchKeyword 값 전달 받기
+				//let searchKeyword = [[${searchKeyword}]];
+				
+				
+				$("#searchByPostBtn").on("click", function() {
+					$("#searchByPostForm").submit();
+				});
+				
+				$("#searchByHashtagBtn").on("click", function() {
+					$("#searchByHashTagForm").submit();
+				});
+				
+				$("#searchByNickBtn").on("click", function() {
+					$("#searchByNickForm").submit();
+				});
+			});
 		</script>
 	</th:block>
 
@@ -56,18 +75,25 @@
 						<div class="col-12">
 							<ul class="nav nav-tabs nav-tabs-bordered">
 								<li class="nav-item">
-									<button class="nav-link active" data-bs-toggle="tab"
-										data-bs-target="#search-post">포스트</button>
+									<form action="/search/searchByPost" method="get" id="searchByPostForm">
+										<input type="hidden" name="searchKeyword" th:value="${searchKeyword}">
+										<button class="nav-link active" data-bs-toggle="tab"
+											data-bs-target="#search-post" id="searchByPostBtn" type="submit">포스트</button>
+									</form>
 								</li>
-
 								<li class="nav-item">
-									<button class="nav-link" data-bs-toggle="tab"
-										data-bs-target="#search-tag">태그</button>
+									<form action="/search/searchByHashtag" method="get" id="searchByHashtagForm">
+										<input type="hidden" name="searchKeyword" th:value="${searchKeyword}">
+										<button class="nav-link" data-bs-toggle="tab"
+											data-bs-target="#search-tag" id="searchByHashtagBtn" type="submit">태그</button>
+									</form>
 								</li>
-
 								<li class="nav-item">
-									<button class="nav-link" data-bs-toggle="tab"
-										data-bs-target="#search-user">유저</button>
+									<form action="/search/searchByNick" method="get" id="searchByNickForm">
+										<input type="hidden" name="searchKeyword" th:value="${searchKeyword}">
+										<button class="nav-link" data-bs-toggle="tab"
+											data-bs-target="#search-user" id="searchByNickBtn" type="submit">유저</button>
+									</form>
 								</li>
 							</ul>
 

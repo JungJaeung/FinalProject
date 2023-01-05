@@ -1,6 +1,6 @@
 			
 	$(function() {
-		
+		let formData;
 		let flagList = false;
 		//파일 추가 입력단 생성.
 
@@ -9,7 +9,6 @@
 			//숨어있던 파일 조작 메뉴 등장.
 			//이벤트 새로 생성.
 			if(!flagList) {
-				//$("#imagePrview").html(fileTag());
 				$.btnAtt();
 				$("#imagePreview").show();
 				$(this).text("파일 업로드 닫기");
@@ -18,7 +17,6 @@
 			} else {
 				$(this).text("파일 업로드 열기");
 				$("#imagePreview").hide();
-				//$("#image_preview").remove();
 				$("#postFileUpdate").hide();
 				flagList = !flagList;
 			}
@@ -32,17 +30,7 @@
 			e.preventDefault();
 			$("#btnAtt").click();
 		});
-		/*
-		$("#btnAtt").on("change", function() {
-			console.log("업로드하는 파일 변경 감지.");
-			$.btnAttForm();
-		});
-		
-		$.btnAttForm = function() {
-			$.btnAtt();
-			console.log("업로드하는 파일의 변경이 반영되었습니다.");
-		}
-		*/
+
 		$.btnAtt = function() {
 			$("#btnAtt").on("change", function(e) {
 				console.log("파일 변경을 감지.");
@@ -57,8 +45,18 @@
 				}
 			});
 		}
-		
-		$("#insertForm").on("submit", function() {
+		/*
+		$("#insert_board").on("click", function(e) {
+			e.preventDefault();
+			fnInsertPost(formData);
+		});
+		*/
+		//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
+		//작성 버튼 - 따로 다른 페이지로 이동하지 않고 현재 페이지에서 바로 입력 처리를 시작함.
+		/*
+		$("#insert_board").on("click", function(e) {
+			e.preventDefault();
+			console.log("파일을 전송하는 중입니다.");
 			//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
 			dt = new DataTransfer();
 			
@@ -68,27 +66,158 @@
 			}
 			
 			$("#btnAtt")[0].files = dt.files;
+
+			let insert_post = "";
+			//$(".quill-editor-default").text();
+			$("#postContent").val($(".quill-editor-default").text());
+			//$("#postContent").val($(".ql-editor").html());
+			let content = $("#postContent").val();
+			let restNm = $("#restNm").val();
+			console.log("내용 : " + content + "식당명 : " + restNm);
+			//$("#insert_form").submit();
+			$.ajax({
+				enctype: 'multipart/form-data',
+				url: '/post/insertPost',
+				type: 'post',
+				data: {
+					restNm: restNm,
+					postContent: content,
+					viewCount: 0,
+					hashTag1: $("#hashTag1").val(),
+					hashTag2: $("#hashTag2").val(),
+					hashTag3: $("#hashTag3").val(),
+					hashTag4: $("#hashTag4").val(),
+					hashTag5: $("#hashTag5").val(),
+					//파일도 같이 다 화면단으로 보내야함. 배열을 다 옮겨서 보내면됨.
+					
+				},
+				processData: false,
+				contentType: false,
+				success: function(obj) {
+					alert("글 등록에 성공하였습니다.");
+					console.log(obj);
+					console.log("로그인한 계정 : " + loginUserId);
+					insert_post = post(obj.item);
+					
+					//$("#posts").html(insert_post);
+					//html단 뿌리기
+					$("#posts").prepend($(insert_post));
+					//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
+					flagList.unshift(false);
+					postIdList.unshift($($('.updateBtn')[0]).val());
+					//이벤트 다시 적용
+					$.like_button();
+					$.comment_button();
+					$.update_post();
+					
+					
+				}, error: function(e) {
+					console.log(e);
+				}
+			});
+			
 		});
-		
+		*/
 		//게시글 조회에서 사용함. 해당 게시글의 업로드된 파일을 확인.
 		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
 		//수업 때 했던 게시글은 1개이고, 지금 이건 여러개를 뿌려야하기 때문에 게시된 데이터를 다 가지고 와야함.
 		for(let i = 0; i < postIdList.length; i++) {
+			console.log("파일 정보 입력 시작하기 : " + i);
 			for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
 				const originFileObj = {
 					postId: postIdList[i],
 					postFileId: $("#postFileId" + postIdList[i]).val(),
-					PostFileNm: $("#postFileNm" + postIdList[i]).val(),
+					postFileNm: $("#postFileNm" + postIdList[i]).val(),
 					//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
-					//파일 상태값(수정되거나 삭제된 파일은 변경)
-					boardFileStatus: "N"
+					//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
+					postFileStatus: "N"
 				};
-				
+				console.log("파일의 정보 : " + originFileObj);
 				originFiles.push(originFileObj);
 			}
+			//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
+			originFileList.push(originFiles);
+		}
+		
+		//게시글을 수정하는 로직 함수.
+		$.fnUpdateBtn = function(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
+			dt = new DataTransfer();
+	
+			for (f in uploadFiles) {
+			   let file = uploadFiles[f];
+			   dt.items.add(file);
+			}
+	
+			$("#btnAtt")[0].files = dt.files;
+	
+			//dt.clearData();
+			//clearData() 사용하면 배열의 모든 내용이 담기지 않고
+			//파일 하나씩만 담기는 현상이 발생해서 dt를 두 개로 분리하여 사용
+			dt2 = new DataTransfer();
+	
+			for (f in changedFiles) {
+			   let file = changedFiles[f];
+			   dt2.items.add(file);
+			}
+			//바뀐 파일의 정보를 임시로 저장
+			$("#changedFiles")[0].files = dt2.files;
+		    
+			//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
+			//배열 형태로 전송 시 백단(Java)에서 처리불가
+			//JSON String 형태로 변환하여 전송한다.
+			$("#originFiles").val(JSON.stringify(originFileList[index]));
+			
+			//ajax에서 multipart/form-data형식을 전송하기 위해서는
+			//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
+			//form.serialize()는 multipart/form-data 전송불가
+			//let formData = new FormData($("#updateForm")[0]);
+			let formData = new FormData($($(".data")[index])[0]);
+	
+			//ajax에 enctype: multipart/form-data, 
+			//processData: false, contentType: false로 설정               
+			console.log("updating-service");
+			console.log("수정 할 내용 : " + $("#contentIn" + postId).val());
+			$.ajax({
+				enctype: 'multipart/form-data',
+				url: '/post/updatePost',
+				type: 'put',
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (obj) {
+					console.log(obj.item);
+					alert("수정작업을 성공하였습니다.");
+	
+					$("#postId").val('' + obj.item.getPost.postId);
+					$("#userId").val('' + obj.item.getPost.userId);
+					$("#postContentIn").val(obj.item.getPost.userId);
+					$("#postContent").text(obj.item.getPost.postContent);
+					$("#postContent" + postId).text(obj.item.getPost.postContent);
+					$("#contentIn" + postId).text(obj.item.getPost.postContent);
+					$("#restNmIn").val(obj.item.getPost.restNm);
+					//수정 다하면 태그들을 다시 원래대로 돌린다.
+					$("#postContent" + postId).show();
+					$("#contentIn" + postId).hide();
+					$("#deleteButton" + postId).remove();
+					$("#updateButton" + postId).remove();
+					flagList[index] = !flagList[index];
+					$($(".updateBtn")[index]).text("게시글 수정");
+				},
+				error: function (e) {
+					console.log(e);
+				},
+				done: function (result) {
+					console.log(result);
+					$("#attZone").replaceWith(result);
+				}
+			});
+			return false;
 		}
 
+
+
 	});
+	
 	//파일 추가창을 활성화하는 이벤트 생성 함수
 	function fileTag() {
 		let text = "";
@@ -161,12 +290,15 @@
 		reader.readAsDataURL(fileArr[0]);
 
 		//기존 파일을 담고있는 배열에서 변경이 일어난 파일 수정
-		for (let i = 0; i < originFiles.length; i++) {
-			if (boardFileNo == originFiles[i].boardFileNo) {
-				originFiles[i].boardFileStatus = "U";
-				originFiles[i].newFileNm = fileArr[0].name;
+		for (let i = 0; i < originFileList.length; i++) {
+			for (let j = 0; j < originFileList[i].originFiles.length; j++) {
+				if (postFileId == originFiles[j].postFileId) {
+					originFiles[j].postFileStatus = "U";
+					originFiles[j].newFileNm = fileArr[0].name;
+				}
 			}
 		}
+
 		console.log("변경된 파일 다시 정렬 중");
 	}
 	
@@ -178,8 +310,8 @@
 		let delFile = ele.getAttribute("data-del-file");	
 		
 		for(let i = 0; i < originFiles.length; i++) {
-			if(delFile == originFiles[i].boardFileNo) {
-				originFiles[i].boardFileStatus = "D";
+			if(delFile == originFiles[i].postFileId) {
+				originFiles[i].postFileStatus = "D";
 			}
 		}
 		
@@ -188,16 +320,18 @@
 		$(div).remove();
 	}	
 	
-	function fnImgChange(boardFileNo) {
+	function fnImgChange(postFileId) {
 		//기존 파일의 이미지를 클릭했을 때 같은 레벨의 input type="file"을 가져온다.
-		let changedFile = document.getElementById("changedFile" + boardFileNo);
+		let changedFile = document.getElementById("changedFile" + postFileId);
 		//위에서 가져온 input 강제클릭 이벤트 발생시킴
 		changedFile.click();
 	}
 
 	//게시글을 수정하는 로직 함수.
+	//함수에 있는 스크립트는 jQuery선택자가 아닌 배열 내의 데이터를 가지고다루면 됨.
+	//한개의 게시글에 대한 수정작업
 	function fnUpdatePost(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
-		/*
+		
 		dt = new DataTransfer();
 
 		for (f in uploadFiles) {
@@ -217,13 +351,13 @@
 		   dt2.items.add(file);
 		}
 
-		$("#changedFiles")[0].files = dt2.files;
-	    
+		$("#changedFiles" + postIdList[index])[0].files = dt2.files;
+		console.log("파일 수정을 진행하고 있습니다.");
 		//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
 		//배열 형태로 전송 시 백단(Java)에서 처리불가
 		//JSON String 형태로 변환하여 전송한다.
-		$("#originFiles").val(JSON.stringify(originFiles));
-		*/
+		$("#originFiles" + postIdList[index]).val(JSON.stringify(originFileList[index]));
+		console.log("원래 파일의 이름 : " + $("originFiles" + postIdList[index]).val());
 		//ajax에서 multipart/form-data형식을 전송하기 위해서는
 		//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
 		//form.serialize()는 multipart/form-data 전송불가
@@ -269,6 +403,70 @@
 			}
 		});
 		return false;
+	}
+	
+	function fnInsertPost(formData) {
+		//e.preventDefault();
+		console.log("파일을 전송하는 중입니다.");
+		//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
+		let content = "";
+		let restNm = "";
+		dt = new DataTransfer();
+		
+		for(f in uploadFiles) {
+			const file = uploadFiles[f];
+			dt.items.add(file);
+		}
+		
+		$("#btnAtt")[0].files = dt.files;
+		let insert_post = "";
+		//$(".quill-editor-default").text();
+		$("#postContent").val($(".quill-editor-default").text());
+		//$("#postContent").val($(".ql-editor").html());
+		content = $("#postContent").val();
+		restNm = $("#restNm").val();
+		console.log("내용 : " + content + "식당명 : " + restNm);
+		$.ajax({
+			enctype: 'multipart/form-data',
+			url: '/post/insertPost',
+			type: 'post',
+			data: {
+				restNm: restNm,
+				postContent: content,
+				viewCount: 0,
+				hashTag1: $("#hashTag1").val(),
+				hashTag2: $("#hashTag2").val(),
+				hashTag3: $("#hashTag3").val(),
+				hashTag4: $("#hashTag4").val(),
+				hashTag5: $("#hashTag5").val(),
+				//파일도 같이 다 화면단으로 보내야함. 배열을 다 옮겨서 보내면됨.
+				
+			},
+			processData: false,
+			contentType: false,
+			success: function(obj) {
+				alert("글 등록에 성공하였습니다.");
+				console.log(obj);
+				console.log("로그인한 계정 : " + loginUserId);
+				insert_post = post(obj.item);
+				
+				//$("#posts").html(insert_post);
+				//html단 뿌리기
+				$("#posts").prepend($(insert_post));
+				//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
+				flagList.unshift(false);
+				postIdList.unshift($($('.updateBtn')[0]).val());
+				//이벤트 다시 적용
+				$.like_button();
+				$.comment_button();
+				$.update_post();
+				
+				
+			}, error: function(e) {
+				console.log(e);
+			}
+		});
+
 	}
 	
 	//미리보기 영역에 들어가 div(img+button+p)를 생성하고 리턴
@@ -378,3 +576,4 @@
 			}
 		});
 	}
+
