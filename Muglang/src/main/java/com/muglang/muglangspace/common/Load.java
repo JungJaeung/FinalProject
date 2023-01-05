@@ -55,10 +55,11 @@ public class Load {
 	public static MglgPostFileDTO toHtml(MglgPostFile mglgPostFile) {
 		MglgPostFileDTO info = MglgPostFileDTO.builder()
 											  .postFileId(mglgPostFile.getPostFileId())
-											  .postFileNm(mglgPostFile.getPostFileOriginNm())
+											  .postFileNm(mglgPostFile.getPostFileNm())
 											  .postFilePath(mglgPostFile.getPostFilePath())
 											  .postFileRegdate(mglgPostFile.getPostFileRegdate().toString())
 											  .postFileOriginNm(mglgPostFile.getPostFileOriginNm())
+											  .postFileCate(mglgPostFile.getPostFileCate())
 											  .build();
 		return info;
 	}

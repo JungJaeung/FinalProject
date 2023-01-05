@@ -37,6 +37,7 @@ public class FileUtils {
 		File checkFile = new File(postFileOriginNm);
 		//업로드한 파일의 형식 가져옴(이미지파일들은 image/jpg, image/png ...)
 		String type = Files.probeContentType(checkFile.toPath());
+		System.out.println("파일의 형식 : " + type);
 		
 		if(type != null) {
 			if(type.startsWith("image")) {

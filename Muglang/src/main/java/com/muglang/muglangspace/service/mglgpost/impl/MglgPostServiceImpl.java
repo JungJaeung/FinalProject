@@ -131,32 +131,20 @@ public class MglgPostServiceImpl implements MglgPostService {
 	
 	// 포스트 내용을 기준으로 검색
 	@Override
-	public Page<MglgPostDTO> searchByPostDTO(String searchKeyword, Pageable pageable) {
+	public Page<CamelHashMap> searchByPost(String searchKeyword, Pageable pageable) {
 		//받은 키워드로 레포지토리를 이용하여 entity를 가져옴
-		Page<MglgPost> mglgPosts = mglgPostRepository.findByPostContentContainingOrderByPostDateDesc(searchKeyword, pageable);
-		
-		//entity를 dto로 변환
-		Page<MglgPostDTO> mglgPostDTOs = mglgPosts.map(mglgPost ->
-													   MglgPostDTO.builder()
-													   			  .postId(mglgPost.getPostId())
-													   			  .userId(mglgPost.getMglgUser().getUserId())
-													   			  .postRating(mglgPost.getPostRating())
-													   			  .postContent(mglgPost.getPostContent())
-													   			  .restNm(mglgPost.getRestNm())
-													   			  .restRating(mglgPost.getRestRating())
-													   			  .hashTag1(mglgPost.getHashTag1())
-														   		  .hashTag2(mglgPost.getHashTag2())
-														   		  .hashTag3(mglgPost.getHashTag3())
-														   		  .hashTag4(mglgPost.getHashTag4())
-														   		  .hashTag5(mglgPost.getHashTag5())
-														   		  .postDate(mglgPost.getPostDate() == null ? 
-														   				  							  null :
-														   				  							  mglgPost.getPostDate().toString())
-														   		  .searchKeyword(mglgPost.getSearchKeyword())
-													   			  .build()
-													   			  );
-		
+		Page<CamelHashMap> mglgPosts = mglgPostRepository.searchByPost(searchKeyword, pageable);
+				
 		// DTO로 바뀐 ENTITY를 리턴
-		return mglgPostDTOs;
+		return mglgPosts;
+	}
+	
+	// 닉네임을 기준으로 검색
+	@Override
+	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable) {
+		
+		Page<CamelHashMap> mglgPosts = mglgPostRepository.searchByNick(searchKeyword, pageable);
+		
+		return mglgPosts;
 	}
 }

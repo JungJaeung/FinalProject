@@ -19,5 +19,6 @@ public interface MglgPostFileService {
 	//게시글에 올린 파일 목록을 수정하는 메소드.
 	public void updatePostFileList(MglgPostFile fileList);
 	
-	//게시글의 파일을 삭제하는 것은 수정하는 것으로 대체함. 게시글을 지울시 해당 게시글의 파일들도 DB에서 제외함.
+	//게시글의 파일을 삭제하는 메소드를 사용한다. 게시글을 지우기전 파일들을 모두 삭제후 게시글을 지울 때 필요함.
+	public void deletePostFileList(int postId);
 }
