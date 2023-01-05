@@ -2,9 +2,11 @@ package com.muglang.muglangspace.service.mglgpost;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
+import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUserRelation;
 
@@ -35,5 +37,10 @@ public interface MglgPostService {
 	public String reportPost(int postId,int userId);
 	
 	// 포스트 내용을 기준으로 검색
-	public Page<MglgPostDTO> searchByPostDTO(String searchKeyword, Pageable pageable);
+	public Page<CamelHashMap> searchByPost(String searchKeyword, Pageable pageable);
+	
+	// 닉네임을 기준으로 검색
+	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable);
+
+	
 }
