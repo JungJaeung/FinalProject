@@ -196,19 +196,19 @@ public class PostController {
 	
 	//삭제 작업 수행하기
 	@PostMapping("/deletePost")
-	public void deletePost(MglgPostDTO mglgPostDTO, HttpSession session,
-			HttpServletResponse response) throws IOException {
-		System.out.println("삭제 작업 실행");
-		MglgUser mglgUser = new MglgUser();
-		mglgUser.setUserId(mglgPostDTO.getUserId());
-		mglgUser = mglgUserService.loginUser(mglgUser);
+	public void deletePost(MglgPostDTO mglgPostDTO,
+			HttpServletResponse response,
+			@AuthenticationPrincipal CustomUserDetails loginUser
+			) throws IOException {
+		System.out.println("삭제 작업 실행 : " + mglgPostDTO.getPostId());
 		
 		//외래키로 가지고 있는 파일들을 모두 삭제
 		mglgPostFileService.deletePostFileList(mglgPostDTO.getPostId());
+		System.out.println("파일들을 삭제 완료 하였습니다..");
 		//게시글 삭제 수행.
 		MglgPost mglgPost = MglgPost.builder()
 									.postId(mglgPostDTO.getPostId())
-									.mglgUser(mglgUser)
+									.mglgUser(loginUser.getMglgUser())
 									.build();
 		
 		mglgPostService.deletePost(mglgPost);

@@ -55,6 +55,7 @@ public class MglgPostFileServiceImpl implements MglgPostFileService{
 		// TODO Auto-generated method stub
 		mglgPostFileRepository.deleteAllByPostId(postId);
 		
+		mglgPostFileRepository.flush();
 	}
 
 }
