@@ -139,7 +139,7 @@
 		//text += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`;
 		//text +=	`</div>`;
 		text += `<div class="box" id="imageBox${post.postId}">
-					<img src="../assets/img/news-1.jpg" style="width: 100%;">
+					
 				</div>
 				<div class="buttons" id="buttonBox${post.postId}">
 					<button id="fileRequest${post.postId}">파일 관리창 열기</button>&emsp;
