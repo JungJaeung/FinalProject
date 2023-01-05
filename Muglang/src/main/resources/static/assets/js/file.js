@@ -138,9 +138,9 @@
 			//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
 			originFileList.push(originFiles);
 		}
+		
 		//게시글을 수정하는 로직 함수.
 		$.fnUpdateBtn = function(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
-			
 			dt = new DataTransfer();
 	
 			for (f in uploadFiles) {
@@ -159,13 +159,13 @@
 			   let file = changedFiles[f];
 			   dt2.items.add(file);
 			}
-	
+			//바뀐 파일의 정보를 임시로 저장
 			$("#changedFiles")[0].files = dt2.files;
 		    
 			//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
 			//배열 형태로 전송 시 백단(Java)에서 처리불가
 			//JSON String 형태로 변환하여 전송한다.
-			$("#originFiles").val(JSON.stringify(originFiles));
+			$("#originFiles").val(JSON.stringify(originFileList[index]));
 			
 			//ajax에서 multipart/form-data형식을 전송하기 위해서는
 			//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
@@ -329,6 +329,7 @@
 
 	//게시글을 수정하는 로직 함수.
 	//함수에 있는 스크립트는 jQuery선택자가 아닌 배열 내의 데이터를 가지고다루면 됨.
+	//한개의 게시글에 대한 수정작업
 	function fnUpdatePost(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
 		
 		dt = new DataTransfer();
@@ -350,13 +351,13 @@
 		   dt2.items.add(file);
 		}
 
-		$("#changedFiles")[0].files = dt2.files;
-	    
+		$("#changedFiles" + postIdList[index])[0].files = dt2.files;
+		console.log("파일 수정을 진행하고 있습니다.");
 		//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
 		//배열 형태로 전송 시 백단(Java)에서 처리불가
 		//JSON String 형태로 변환하여 전송한다.
-		$("#originFiles").val(JSON.stringify(originFiles));
-		
+		$("#originFiles" + postIdList[index]).val(JSON.stringify(originFileList[index]));
+		console.log("원래 파일의 이름 : " + $("originFiles" + postIdList[index]).val());
 		//ajax에서 multipart/form-data형식을 전송하기 위해서는
 		//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
 		//form.serialize()는 multipart/form-data 전송불가

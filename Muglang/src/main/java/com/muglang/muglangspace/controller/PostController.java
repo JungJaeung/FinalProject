@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -147,25 +148,31 @@ public class PostController {
 		}
 	}
 	
+	@Transactional //쿼리가 실행된 후 바로 트랜잭션을 호출
 	@PutMapping("/updatePost")
-	public ResponseEntity<?> updatePost(MglgPostDTO mglgPostDTO, MglgPostFileDTO mglgPostFileDTO) {
+	public ResponseEntity<?> updatePost(MglgPostDTO mglgPostDTO, 
+			MglgPostFileDTO mglgPostFileDTO, MultipartFile[] uploadFiles, 
+			MultipartFile[] changedFiles, HttpServletRequest request,
+			@RequestParam("originFiles") String originFiles,
+			@AuthenticationPrincipal CustomUserDetails loginUser) {
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
-		MglgUser mglgUser = new MglgUser();
-		mglgUser.setUserId(mglgPostDTO.getUserId());
-		mglgUser = mglgUserService.loginUser(mglgUser);
+		
 		System.out.println("수정 작업을 실행합니다." + mglgPostDTO);
 		
 		try {
 			//수정될 게시글의 정보를 모두 담아 갱신하려는 객체 생성.
 			MglgPost mglgPost = MglgPost.builder()
 										.postId(mglgPostDTO.getPostId())
-										.mglgUser(mglgUser)
+										.mglgUser(loginUser.getMglgUser())
 										.postContent(mglgPostDTO.getPostContent())
 										.restNm(mglgPostDTO.getRestNm())
 										.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate()))
 										.build();
 			
 			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
+
+			System.out.println("파일 정보를 확인하고 있습니다." + uploadFiles);
+			System.out.println("수정된 파일 정보를 확인 : " + changedFiles);
 			System.out.println(updateMglgPost);
 			MglgPostDTO updateMglgPostDTO = MglgPostDTO.builder()
 														.postId(mglgPost.getPostId())
@@ -189,16 +196,19 @@ public class PostController {
 	
 	//삭제 작업 수행하기
 	@PostMapping("/deletePost")
-	public void deletePost(MglgPostDTO mglgPostDTO, HttpSession session,
-			HttpServletResponse response) throws IOException {
-		System.out.println("삭제 작업 실행");
-		MglgUser mglgUser = new MglgUser();
-		mglgUser.setUserId(mglgPostDTO.getUserId());
-		mglgUser = mglgUserService.loginUser(mglgUser);
-
+	public void deletePost(MglgPostDTO mglgPostDTO,
+			HttpServletResponse response,
+			@AuthenticationPrincipal CustomUserDetails loginUser
+			) throws IOException {
+		System.out.println("삭제 작업 실행 : " + mglgPostDTO.getPostId());
+		
+		//외래키로 가지고 있는 파일들을 모두 삭제
+		mglgPostFileService.deletePostFileList(mglgPostDTO.getPostId());
+		System.out.println("파일들을 삭제 완료 하였습니다..");
+		//게시글 삭제 수행.
 		MglgPost mglgPost = MglgPost.builder()
 									.postId(mglgPostDTO.getPostId())
-									.mglgUser(mglgUser)
+									.mglgUser(loginUser.getMglgUser())
 									.build();
 		
 		mglgPostService.deletePost(mglgPost);

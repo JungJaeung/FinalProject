@@ -52,7 +52,7 @@
 					postFileIdList.push(new Array());
 					console.log(postIdList[i] + " 게시글의 파일의 길이 : " + $("#fileListSize" + postIdList[i]).val());
 					for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
-						let id = $($('.postFileId')[j]).val();
+						let id = $($('.postFileId' + postIdList[i])[j]).val();
 						console.log(id);
 						postFileIdList[i].push(id);
 					}
@@ -766,8 +766,8 @@
 							<input type="hidden" th:value="${post.betweenDate}">
 							<!-- 파일의 개수가 몇개 오는지 테스트 하는 임시 자료 추후에 숨김 처리 할 예정 -->
 							<input type="text" th:id="'fileListSize' + ${post.postId}" th:value="${post.fileLength}">
-							<input type="hidden" id="changedFiles" name="changedFiles"> 
-							<input type="hidden" name="originFiles" id="originFiles">
+							<input type="hidden" th:id="'changedFiles' + ${post.postId}" name="changedFiles"> 
+							<input type="hidden" name="originFiles" th:id="'originFiles' + ${post.postId}">
 							<div class="card recent-sales">
 								<div class="card-body">
 									<!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
@@ -807,7 +807,7 @@
 										<div th:each="file : ${post.fileList}" class="fileList" th:value="${file.postId}">
 										<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
 											<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-											<input type="hidden" id="postFileId" class="postFileId" 
+											<input type="hidden" id="postFileId" th:class="'postFileId' + ${file.postId}" 
 													name="postFileId" 
 													th:value="${file.postFileId}">
 											<input type="hidden" id="postFileNm" class="postFileNm" 
