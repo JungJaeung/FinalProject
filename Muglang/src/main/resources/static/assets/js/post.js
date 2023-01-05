@@ -1,4 +1,11 @@
 let title;
+//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
+//포스팅 글들의 id를 관리하는데 사용함.
+//해당 배열은 파일 처리 이벤트에서 많이 쓰게될 예정.
+let postIdList = [];
+let flagList = [];
+let postFileIdList = [];
+
 
 $(function() {
 	//ajax로 이벤트 함수를 다시 빌드하는 객체를 따로 정의

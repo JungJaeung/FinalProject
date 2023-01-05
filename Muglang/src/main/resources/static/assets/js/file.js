@@ -1,4 +1,12 @@
-			
+//전역 변수로 담는 배열들을 미리 선언해두고, 계속 사용할 것임.
+//추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
+let uploadFiles = [];
+//기존 첨부파일 배열
+let originFiles = [];
+//각 게시글들의 첨부파일들을 모은 것을 따로 담을 것임..
+let originFileList = [];
+//변경된 첨부파일 배열
+let changedFiles = [];
 	$(function() {
 		let formData;
 		let flagList = false;

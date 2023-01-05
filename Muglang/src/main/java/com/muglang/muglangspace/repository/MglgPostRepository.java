@@ -55,9 +55,10 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			countQuery = " SELECT COUNT(*) FROM (SELECT * FROM T_MGLG_POST) D", nativeQuery = true)
 	Page<CamelHashMap> getPagePostList(Pageable pageable, @Param("userId") int userId);
 
-	
+	//포스팅 내용을 수정하는 부분. 파일 정리는 따로 하고 나머지 글의 내용을 고치고, 반영.
 	@Modifying
-	@Query(value="UPDATE T_MGLG_POST SET POST_CONTENT = :#{#mglgPost.postContent} WHERE POST_ID = :#{#mglgPost.postId}", nativeQuery=true)
+	@Query(value="UPDATE T_MGLG_POST SET POST_CONTENT = :#{#mglgPost.postContent} "
+			+ " WHERE POST_ID = :#{#mglgPost.postId}", nativeQuery=true)
 	public void updateMglgPost(@Param("mglgPost") MglgPost mglgPost);
 	
    // 내용을 기준으로 검색
