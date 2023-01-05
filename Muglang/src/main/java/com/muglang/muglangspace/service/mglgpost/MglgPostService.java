@@ -28,9 +28,9 @@ public interface MglgPostService {
 	// 개인 유저에 대한 포스팅 불러오기
 	public Page<MglgPost> userPostList(int userId, Pageable pageable);
 
-	public Page<MglgPost> getFollowerPost(int userId, Pageable pageable);
+	public Page<CamelHashMap> getFollowerPost(int userId, Pageable pageable);
 
-	public Page<MglgPost> getFollowingPost(int userId, Pageable pageable);
+	public Page<CamelHashMap> getFollowingPost(int userId, Pageable pageable);
 
 	
 	public int likeUp(int userId, int postId);

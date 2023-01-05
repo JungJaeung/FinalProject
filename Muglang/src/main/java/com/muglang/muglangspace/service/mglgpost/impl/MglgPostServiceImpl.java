@@ -85,13 +85,13 @@ public class MglgPostServiceImpl implements MglgPostService {
 	}
 
 	@Override
-	public Page<MglgPost> getFollowerPost(int userId, Pageable pageable) {
+	public Page<CamelHashMap> getFollowerPost(int userId, Pageable pageable) {
 
 		return mglgPostRepository.getFollowerPost(userId, pageable);
 	}
 	
 	@Override
-	public Page<MglgPost> getFollowingPost(int userId, Pageable pageable) {
+	public Page<CamelHashMap> getFollowingPost(int userId, Pageable pageable) {
 
 		return mglgPostRepository.getFollowingPost(userId, pageable);
 	}

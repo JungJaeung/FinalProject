@@ -81,7 +81,7 @@
 										<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
 											style="width: 40px;">
 										<!--이름-->
-										<a href="#" class="card-title" name ="${obj.pageItems.content[i].userId}"> </a>
+										<a href="#" class="card-title"> ${obj.pageItems.content[i].userName}</a>
 									</div>
 									<div class="activity" style="margin-bottom: 10px;">
 										<!--내용 사진-->
@@ -110,7 +110,7 @@
 												style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
 										<br>
 										<!--좋아요 숫자 넣는곳-->
-										<a>좋아요 <span>21</span>개</a>
+										<a>좋아요 <span>${obj.pageItems.content[i].likeCnt}</span>개</a>
 										<hr>
 									</div>
 									<!--친구, 외 몇명, 위치, 상호명-->
@@ -123,7 +123,6 @@
 					`
 						}
 						$("#divContent").html(htmlStr);
-						nameChange();
 					}
 
 					,
@@ -132,21 +131,7 @@
 						console.log(e);
 					}
 				});
-				let nameChange = function () {
-					$.ajax({
-						url: '/social/followUserName',
-						type: 'get',
-						success: function (obj) {
-							console.log(obj);
-							for (let i = 0; i < obj.pageItems.content.length; i++) {
-								$(`a[name=${obj.pageItems.content[i].userId}]`).text(obj.pageItems.content[i].userName)
-							}
-						},
-						error: function (e) {
-							console.log(e);
-						}
-					});
-				}
+
 				//시작시 팔로워 리스트 불러옴
 				$.ajax({
 					url: '/social/following',

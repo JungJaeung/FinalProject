@@ -364,28 +364,26 @@ public class PostController {
 	//팔로우 하고 있는사람 포스트만 불러오는 로직
 	@GetMapping("/getFollowerPost")
 	public ResponseEntity<?> getFollowerPost(@PageableDefault(page=0,size=5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
-		MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
+		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 		int userId = loginUser.getMglgUser().getUserId();
 		try {		
 			
-		Page<MglgPost> pagePostList = mglgPostService.getFollowerPost(userId,pageable);
-		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
-																						.userId(pageMglgPost.getMglgUser().getUserId())
-																						.postId(pageMglgPost.getPostId())
-																						.postContent(pageMglgPost.getPostContent())
-																						.postDate(pageMglgPost.getPostDate().toString())
-																						.restNm(pageMglgPost.getRestNm())
-																						.restRating(pageMglgPost.getRestRating())
-																						.postRating(pageMglgPost.getPostRating())
-																						.hashTag1(pageMglgPost.getHashTag1())
-																						.hashTag2(pageMglgPost.getHashTag2())
-																						.hashTag3(pageMglgPost.getHashTag3())
-																						.hashTag4(pageMglgPost.getHashTag4())
-																						.hashTag5(pageMglgPost.getHashTag5())
-																						.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
-																						.build()
-		);
-				response.setPageItems(pagePostListDTO);
+			Page<CamelHashMap> pagePostList = mglgPostService.getFollowerPost(userId,pageable);
+			for (int i = 0; i < pagePostList.getContent().size(); i++) {
+				pagePostList.getContent().get(i).put(
+					"between_date", Duration.between(
+							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
+							LocalDateTime.now()).getSeconds()
+				);
+				
+				pagePostList.getContent().get(i).put(
+						"post_date",
+						String.valueOf(
+								((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
+						)
+				);
+			}
+				response.setPageItems(pagePostList);
 				return ResponseEntity.ok().body(response);
 			} catch (Exception e) {
 				response.setErrorMessage(e.getMessage());
@@ -397,28 +395,28 @@ public class PostController {
 	//팔로우 하고 있는사람 포스트만 불러오는 로직
 		@GetMapping("/getFollowingPost")
 		public ResponseEntity<?> getFollowingPost(@PageableDefault(page=0,size=5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
-			MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
+			MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 			int userId = loginUser.getMglgUser().getUserId();
 			try {		
 				
-			Page<MglgPost> pagePostList = mglgPostService.getFollowingPost(userId,pageable);
-			Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
-																							.userId(pageMglgPost.getMglgUser().getUserId())
-																							.postId(pageMglgPost.getPostId())
-																							.postContent(pageMglgPost.getPostContent())
-																							.postDate(pageMglgPost.getPostDate().toString())
-																							.restNm(pageMglgPost.getRestNm())
-																							.restRating(pageMglgPost.getRestRating())
-																							.postRating(pageMglgPost.getPostRating())
-																							.hashTag1(pageMglgPost.getHashTag1())
-																							.hashTag2(pageMglgPost.getHashTag2())
-																							.hashTag3(pageMglgPost.getHashTag3())
-																							.hashTag4(pageMglgPost.getHashTag4())
-																							.hashTag5(pageMglgPost.getHashTag5())
-																							.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
-																							.build()
-			);
-					response.setPageItems(pagePostListDTO);
+				
+				Page<CamelHashMap> pagePostList = mglgPostService.getFollowingPost(userId,pageable);
+				for (int i = 0; i < pagePostList.getContent().size(); i++) {
+					pagePostList.getContent().get(i).put(
+						"between_date", Duration.between(
+								((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
+								LocalDateTime.now()).getSeconds()
+					);
+					
+					pagePostList.getContent().get(i).put(
+							"post_date",
+							String.valueOf(
+									((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
+							)
+					);
+				}
+				
+					response.setPageItems(pagePostList);
 					return ResponseEntity.ok().body(response);
 				} catch (Exception e) {
 					response.setErrorMessage(e.getMessage());

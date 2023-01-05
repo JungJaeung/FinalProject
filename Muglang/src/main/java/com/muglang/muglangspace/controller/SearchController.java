@@ -33,7 +33,10 @@ public class SearchController {
 		log.info("searchByPost - SearchKeyword: " + searchKeyword);
 		
 		Page<CamelHashMap> mglgPosts = mglgPostService.searchByPost(searchKeyword, pageable);
-		
+		System.out.println("---------123123---------");
+		System.out.println(mglgPosts.getContent());
+		System.out.println("--------123123----------");
+
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("/search/searchByPost.html");
 		mv.addObject("mglgPosts", mglgPosts);
