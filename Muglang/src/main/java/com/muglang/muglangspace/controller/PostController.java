@@ -32,24 +32,23 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.common.FileUtils;
 import com.muglang.muglangspace.common.Load;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgPostFileDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
-import com.muglang.muglangspace.dto.MglgUserDTO;
+import com.muglang.muglangspace.dto.MglgRestaurantDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgPostFile;
-import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.entity.MglgRestaurant;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglgpostfile.MglgPostFileService;
+import com.muglang.muglangspace.service.mglgrestaurant.MglgRestaurantService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
 
 @RestController
@@ -63,6 +62,9 @@ public class PostController {
 
 	@Autowired
 	private MglgCommentService mglgCommentService;
+
+	@Autowired
+	private MglgRestaurantService mglgRestaurantService;
 	
 	@Autowired
 	private AdminService adminService;
@@ -73,8 +75,8 @@ public class PostController {
 	
 	//글쓰기 버튼으로 적용되는 글 새로 작성, 새로 작성되는 글에 파일을 같이 넣음.
 	@PostMapping("/insertPost")
-	public ResponseEntity<?> insertPost(MglgPostDTO mglgPostDTO, MultipartFile[] uploadFiles,
-			HttpServletRequest request
+	public ResponseEntity<?> insertPost(MglgPostDTO mglgPostDTO, MglgRestaurantDTO mglgRestaurantDTO,
+			MultipartFile[] uploadFiles, HttpServletRequest request
 			,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		System.out.println(mglgPostDTO);
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
@@ -134,6 +136,19 @@ public class PostController {
 			System.out.println("파일 자료 입력 완료");
 			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
+			
+			//returnDTO의 postId를 이용해서 restaurant 테이블에 내용 insert
+			MglgRestaurant mglgRes = MglgRestaurant.builder()
+					.postId(returnDTO.getPostId())
+					.resName(mglgRestaurantDTO.getResName())
+					.resAddress(mglgRestaurantDTO.getResAddress())
+					.resRoadAddress(mglgRestaurantDTO.getResRoadAddress())
+					.resPhone(mglgRestaurantDTO.getResPhone())
+					.resCategory(mglgRestaurantDTO.getResCategory())
+					.build();
+			
+			//쿼리문 실행
+			mglgRestaurantService.insertRestaurant(mglgRes);
 			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
@@ -426,6 +441,27 @@ public class PostController {
 		    } catch(Exception e) {
 				e.printStackTrace();
 		    }
+		}
+		
+		@GetMapping("map")
+		public ModelAndView map() {
+			ModelAndView mv = new ModelAndView();
+			mv.setViewName("post/kakaoMap.html");
+			
+			return mv;
+		}
+		
+		@GetMapping("PostMap")
+		public ResponseEntity<?> PostMap(@RequestParam("postId") int postId) {
+			try {
+				MglgRestaurant mglgRes = mglgRestaurantService.selectRes(postId);
+				
+				return ResponseEntity.ok().body(mglgRes);
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				return ResponseEntity.ok().body(e);
+			}
 		}
 
 }
