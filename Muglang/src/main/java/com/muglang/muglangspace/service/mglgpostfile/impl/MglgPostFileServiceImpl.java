@@ -50,4 +50,11 @@ public class MglgPostFileServiceImpl implements MglgPostFileService{
 		mglgPostFileRepository.flush();
 	}
 
+	@Override
+	public void deletePostFileList(int postId) {
+		// TODO Auto-generated method stub
+		mglgPostFileRepository.deleteAllByPostId(postId);
+		
+	}
+
 }
