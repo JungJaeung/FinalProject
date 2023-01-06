@@ -123,48 +123,29 @@ public class UserController {
 	// 팔로잉으로 이동
 	// 유저 목록 불러오기 + 페이징
 	@GetMapping("/follower")
-	public ModelAndView followList() {
-
+	public ModelAndView followList(@AuthenticationPrincipal CustomUserDetails loginUser) {
+			int userId = loginUser.getMglgUser().getUserId();
 			ModelAndView mv = new ModelAndView();
 
 					
 					mv.setViewName("/user/follower.html");
-					
+					mv.addObject("userIds", userId);
 				
 					return mv;
 	}
 
 	// 팔로워로 이동
 	@GetMapping("/following")
-	public ModelAndView followingList(MglgUserDTO userDTO,@PageableDefault(page = 0, size = 5) Pageable pageable,HttpSession session) {
-		MglgUserDTO temp = (MglgUserDTO)session.getAttribute("loginUser");
-		
-		MglgUser user = MglgUser.builder()
-				   .searchKeyword(userDTO.getSearchKeyword())
-				   .userId(temp.getUserId())
-				   .build();
-		
+	public ModelAndView followingList(@AuthenticationPrincipal CustomUserDetails loginUser) {
+		int userId = loginUser.getMglgUser().getUserId();
 		ModelAndView mv = new ModelAndView();
-		
-		Page<MglgUser> pagefollowingList = userRelationService.followingList(user, pageable);
-		Page<MglgUserDTO> pagefollowingDTOList = pagefollowingList.map(pageUser -> 
-													MglgUserDTO.builder()
-																.userId(pageUser.getUserId())
-																.userName(pageUser.getUserName())
-																.email(pageUser.getEmail())
-																.userNick(pageUser.getUserNick())
-																.build()
-														);
 
+				
+				mv.setViewName("/user/follower.html");
+				mv.addObject("userId", userId);
 					
 					mv.setViewName("/user/following.html");
 					
-					mv.addObject("followingList", pagefollowingDTOList);
-					
-					
-					if(userDTO.getSearchKeyword() != null && !userDTO.getSearchKeyword().equals("")) {
-						mv.addObject("searchKeyword", userDTO.getSearchKeyword());
-					}
 					
 					return mv;
 	}
