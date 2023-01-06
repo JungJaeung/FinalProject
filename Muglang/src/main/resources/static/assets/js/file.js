@@ -370,7 +370,7 @@ let changedFiles = [];
 		//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
 		//form.serialize()는 multipart/form-data 전송불가
 		//let formData = new FormData($("#updateForm")[0]);
-		let formData = new FormData($($(".data")[index])[0]);
+		let formData = new FormData($("#updateForm" + postIdList[index])[0]);
 
 		//ajax에 enctype: multipart/form-data, 
 		//processData: false, contentType: false로 설정               

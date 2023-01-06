@@ -285,8 +285,8 @@ public class PostController {
 	@PostMapping("/deletePost")
 	public void deletePost(MglgPostDTO mglgPostDTO,
 			HttpServletResponse response,
-			@RequestParam("fileSize") int fileSize,
-			@AuthenticationPrincipal CustomUserDetails loginUser
+			@AuthenticationPrincipal CustomUserDetails loginUser, 
+			@RequestParam("fileSize") int fileSize
 			) throws IOException {
 		
 		System.out.println("삭제 작업 실행 : " + mglgPostDTO.getPostId());
@@ -307,7 +307,7 @@ public class PostController {
 		
 		mglgPostService.deletePost(mglgPost);
 		
-		response.sendRedirect("/post/mainPost?posting=0");
+		response.sendRedirect("/post/mainPost");
 	}
 	
 	
@@ -436,7 +436,7 @@ public class PostController {
 												   .userId(post.getMglgUser().getUserId())
 												   .restNm(post.getRestNm())
 												   .build();
-
+			
 			response.setItem(returnPostDTO);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
