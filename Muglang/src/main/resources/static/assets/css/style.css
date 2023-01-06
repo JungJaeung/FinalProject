@@ -401,14 +401,12 @@ h6 {
 }
 
 @media (min-width: 1200px) {
-  .logo {
-    width: 280px;
-  }
+  
 }
 
 .logo img {
-  max-height: 26px;
-  margin-right: 6px;
+  max-height: 46px;
+  margin: 0 10px auto;
 }
 
 .logo span {
@@ -461,6 +459,7 @@ h6 {
     visibility: visible;
     opacity: 1;
   }
+  
 }
 
 .header .search-form {
@@ -494,6 +493,13 @@ h6 {
 
 .header .search-form button i {
   color: #012970;
+}
+
+@media (max-width: 767px) {
+  .logo img {
+  max-height: 26px;
+  margin: 0 10px auto;
+}
 }
 
 /*--------------------------------------------------------------
