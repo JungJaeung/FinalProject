@@ -10,6 +10,7 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			const loginUserId = /*[[${loginUser.userId}]]*/;
+			/*
 			//추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
 			let uploadFiles = [];
 			//기존 첨부파일 배열
@@ -18,7 +19,7 @@
 			let originFileList = [];
 			//변경된 첨부파일 배열
 			let changedFiles = [];
-
+			*/
 			//댓글 페이지수
 			let comment_page_num = 0;
 
@@ -35,13 +36,14 @@
 				obj.style.height = "1px";
 				obj.style.height = (12 + obj.scrollHeight) + "px";
 			}
-
+			/*
 			//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
 			//포스팅 글들의 id를 관리하는데 사용함.
 			//해당 배열은 파일 처리 이벤트에서 많이 쓰게될 예정.
 			let postIdList = [];
 			let flagList = [];
 			let postFileIdList = [];
+			*/
 			$(function () {
 				const userId = /*[[${#authentication.principal.username}]]*/;
 				
@@ -843,45 +845,49 @@
 												style="width: 40px;">
 											<a href="#" class="card-title" th:text="${post.restNm}"></a>
 										</div>
-										<!-- 게시글 사진 부분 -->
-										<!-- imgBox는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
-										<div class="activity" style="margin-bottom: 10px;" id="restImgBox">
-											<div th:each="file : ${post.fileList}" class="fileList"
-												th:value="${file.postId}">
-												<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
-											<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-											<div th:if="${#authentication.principal.mglgUser.userId == post.userId}">
-												<input type="hidden" id="postFileId" th:class="'postFileId' + ${file.postId}" 
-														name="postFileId" 
-														th:value="${file.postFileId}">
-												<input type="hidden" id="postFileNm" class="postFileNm" 
-														name="postFileNm" 
-														th:value="${file.postFileNm}">
-												<input type="file" th:id="'changedFile' + ${file.postFileId}" 
-													   th:name="'changedFile' + ${file.postFileId}"
-													   style="display: none;" 
-													   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], event)">
-												<img th:if="${file.postFileCate} == 'img'" 
-														 th:id="'img' + ${file.postFileId}" 
-														 th:src="@{'/upload/' + ${file.postFileNm}}"
-													 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-														 class="fileImg" 
-														 th:onclick="fnImgChange([[${file.postFileId}]])">
-												<img th:unless="${file.postFileCate} == 'img'" 
-														 th:id="'img' + ${file.postFileId}"
-														 th:src="@{/assets/img/defaultFileImg.png}"
-														 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-														 class="fileImg" 
-														 th:onclick="fnImgChange([[${file.postFileId}]])">
-												<input th:if="${post.userId} eq ${loginUser.userId}" type="button" class="btnDel" value="x" th:data-del-file="${file.postFileId}"
-														   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-														   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-														   onclick="fnImgDel(event)">
+										<form th:id="'updateForm' + ${post.postId}" action="/post/updatePost" enctype="multipart/form-data" th:method="put">
+											<!-- 게시글 사진 부분 -->
+											<!-- imgBox는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
+											<div class="activity" style="margin-bottom: 10px;" id="restImgBox">
+												<div th:each="file : ${post.fileList}" class="fileList"
+													th:value="${file.postId}">
+													<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
+												<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
+												<div th:if="${#authentication.principal.mglgUser.userId == post.userId}">
+													<input type="hidden" id="postFileId" th:class="'postFileId' + ${file.postId}" 
+															name="postFileId" 
+															th:value="${file.postFileId}">
+													<input type="hidden" id="postFileNm" class="postFileNm" 
+															name="postFileNm" 
+															th:value="${file.postFileNm}">
+													<input type="file" th:id="'changedFile' + ${file.postFileId}" 
+														   th:name="'changedFile' + ${file.postFileId}"
+														   style="display: none;" 
+														   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], event)">
+													<img th:if="${file.postFileCate} == 'img'" 
+															 th:id="'img' + ${file.postFileId}" 
+															 th:src="@{'/upload/' + ${file.postFileNm}}"
+														 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+															 class="fileImg" 
+															 th:onclick="fnImgChange([[${file.postFileId}]])">
+													<img th:unless="${file.postFileCate} == 'img'" 
+															 th:id="'img' + ${file.postFileId}"
+															 th:src="@{/assets/img/defaultFileImg.png}"
+															 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+															 class="fileImg" 
+															 th:onclick="fnImgChange([[${file.postFileId}]])">
+													<input th:if="${post.userId} eq ${loginUser.userId}" type="button" class="btnDel" value="x" th:data-del-file="${file.postFileId}"
+															   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+															   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+															   onclick="fnImgDel(event)">
+												</div>
+												<div th:if="${#authentication.principal.mglgUser.userId != post.userId}">
+													<img th:src="@{'/upload/' + ${file.postFileNm}}">
+												</div>
 											</div>
-											<div th:if="${#authentication.principal.mglgUser.userId != post.userId}">
-												<img th:src="@{'/upload/' + ${file.postFileNm}}">
-											</div>
-										</div>
+											<input type="hidden" id="userId" name="userId" th:value="${post.userId}">
+											<input type="hidden" id="postContentIn" name="postContent" th:value="${post.postContent}">
+										</form>
 										<div class="buttons" th:id="'buttonBox' + ${post.postId}" th:if="${post.userId} eq ${loginUser.userId}">
 											<button th:id="'fileRequest' + ${post.postId}">파일 관리창 열기</button>&emsp;
 											<button th:id="'fileRemove' + ${post.postId}">파일 삭제</button>
@@ -922,22 +928,16 @@
 
 										<!-- 내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. -->
 										<form class="data" action="/post/deletePost" th:method="post">
+											<input type="hidden" id="postId" name="postId" th:value="${post.postId}">
 											<input type="hidden" id="restNmIn" name="restNm" th:value="${post.restNm}">
-											<input type="hidden" id="postContentIn" name="postContent"
-												th:value="${post.postContent}">
-											<input type="hidden" id="userId" name="userId" th:value="''+${post.userId}">
-											<input type="hidden" id="postId" name="postId" th:value="''+${post.postId}">
-											<input type="hidden" id="postDate" name="postDate"
-												th:value="''+${post.postDate}">
-
+											<input type="hidden" id="postDate" name="postDate" th:value="${post.postDate}">
+											<input type="hidden" name="fileSize" id="fileSize" th:value="${post.fileLength}">
 										</form>
 										<!-- 친구 식사 했는지 확인 필드 -->
 										<div class="activity" style="text-align: center;">
 											<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>
 												<span>감성타코</span>에서 식사하셨어요!</a>
-
-											<input type="hidden" class="test" value="">
-											<button class="updateBtn" id="updateButton" th:value="${post.postId}"
+											<button type="button" class="updateBtn" id="updateButton" th:value="${post.postId}"
 												th:if="${post.userId} eq ${loginUser.userId}">게시글 수정</button>
 										</div>
 									</div>
@@ -948,39 +948,36 @@
 						</div>
 
 					</div><!-- End Left side columns -->
+					<!-- Right side columns -->
+					<div class="col-lg-4 col-xxl-3">
+						<!-- Recent Activity -->
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title"
+									style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
+									먹거리 <span>| Today</span></h5>
+								<div class="activity">
+									<div id="today_eat">
+										<ol>
+											<li><a href="#"><b>#치킨</b></a></li>
+											<li><a href="#"><b>#보쌈</b></a></li>
+											<li><a href="#"><b>#연어초밥</b></a></li>
+											<li><a href="#"><b>#우육면</b></a></li>
+											<li><a href="#"><b>#마라탕</b></a></li>
+											<li><a href="#"><b>#짜장면</b></a></li>
+											<li><a href="#"><b>#라멘</b></a></li>
+											<li><a href="#"><b>#갈비</b></a></li>
+											<li><a href="#"><b>#곱창</b></a></li>
+											<li><a href="#"><b>#막창</b></a></li>
+			
+										</ol>
+									</div>
+								</div>
+							</div>
+						</div><!-- End Recent Activity -->
+					</div><!-- End Right side columns -->
 				</div>
 			</div>
-			<!-- Right side columns -->
-			<div class="col-lg-4 col-xxl-3">
-
-				<!-- Recent Activity -->
-				<div class="card">
-					<div class="card-body">
-						<h5 class="card-title"
-							style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
-							먹거리 <span>| Today</span></h5>
-						<div class="activity">
-							<div id="today_eat">
-								<ol>
-									<li><a href="#"><b>#치킨</b></a></li>
-									<li><a href="#"><b>#보쌈</b></a></li>
-									<li><a href="#"><b>#연어초밥</b></a></li>
-									<li><a href="#"><b>#우육면</b></a></li>
-									<li><a href="#"><b>#마라탕</b></a></li>
-									<li><a href="#"><b>#짜장면</b></a></li>
-									<li><a href="#"><b>#라멘</b></a></li>
-									<li><a href="#"><b>#갈비</b></a></li>
-									<li><a href="#"><b>#곱창</b></a></li>
-									<li><a href="#"><b>#막창</b></a></li>
-
-								</ol>
-							</div>
-
-						</div>
-
-					</div>
-				</div><!-- End Recent Activity -->
-			</div><!-- End Right side columns -->
 		</section>
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">

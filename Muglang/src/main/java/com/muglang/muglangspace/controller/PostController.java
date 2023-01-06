@@ -32,6 +32,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.common.FileUtils;
 import com.muglang.muglangspace.common.Load;
@@ -169,10 +173,26 @@ public class PostController {
 			MglgPostFileDTO mglgPostFileDTO, MultipartFile[] uploadFiles, 
 			MultipartFile[] changedFiles, HttpServletRequest request,
 			@RequestParam("originFiles") String originFiles,
-			@AuthenticationPrincipal CustomUserDetails loginUser) {
+			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		//JSON string으로 파일의 원래 있던 파일을 가져오는 형식임.
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
 		
+		List<MglgPostFile> originFileList = new ObjectMapper().readValue(originFiles, 
+				new TypeReference<List<MglgPostFile>>() {});
+		
 		System.out.println("수정 작업을 실행합니다." + mglgPostDTO);
+		
+		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
+		
+		System.out.println("게시글 수정 작업 attachPath : " + attachPath);
+		
+		File directory = new File(attachPath);
+		
+		if(!directory.exists()) {
+			directory.mkdir();
+		}
+		
+		List<MglgPostFile> uploadFileList = new ArrayList<MglgPostFile>();	
 		
 		try {
 			//수정될 게시글의 정보를 모두 담아 갱신하려는 객체 생성.
@@ -185,16 +205,68 @@ public class PostController {
 										.build();
 			
 			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
-
+			
 			System.out.println("파일 정보를 확인하고 있습니다." + uploadFiles);
 			System.out.println("수정된 파일 정보를 확인 : " + changedFiles);
 			System.out.println(updateMglgPost);
-			MglgPostDTO updateMglgPostDTO = MglgPostDTO.builder()
-														.postId(mglgPost.getPostId())
-														.userId(mglgPost.getMglgUser().getUserId())
-														.postContent(mglgPost.getPostContent())
-														.restNm(mglgPost.getRestNm())
-														.build();
+			MglgPostDTO updateMglgPostDTO = Load.toHtml(updateMglgPost, loginUser.getMglgUser());
+			
+			//파일 정보를 바꾸거나, 삭제하고 난 정보를 갱신하는 부분.
+			//변경하기전의 파일리스트들을 모두 돌아서 해당 파일의 상태에 따라 삭제와 수정을 처리함.
+			for(int i = 0; i < originFileList.size(); i++) {
+				//수정되는 파일 처리
+				if(originFileList.get(i).getPostFileStat().equals("U")) {
+					for(int j = 0; j < changedFiles.length; j++) {
+						if(originFileList.get(i).getNewFileNm().equals(changedFiles[j].getOriginalFilename())) {
+							MglgPostFile targetFile = new MglgPostFile();
+							
+							MultipartFile file = changedFiles[j];
+							
+							targetFile = FileUtils.parseFileInfo(file, attachPath);
+							
+							targetFile.setMglgPost(mglgPost);
+							targetFile.setPostFileId(originFileList.get(i).getPostFileId());
+							targetFile.setPostFileStat("U");
+							
+							uploadFileList.add(targetFile);
+						}
+					}
+				}
+				//삭제되는 파일 처리
+				else if(originFileList.get(i).getPostFileStat().equals("D")) {
+					MglgPostFile targetFile = new MglgPostFile();
+					
+					targetFile.setMglgPost(mglgPost);
+					targetFile.setPostFileId(originFileList.get(i).getPostFileId());
+					targetFile.setPostFileStat("D");
+					
+					File deleteFile = new File(attachPath + originFileList.get(i).getPostFileNm());
+					deleteFile.delete();
+					
+					uploadFileList.add(targetFile);
+				}
+			}
+			//수정, 삭제 처리를 완료하고 더 추가된 파일을 적용한 뒤 마지막으로 다시 파일들을 업로드한다.
+			//파일의 개수 만큼 하나씩 파일을 DB에 저장함.
+			if(uploadFiles.length > 0) {
+				for(int i = 0; i < uploadFiles.length; i++) {
+					MultipartFile file = uploadFiles[i];
+					
+					if(file.getOriginalFilename() != null && !file.getOriginalFilename().equals("")) {
+						MglgPostFile uploadFile = new MglgPostFile();
+						
+						uploadFile = FileUtils.parseFileInfo(file, attachPath);
+						
+						uploadFile.setMglgPost(mglgPost);
+						uploadFile.setPostFileStat("I");
+						uploadFileList.add(uploadFile);
+						System.out.println("등록하려는 파일의 원래 이름 : " + uploadFile.getPostFileOriginNm());
+						mglgPostFileService.insertPostFile(uploadFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
+					}
+				}
+			}
+			
+			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("getPost", updateMglgPostDTO);
 			
@@ -209,17 +281,24 @@ public class PostController {
 
 	}
 	
-	//삭제 작업 수행하기
+	//삭제 작업 수행하기 - 삭제 후 넘어가는 페이지 리다이렉트가 두개가 겹쳐서 안되는거 같다.
 	@PostMapping("/deletePost")
 	public void deletePost(MglgPostDTO mglgPostDTO,
 			HttpServletResponse response,
-			@AuthenticationPrincipal CustomUserDetails loginUser
+			@AuthenticationPrincipal CustomUserDetails loginUser, 
+			@RequestParam("fileSize") int fileSize
 			) throws IOException {
-		System.out.println("삭제 작업 실행 : " + mglgPostDTO.getPostId());
 		
+		System.out.println("삭제 작업 실행 : " + mglgPostDTO.getPostId());
+		System.out.println("파일의 크기 : " + fileSize);// 파일의 개수를 미리 받아서 개수만큼 모두 삭제하는 용도로 사용.
 		//외래키로 가지고 있는 파일들을 모두 삭제
-		mglgPostFileService.deletePostFileList(mglgPostDTO.getPostId());
-		System.out.println("파일들을 삭제 완료 하였습니다..");
+		if(fileSize > 0) {
+			mglgPostFileService.deletePostFileList(mglgPostDTO.getPostId());
+			System.out.println("파일들을 삭제 완료 하였습니다..");
+		} else {
+			System.out.println("게시글에 파일이 없었습니다.");
+		}
+
 		//게시글 삭제 수행.
 		MglgPost mglgPost = MglgPost.builder()
 									.postId(mglgPostDTO.getPostId())
@@ -262,25 +341,30 @@ public class PostController {
 			);
 		}
 		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열처럼 사용됨.
+		//반복문을 통해 한 게시글의 전체 정보를 담을 맵을 반복자로 잡아서 반복문을 돌림.
 		for(CamelHashMap file : pagePostList) {
+			//파일 정보를 화면단에 출력하기위해서 DTO를 담을 때 엔티티에서는 있지만, DTO에서는 이것을 따로 담아서 사용한다.
+			//해당 포스팅 게시글에 해당하는 파일들을 모두 검색하기 위해 포스트 ID를 따로 가져와서 쿼리로 검색한다.
 			System.out.println("변경된 맵 : " + file);
 			int findId = (int)file.get("postId");
-			//한 게시글의 모든 파일들을 생성함.
+			//한 게시글의 모든 파일들을 로드함.
 			//파일을 등록하지 않은 경우 파일 없이 수행. if문의 조건에 만족하지 못하면 file 데이터는 없는것.
+			//fileList 객체의 결과가 없으면 if문을 들어가지 않고 바로 빠져나와 파일의 개수가 0이고, 내용은 비어있음.
 			List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
 			System.out.println("파일의 개수 : " + fileList.size());
 			List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
 			if(!fileList.isEmpty()) {
 				for(int j = 0; j < fileList.size(); j++) {
 					//리스트에 먼저 추가를하고 키 값을 그후에 넣어야함. 없는 객체에 뭘 넣는건 불가능함.
-					fileListDTO.add(Load.toHtml(fileList.get(j)));
-					fileListDTO.get(j).setPostId(findId);
+					fileListDTO.add(Load.toHtml(fileList.get(j)));	//DTO로 바꾸는 메소드 수행.
+					fileListDTO.get(j).setPostId(findId);	//바로 직전 메소드에서 postID는 넣지 않음. 따로 넣는 과정.
 					System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
 				}
 
 			}
-			file.put("file_length", fileList.size());	//게시글의 파일 개수 저장.
-			file.put("file_list", fileListDTO);	//camel형으로 키값을 자동으로 바꿈.
+			file.put("file_length", fileList.size());	//방금 작업 완료한 게시글의 파일 개수 저장.
+			file.put("file_list", fileListDTO);	//키값은 스네이크형으로 적고 오버라이딩된 camelHashMap클래스의 메소드를 따라감. 
+			//camel형으로 키값을 자동으로 바꿈.
 			System.out.println("멥에 다 넣은 결과 : " + file);
 		}
 		System.out.println("파일 리스트 정보 담기 완료..... 화면단으로 넘길 준비를 합니다." );
@@ -352,7 +436,7 @@ public class PostController {
 												   .userId(post.getMglgUser().getUserId())
 												   .restNm(post.getRestNm())
 												   .build();
-
+			
 			response.setItem(returnPostDTO);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {

@@ -1,9 +1,16 @@
 let title;
+//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
+//포스팅 글들의 id를 관리하는데 사용함.
+//해당 배열은 파일 처리 이벤트에서 많이 쓰게될 예정.
+let postIdList = [];
+let flagList = [];
+let postFileIdList = [];
+
 
 $(function() {
 	//ajax로 이벤트 함수를 다시 빌드하는 객체를 따로 정의
 	$.update_post = function() {
-		$($(".updateBtn")[0]).click(function() {
+		$($(".updateBtn")[0]).click(function(e) {
 			console.log("회원의 수정버튼 이벤트 함수 적용 확인.");
 			flagList[0] = !flagList[0];
 			if (flagList[0]) {
@@ -54,9 +61,9 @@ $(function() {
 			flagList[i] = !flagList[i];
 			if (flagList[i]) {
 				$(this).text("돌아가기");
-				$("<button id='deleteButton" + $(this).val() + "'>").appendTo($(this).parent());
+				$("<button type='button' id='deleteButton" + $(this).val() + "'>").appendTo($(this).parent());
 				$("#deleteButton" + $(this).val()).text("글 삭제");
-				$("<button id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
+				$("<button type='button' id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
 				$("#updateButton" + $(this).val()).text("게시글 수정하기");
 			} else {
 				$(this).text("게시글 수정")
@@ -73,7 +80,6 @@ $(function() {
 				$("#postContent" + $(this).val()).hide();
 				$("#contentIn" + $(this).val()).show();
 			}
-
 			console.log("버튼 이벤트 html단 활성화");
 			$("#updateButton" + postIdList[i]).click(function(e) {
 				$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());
@@ -99,6 +105,11 @@ $(function() {
 
 function inputTitle(title) {
 	$('#inputRestNm').val(title)
+}
+
+function updateFormOn() {
+	text = "";
+	text += ``;
 }
 
 //포스팅 html단에 표시하는 함수. 문자열 값을 반환

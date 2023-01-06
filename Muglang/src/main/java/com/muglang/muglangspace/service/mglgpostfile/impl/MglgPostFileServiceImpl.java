@@ -49,7 +49,7 @@ public class MglgPostFileServiceImpl implements MglgPostFileService{
 		
 		mglgPostFileRepository.flush();
 	}
-
+	//포스트의 아이디에 해당하는 모든 파일리스트를 찾아서 지운다.
 	@Override
 	public void deletePostFileList(int postId) {
 		// TODO Auto-generated method stub
