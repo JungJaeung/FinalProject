@@ -200,9 +200,10 @@
 							console.log(obj);
 							console.log("로그인한 계정 : " + loginUserId);
 							insert_post = post(obj.item);
-
+							
 							//$("#posts").html(insert_post);
 							//html단 뿌리기
+							
 							$("#posts").prepend($(insert_post));
 							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
 							flagList.unshift(false);

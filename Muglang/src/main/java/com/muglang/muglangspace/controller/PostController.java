@@ -157,7 +157,8 @@ public class PostController {
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
 			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
-			System.out.println("반환하는 포스팅 데이터 : " + returnMap.get("insertPost"));
+			returnMap.put("postFileList", uploadFileList);
+			System.out.println("파일 리스트 : " + uploadFileList);
 			responseDTO.setItem(returnMap);
 			System.out.println("새로운 글을 추가합니다.");
 			return ResponseEntity.ok().body(responseDTO); 
