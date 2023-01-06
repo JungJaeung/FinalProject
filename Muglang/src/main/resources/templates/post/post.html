@@ -10,7 +10,8 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			const loginUserId = /*[[${loginUser.userId}]]*/;
-			/*
+			
+			
 			//추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
 			let uploadFiles = [];
 			//기존 첨부파일 배열
@@ -19,7 +20,7 @@
 			let originFileList = [];
 			//변경된 첨부파일 배열
 			let changedFiles = [];
-			*/
+			
 			//댓글 페이지수
 			let comment_page_num = 0;
 
@@ -697,10 +698,6 @@
 				*/
 			}
 
-			function fnChangeTitle(input) {
-				$("#")
-			}
-
 		</script>
 	</th:block>
 </head>
@@ -889,13 +886,16 @@
 													<img th:src="@{'/upload/' + ${file.postFileNm}}">
 												</div>
 											</div>
-											<input type="hidden" id="updateBtnAtt" name="uploadFiles" value="" multiple="multiple">
+											<div class="uploadFileSpace">
+												<input type="file" th:id="'updateBtnAtt' + ${post.postId}" name="uploadFiles" multiple="multiple">
+											</div>
+											<div th:id="'postAttZone' + ${post.postId}" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>
 											<input type="hidden" th:id="'changedFiles' + ${post.postId}" name="changedFiles" value="" multiple="multiple">
 											<input type="hidden" name="originFiles" th:id="'originFiles' + ${post.postId}" value="">
 											<input type="hidden" id="userId" name="userId" th:value="${post.userId}">
 											<input type="hidden" id="postContentIn" name="postContent" th:value="${post.postContent}">
 										</form>
-										<div class="buttons fileBtns" th:id="'buttonBox' + ${post.postId}" th:if="${post.userId} eq ${loginUser.userId}">
+										<div class="buttons fileBtns" th:id="'buttonBox' + ${post.postId}" th:if="${post.userId} eq ${loginUser.userId}" th:value="${post.postId}">
 											<button type="button" th:id="'fileRequest' + ${post.postId}">파일 관리창 열기</button>&emsp;
 											<button type="button" th:id="'fileRemove' + ${post.postId}">파일 전부 삭제</button>
 										</div>
