@@ -15,14 +15,17 @@
 			/*<![CDATA[*/
 
 			function new_window(commentId, postId) {
-				window.open(
+				pop = window.open(
 					"commentWindow?commentId=" + commentId + "&postId=" + postId,
 					"Comment",
 					"width=750, height=200, top=50, left=50"
 				);
 			}
 		/*]]>*/
-
+			function closeCallback() {
+				pop.close();
+				location.reload();
+			}
 		</script>
 	</th:block>
 </head>

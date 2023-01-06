@@ -58,7 +58,7 @@
 									<!--회원 이름, 아이디-->
 									<div style="width: 70%; float: left; margin-top: 5px;">
 										<div th:style="${user.reportCnt >=3? 'font-weight: bold;color:red':'font-weight: bold;color:black'}"
-											th:text="${user.userName}"></div>
+											th:text="${user.userName}+'('+${user.userId}+')'"></div>
 										<div style="color: #aaaaaa; font-size: x-small;" th:text="${user.email}"></div>
 									</div>
 									<!--정지,추방 버튼-->

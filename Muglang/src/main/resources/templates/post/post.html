@@ -44,9 +44,9 @@
 			let postFileIdList = [];
 			$(function () {
 				const userId = /*[[${#authentication.principal.username}]]*/;
-				
+
 				console.log(userId);
-				
+
 				let list = $('.post').get();
 
 				for (let i = 0; i < list.length; i++) {
@@ -312,7 +312,12 @@
 								comment_date = now - comment_date;
 
 								console.log(comment_date);
-								text_comment += `<div class="comment_info" style="margin-bottom: 30px;  position:relative;">`
+								if (loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
+									text_comment += `<div class="comment_info" style="margin-bottom: 30px; background-color: rgba(0, 0, 0, 0.08);  position:relative;">`									
+								} else {
+									text_comment += `<div class="comment_info" style="margin-bottom: 30px;  position:relative;">`									
+
+								}
 								text_comment += `<div class="filter" style="margin-top: 15px; position: absolute; top:-12px; right:10px;">`
 								//댓글에 시간 표시하는 로직.
 								if (comment_date / (1000 * 60 * 60 * 24 * 30 * 12) > 1) {
@@ -332,11 +337,20 @@
 								}
 								text_comment += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`;
 								text_comment += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
-								if (/*[[${loginUser.userId}]]*/loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
+								if (loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
 									text_comment += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`
 									text_comment += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`
 								} else {
-									text_comment += `<li><a class="dropdown-item" href="#" href="#"></i>&emsp;신고하기</a></li>`
+
+									text_comment += `
+													<form action="/comment/reportComment" method="post">
+													<li>
+														<input type="hidden" name="postId" value="${postId}">
+														<input type="hidden" name="postUserId" value="${comment.mglgUser.userId}">
+														<input type="hidden" name="commentId" value="${comment.commentId}">
+														<input type="submit" class="dropdown-item" value="코멘트 신고하기">
+													</li>
+													</form>`
 								}
 								text_comment += `</ul>`
 								text_comment += `</div>`
@@ -387,7 +401,7 @@
 							url: '/comment/insertComment',
 							type: 'post',
 							data: {
-								userId: /*[[${loginUser.userId}]]*/loginUserId,
+								userId: loginUserId,
 								postId: postId,
 								commentContent: $("#insert_text" + postId).val()
 							},
@@ -600,7 +614,8 @@
 
 											console.log(comment_date);
 
-											comment_text_scroll += `<div class="comment_info" style="margin-bottom: 30px;  position:relative;">`;
+											comment_text_scroll += `<div class="comment_info" style="margin-bottom: 30px; background-Color:red;  position:relative;">`;
+												
 											comment_text_scroll += `<div class="filter" style="margin-top: 15px; position: absolute; top:-12px; right:10px;">`;
 											comment_text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`;
 											//댓글에 시간 표시하는 로직.
@@ -621,7 +636,7 @@
 											}
 
 											comment_text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
-											if (/*[[${loginUser.userId}]]*/loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
+											if (loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
 												comment_text_scroll += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`;
 												comment_text_scroll += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`;
 											} else {
@@ -850,137 +865,143 @@
 												th:value="${file.postId}">
 												<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
 											<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-											<div th:if="${#authentication.principal.mglgUser.userId == post.userId}">
-												<input type="hidden" id="postFileId" th:class="'postFileId' + ${file.postId}" 
-														name="postFileId" 
+												<div
+													th:if="${#authentication.principal.mglgUser.userId == post.userId}">
+													<input type="hidden" id="postFileId"
+														th:class="'postFileId' + ${file.postId}" name="postFileId"
 														th:value="${file.postFileId}">
-												<input type="hidden" id="postFileNm" class="postFileNm" 
-														name="postFileNm" 
-														th:value="${file.postFileNm}">
-												<input type="file" th:id="'changedFile' + ${file.postFileId}" 
-													   th:name="'changedFile' + ${file.postFileId}"
-													   style="display: none;" 
-													   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], event)">
-												<img th:if="${file.postFileCate} == 'img'" 
-														 th:id="'img' + ${file.postFileId}" 
-														 th:src="@{'/upload/' + ${file.postFileNm}}"
-													 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-														 class="fileImg" 
-														 th:onclick="fnImgChange([[${file.postFileId}]])">
-												<img th:unless="${file.postFileCate} == 'img'" 
-														 th:id="'img' + ${file.postFileId}"
-														 th:src="@{/assets/img/defaultFileImg.png}"
-														 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-														 class="fileImg" 
-														 th:onclick="fnImgChange([[${file.postFileId}]])">
-												<input th:if="${post.userId} eq ${loginUser.userId}" type="button" class="btnDel" value="x" th:data-del-file="${file.postFileId}"
-														   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-														   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-														   onclick="fnImgDel(event)">
+													<input type="hidden" id="postFileNm" class="postFileNm"
+														name="postFileNm" th:value="${file.postFileNm}">
+													<input type="file" th:id="'changedFile' + ${file.postFileId}"
+														th:name="'changedFile' + ${file.postFileId}"
+														style="display: none;"
+														th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], event)">
+													<img th:if="${file.postFileCate} == 'img'"
+														th:id="'img' + ${file.postFileId}"
+														th:src="@{'/upload/' + ${file.postFileNm}}"
+														style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
+														class="fileImg"
+														th:onclick="fnImgChange([[${file.postFileId}]])">
+													<img th:unless="${file.postFileCate} == 'img'"
+														th:id="'img' + ${file.postFileId}"
+														th:src="@{/assets/img/defaultFileImg.png}"
+														style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
+														class="fileImg"
+														th:onclick="fnImgChange([[${file.postFileId}]])">
+													<input th:if="${post.userId} eq ${loginUser.userId}" type="button"
+														class="btnDel" value="x" th:data-del-file="${file.postFileId}"
+														style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+														   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;" onclick="fnImgDel(event)">
+												</div>
+												<div
+													th:if="${#authentication.principal.mglgUser.userId != post.userId}">
+													<img th:src="@{'/upload/' + ${file.postFileNm}}">
+												</div>
 											</div>
-											<div th:if="${#authentication.principal.mglgUser.userId != post.userId}">
-												<img th:src="@{'/upload/' + ${file.postFileNm}}">
+											<div class="buttons" th:id="'buttonBox' + ${post.postId}"
+												th:if="${post.userId} eq ${loginUser.userId}">
+												<button th:id="'fileRequest' + ${post.postId}">파일 관리창 열기</button>&emsp;
+												<button th:id="'fileRemove' + ${post.postId}">파일 삭제</button>
 											</div>
-										</div>
-										<div class="buttons" th:id="'buttonBox' + ${post.postId}" th:if="${post.userId} eq ${loginUser.userId}">
-											<button th:id="'fileRequest' + ${post.postId}">파일 관리창 열기</button>&emsp;
-											<button th:id="'fileRemove' + ${post.postId}">파일 삭제</button>
-										</div>
-										<div class="activity">
-											<!-- 게시글 내용부분-->
+											<div class="activity">
+												<!-- 게시글 내용부분-->
 
-											<div th:id="'postContent' + ${post.postId}" th:text="${post.postContent}">
+												<div th:id="'postContent' + ${post.postId}"
+													th:text="${post.postContent}">
+												</div>
+												<textarea th:id="'contentIn' + ${post.postId}" name="contentIn"
+													col="200" row="40" th:text="${post.postContent}"
+													style="display: none; resize: none;"></textarea>
+												<br>
+												<!-- 해시태그 -->
+												<a href="#" style="color: blue;">&emsp;#강남맛집</a>
+												<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>
+												<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>
 											</div>
-											<textarea th:id="'contentIn' + ${post.postId}" name="contentIn" col="200"
-												row="40" th:text="${post.postContent}"
-												style="display: none; resize: none;"></textarea>
-											<br>
-											<!-- 해시태그 -->
-											<a href="#" style="color: blue;">&emsp;#강남맛집</a>
-											<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>
-											<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a>
-										</div>
-										<!-- 좋아요 댓글 아이콘 -->
-										<div class="activity">
-											<i th:if="${post.postLike} == 'N'" class="ri-heart-3-line post_like"
-												th:id="${post.postId}"
-												style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
-											<i th:if="${post.postLike} == 'Y'" class="ri-heart-3-line post_like"
-												th:id="${post.postId}"
-												style="font-size: 30px; margin-right: 5px; color:red; cursor: pointer;"></i>
-											<i class="ri-message-3-line msg_icon" th:id="${post.postId}"
-												style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
-											<i th:if="${post.restaurant} == 'Y'" class="ri-map-pin-2-line map_icon"
-												th:id="${post.postId}"
-												style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
-											<br>
-											<!--좋아요 숫자 필드-->
-											<a>좋아요 <span th:id="'likeCnt' + ${post.postId}"
-													th:text="${post.likeCnt}"></span>개</a>
-											<hr>
-										</div>
+											<!-- 좋아요 댓글 아이콘 -->
+											<div class="activity">
+												<i th:if="${post.postLike} == 'N'" class="ri-heart-3-line post_like"
+													th:id="${post.postId}"
+													style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
+												<i th:if="${post.postLike} == 'Y'" class="ri-heart-3-line post_like"
+													th:id="${post.postId}"
+													style="font-size: 30px; margin-right: 5px; color:red; cursor: pointer;"></i>
+												<i class="ri-message-3-line msg_icon" th:id="${post.postId}"
+													style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
+												<i th:if="${post.restaurant} == 'Y'" class="ri-map-pin-2-line map_icon"
+													th:id="${post.postId}"
+													style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>
+												<br>
+												<!--좋아요 숫자 필드-->
+												<a>좋아요 <span th:id="'likeCnt' + ${post.postId}"
+														th:text="${post.likeCnt}"></span>개</a>
+												<hr>
+											</div>
 
-										<!-- 내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. -->
-										<form class="data" action="/post/deletePost" th:method="post">
-											<input type="hidden" id="restNmIn" name="restNm" th:value="${post.restNm}">
-											<input type="hidden" id="postContentIn" name="postContent"
-												th:value="${post.postContent}">
-											<input type="hidden" id="userId" name="userId" th:value="''+${post.userId}">
-											<input type="hidden" id="postId" name="postId" th:value="''+${post.postId}">
-											<input type="hidden" id="postDate" name="postDate"
-												th:value="''+${post.postDate}">
+											<!-- 내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. -->
+											<form class="data" action="/post/deletePost" th:method="post">
+												<input type="hidden" id="restNmIn" name="restNm"
+													th:value="${post.restNm}">
+												<input type="hidden" id="postContentIn" name="postContent"
+													th:value="${post.postContent}">
+												<input type="hidden" id="userId" name="userId"
+													th:value="''+${post.userId}">
+												<input type="hidden" id="postId" name="postId"
+													th:value="''+${post.postId}">
+												<input type="hidden" id="postDate" name="postDate"
+													th:value="''+${post.postDate}">
 
-										</form>
-										<!-- 친구 식사 했는지 확인 필드 -->
-										<div class="activity" style="text-align: center;">
-											<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>
-												<span>감성타코</span>에서 식사하셨어요!</a>
+											</form>
+											<!-- 친구 식사 했는지 확인 필드 -->
+											<div class="activity" style="text-align: center;">
+												<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>
+													<span>감성타코</span>에서 식사하셨어요!</a>
 
-											<input type="hidden" class="test" value="">
-											<button class="updateBtn" id="updateButton" th:value="${post.postId}"
-												th:if="${post.userId} eq ${loginUser.userId}">게시글 수정</button>
+												<input type="hidden" class="test" value="">
+												<button class="updateBtn" id="updateButton" th:value="${post.postId}"
+													th:if="${post.userId} eq ${loginUser.userId}">게시글 수정</button>
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-							<!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
-							<div id="post_scroll_div" class="col-12"></div>
-						</div>
-
-					</div><!-- End Left side columns -->
-				</div>
-			</div>
-			<!-- Right side columns -->
-			<div class="col-lg-4 col-xxl-3">
-
-				<!-- Recent Activity -->
-				<div class="card">
-					<div class="card-body">
-						<h5 class="card-title"
-							style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
-							먹거리 <span>| Today</span></h5>
-						<div class="activity">
-							<div id="today_eat">
-								<ol>
-									<li><a href="#"><b>#치킨</b></a></li>
-									<li><a href="#"><b>#보쌈</b></a></li>
-									<li><a href="#"><b>#연어초밥</b></a></li>
-									<li><a href="#"><b>#우육면</b></a></li>
-									<li><a href="#"><b>#마라탕</b></a></li>
-									<li><a href="#"><b>#짜장면</b></a></li>
-									<li><a href="#"><b>#라멘</b></a></li>
-									<li><a href="#"><b>#갈비</b></a></li>
-									<li><a href="#"><b>#곱창</b></a></li>
-									<li><a href="#"><b>#막창</b></a></li>
-
-								</ol>
+								<!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
+								<div id="post_scroll_div" class="col-12"></div>
 							</div>
 
-						</div>
-
+						</div><!-- End Left side columns -->
 					</div>
-				</div><!-- End Recent Activity -->
-			</div><!-- End Right side columns -->
+				</div>
+				<!-- Right side columns -->
+				<div class="col-lg-4 col-xxl-3">
+
+					<!-- Recent Activity -->
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title"
+								style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
+								먹거리 <span>| Today</span></h5>
+							<div class="activity">
+								<div id="today_eat">
+									<ol>
+										<li><a href="#"><b>#치킨</b></a></li>
+										<li><a href="#"><b>#보쌈</b></a></li>
+										<li><a href="#"><b>#연어초밥</b></a></li>
+										<li><a href="#"><b>#우육면</b></a></li>
+										<li><a href="#"><b>#마라탕</b></a></li>
+										<li><a href="#"><b>#짜장면</b></a></li>
+										<li><a href="#"><b>#라멘</b></a></li>
+										<li><a href="#"><b>#갈비</b></a></li>
+										<li><a href="#"><b>#곱창</b></a></li>
+										<li><a href="#"><b>#막창</b></a></li>
+
+									</ol>
+								</div>
+
+							</div>
+
+						</div>
+					</div><!-- End Recent Activity -->
+				</div><!-- End Right side columns -->
 		</section>
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">
@@ -1110,7 +1131,7 @@
 										});
 									})
 								}
-								
+
 								$.map_button();
 
 							})

@@ -12,6 +12,8 @@ public interface MglgCommentService {
 
 	void deleteComment(int commentId, int postId);
 
+	String reportComment(int postId,int commentId,int postUserId,int userId);
+	
 //	void insertComment(MglgComment comment);
 //	
 //	void updateComment(MglgComment comment);

@@ -1,6 +1,7 @@
 package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.muglang.muglangspace.dto.MglgCommentDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
+import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
@@ -94,7 +97,6 @@ public class CommentController {
 			System.out.println(comment1);
 		}
 		try {
-			System.out.println("댓글 조회 ㄱㄱ");
 //			returnMap.put("commentList", pageCommentList);
 //			returnMap.put("", pageCommentList.getPageable().getPageNumber());
 			return ResponseEntity.ok().body(pageCommentList);
@@ -152,6 +154,32 @@ public class CommentController {
 			@RequestParam("commentContent") String commentContent) throws IOException {
 		System.out.println("댓글 수정");
 		mglgCommentService.updateComment(commentId, postId, commentContent);
+	}
+	//댓글 신고하기
+	@PostMapping("reportComment")
+	public void reportComment(HttpServletResponse response,@RequestParam("postId") int postId,
+								@RequestParam("commentId") int commentId,@RequestParam("postUserId") int postUserId,
+								@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		int userId = loginUser.getMglgUser().getUserId();
+		String msg = mglgCommentService.reportComment(postId,commentId,postUserId,userId);
+		String url = "/post/mainPost";
+		
+		if(msg.equals("self")) {
+			msg= "자신의 댓글은 신고할 수 없습니다.";
+		}else if(msg.equals("success")) {
+			msg= commentId+"번 댓글을 신고했습니다.";
+		}else {
+			msg= "중복해서 신고할 수 없습니다.";
+		}
+	    try {
+			response.setContentType("text/html; charset=utf-8");
+			PrintWriter w = response.getWriter();
+	        w.write("<script>alert('"+msg+"');location.href='"+url+"';</script>");
+			w.flush();
+			w.close();
+	    } catch(Exception e) {
+			e.printStackTrace();
+	    }
 	}
 
 	

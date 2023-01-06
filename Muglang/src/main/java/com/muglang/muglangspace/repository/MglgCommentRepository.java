@@ -48,7 +48,20 @@ public interface MglgCommentRepository extends JpaRepository<MglgComment, MglgCo
 	void updateComment(@Param("commentId") int commentId, @Param("postId") int postId,
 			@Param("commentContent") String commentContent);
 
+	//커멘트 신고 로직
+	@Modifying
+	@Query(value = ""
+			+ "INSERT INTO T_MGLG_REPORT VALUES("
+			+ "(SELECT IFNULL(MAX(A.REPORT_ID), 0) + 1 FROM T_MGLG_REPORT A),1,:commentId,:postId,NOW(),:userId,:postUserId"
+			+ ")", nativeQuery = true)
+	void reportComment(@Param("postId") int postId,@Param("commentId") int commentId,@Param("postUserId") int postUserId,@Param("userId") int userId );		
 	
+	//커멘트 다중 신고 방지 로직
+	@Query(value = ""
+			+ "SELECT COUNT(*) FROM T_MGLG_REPORT "
+			+ "WHERE SOURCE_USER_ID= :userId AND POST_Id = :postId AND COMMENT_Id = :commentId", nativeQuery = true)
+	int reportCommentCheck(@Param("postId")int postId,@Param("commentId")int commentId,@Param("userId")int userId);	
+
 	
 //	@Modifying
 //	@Query(value="UPDATE T_MGLG_COMMENT SET COMMENT_CONTENT = :#{#mglgComment.commentContent}"
