@@ -38,6 +38,22 @@ let changedFiles = [];
 			e.preventDefault();
 			$("#btnAtt").click();
 		});
+		
+		$('.fileBtns').hide();
+		
+		//자신이 게시한 글의 파일을 수정할 수 있는 버튼에 대한 이벤트 조작 생성.
+		$('.fileBtns').each(function(i, e) {
+			$("#fileRequest" + postIdList[i]).click(function(e) {
+				console.log("파일 요청 조작 활성화");
+				
+			});
+			
+			$("#fileRemove" + postIdList[i]).click(function(e) {
+				console.log("파일 삭제 요청 활성화");	
+			});
+		});
+		
+		
 
 		$.btnAtt = function() {
 			$("#btnAtt").on("change", function(e) {
@@ -270,7 +286,8 @@ let changedFiles = [];
 	}
 	
 
-	function fnGetChangedFileInfo(boardFileNo, e) {
+	function fnGetChangedFileInfo(postFileId, e) {
+		console.log("바꾸는 파일 아이디 : " + postFileId);
 		//변경된 파일 받아오기
 		const files = e.target.files;
 		//받아온 파일 배열 형태로 변경(싱글파일 업로드여서 파일배열 한개의 인자만 담김)
@@ -283,8 +300,8 @@ let changedFiles = [];
 		const reader = new FileReader();
 
 		reader.onload = function (ee) {
-			const img = document.getElementById("img" + boardFileNo);
-			const p = document.getElementById("fileNm" + boardFileNo);
+			const img = document.getElementById("img" + postFileId);
+			const p = document.getElementById("fileNm" + postFileId);
 
 			p.textContent = fileArr[0].name;
 
@@ -298,8 +315,9 @@ let changedFiles = [];
 		reader.readAsDataURL(fileArr[0]);
 
 		//기존 파일을 담고있는 배열에서 변경이 일어난 파일 수정
+		console.log("게시글의 개수 : " + originFileList.length);
 		for (let i = 0; i < originFileList.length; i++) {
-			for (let j = 0; j < originFileList[i].originFiles.length; j++) {
+			for (let j = 0; j < originFileList[i].length; j++) {
 				if (postFileId == originFiles[j].postFileId) {
 					originFiles[j].postFileStatus = "U";
 					originFiles[j].newFileNm = fileArr[0].name;
@@ -339,7 +357,6 @@ let changedFiles = [];
 	//함수에 있는 스크립트는 jQuery선택자가 아닌 배열 내의 데이터를 가지고다루면 됨.
 	//한개의 게시글에 대한 수정작업
 	function fnUpdatePost(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
-		
 		dt = new DataTransfer();
 
 		for (f in uploadFiles) {
@@ -360,12 +377,12 @@ let changedFiles = [];
 		}
 
 		$("#changedFiles" + postIdList[index])[0].files = dt2.files;
-		console.log("파일 수정을 진행하고 있습니다.");
+		console.log(postId + "번 게시글의 파일 수정을 진행하고 있습니다.");
 		//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
 		//배열 형태로 전송 시 백단(Java)에서 처리불가
 		//JSON String 형태로 변환하여 전송한다.
 		$("#originFiles" + postIdList[index]).val(JSON.stringify(originFileList[index]));
-		console.log("원래 파일의 이름 : " + $("originFiles" + postIdList[index]).val());
+		console.log("원래 파일의 이름 : " + $("#originFiles" + postIdList[index]).val());
 		//ajax에서 multipart/form-data형식을 전송하기 위해서는
 		//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
 		//form.serialize()는 multipart/form-data 전송불가

@@ -65,10 +65,12 @@ $(function() {
 				$("#deleteButton" + $(this).val()).text("글 삭제");
 				$("<button type='button' id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
 				$("#updateButton" + $(this).val()).text("게시글 수정하기");
+				$($(".fileBtns")[i]).show();
 			} else {
 				$(this).text("게시글 수정")
 				$("#deleteButton" + $(this).val()).remove();
 				$("#updateButton" + $(this).val()).remove();
+				$($(".fileBtns")[i]).hide();
 			}
 
 			$("#postContent" + $(this).val()).text();
@@ -81,6 +83,9 @@ $(function() {
 				$("#contentIn" + $(this).val()).show();
 			}
 			console.log("버튼 이벤트 html단 활성화");
+			
+			console.log("버튼 파일 조작 화면단 활성화");
+			
 			$("#updateButton" + postIdList[i]).click(function(e) {
 				$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());
 				console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());

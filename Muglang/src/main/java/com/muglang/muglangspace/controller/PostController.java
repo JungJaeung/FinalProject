@@ -177,8 +177,10 @@ public class PostController {
 		//JSON string으로 파일의 원래 있던 파일을 가져오는 형식임.
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
 		
-		List<MglgPostFile> originFileList = new ObjectMapper().readValue(originFiles, 
-				new TypeReference<List<MglgPostFile>>() {});
+		System.out.println("수정 작업 할 맵 DTO 생성 완료");
+		
+		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles, 
+				new TypeReference<List<MglgPostFileDTO>>() {});
 		
 		System.out.println("수정 작업을 실행합니다." + mglgPostDTO);
 		
@@ -215,7 +217,7 @@ public class PostController {
 			//변경하기전의 파일리스트들을 모두 돌아서 해당 파일의 상태에 따라 삭제와 수정을 처리함.
 			for(int i = 0; i < originFileList.size(); i++) {
 				//수정되는 파일 처리
-				if(originFileList.get(i).getPostFileStat().equals("U")) {
+				if(originFileList.get(i).getPostFileStatus().equals("U")) {
 					for(int j = 0; j < changedFiles.length; j++) {
 						if(originFileList.get(i).getNewFileNm().equals(changedFiles[j].getOriginalFilename())) {
 							MglgPostFile targetFile = new MglgPostFile();
@@ -233,7 +235,7 @@ public class PostController {
 					}
 				}
 				//삭제되는 파일 처리
-				else if(originFileList.get(i).getPostFileStat().equals("D")) {
+				else if(originFileList.get(i).getPostFileStatus().equals("D")) {
 					MglgPostFile targetFile = new MglgPostFile();
 					
 					targetFile.setMglgPost(mglgPost);

@@ -800,8 +800,7 @@
 								<!-- 파일의 개수가 몇개 오는지 테스트 하는 임시 자료 추후에 숨김 처리 할 예정 -->
 								<input type="text" th:id="'fileListSize' + ${post.postId}"
 									th:value="${post.fileLength}">
-								<input type="hidden" th:id="'changedFiles' + ${post.postId}" name="changedFiles">
-								<input type="hidden" name="originFiles" th:id="'originFiles' + ${post.postId}">
+
 								<div class="card recent-sales">
 									<div class="card-body">
 										<!-- 오른쪽 정렬된 시간, 드롭다운 버튼 -->
@@ -845,7 +844,7 @@
 												style="width: 40px;">
 											<a href="#" class="card-title" th:text="${post.restNm}"></a>
 										</div>
-										<form th:id="'updateForm' + ${post.postId}" action="/post/updatePost" enctype="multipart/form-data" th:method="put">
+										<form th:id="'updateForm' + ${post.postId}" enctype="multipart/form-data">
 											<!-- 게시글 사진 부분 -->
 											<!-- imgBox는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
 											<div class="activity" style="margin-bottom: 10px;" id="restImgBox">
@@ -860,10 +859,12 @@
 													<input type="hidden" id="postFileNm" class="postFileNm" 
 															name="postFileNm" 
 															th:value="${file.postFileNm}">
+
 													<input type="file" th:id="'changedFile' + ${file.postFileId}" 
 														   th:name="'changedFile' + ${file.postFileId}"
 														   style="display: none;" 
 														   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], event)">
+													
 													<img th:if="${file.postFileCate} == 'img'" 
 															 th:id="'img' + ${file.postFileId}" 
 															 th:src="@{'/upload/' + ${file.postFileNm}}"
@@ -880,17 +881,23 @@
 															   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
 															   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
 															   onclick="fnImgDel(event)">
+													<p th:id="'fileNm' + ${file.postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
+														   th:onclick="fnFileDown([[${file.postId}]], [[${file.postFileId}]])"
+														   th:text="${file.postFileOriginNm}">
 												</div>
 												<div th:if="${#authentication.principal.mglgUser.userId != post.userId}">
 													<img th:src="@{'/upload/' + ${file.postFileNm}}">
 												</div>
 											</div>
+											<input type="hidden" id="updateBtnAtt" name="uploadFiles" value="" multiple="multiple">
+											<input type="hidden" th:id="'changedFiles' + ${post.postId}" name="changedFiles" value="" multiple="multiple">
+											<input type="hidden" name="originFiles" th:id="'originFiles' + ${post.postId}" value="">
 											<input type="hidden" id="userId" name="userId" th:value="${post.userId}">
 											<input type="hidden" id="postContentIn" name="postContent" th:value="${post.postContent}">
 										</form>
-										<div class="buttons" th:id="'buttonBox' + ${post.postId}" th:if="${post.userId} eq ${loginUser.userId}">
-											<button th:id="'fileRequest' + ${post.postId}">파일 관리창 열기</button>&emsp;
-											<button th:id="'fileRemove' + ${post.postId}">파일 삭제</button>
+										<div class="buttons fileBtns" th:id="'buttonBox' + ${post.postId}" th:if="${post.userId} eq ${loginUser.userId}">
+											<button type="button" th:id="'fileRequest' + ${post.postId}">파일 관리창 열기</button>&emsp;
+											<button type="button" th:id="'fileRemove' + ${post.postId}">파일 전부 삭제</button>
 										</div>
 										<div class="activity">
 											<!-- 게시글 내용부분-->
