@@ -132,19 +132,24 @@ public class MglgPostServiceImpl implements MglgPostService {
 	// 포스트 내용을 기준으로 검색
 	@Override
 	public Page<CamelHashMap> searchByPost(String searchKeyword, Pageable pageable) {
-		//받은 키워드로 레포지토리를 이용하여 entity를 가져옴
-		Page<CamelHashMap> mglgPosts = mglgPostRepository.searchByPost(searchKeyword, pageable);
-				
-		// DTO로 바뀐 ENTITY를 리턴
-		return mglgPosts;
+		System.out.println("포스트 내용이 끌고오는 데이터 ↓");
+		mglgPostRepository.searchByPost(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " ＆ \r\n"));
+		return mglgPostRepository.searchByPost(searchKeyword, pageable);
 	}
 	
 	// 닉네임을 기준으로 검색
 	@Override
 	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable) {
-		
-		Page<CamelHashMap> mglgPosts = mglgPostRepository.searchByNick(searchKeyword, pageable);
-		
-		return mglgPosts;
+		System.out.println("닉네임이 끌고오는 데이터 ↓");
+		mglgPostRepository.searchByNick(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " ＆ \r\n"));
+		return mglgPostRepository.searchByNick(searchKeyword, pageable);
+	}
+	  
+	// 해시태그를 기준으로 검색
+	@Override
+	public Page<CamelHashMap> searchByHashtag(String searchKeyword, Pageable pageable) {
+		System.out.println("해시태그가 끌고오는 데이터 ↓");
+		mglgPostRepository.searchByHashtag(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " ＆ \r\n"));
+		return mglgPostRepository.searchByHashtag(searchKeyword, pageable);
 	}
 }
