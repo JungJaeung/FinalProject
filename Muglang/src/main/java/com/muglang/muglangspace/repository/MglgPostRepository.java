@@ -55,9 +55,10 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			countQuery = " SELECT COUNT(*) FROM (SELECT * FROM T_MGLG_POST) D", nativeQuery = true)
 	Page<CamelHashMap> getPagePostList(Pageable pageable, @Param("userId") int userId);
 
-	
+	//포스팅 내용을 수정하는 부분. 파일 정리는 따로 하고 나머지 글의 내용을 고치고, 반영.
 	@Modifying
-	@Query(value="UPDATE T_MGLG_POST SET POST_CONTENT = :#{#mglgPost.postContent} WHERE POST_ID = :#{#mglgPost.postId}", nativeQuery=true)
+	@Query(value="UPDATE T_MGLG_POST SET POST_CONTENT = :#{#mglgPost.postContent} "
+			+ " WHERE POST_ID = :#{#mglgPost.postId}", nativeQuery=true)
 	public void updateMglgPost(@Param("mglgPost") MglgPost mglgPost);
 	
    // 내용을 기준으로 검색
@@ -68,29 +69,68 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
             + "   ON P.USER_ID = U.USER_ID \r\n"
             + "WHERE P.POST_CONTENT LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
             + "ORDER BY P.POST_DATE DESC",
-		   countQuery = " SELECT COUNT(*) FROM T_MGLG_POST P WHERE P.POST_CONTENT LIKE '%:#{#searchKeyword}%'", nativeQuery=true)
+		   countQuery = " SELECT COUNT(*)"
+		   		+ "			FROM ("
+		   		+ "					SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\\r\\n"
+		   		+ "						   POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
+		   		+ "						FROM T_MGLG_POST P\r\n"
+		   		+ "   					INNER JOIN T_MGLG_USER U\r\n"
+	            + "   						ON P.USER_ID = U.USER_ID \r\n"
+	            + "						WHERE P.POST_CONTENT LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
+	            + "						ORDER BY P.POST_DATE DESC\r\n"
+	            + "				) A",
+		   nativeQuery=true)
 	Page<CamelHashMap> searchByPost(@Param("searchKeyword") String searchKeyword, Pageable pageable);
 	
    	// 닉네임을 기준으로 검색
-   @Query(value="SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\r\n"
-  			+ "POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
+    @Query(value="SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\r\n"
+  		   + "POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
            + "FROM T_MGLG_POST P\r\n"
            + "   INNER JOIN T_MGLG_USER U\r\n"
-           + "   ON P.USER_ID = U.USER_ID \r\n"
+           + "   ON P.USER_ID = U.USER_ID\r\n"
            + "WHERE U.USER_NICK LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
            + "ORDER BY P.POST_DATE DESC",
-		   countQuery = " SELECT COUNT(*) FROM T_MGLG_POST P WHERE P.POST_CONTENT LIKE '%:#{#searchKeyword}%'", nativeQuery=true)
+		   countQuery = " SELECT COUNT(*) "
+		   		+ "			FROM ("
+	            + "					SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\r\n"
+	  		    + "						   POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
+	            + "					FROM T_MGLG_POST P\r\n"
+	            + "   				INNER JOIN T_MGLG_USER U\r\n"
+	            + "   					ON P.USER_ID = U.USER_ID\r\n"
+	            + "					WHERE U.USER_NICK LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
+	            + "					ORDER BY P.POST_DATE DESC\r\n"
+			    + "				) A", nativeQuery=true)
 	Page<CamelHashMap> searchByNick(@Param("searchKeyword") String searchKeyword, Pageable pageable);
 	
-	//해시태그 검색
-	Page<MglgPost> findByHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5ContainingOrderByPostDateDesc(
-			@Param("searchKeyword") String searchKeyword1, 
-			@Param("searchKeyword") String searchKeyword2, 
-			@Param("searchKeyword") String searchKeyword3,
-			@Param("searchKeyword") String searchKeyword4, 
-			@Param("searchKeyword") String searchKeyword5, 
-			Pageable pageable
-			);
+	// 해시태그를 기준으로 검색
+    @Query(value="SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\r\n"
+ 		  + "POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
+          + "FROM T_MGLG_POST P\r\n"
+          + "   INNER JOIN T_MGLG_USER U\r\n"
+          + "   ON P.USER_ID = U.USER_ID \r\n"
+          + "WHERE\r\n"
+          + "	P.HASH_TAG1 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+          + "	P.HASH_TAG2 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+          + "	P.HASH_TAG3 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+          + "	P.HASH_TAG4 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+          + "	P.HASH_TAG5 LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
+          + "ORDER BY P.POST_DATE DESC",
+          countQuery = " SELECT COUNT(*) "
+          		+ "		   FROM ("
+        		+ "				  SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\r\n"
+	 		    + "						 POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
+	            + "				  FROM T_MGLG_POST P\r\n"
+	            + "   			  INNER JOIN T_MGLG_USER U\r\n"
+	            + "   			  	ON P.USER_ID = U.USER_ID \r\n"
+	            + "				  WHERE\r\n"
+	            + "					P.HASH_TAG1 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+	            + "					P.HASH_TAG2 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+	            + "					P.HASH_TAG3 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+	            + "					P.HASH_TAG4 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+	            + "					P.HASH_TAG5 LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
+	            + "				  ORDER BY P.POST_DATE DESC\r\n"
+	            + " 			) A", nativeQuery=true)
+	Page<CamelHashMap> searchByHashtag(@Param("searchKeyword") String searchKeyword, Pageable pageable);
 	
  	//포스트 갯수 세기
  	@Query(value="SELECT COUNT(*) AS postCount FROM T_MGLG_POST WHERE USER_ID = :userId", nativeQuery=true)
