@@ -208,7 +208,7 @@
 						for (let i = 0; i < obj.pageItems.content.length; i++) {
 							htmlStr += `
 
-                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+                     			<div class="" style="width: 100%; height: 70px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
 												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
@@ -254,7 +254,7 @@
 							totalPages = obj.pageItems.totalPages;
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+                     			<div class="" style="width: 100%; height: 70px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
 												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
@@ -300,7 +300,7 @@
 							totalPages = obj.pageItems.totalPages;
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+                     			<div class="" style="width: 100%; height: 70px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
 												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
@@ -342,7 +342,7 @@
 							totalPages = obj.pageItems.totalPages;
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+                     			<div class="" style="width: 100%; height: 70px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
 												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
@@ -410,15 +410,19 @@
 						<!--검색-->
 						<div class="card-body">
 								<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
-									onblur="this.placeholder='이름으로 검색'" id="searchKeyword">
+									onblur="this.placeholder='이름으로 검색'" id="searchKeyword" style="width:70%; margin-right: 3%;">
 								<input type="button" value="검색" id="btn_search">
 						</div>
 						<!--붙여넣는곳-->
 						<div class="card-body" style="position: relative;">
 							<button id="btn_prev"
-								style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%);">&#60;</button>
+								style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%); background:none; border:none;">
+									<img th:src="@{/assets/img/left_btn.png}">
+								</button>
 							<button id="btn_next"
-								style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%);">&#62;</button>
+								style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%); background:none; border:none;">
+									<img th:src="@{/assets/img/right_btn.png}">
+								</button>
 							<div id="div_body"></div>
 						</div>
 					</div>

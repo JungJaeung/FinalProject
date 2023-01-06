@@ -53,7 +53,7 @@
 											</div>			
 							`
 							}
-							$("#modalBody").html(htmlStr)
+							$("#fallowing_request").html(htmlStr)
 
 						},
 						error: function (e) {
@@ -62,7 +62,7 @@
 					});
 
 				})
-				
+
 				$("#btn_prev").click(function () {
 					console.log("누르기전page_num===" + page_num);
 					if (page_num < 2) {
@@ -101,7 +101,7 @@
 											</div>			
 							`
 							}
-							$("#modalBody").html(htmlStr)
+							$("#fallowing_request").html(htmlStr)
 
 						},
 						error: function (e) {
@@ -145,7 +145,7 @@
 											</div>			
 							`
 							}
-							$("#modalBody").html(htmlStr)
+							$("#fallowing_request").html(htmlStr)
 							$('#followModal').modal("show");
 
 						},
@@ -350,49 +350,60 @@
 						</div>
 
 					</div>
+				</div>
 
-					<div class="col-lg-4 col-xxl-3">
+				<div class="col-lg-4 col-xxl-3">
 
-						<div class="card" style="text-align: center;" id="followingCard">
-							<h5 class="card-title" style="font-weight: bold;">팔로잉 요청</h5>
-							<a style="color:lightgray; font-size: small;" th:text="'총 '+${followCnt}+'개의 요청'"></a>
+					<div class="card" style="text-align: center;" id="followingCard">
+						<h5 class="card-title" style="font-weight: bold;">팔로잉 요청</h5>
+						<a style="color:lightgray; font-size: small;" th:text="'총 '+${followCnt}+'개의 요청'"></a>
 
-							<div class="card-body" th:id="'bodyHtml' + ${requestStat.index}"
-								th:each="request : ${requestList}">
-								<!--팔로잉 요청1-->
-								<div class="follow_request mb-5">
-									<span style="float: left;"><img class="img-fluid rounded-circle"
-											th:src="@{/assets/img/messages-1.jpg}" style="width: 90px;"></span>
-									<span style="word-break: keep-all;"><b th:text="${request.userName}"></b>님이 당신을
-										하셨어요!!</span>
-									<div>
-										<form action="/social/followUser" method="post">
-											<input type="hidden" th:value="${request.userId}" name="followerId">
-											<input type="submit" class="btn mt-1"
-												style="background-color:#DCEBFF; color: #6e6e6e;" value="팔로우"></input>
-										</form>
-									</div>
+						<div class="card-body" th:id="'bodyHtml' + ${requestStat.index}"
+							th:each="request : ${requestList}">
+							<!--팔로잉 요청1-->
+							<div class="follow_request mb-5">
+								<span style="float: left;"><img class="img-fluid rounded-circle"
+										th:src="@{/assets/img/messages-1.jpg}" style="width: 90px;"></span>
+								<span style="word-break: keep-all;"><b th:text="${request.userName}"></b>님이 당신을
+									하셨어요!!</span>
+								<div>
+									<form action="/social/followUser" method="post">
+										<input type="hidden" th:value="${request.userId}" name="followerId">
+										<input type="submit" class="btn mt-1"
+											style="background-color:#DCEBFF; color: #6e6e6e;" value="팔로우"></input>
+									</form>
 								</div>
-							</div>
-							<button id="btnFull">전체 요청 보기</button>
-							<!--모달 처리-->
-							<div class="modal fade" id="followModal" role="dialog">
-								<div class="modal-dialog modal-dialog-centered">
-									<div class="modal-content" id="modal-content">
-										<div class="modal-body overflow-auto" id="modalBody">
-
-
-										</div>
-									<button id="btn_prev">&#60;</button>
-									<button id="btn_next">&#62;</button>					
-									</div>
-								</div>
-
 							</div>
 						</div>
+						<hr>
+						<button id="btnFull" style="margin-top: -17px; background: none; border: none; padding: 10px 0 10px 0;">전체 요청 보기</button>
+						
 					</div>
 				</div>
+			</div>
 		</section>
+		
+		<!--모달 처리-->
+		<div class="modal fade" id="followModal" role="dialog">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content" id="modal-content">
+					<div class="modal-body overflow-auto" style="position: relative;">
+						<div id="fallowing_request">
+						
+						</div>
+						<button id="btn_prev"
+								style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%); background:none; border:none;">
+									<img th:src="@{/assets/img/left_btn.png}">
+								</button>
+							<button id="btn_next"
+								style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%); background:none; border:none;">
+									<img th:src="@{/assets/img/right_btn.png}">
+								</button>
+					</div>
+				</div>
+			</div>
+		
+		</div>
 	</main><!-- End #main -->
 </body>
 
