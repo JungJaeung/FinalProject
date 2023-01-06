@@ -38,8 +38,11 @@
 
 				}
 				$.post_hover();
+				
+				// 포스트, 태그, 유저 닉네임 버튼
+				
 			});
-	
+
 		    // 포스트, 태그, 유저 닉네임 버튼을 위한 jQuery
 			$(function()  {
 				// searchKeyword 값 전달 받기
@@ -121,7 +124,7 @@
 													<div class="card-title">
 														<img class="img-fluid rounded-circle"
 															th:src="@{/assets/img/messages-1.jpg}" style="width: 40px;">
-														<a href="#" class="card-title" th:text="${mglgPost.userNick}">asdf</a>
+														<a href="#" class="card-title" th:text="${mglgPost.userNick}"></a>
 													</div>
 													<div class="activity" style="margin-bottom: 10px;">
 														<img th:src="@{/assets/img/news-1.jpg}" style="width: 100%;">
@@ -272,4 +275,6 @@
 
 	</main><!-- End #main -->
 </body>
+
+
 </html>

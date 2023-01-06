@@ -37,7 +37,7 @@ public class SearchController {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("/search/searchByPost.html");
 		mv.addObject("mglgPosts", mglgPosts);
-		
+		mv.addObject("searchKeyword", searchKeyword);
 		
 		return mv;
 	}
@@ -55,8 +55,29 @@ public class SearchController {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("/search/searchByNick.html");
 		mv.addObject("mglgPosts", mglgPosts);
+		mv.addObject("searchKeyword", searchKeyword);
 		
 		return mv;
 		
+	}
+	
+	// 해시태그를 기준으로 검색
+	@GetMapping("/searchByHashtag")
+	public ModelAndView searchByHashtag(@RequestParam("searchKeyword") String searchKeyword,
+			                         @PageableDefault(page = 0, size = 5)Pageable pageable) {
+
+		log.info("searchByHashtag - SearchKeyword: " + searchKeyword);
+		
+		Page<CamelHashMap> mglgPosts = mglgPostService.searchByNick(searchKeyword, pageable);
+		
+		System.out.println("이것은 해시태그가 불러온 mglgPosts: " + mglgPosts.getContent());
+		
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/search/searchByHashtag.html");
+		mv.addObject("mglgPosts", mglgPosts);
+		mv.addObject("searchKeyword", searchKeyword);
+		
+		return mv;
+	
 	}
 }
