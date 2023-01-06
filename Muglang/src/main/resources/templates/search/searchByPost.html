@@ -42,20 +42,27 @@
 
 		    // 포스트, 태그, 유저 닉네임 버튼을 위한 jQuery
 			$(function()  {
+				$("#tab-pannel1").show();
+				$("#tab-pannel2").hide();
+				$("#tab-pannel3").hide();	
 				// searchKeyword 값 전달 받기
 				//let searchKeyword = [[${searchKeyword}]];
 				
-				
-				$("#searchByPostBtn").on("click", function() {
-					$("#searchByPostForm").submit();
-				});
-				
-				$("#searchByHashtagBtn").on("click", function() {
-					$("#searchByHashTagForm").submit();
-				});
-				
-				$("#searchByNickBtn").on("click", function() {
-					$("#searchByNickForm").submit();
+				//탭전환
+				$("button[name='tabBtn']").on("click", function(e) {
+					if($(e.target).text() == "포스트") {
+						$("#tab-pannel1").show();
+						$("#tab-pannel2").hide();
+						$("#tab-pannel3").hide();						
+					} else if($(e.target).text() == "태그") {
+						$("#tab-pannel1").hide();
+						$("#tab-pannel2").show();
+						$("#tab-pannel3").hide();
+					} else if($(e.target).text() == "유저") {
+						$("#tab-pannel1").hide();
+						$("#tab-pannel2").hide();
+						$("#tab-pannel3").show();
+					}
 				});
 			});
 		</script>
@@ -75,35 +82,26 @@
 						<div class="col-12">
 							<ul class="nav nav-tabs nav-tabs-bordered">
 								<li class="nav-item">
-									<form action="/search/searchByPost" method="get" id="searchByPostForm">
-										<input type="hidden" name="searchKeyword" th:value="${searchKeyword}">
-										<button class="nav-link active" data-bs-toggle="tab"
-											data-bs-target="#search-post" id="searchByPostBtn" type="submit">포스트</button>
-									</form>
+									<button class="nav-link active" data-bs-toggle="tab" name="tabBtn"
+										data-bs-target="#search-post" id="searchByPostBtn" type="button">포스트</button>
 								</li>
 								<li class="nav-item">
-									<form action="/search/searchByHashtag" method="get" id="searchByHashtagForm">
-										<input type="hidden" name="searchKeyword" th:value="${searchKeyword}">
-										<button class="nav-link" data-bs-toggle="tab"
-											data-bs-target="#search-tag" id="searchByHashtagBtn" type="submit">태그</button>
-									</form>
+									<button class="nav-link" data-bs-toggle="tab" name="tabBtn"
+										data-bs-target="#search-tag" id="searchByHashtagBtn" type="button">태그</button>
 								</li>
 								<li class="nav-item">
-									<form action="/search/searchByNick" method="get" id="searchByNickForm">
-										<input type="hidden" name="searchKeyword" th:value="${searchKeyword}">
-										<button class="nav-link" data-bs-toggle="tab"
-											data-bs-target="#search-user" id="searchByNickBtn" type="submit">유저</button>
-									</form>
+									<button class="nav-link" data-bs-toggle="tab" name="tabBtn"
+										data-bs-target="#search-user" id="searchByNickBtn" type="button">유저</button>
 								</li>
 							</ul>
 
 
 							<!--버튼에 관한 각각의 창-->
-							<div class="tab-content pt-1">
+							<div id="tab-pannel1" class="tab-content pt-1">
 								<!--포스트-->
 								<!-- 받아온 POST 정보 삽입 -->
 								<th:block id="card-block">
-									<div class="tab-pane fade show active" id="search-post" th:each="mglgPost : ${mglgPosts}">
+									<div class="tab-pane fade show active" id="search-post" th:each="mglgPostContent : ${mglgPostsContent}">
 										<div class="row">
 											<div class="col-12">
 												<div class="card-body search_post"
@@ -121,19 +119,171 @@
 													<div class="card-title">
 														<img class="img-fluid rounded-circle"
 															th:src="@{/assets/img/messages-1.jpg}" style="width: 40px;">
-														<a href="#" class="card-title" th:text="${mglgPost.userNick}">asdf</a>
+														<a href="#" class="card-title" th:text="${mglgPostContent.userNick}">asdf</a>
 													</div>
 													<div class="activity" style="margin-bottom: 10px;">
 														<img th:src="@{/assets/img/news-1.jpg}" style="width: 100%;">
 													</div>
 													<div class="activity">
-														<div th:text="${mglgPost.postContent}"></div>
+														<div th:text="${mglgPostContent.postContent}"></div>
 														<br>
-														<a href="#" th:text="${mglgPost.hashTag1}" style="color: blue;">&emsp;#</a>
-														<a href="#" th:text="${mglgPost.hashTag2}" style="color: blue;">&emsp;#</a>
-														<a href="#" th:text="${mglgPost.hashTag3}" style="color: blue;">&emsp;#</a>
-														<a href="#" th:text="${mglgPost.hashTag4}" style="color: blue;">&emsp;#</a>
-														<a href="#" th:text="${mglgPost.hashTag5}" style="color: blue;">&emsp;#</a>
+														<a href="#" th:text="|#${mglgPostContent.hashTag1}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostContent.hashTag2}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostContent.hashTag3}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostContent.hashTag4}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostContent.hashTag5}|" style="color: blue;"></a>&emsp;
+													</div>
+													<div class="activity">
+														<a href="#"><i class="ri-heart-3-line"
+																style="font-size: 30px; margin-right: 5px; color:black"></i></a>
+														<a href="#" id="msg_btn"><i class="ri-message-3-line"
+																style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
+														<a href="#"><i class="ri-send-plane-2-line"
+																style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
+														<br>
+														<a>좋아요 <span>21</span>개</a>
+													</div>
+												</div>
+	
+												<hr>
+											</div>
+										</div>
+									</div>
+								</th:block>
+								<!--팔로잉-->
+								<div class="tab-pane fade" id="search-user">
+									<div class="row">
+										<div class="card">
+											<!--팔로잉 리스트-->
+											<div class="" style="width: 100%; height: 70px;">
+												<div class="col-2"
+													style="margin-top: 10px; float: left; text-align: center;"><img
+														class="img-fluid rounded-circle"
+														th:src="@{/assets/img/messages-2.jpg}" style="width: 50px;">
+												</div>
+												<div class="col-10"
+													style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
+													<div><b>asdf</b></div>
+													<div style="color: #aaaaaa; font-size: x-small;">
+														rlckdur123@naver.com</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div id="tab-pannel2" class="tab-content pt-1">
+								<!--포스트-->
+								<!-- 받아온 POST 정보 삽입 -->
+								<th:block id="card-block">
+									<div class="tab-pane fade show active" id="search-post" th:each="mglgPostHashtag : ${mglgPostsHashtag}">
+										<div class="row">
+											<div class="col-12">
+												<div class="card-body search_post"
+													style="border-radius: 16px; position: relative;">
+													<div class="filter" style="margin-top: 10px;">
+														<a class="icon" href="#" data-bs-toggle="dropdown"><i
+																class="bi bi-three-dots"></i></a>
+														<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+															<li><a class="dropdown-item" href="#"><i
+																		class="ri-alarm-warning-line"></i>&emsp;신고하기</a>
+															</li>
+														</ul>
+													</div>
+	
+													<div class="card-title">
+														<img class="img-fluid rounded-circle"
+															th:src="@{/assets/img/messages-1.jpg}" style="width: 40px;">
+														<a href="#" class="card-title" th:text="${mglgPostHashtag.userNick}">asdf</a>
+													</div>
+													<div class="activity" style="margin-bottom: 10px;">
+														<img th:src="@{/assets/img/news-1.jpg}" style="width: 100%;">
+													</div>
+													<div class="activity">
+														<div th:text="${mglgPostHashtag.postContent}"></div>
+														<br>
+														<a href="#" th:text="|#${mglgPostHashtag.hashTag1}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostHashtag.hashTag2}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostHashtag.hashTag3}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostHashtag.hashTag4}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostHashtag.hashTag5}|" style="color: blue;"></a>&emsp;
+													</div>
+													<div class="activity">
+														<a href="#"><i class="ri-heart-3-line"
+																style="font-size: 30px; margin-right: 5px; color:black"></i></a>
+														<a href="#" id="msg_btn"><i class="ri-message-3-line"
+																style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
+														<a href="#"><i class="ri-send-plane-2-line"
+																style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
+														<br>
+														<a>좋아요 <span>21</span>개</a>
+													</div>
+												</div>
+	
+												<hr>
+											</div>
+										</div>
+									</div>
+								</th:block>
+								<!--팔로잉-->
+								<div class="tab-pane fade" id="search-user">
+									<div class="row">
+										<div class="card">
+											<!--팔로잉 리스트-->
+											<div class="" style="width: 100%; height: 70px;">
+												<div class="col-2"
+													style="margin-top: 10px; float: left; text-align: center;"><img
+														class="img-fluid rounded-circle"
+														th:src="@{/assets/img/messages-2.jpg}" style="width: 50px;">
+												</div>
+												<div class="col-10"
+													style="margin-top: 13px; float: left; text-align: center; padding-left: -50%;">
+													<div><b>asdf</b></div>
+													<div style="color: #aaaaaa; font-size: x-small;">
+														rlckdur123@naver.com</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div id="tab-pannel3" class="tab-content pt-1">
+								<!--포스트-->
+								<!-- 받아온 POST 정보 삽입 -->
+								<th:block id="card-block">
+									<div class="tab-pane fade show active" id="search-post" th:each="mglgPostNick : ${mglgPostsNick}">
+										<div class="row">
+											<div class="col-12">
+												<div class="card-body search_post"
+													style="border-radius: 16px; position: relative;">
+													<div class="filter" style="margin-top: 10px;">
+														<a class="icon" href="#" data-bs-toggle="dropdown"><i
+																class="bi bi-three-dots"></i></a>
+														<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+															<li><a class="dropdown-item" href="#"><i
+																		class="ri-alarm-warning-line"></i>&emsp;신고하기</a>
+															</li>
+														</ul>
+													</div>
+	
+													<div class="card-title">
+														<img class="img-fluid rounded-circle"
+															th:src="@{/assets/img/messages-1.jpg}" style="width: 40px;">
+														<a href="#" class="card-title" th:text="${mglgPostNick.userNick}">asdf</a>
+													</div>
+													<div class="activity" style="margin-bottom: 10px;">
+														<img th:src="@{/assets/img/news-1.jpg}" style="width: 100%;">
+													</div>
+													<div class="activity">
+														<div th:text="${mglgPostNick.postContent}"></div>
+														<br>
+														<a href="#" th:text="|#${mglgPostNick.hashTag1}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostNick.hashTag2}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostNick.hashTag3}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostNick.hashTag4}|" style="color: blue;"></a>&emsp;
+														<a href="#" th:text="|#${mglgPostNick.hashTag5}|" style="color: blue;"></a>&emsp;
 													</div>
 													<div class="activity">
 														<a href="#"><i class="ri-heart-3-line"

@@ -69,7 +69,17 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
             + "   ON P.USER_ID = U.USER_ID \r\n"
             + "WHERE P.POST_CONTENT LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
             + "ORDER BY P.POST_DATE DESC",
-		   countQuery = " SELECT COUNT(*) FROM T_MGLG_POST P WHERE P.POST_CONTENT LIKE '%:#{#searchKeyword}%'", nativeQuery=true)
+		   countQuery = " SELECT COUNT(*)"
+		   		+ "			FROM ("
+		   		+ "					SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\\r\\n"
+		   		+ "						   POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
+		   		+ "						FROM T_MGLG_POST P\r\n"
+		   		+ "   					INNER JOIN T_MGLG_USER U\r\n"
+	            + "   						ON P.USER_ID = U.USER_ID \r\n"
+	            + "						WHERE P.POST_CONTENT LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
+	            + "						ORDER BY P.POST_DATE DESC\r\n"
+	            + "				) A",
+		   nativeQuery=true)
 	Page<CamelHashMap> searchByPost(@Param("searchKeyword") String searchKeyword, Pageable pageable);
 	
    	// 닉네임을 기준으로 검색
@@ -77,10 +87,19 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
   		   + "POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
            + "FROM T_MGLG_POST P\r\n"
            + "   INNER JOIN T_MGLG_USER U\r\n"
-           + "   ON P.USER_ID = U.USER_ID \r\n"
+           + "   ON P.USER_ID = U.USER_ID\r\n"
            + "WHERE U.USER_NICK LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
            + "ORDER BY P.POST_DATE DESC",
-		   countQuery = " SELECT COUNT(*) FROM T_MGLG_POST P WHERE P.POST_CONTENT LIKE '%:#{#searchKeyword}%'", nativeQuery=true)
+		   countQuery = " SELECT COUNT(*) "
+		   		+ "			FROM ("
+	            + "					SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\r\n"
+	  		    + "						   POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
+	            + "					FROM T_MGLG_POST P\r\n"
+	            + "   				INNER JOIN T_MGLG_USER U\r\n"
+	            + "   					ON P.USER_ID = U.USER_ID\r\n"
+	            + "					WHERE U.USER_NICK LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
+	            + "					ORDER BY P.POST_DATE DESC\r\n"
+			    + "				) A", nativeQuery=true)
 	Page<CamelHashMap> searchByNick(@Param("searchKeyword") String searchKeyword, Pageable pageable);
 	
 	// 해시태그를 기준으로 검색
@@ -96,7 +115,21 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
           + "	P.HASH_TAG4 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
           + "	P.HASH_TAG5 LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
           + "ORDER BY P.POST_DATE DESC",
-		   countQuery = " SELECT COUNT(*) FROM T_MGLG_POST P WHERE P.POST_CONTENT LIKE '%:#{#searchKeyword}%'", nativeQuery=true)
+          countQuery = " SELECT COUNT(*) "
+          		+ "		   FROM ("
+        		+ "				  SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\r\n"
+	 		    + "						 POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
+	            + "				  FROM T_MGLG_POST P\r\n"
+	            + "   			  INNER JOIN T_MGLG_USER U\r\n"
+	            + "   			  	ON P.USER_ID = U.USER_ID \r\n"
+	            + "				  WHERE\r\n"
+	            + "					P.HASH_TAG1 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+	            + "					P.HASH_TAG2 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+	            + "					P.HASH_TAG3 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+	            + "					P.HASH_TAG4 LIKE CONCAT('%', :#{#searchKeyword}, '%') OR\r\n"
+	            + "					P.HASH_TAG5 LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
+	            + "				  ORDER BY P.POST_DATE DESC\r\n"
+	            + " 			) A", nativeQuery=true)
 	Page<CamelHashMap> searchByHashtag(@Param("searchKeyword") String searchKeyword, Pageable pageable);
 	
  	//포스트 갯수 세기
