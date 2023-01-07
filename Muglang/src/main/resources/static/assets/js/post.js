@@ -90,10 +90,9 @@ $(function() {
 			console.log("버튼 이벤트 html단 활성화");
 			
 			console.log("버튼 파일 조작 화면단 활성화" + postIdList[0]);
-			
+			$.updateBtnAtt(postIdList[i]);
 			//내 게시글 파일 관리 버튼
 			$("#fileRequest" + $(this).val()).click(function(e) {
-				$.updateBtnAtt(postIdList[i]);
 				console.log("파일 요청 조작 활성화");
 				$("#updateBtnAtt" + postIdList[i]).click();
 			});
