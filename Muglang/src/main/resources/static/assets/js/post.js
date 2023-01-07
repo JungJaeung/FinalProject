@@ -181,8 +181,10 @@ function post(item) {
 		//text +=	`</div>`;
 		text += `<div class="box" id="imageBox${post.postId}">`;
 		for(let i = 0; i < item.postFileList.length; i++) {
+			console.log("파일의 개수 : " + item.postFileList.length);
 			if(item.loginUser.userId != item.insertPost.userId) {
-				text += `<img src="@{'/upload/' + ${item.postFileList[i].postFileNm}}">`;
+				console.log("사용자가 같지않음.");
+				text += `<img src="/upload/${item.postFileList[i].postFileNm}">`;
 			} else {
 				text += `<input type="hidden" id="postFileId" class="postFileId${item.insertPost.postId}" 
 						name="postFileId" 
@@ -196,12 +198,12 @@ function post(item) {
 					   onchange="fnGetChangedFileInfo(${item.postFileList[i].postFileId}, event)">`;
 				if(item.postFileList[i].postFileCate == "img") {
 					text += `<img id="img${item.postFileList[i].postFileId}" 
-						 src="/upload/${item.postFileList[i].postFileNm}}"
+						 src="/upload/${item.postFileList[i].postFileNm}"
 					 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
 						 class="fileImg" 
 						 onclick="fnImgChange(${item.postFileList[i].postFileId})">`;
 				} else {
-					text += `<img id="img${item.postFileList.postFileId}"
+					text += `<img id="img${item.postFileList[i].postFileId}"
 						 src="/assets/img/defaultFileImg.png"
 						 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
 						 class="fileImg" 
