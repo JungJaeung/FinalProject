@@ -2,7 +2,7 @@
 //전역 변수로 담는 배열들을 미리 선언해두고, 계속 사용할 것임.
 //추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
 let uploadFiles = [];
-//기존 첨부파일 배열
+//기존 첨부파일 배열 - 새 게시글에서 사용하는 첨부파일 배열.
 let originFiles = [];
 //각 게시글들의 첨부파일들을 모은 것을 따로 담을 것임..
 let originFileList = [];
@@ -81,79 +81,7 @@ let changedFiles = [];
 				}
 			});
 		}
-		/*
-		$("#insert_board").on("click", function(e) {
-			e.preventDefault();
-			fnInsertPost(formData);
-		});
-		*/
-		//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
-		//작성 버튼 - 따로 다른 페이지로 이동하지 않고 현재 페이지에서 바로 입력 처리를 시작함.
-		/*
-		$("#insert_board").on("click", function(e) {
-			e.preventDefault();
-			console.log("파일을 전송하는 중입니다.");
-			//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
-			dt = new DataTransfer();
-			
-			for(f in uploadFiles) {
-				const file = uploadFiles[f];
-				dt.items.add(file);
-			}
-			
-			$("#btnAtt")[0].files = dt.files;
 
-			let insert_post = "";
-			//$(".quill-editor-default").text();
-			$("#postContent").val($(".quill-editor-default").text());
-			//$("#postContent").val($(".ql-editor").html());
-			let content = $("#postContent").val();
-			let restNm = $("#restNm").val();
-			console.log("내용 : " + content + "식당명 : " + restNm);
-			//$("#insert_form").submit();
-			$.ajax({
-				enctype: 'multipart/form-data',
-				url: '/post/insertPost',
-				type: 'post',
-				data: {
-					restNm: restNm,
-					postContent: content,
-					viewCount: 0,
-					hashTag1: $("#hashTag1").val(),
-					hashTag2: $("#hashTag2").val(),
-					hashTag3: $("#hashTag3").val(),
-					hashTag4: $("#hashTag4").val(),
-					hashTag5: $("#hashTag5").val(),
-					//파일도 같이 다 화면단으로 보내야함. 배열을 다 옮겨서 보내면됨.
-					
-				},
-				processData: false,
-				contentType: false,
-				success: function(obj) {
-					alert("글 등록에 성공하였습니다.");
-					console.log(obj);
-					console.log("로그인한 계정 : " + loginUserId);
-					insert_post = post(obj.item);
-					
-					//$("#posts").html(insert_post);
-					//html단 뿌리기
-					$("#posts").prepend($(insert_post));
-					//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
-					flagList.unshift(false);
-					postIdList.unshift($($('.updateBtn')[0]).val());
-					//이벤트 다시 적용
-					$.like_button();
-					$.comment_button();
-					$.update_post();
-					
-					
-				}, error: function(e) {
-					console.log(e);
-				}
-			});
-			
-		});
-		*/
 		//게시글 조회에서 사용함. 해당 게시글의 업로드된 파일을 확인.
 		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
 		//수업 때 했던 게시글은 1개이고, 지금 이건 여러개를 뿌려야하기 때문에 게시된 데이터를 다 가지고 와야함.
@@ -361,9 +289,9 @@ let changedFiles = [];
 		console.log("게시글의 개수 : " + originFileList.length);
 		for (let i = 0; i < originFileList.length; i++) {
 			for (let j = 0; j < originFileList[i].length; j++) {
-				if (postFileId == originFiles[j].postFileId) {
-					originFiles[j].postFileStatus = "U";
-					originFiles[j].newFileNm = fileArr[0].name;
+				if (postFileId == originFileList[i].originFiles[j].postFileId) {
+					originFileList[i].originFiles[j].postFileStatus = "U";
+					originFileList[i].originFiles[j].newFileNm = fileArr[0].name;
 				}
 			}
 		}
@@ -389,6 +317,26 @@ let changedFiles = [];
 		let div = ele.parentNode;
 		$(div).remove();
 	}	
+	
+	//이미 게시된 포스트의 x버튼 클릭시 일어나는 이벤트
+	function fnPostImgDel(e) {
+		//클릭된 태그 가져오기
+		let ele = e.srcElement;
+		//delFile속성 값 가져오기(boardFileNo)
+		let delFile = ele.getAttribute("data-del-file");	
+		console.log("삭제할 이미지 파일 번호 : " + delFile);
+		
+		for(let i = 0; i < originFileList.length; i++) {
+			for(let j = 0; j < originFileList[i].length; j++) {
+				if(delFile == originFileList[i].originFiles[j].postFileId) {
+					originFileList[i].originFiles[j].postFileStatus = "D";
+				}
+			}
+		}
+		//부모 요소인 div 삭제
+		let div = ele.parentNode;
+		$(div).remove();
+	}
 	
 	function fnImgChange(postFileId) {
 		//기존 파일의 이미지를 클릭했을 때 같은 레벨의 input type="file"을 가져온다.
@@ -472,70 +420,6 @@ let changedFiles = [];
 			}
 		});
 		return false;
-	}
-	
-	function fnInsertPost(formData) {
-		//e.preventDefault();
-		console.log("파일을 전송하는 중입니다.");
-		//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
-		let content = "";
-		let restNm = "";
-		dt = new DataTransfer();
-		
-		for(f in uploadFiles) {
-			const file = uploadFiles[f];
-			dt.items.add(file);
-		}
-		
-		$("#btnAtt")[0].files = dt.files;
-		let insert_post = "";
-		//$(".quill-editor-default").text();
-		$("#postContent").val($(".quill-editor-default").text());
-		//$("#postContent").val($(".ql-editor").html());
-		content = $("#postContent").val();
-		restNm = $("#restNm").val();
-		console.log("내용 : " + content + "식당명 : " + restNm);
-		$.ajax({
-			enctype: 'multipart/form-data',
-			url: '/post/insertPost',
-			type: 'post',
-			data: {
-				restNm: restNm,
-				postContent: content,
-				viewCount: 0,
-				hashTag1: $("#hashTag1").val(),
-				hashTag2: $("#hashTag2").val(),
-				hashTag3: $("#hashTag3").val(),
-				hashTag4: $("#hashTag4").val(),
-				hashTag5: $("#hashTag5").val(),
-				//파일도 같이 다 화면단으로 보내야함. 배열을 다 옮겨서 보내면됨.
-				
-			},
-			processData: false,
-			contentType: false,
-			success: function(obj) {
-				alert("글 등록에 성공하였습니다.");
-				console.log(obj);
-				console.log("로그인한 계정 : " + loginUserId);
-				insert_post = post(obj.item);
-				
-				//$("#posts").html(insert_post);
-				//html단 뿌리기
-				$("#posts").prepend($(insert_post));
-				//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
-				flagList.unshift(false);
-				postIdList.unshift($($('.updateBtn')[0]).val());
-				//이벤트 다시 적용
-				$.like_button();
-				$.comment_button();
-				$.update_post();
-				
-				
-			}, error: function(e) {
-				console.log(e);
-			}
-		});
-
 	}
 	
 	//미리보기 영역에 들어가 div(img+button+p)를 생성하고 리턴
@@ -671,48 +555,5 @@ let changedFiles = [];
 		
 		//완성된 div 리턴
 		return div;
-	}
-	
-	function insertPostAndFile() {
-		console.log("데이터 입력중...")
-		$.ajax({
-			enctype: 'multipart/form-data',
-			url: '/post/insertPost',
-			type: 'post',
-			data: {
-				restNm: $("input[name='restNm']").val(),
-				postContent: $("input[name='postContent']").val(),
-				viewCount: 0,
-				hashTag1: $("#hashTag1").val(),
-				hashTag2: $("#hashTag2").val(),
-				hashTag3: $("#hashTag3").val(),
-				hashTag4: $("#hashTag4").val(),
-				hashTag5: $("#hashTag5").val(),
-				//파일도 같이 다 보내야함. 배열을 다 옮겨서 보내면됨.
-			},
-			processData: false,
-			contentType: false,
-			success: function(obj) {
-				alert("글 등록에 성공하였습니다.");
-				console.log(obj);
-				console.log("로그인한 계정 : " + loginUserId);
-				insert_post = post(obj.item);
-				
-				//$("#posts").html(insert_post);
-				//html단 뿌리기
-				$("#posts").prepend($(insert_post));
-				//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
-				flagList.unshift(false);
-				postIdList.unshift($($('.updateBtn')[0]).val());
-				//이벤트 다시 적용
-				$.like_button();
-				$.comment_button();
-				$.update_post();
-				
-				
-			}, error: function(e) {
-				console.log(e);
-			}
-		});
 	}
 

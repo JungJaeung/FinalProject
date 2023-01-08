@@ -200,7 +200,10 @@
 							console.log(obj);
 							console.log("로그인한 계정 : " + loginUserId);
 							insert_post = post(obj.item);
-
+							
+							//화면에 표시된 게시글 수 갱신
+							let postNumber = Number($("#cntPost").text()) + 1; 
+							$("#cntPost").text(postNumber);
 							//$("#posts").html(insert_post);
 							//html단 뿌리기
 							$("#posts").prepend($(insert_post));
@@ -531,6 +534,56 @@
 										text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
 										text_scroll += `</ul></div>`
 										text_scroll += `<div class="card-title">`
+										if(loginUserId == post.userId) {
+											for(let i = 0; i < post.fileLength; i++ ){
+												text += `<input type="hidden" id="postFileId" class="postFileId${post.postId}" 
+														name="postFileId" 
+														value="${post.fileList[i].postFileId}">`;
+												text += `<input type="hidden" id="postFileNm" class="postFileNm" 
+														name="postFileNm" 
+														value="${post.fileList[i].postFileNm}">`;
+												text += `<input type="file" id="changedFile${post.fileList[i].postFileId}" 
+													   name="changedFile${post.fileList[i].postFileId}"
+													   style="display: none;" 
+													   onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, event)">`;
+												if(post.fileList[i].postFileCate == "img") {
+													text += `<img id="img${post.fileList[i].postFileId}" 
+														 src="/upload/${post.fileList[i].postFileNm}"
+													 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+														 class="fileImg" 
+														 onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+												} else {
+													text += `<img id="img${post.fileList[i].postFileId}"
+														 src="/assets/img/defaultFileImg.png"
+														 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+														 class="fileImg" 
+														 onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+												}
+												text += `<input type="button" class="btnDel" value="x" data-del-file="${post.fileList[i].postFileId}"
+														   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+														   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+														   onclick="fnImgDel(event)">`;
+												text += `<p id="fileNm${post.fileList[i].postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
+													   onclick="fnFileDown(${post.fileList[i].postId}, ${post.fileList[i].postFileId})"
+													   >${post.fileList[i].postFileOriginNm}</p>`;
+											}
+										} else {
+											for(let i = 0; i < post.fileLength; i++) {
+												if(post.fileList[i].postFileCate == "img") {
+													text += `<img id="img${post.fileList[i].postFileId}" 
+														 src="/upload/${post.fileList[i].postFileNm}"
+													 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+														 class="fileImg" 
+														 onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+												} else {
+													text += `<img id="img${post.fileList[i].postFileId}"
+														 src="/assets/img/defaultFileImg.png"
+														 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+														 class="fileImg" 
+														 onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+												}
+											}
+										}
 										text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
 										text_scroll += `<a href="#" class="card-title"> ${post.restNm}</a></div>`
 										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
@@ -893,7 +946,7 @@
 													<input th:if="${post.userId} eq ${loginUser.userId}" type="button" class="btnDel" value="x" th:data-del-file="${file.postFileId}"
 															   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
 															   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-															   onclick="fnImgDel(event)">
+															   onclick="fnPostImgDel(event)">
 													<p th:id="'fileNm' + ${file.postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
 														   th:onclick="fnFileDown([[${file.postId}]], [[${file.postFileId}]])"
 														   th:text="${file.postFileOriginNm}">
@@ -937,45 +990,46 @@
 										</div>
 									</div>
 								</div>
-								<!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
-								<div id="post_scroll_div" class="col-12"></div>
 							</div>
-
 						</div><!-- End Left side columns -->
+						<!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
+						<div id="post_scroll_div" class="col-12"></div>
+					</div>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-				<!-- Right side columns -->
-				<div class="col-lg-4 col-xxl-3">
+			</div>
+			<!-- Right side columns -->
+			<div class="col-lg-4 col-xxl-3">
+				<!-- Recent Activity -->
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title"
+							style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
+							먹거리 <span>| Today</span></h5>
+						<div class="activity">
+							<div id="today_eat">
+								<ol>
+									<li><a href="#"><b>#치킨</b></a></li>
+									<li><a href="#"><b>#보쌈</b></a></li>
+									<li><a href="#"><b>#연어초밥</b></a></li>
+									<li><a href="#"><b>#우육면</b></a></li>
+									<li><a href="#"><b>#마라탕</b></a></li>
+									<li><a href="#"><b>#짜장면</b></a></li>
+									<li><a href="#"><b>#라멘</b></a></li>
+									<li><a href="#"><b>#갈비</b></a></li>
+									<li><a href="#"><b>#곱창</b></a></li>
+									<li><a href="#"><b>#막창</b></a></li>
 
-					<!-- Recent Activity -->
-					<div class="card">
-						<div class="card-body">
-							<h5 class="card-title"
-								style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
-								먹거리 <span>| Today</span></h5>
-							<div class="activity">
-								<div id="today_eat">
-									<ol>
-										<li><a href="#"><b>#치킨</b></a></li>
-										<li><a href="#"><b>#보쌈</b></a></li>
-										<li><a href="#"><b>#연어초밥</b></a></li>
-										<li><a href="#"><b>#우육면</b></a></li>
-										<li><a href="#"><b>#마라탕</b></a></li>
-										<li><a href="#"><b>#짜장면</b></a></li>
-										<li><a href="#"><b>#라멘</b></a></li>
-										<li><a href="#"><b>#갈비</b></a></li>
-										<li><a href="#"><b>#곱창</b></a></li>
-										<li><a href="#"><b>#막창</b></a></li>
-
-									</ol>
-								</div>
-
+								</ol>
 							</div>
-
 						</div>
-					</div><!-- End Recent Activity -->
-				</div><!-- End Right side columns -->
-
+					</div>
+				</div><!-- End Recent Activity -->
+			</div><!-- End Right side columns -->
 		</section>
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">

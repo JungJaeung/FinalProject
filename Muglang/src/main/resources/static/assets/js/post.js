@@ -90,10 +90,9 @@ $(function() {
 			console.log("버튼 이벤트 html단 활성화");
 			
 			console.log("버튼 파일 조작 화면단 활성화" + postIdList[0]);
-			
+			$.updateBtnAtt(postIdList[i]);
 			//내 게시글 파일 관리 버튼
 			$("#fileRequest" + $(this).val()).click(function(e) {
-				$.updateBtnAtt(postIdList[i]);
 				console.log("파일 요청 조작 활성화");
 				$("#updateBtnAtt" + postIdList[i]).click();
 			});
@@ -179,10 +178,48 @@ function post(item) {
 		text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox">`;
 		//text += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`;
 		//text +=	`</div>`;
-		text += `<div class="box" id="imageBox${post.postId}">
+		text += `<div class="box" id="imageBox${post.postId}">`;
+		for(let i = 0; i < item.postFileList.length; i++) {
+			console.log("파일의 개수 : " + item.postFileList.length);
+			if(item.loginUser.userId != item.insertPost.userId) {
+				console.log("사용자가 같지않음.");
+				text += `<img src="/upload/${item.postFileList[i].postFileNm}">`;
+			} else {
+				text += `<input type="hidden" id="postFileId" class="postFileId${item.insertPost.postId}" 
+						name="postFileId" 
+						value="${item.postFileList[i].postFileId}">`;
+				text += `<input type="hidden" id="postFileNm" class="postFileNm" 
+						name="postFileNm" 
+						value="${item.postFileList[i].postFileNm}">`;
+				text += `<input type="file" id="changedFile${item.postFileList[i].postFileId}" 
+					   name="changedFile${item.postFileList[i].postFileId}"
+					   style="display: none;" 
+					   onchange="fnGetChangedFileInfo(${item.postFileList[i].postFileId}, event)">`;
+				if(item.postFileList[i].postFileCate == "img") {
+					text += `<img id="img${item.postFileList[i].postFileId}" 
+						 src="/upload/${item.postFileList[i].postFileNm}"
+					 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+						 class="fileImg" 
+						 onclick="fnImgChange(${item.postFileList[i].postFileId})">`;
+				} else {
+					text += `<img id="img${item.postFileList[i].postFileId}"
+						 src="/assets/img/defaultFileImg.png"
+						 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+						 class="fileImg" 
+						 onclick="fnImgChange(${item.postFileList[i].postFileId})">`;
+				}
+				text += `<input type="button" class="btnDel" value="x" data-del-file="${item.postFileList[i].postFileId}"
+						   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+						   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+						   onclick="fnImgDel(event)">`;
+				text += `<p id="fileNm${item.postFileList[i].postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
+					   onclick="fnFileDown(${item.insertPost.postId}, ${item.postFileList[i].postFileId})"
+					   >${item.postFileList[i].postFileOriginNm}</p>`;
+			}
+		}
 
-				</div>
-				<div class="buttons" id="buttonBox${post.postId}">
+		text += `</div>`;
+		text +=	`<div class="buttons" id="buttonBox${post.postId}">
 					<button id="fileRequest${post.postId}">파일 관리창 열기</button>&emsp;
 					<button id="fileRemove${post.postId}">파일 삭제</button>
 				</div></div>`;
