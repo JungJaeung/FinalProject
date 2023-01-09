@@ -567,7 +567,7 @@
 												text += `<input type="file" id="changedFile${post.fileList[i].postFileId}" 
 													   name="changedFile${post.fileList[i].postFileId}"
 													   style="display: none;" 
-													   onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, ${post.postId}, event)">`;
+													   onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, ${elements}, event)">`;
 												if(post.fileList[i].postFileCate == "img") {
 													text += `<img id="img${post.fileList[i].postFileId}" 
 														 src="/upload/${post.fileList[i].postFileNm}"
