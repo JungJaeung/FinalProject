@@ -64,6 +64,7 @@ let changedFiles = [];
 				//배열에 있는 파일들을 하나씩 꺼내서 처리
 				for(f of fileArr) {
 					postImageLoader(f, postId, index);
+					$.fnGetChangedFileInfo()
 				}
 			});
 		}
@@ -180,8 +181,6 @@ let changedFiles = [];
 			return false;
 		}
 		*/
-
-
 	});
 	
 	//파일 추가창을 활성화하는 이벤트 생성 함수
@@ -257,6 +256,7 @@ let changedFiles = [];
 			//미리보기 영역에 추가
 			//미리보기 영역을 다른거로 대체해야함.
 			$("#postAttZone" + postId).append(makePostDiv(img, file, postId, index));
+			//로딩된 이미지의 이벤트를 추가함.
 		};
 		//파일을 Base64 인코딩된 문자열로 변경
 		reader.readAsDataURL(file);
@@ -303,10 +303,11 @@ let changedFiles = [];
 		console.log("변경된 파일 다시 정렬 중");
 	}
 	*/
+	//게시글의 인덱스 번호를 가져온뒤 해당 이미지들의 이벤트를 작동시킬수 있게 해주는 함수를 jquery단계에서 이벤트를 설정해주는 함수다.
+	
 	//게시글의 인덱스 번호를 매개변수로 더 가져온 뒤 수정하려는 게시글만 따로 저장한다.
 	//게시글의 아이디를 가지고 온다음, 그것을 저장한 postIdList에서 인덱스 값을 가지고 온다음, 임시로 저장한 인덱스 번호를 사용한다.
-	function fnGetChangedFileInfo(postFileId, postId, e) {
-		let index = postIdList[i].indexOf(postId);
+	function fnGetChangedFileInfo(postFileId, index, e) {
 		console.log("바꾸는 파일의 게시글 자리 : " + index);
 		console.log("바꾸는 파일 아이디 : " + postFileId);
 		//변경된 파일 받아오기
