@@ -152,4 +152,10 @@ public class MglgPostServiceImpl implements MglgPostService {
 		mglgPostRepository.searchByHashtag(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " ＆ \r\n"));
 		return mglgPostRepository.searchByHashtag(searchKeyword, pageable);
 	}
+	
+	// 검색어를 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
+	@Override
+	public void insertKeyword(String searchKeyword) {
+		mglgPostRepository.insertKeyword(searchKeyword);
+	}
 }
