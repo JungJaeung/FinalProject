@@ -19,29 +19,7 @@ import com.muglang.muglangspace.service.mglguser.MglgUserService;
 public class MglgUserServiceImpl implements MglgUserService{
 	@Autowired
 	private MglgUserRepository mglgUserRepository;
-	
-	@Autowired
-	private MglgUserMapper mglgUserMapper;
 
-	@Override
-	public Page<MglgUser> getUserList(MglgUser user, Pageable pageable) {
-			if(user.getSearchKeyword() != null && !user.getSearchKeyword().equals("")) {
-				if(user.getSearchCondition().equals("ALL")) {
-					return mglgUserRepository.findByEmailContainingOrUserNameContaining
-							(user.getSearchKeyword(), 
-							 user.getSearchKeyword(), 
-							 pageable);
-				} else if(user.getSearchCondition().equals("이름")) {
-					return mglgUserRepository.findByUserNameContaining(user.getSearchKeyword(), pageable);
-				} else if(user.getSearchCondition().equals("이메일")) {
-					return mglgUserRepository.findByEmailContaining(user.getSearchKeyword(), pageable);
-				} else {
-					return mglgUserRepository.findAll(pageable);
-				}
-			}else {
-				return mglgUserRepository.findAll(pageable);
-			}
-	}
 	
 	///// 검색 + 유저 카운트
 	@Override
@@ -53,7 +31,7 @@ public class MglgUserServiceImpl implements MglgUserService{
 				} else if(user.getSearchCondition().equals("이름")) {
 					return mglgUserRepository.searchName(user.getSearchKeyword(), pageable);
 				} else{
-					return mglgUserRepository.searchEmail(user.getSearchKeyword(), pageable);
+					return mglgUserRepository.searchId(user.getSearchKeyword(), pageable);
 				}
 			}else {
 				return mglgUserRepository.searchDefault(pageable);

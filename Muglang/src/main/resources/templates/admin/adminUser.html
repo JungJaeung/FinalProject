@@ -120,7 +120,7 @@
 						<h5 class="card-title" style="font-weight: bold;">검색</h5>
 						<div class="card-body">
 							<!--검색 폼 (a태그로 해야하는지 폼으로 해야하는지 아리까리해서 일단작성 피드백 부탁)-->
-							<form id="searchForm" action="/user/getUserList" method="get">
+							<form id="searchForm" action="/user/getAdminUserList" method="get">
 								<input type="hidden" name="page" value="">
 								<tabl border="1" style="width: 700px; border-collapse: collapse;">
 									<tr>
@@ -130,7 +130,7 @@
 												</option>
 												<option value="이름" th:selected="${searchCondition == '이름'}">이름
 												</option>
-												<option value="이메일" th:selected="${searchCondition == '이메일'}">이메일
+												<option value="아이디" th:selected="${searchCondition == '아이디'}">아이디
 												</option>
 											</select>
 											<input type="text" name="searchKeyword" th:value="${searchKeyword}">
