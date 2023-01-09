@@ -145,7 +145,7 @@
 						for (let i = 0; i < obj.pageItems.content.length; i++) {
 							htmlStr += `
 
-                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
 												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
@@ -173,7 +173,7 @@
 				$("#btn_next").click(function () {
 					searchKeyword = ""
 					console.log("누르기전page_num===" + page_num)
-					if(page_num==totalPages-1){
+					if (page_num == totalPages - 1) {
 						return;
 					}
 					page_num = page_num + 1;
@@ -217,7 +217,7 @@
 
 				})
 				$("#btn_prev").click(function () {
-					searchKeyword =""
+					searchKeyword = ""
 					console.log("누르기전page_num===" + page_num);
 					if (page_num < 1) {
 						return;
@@ -263,10 +263,10 @@
 
 				})
 				//검색 이벤트 //질문
-				$("#btn_search").click(function(){
-						
-						searchKeyword = $("#searchKeyword").val()
-						$.ajax({
+				$("#btn_search").click(function () {
+
+					searchKeyword = $("#searchKeyword").val()
+					$.ajax({
 						url: '/social/followingSearch',
 						type: 'get',
 						data: {
@@ -303,7 +303,7 @@
 							console.log(e);
 						}
 					});
-					
+
 				})
 
 
@@ -334,7 +334,7 @@
 				<div class="col-lg-8">
 					<div class="row">
 						<div class="col-12" id="divContent">
-		
+
 						</div>
 					</div>
 				</div><!-- End Left side columns -->
@@ -345,16 +345,20 @@
 						<h5 class="card-title" style="font-weight: bold;">Follower</h5>
 						<!--검색-->
 						<div class="card-body">
-								<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
-									onblur="this.placeholder='이름으로 검색'" id="searchKeyword">
-								<input type="button" value="검색" id="btn_search">
+							<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
+								onblur="this.placeholder='이름으로 검색'" id="searchKeyword">
+							<input type="button" value="검색" id="btn_search">
 						</div>
 						<!--붙여넣는곳-->
 						<div class="card-body" style="position: relative;">
 							<button id="btn_prev"
-								style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%);">&#60;</button>
+								style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%); background:none; border:none;">
+								<img th:src="@{/assets/img/left_btn.png}">
+							</button>
 							<button id="btn_next"
-								style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%);">&#62;</button>
+								style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%); background:none; border:none;">
+								<img th:src="@{/assets/img/right_btn.png}">
+							</button>
 							<div id="div_body"></div>
 						</div>
 					</div>
@@ -365,16 +369,16 @@
 		</section>
 		<!--모달모달-->
 		<div class="modal fade" id="followModal" role="dialog">
-								<div class="modal-dialog modal-dialog-centered">
-									<div class="modal-content" id="modal-content">
-										<div class="modal-body overflow-auto" id="modalBody">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content" id="modal-content">
+					<div class="modal-body overflow-auto" id="modalBody">
 
 
-										</div>					
-									</div>
-								</div>
+					</div>
+				</div>
+			</div>
 
-							</div>
+		</div>
 
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">
