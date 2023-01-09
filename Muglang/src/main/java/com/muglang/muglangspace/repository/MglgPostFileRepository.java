@@ -27,4 +27,9 @@ public interface MglgPostFileRepository extends JpaRepository<MglgPostFile, Mglg
 	@Query(value="DELETE FROM T_MGLG_POST_FILE WHERE POST_ID = :postId", nativeQuery=true)
 	public void deleteAllByPostId(@Param("postId") int postId);
 	
+	//게시글의 파일 삭제를 반영하는 쿼리문
+	@Modifying
+	@Query(value="DELELTE FROM T_MGLG_POST_FILE WHERE POST_FILE_ID =  :postFileId", nativeQuery=true)
+	public void deletePostFile(@Param("postFileId") int postFileId);
+	
 }

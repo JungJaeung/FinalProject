@@ -23,6 +23,15 @@
 			//변경된 첨부파일 배열
 			let changedFiles = [];
 			
+			//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
+			//포스팅 글들의 id를 관리하는데 사용함.
+			//해당 배열은 파일 처리 이벤트에서 많이 쓰게될 예정.
+			let postIdList = [];
+			let flagList = [];
+			let postFileIdList = [];
+			//게시글 등록후 해당 인덱스 번호에 대한 파일 이미지 조작할 게시글 위치를 등록할 변수
+			//새로 고침을 하거나 다른 페이지로 가면 이 정보는 0으로 초기화됨.
+			let insertIndex = 0;
 			//댓글 페이지수
 			let comment_page_num = 0;
 
@@ -204,10 +213,12 @@
 						contentType: false,
 						data: formData,
 						success: function (obj) {
+							
 							alert("글 등록에 성공하였습니다.");
 							console.log(obj);
 							console.log("로그인한 계정 : " + loginUserId);
-							insert_post = post(obj.item);
+							console.log("먼저 등록한 게시글의 번호 : " + insertIndex);
+							insert_post = post(obj.item, insertIndex);
 							
 							//화면에 표시된 게시글 수 갱신
 							let postNumber = Number($("#cntPost").text()) + 1; 
@@ -222,7 +233,7 @@
 							$.like_button();
 							$.comment_button();
 							$.update_post();
-
+							insertIndex += 1;
 							return false;
 						}, error: function (e) {
 							console.log(e);
@@ -940,7 +951,7 @@
 														<input type="file" th:id="'changedFile' + ${file.postFileId}" 
 															   th:name="'changedFile' + ${file.postFileId}"
 															   style="display: none;" 
-															   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], [[${post.postId}]], event)">
+															   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], [[${postStat.index}]], event)">
 														
 														<img th:if="${file.postFileCate} == 'img'" 
 																 th:id="'img' + ${file.postFileId}" 
@@ -978,6 +989,7 @@
 											<input type="hidden" id="userId" name="userId" th:value="${post.userId}">
 											<input type="hidden" id="postContentIn" name="postContent" th:value="${post.postContent}">
 											<input type="hidden" name="postDate" th:value="${post.postDate}">
+											<input type="hidden" name="restNm" th:value="${post.restNm}">
 										</form>
 										<div class="buttons fileBtns" th:id="'buttonBox' + ${post.postId}" th:if="${post.userId} eq ${loginUser.userId}" th:value="${post.postId}">
 											<button type="button" th:id="'fileRequest' + ${post.postId}">파일 관리창 열기</button>&emsp;

@@ -92,6 +92,7 @@ public class PostController {
 		System.out.println("가져온 파일의 정보 : " + uploadFiles);
 
 		try {
+			System.out.println("게시글 등록 시작.");
 			MglgPost mglgPost = MglgPost.builder()
 					.postId(mglgPostDTO.getPostId())
 					.mglgUser(loginUser.getMglgUser())
@@ -158,6 +159,7 @@ public class PostController {
 			returnMap.put("insertPost", returnDTO);
 			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
 			returnMap.put("postFileList", uploadFileList);
+			
 			System.out.println("파일 리스트 : " + uploadFileList);
 			responseDTO.setItem(returnMap);
 			System.out.println("새로운 글을 추가합니다.");
@@ -241,10 +243,10 @@ public class PostController {
 							
 							targetFile.setMglgPost(mglgPost);
 							targetFile.setPostFileId(originFileList.get(i).getPostFileId());
-							targetFile.setPostFileStat("U");
+							targetFile.setPostFileStatus("U");
 							
 							uploadFileList.add(targetFile);
-							
+							System.out.println("해당 파일의 상태 : " + targetFile.getPostFileStatus());
 							System.out.println("수정된 파일들을 적용 완료 하였습니다." + targetFile);
 						}
 					}
@@ -256,13 +258,13 @@ public class PostController {
 					
 					targetFile.setMglgPost(mglgPost);
 					targetFile.setPostFileId(originFileList.get(i).getPostFileId());
-					targetFile.setPostFileStat("D");
+					targetFile.setPostFileStatus("D");
 					
 					File deleteFile = new File(attachPath + originFileList.get(i).getPostFileNm());
 					deleteFile.delete();
 					
 					uploadFileList.add(targetFile);
-					
+					System.out.println("해당 파일의 상태 : " + targetFile.getPostFileStatus());
 					System.out.println("삭제된 파일들을 적용 완료 하였습니다." + targetFile);
 				}
 			}
@@ -278,14 +280,16 @@ public class PostController {
 						uploadFile = FileUtils.parseFileInfo(file, attachPath);
 						
 						uploadFile.setMglgPost(mglgPost);
-						uploadFile.setPostFileStat("I");
+						uploadFile.setPostFileStatus("I");
 						uploadFileList.add(uploadFile);
+						System.out.println("해당 파일의 상태 : " + uploadFile.getPostFileStatus());
 						System.out.println("새로 등록하려는 파일의 원래 이름 : " + uploadFile.getPostFileOriginNm());
-						mglgPostFileService.insertPostFile(uploadFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
+						//mglgPostFileService.insertPostFile(uploadFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
 					}
 				}
 			}
-			
+			//최종적으로 변경을 완료한 파일리스트를 반영하는 서비스 호출
+			mglgPostFileService.updatePostFileList(uploadFileList);
 			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("getPost", updateMglgPostDTO);

@@ -41,11 +41,21 @@ public class MglgPostFileServiceImpl implements MglgPostFileService{
 		mglgPostFileRepository.flush();
 	}
 
-	//해당 게시글의 파일 정보를 수정한다.
+	//해당 게시글의 파일 정보를 수정한다. 수정 작업을 한 최종 결과물을 가공하여 최종적으로 DB에 반영하는 과정이다.
 	@Override
-	public void updatePostFileList(MglgPostFile fileList) {
+	public void updatePostFileList(List<MglgPostFile> uploadFileList) {
 		// TODO Auto-generated method stub
-		mglgPostFileRepository.save(fileList);
+		for(int i = 0; i < uploadFileList.size(); i++) {
+			if(uploadFileList.get(i).getPostFileStatus().equals("U")) {
+				mglgPostFileRepository.save(uploadFileList.get(i));
+			} else if(uploadFileList.get(i).getPostFileStatus().equals("D")) {
+				mglgPostFileRepository.delete(uploadFileList.get(i));
+			} else if(uploadFileList.get(i).getPostFileStatus().equals("I")) {
+				//추가한 파일들은 postId를 갖고있지만, postFileId는 없는 상태로 새로 추가할 때는 이것을 1증가하면서 늘린다.
+				
+				mglgPostFileRepository.save(uploadFileList.get(i));
+			}
+		}
 		
 		mglgPostFileRepository.flush();
 	}

@@ -1,10 +1,4 @@
 
-//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
-//포스팅 글들의 id를 관리하는데 사용함.
-//해당 배열은 파일 처리 이벤트에서 많이 쓰게될 예정.
-let postIdList = [];
-let flagList = [];
-let postFileIdList = [];
 
 
 $(function() {
@@ -142,7 +136,7 @@ function updateFormOn() {
 }
 
 //포스팅 html단에 표시하는 함수. 문자열 값을 반환
-function post(item) {
+function post(item, insertIndex) {
 	console.log("게시글 작성자 Id : " + item.loginUser.userId);
 	let text = "";
 	text += `<div class="col-12 post">`;
@@ -195,7 +189,7 @@ function post(item) {
 				text += `<input type="file" id="changedFile${item.postFileList[i].postFileId}" 
 					   name="changedFile${item.postFileList[i].postFileId}"
 					   style="display: none;" 
-					   onchange="fnGetChangedFileInfo(${item.postFileList[i].postFileId}, ${item.insertPost.postId}, event)">`;
+					   onchange="fnGetChangedFileInfo(${item.postFileList[i].postFileId}, ${insertIndex}, event)">`;
 				if(item.postFileList[i].postFileCate == "img") {
 					text += `<img id="img${item.postFileList[i].postFileId}" 
 						 src="/upload/${item.postFileList[i].postFileNm}"
