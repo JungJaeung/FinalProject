@@ -82,7 +82,7 @@ let changedFiles = [];
 				}
 			});
 		}
-
+		/*
 		//게시글 조회에서 사용함. 해당 게시글의 업로드된 파일을 확인.
 		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
 		//수업 때 했던 게시글은 1개이고, 지금 이건 여러개를 뿌려야하기 때문에 게시된 데이터를 다 가지고 와야함.
@@ -103,7 +103,8 @@ let changedFiles = [];
 			//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
 			originFileList.push(originFiles);
 		}
-		
+		*/
+		/*
 		//게시글을 수정하는 로직 함수.
 		$.fnUpdateBtn = function(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
 			dt = new DataTransfer();
@@ -178,7 +179,7 @@ let changedFiles = [];
 			});
 			return false;
 		}
-
+		*/
 
 
 	});
@@ -261,7 +262,7 @@ let changedFiles = [];
 		reader.readAsDataURL(file);
 	}
 	
-
+	/*
 	function fnGetChangedFileInfo(postFileId, e) {
 		console.log("바꾸는 파일 아이디 : " + postFileId);
 		//변경된 파일 받아오기
@@ -291,18 +292,64 @@ let changedFiles = [];
 		reader.readAsDataURL(fileArr[0]);
 
 		//기존 파일을 담고있는 배열에서 변경이 일어난 파일 수정
+		console.log("게시글의 개수 : " + originFiles.length);
+		for (let i = 0; i < originFiles.length; i++) {
+			if (postFileId == originFiles[i].postFileId) {
+				originFiles[i].postFileStatus = "U";
+				originFiles[i].newFileNm = fileArr[0].name;
+			}
+		}
+
+		console.log("변경된 파일 다시 정렬 중");
+	}
+	*/
+	//게시글의 인덱스 번호를 매개변수로 더 가져온 뒤 수정하려는 게시글만 따로 저장한다.
+	//게시글의 아이디를 가지고 온다음, 그것을 저장한 postIdList에서 인덱스 값을 가지고 온다음, 임시로 저장한 인덱스 번호를 사용한다.
+	function fnGetChangedFileInfo(postFileId, postId, e) {
+		let index = postIdList[i].indexOf(postId);
+		console.log("바꾸는 파일의 게시글 자리 : " + index);
+		console.log("바꾸는 파일 아이디 : " + postFileId);
+		//변경된 파일 받아오기
+		const files = e.target.files;
+		//받아온 파일 배열 형태로 변경(싱글파일 업로드여서 파일배열 한개의 인자만 담김)
+		const fileArr = Array.prototype.slice.call(files);
+	
+		//변경된 파일들은 변경된 파일 배열에 담아준다.
+		changedFiles[index].push(fileArr[0]);
+		console.log("바꾼 파일의 변경사항을 저장하였습니다. 몇번째 게시글의 : "  + index);
+		console.log(changedFiles[index]);
+		//미리보기 화면에서 변경된 파일의 이미지 출력
+		const reader = new FileReader();
+
+		reader.onload = function (ee) {
+			const img = document.getElementById("img" + postFileId);
+			const p = document.getElementById("fileNm" + postFileId);
+
+			p.textContent = fileArr[0].name;
+
+			//이미지인지 체크
+			if (fileArr[0].name.match(/(.*?)\.(jpg|jpeg|png|gif|bmp|svg)$/))
+				img.src = ee.target.result;
+			else
+				img.src = "/assets/img/defaultFileImg.png";
+		}
+
+		reader.readAsDataURL(fileArr[0]);
+
+		//기존 파일을 담고있는 배열에서 변경이 일어난 파일 수정
 		console.log("게시글의 개수 : " + originFileList.length);
 		for (let i = 0; i < originFileList.length; i++) {
 			for (let j = 0; j < originFileList[i].length; j++) {
-				if (postFileId == originFileList[i].originFiles[j].postFileId) {
-					originFileList[i].originFiles[j].postFileStatus = "U";
-					originFileList[i].originFiles[j].newFileNm = fileArr[0].name;
+				if (postFileId == originFileList[i][j].postFileId) {
+					originFileList[i][j].postFileStatus = "U";
+					originFileList[i][j].newFileNm = fileArr[0].name;
 				}
 			}
 		}
 
 		console.log("변경된 파일 다시 정렬 중");
 	}
+	
 	
 	//x버튼 클릭시 동작하는 메소드
 	function fnImgDel(e) {
@@ -333,8 +380,8 @@ let changedFiles = [];
 		
 		for(let i = 0; i < originFileList.length; i++) {
 			for(let j = 0; j < originFileList[i].length; j++) {
-				if(delFile == originFileList[i].originFiles[j].postFileId) {
-					originFileList[i].originFiles[j].postFileStatus = "D";
+				if(delFile == originFileList[i][j].postFileId) {
+					originFileList[i][j].postFileStatus = "D";
 				}
 			}
 		}
@@ -350,14 +397,15 @@ let changedFiles = [];
 		changedFile.click();
 	}
 
-	//게시글을 수정하는 로직 함수.
+	//이미 게시된 자신의 게시글을 수정하는 로직 함수.
 	//함수에 있는 스크립트는 jQuery선택자가 아닌 배열 내의 데이터를 가지고다루면 됨.
 	//한개의 게시글에 대한 수정작업
 	function fnUpdatePost(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
 		dt = new DataTransfer();
-
-		for (f in uploadFiles) {
-		   let file = uploadFiles[f];
+		console.log(postId + "번의 업로드 되는 파일 목록 : ");
+		console.log(uploadPostFileList[index]);
+		for (f in uploadPostFileList[index]) {
+		   let file = uploadPostFileList[index][f];
 		   dt.items.add(file);
 		}
 
@@ -368,13 +416,14 @@ let changedFiles = [];
 		//파일 하나씩만 담기는 현상이 발생해서 dt를 두 개로 분리하여 사용
 		dt2 = new DataTransfer();
 
-		for (f in changedFiles) {
-		   let file = changedFiles[f];
+		for (f in changedFiles[index]) {
+		   let file = changedFiles[index][f];
 		   dt2.items.add(file);
 		}
 
 		$("#changedFiles" + postId)[0].files = dt2.files;
 		console.log(postId + "번 게시글의 파일 수정을 진행하고 있습니다.");
+		console.log(changedFiles[index]);
 		//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
 		//배열 형태로 전송 시 백단(Java)에서 처리불가
 		//JSON String 형태로 변환하여 전송한다.
@@ -520,9 +569,9 @@ let changedFiles = [];
 			for(let i = 0; i < uploadPostFileList[index].length; i++) {
 				//배열에 담아놓은 파일들중에 해당 파일 삭제
 				if(delFile == uploadPostFileList[index][i].name) {
-					console.log("del-file : " + delFile + ", uploadFiles : " + uploadFiles[i].name);
+					console.log("del-file : " + delFile + ", uploadFiles : " + uploadPostFileList[index][i].name);
 					//배열에서 i번째 한개만 제거
-					let del = uploadFiles.splice(i, 1);
+					let del = uploadPostFileList[index].splice(i, 1);
 					console.log(del[0].name);
 				}
 				
@@ -535,8 +584,8 @@ let changedFiles = [];
 			//input.files에 넣어줘야 된다.
 			dt = new DataTransfer();
 			
-			for(f in uploadFiles) {
-				const file = uploadFiles[f];
+			for(f in uploadFileList[index]) {
+				const file = uploadFileList[index][f];
 				dt.items.add(file);
 			}
 			

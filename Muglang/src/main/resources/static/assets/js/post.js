@@ -60,6 +60,7 @@ $(function() {
 	//게시글 수정과 삭제를 활성화하는 버튼을 생성함. 게시글이 자기꺼인 것만 표시함.
 	$(".updateBtn").each(function(i, e) {
 		$($('.uploadFileSpace')[i]).hide();
+		$($('.changedFileSpace')[i]).hide();
 		$(this).on('click', function() {
 			console.log("초기 화면 수정 버튼 활성화.");
 			flagList[i] = !flagList[i];
@@ -194,7 +195,7 @@ function post(item) {
 				text += `<input type="file" id="changedFile${item.postFileList[i].postFileId}" 
 					   name="changedFile${item.postFileList[i].postFileId}"
 					   style="display: none;" 
-					   onchange="fnGetChangedFileInfo(${item.postFileList[i].postFileId}, event)">`;
+					   onchange="fnGetChangedFileInfo(${item.postFileList[i].postFileId}, ${item.insertPost.postId}, event)">`;
 				if(item.postFileList[i].postFileCate == "img") {
 					text += `<img id="img${item.postFileList[i].postFileId}" 
 						 src="/upload/${item.postFileList[i].postFileNm}"

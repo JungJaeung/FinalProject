@@ -175,19 +175,23 @@ public class PostController {
 			MultipartFile[] changedFiles, HttpServletRequest request,
 			@RequestParam("originFiles") String originFiles,
 			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		//파일의 내용은 하나의 게시글을 가져오므로 1차원 배열을 가져오게됨.
 		//JSON string으로 파일의 원래 있던 파일을 가져오는 형식임.
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
 		
-		System.out.println("수정 작업 할 맵 DTO 생성 완료");
+		System.out.println("수정 작업 할 맵 DTO 생성 완료" + uploadFiles);
+		System.out.println("가져온 게시글의 정보 : " + mglgPostDTO);
 		
 		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles, 
 				new TypeReference<List<MglgPostFileDTO>>() {});
 		
-		System.out.println("수정 작업을 실행합니다." + mglgPostDTO);
+		System.out.println("수정 작업을 실행합니다. 원래 파일의 목록을 불러옵니다." + originFileList);
 		
 		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
 		
 		System.out.println("게시글 수정 작업 attachPath : " + attachPath);
+		
+		System.out.println("변경된 파일들을 불러옵니다. " + changedFiles);
 		
 		File directory = new File(attachPath);
 		
@@ -196,17 +200,25 @@ public class PostController {
 		}
 		
 		List<MglgPostFile> uploadFileList = new ArrayList<MglgPostFile>();	
-		
+
 		try {
+			System.out.println("파일들을 수정할 작업을 시작합니다.");
 			//수정될 게시글의 정보를 모두 담아 갱신하려는 객체 생성.
 			MglgPost mglgPost = MglgPost.builder()
-										.postId(mglgPostDTO.getPostId())
-										.mglgUser(loginUser.getMglgUser())
-										.postContent(mglgPostDTO.getPostContent())
-										.restNm(mglgPostDTO.getRestNm())
-										.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate()))
-										.build();
-			
+					.postId(mglgPostDTO.getPostId())
+					.mglgUser(loginUser.getMglgUser())
+					.postContent(mglgPostDTO.getPostContent())
+					.restNm(mglgPostDTO.getRestNm())
+					.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate()))
+					.postRating(mglgPostDTO.getPostRating())
+					.restRating(mglgPostDTO.getRestRating())
+					.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
+					.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
+					.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
+					.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
+					.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
+					.build();
+			System.out.println("파일이 아닌 게시글의 내용을 수정할 정보를 가져옵니다.");
 			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
 			
 			System.out.println("파일 정보를 확인하고 있습니다." + uploadFiles);
@@ -232,8 +244,11 @@ public class PostController {
 							targetFile.setPostFileStat("U");
 							
 							uploadFileList.add(targetFile);
+							
+							System.out.println("수정된 파일들을 적용 완료 하였습니다." + targetFile);
 						}
 					}
+
 				}
 				//삭제되는 파일 처리
 				else if(originFileList.get(i).getPostFileStatus().equals("D")) {
@@ -247,6 +262,8 @@ public class PostController {
 					deleteFile.delete();
 					
 					uploadFileList.add(targetFile);
+					
+					System.out.println("삭제된 파일들을 적용 완료 하였습니다." + targetFile);
 				}
 			}
 			//수정, 삭제 처리를 완료하고 더 추가된 파일을 적용한 뒤 마지막으로 다시 파일들을 업로드한다.
@@ -263,7 +280,7 @@ public class PostController {
 						uploadFile.setMglgPost(mglgPost);
 						uploadFile.setPostFileStat("I");
 						uploadFileList.add(uploadFile);
-						System.out.println("등록하려는 파일의 원래 이름 : " + uploadFile.getPostFileOriginNm());
+						System.out.println("새로 등록하려는 파일의 원래 이름 : " + uploadFile.getPostFileOriginNm());
 						mglgPostFileService.insertPostFile(uploadFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
 					}
 				}
@@ -342,6 +359,7 @@ public class PostController {
 							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
 					)
 			);
+			pagePostList.getContent().get(i).put("index", i);
 		}
 		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열처럼 사용됨.
 		//반복문을 통해 한 게시글의 전체 정보를 담을 맵을 반복자로 잡아서 반복문을 돌림.

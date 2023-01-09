@@ -55,9 +55,12 @@
 				let list = $('.post').get();
 				
 				//전역변수에서 사용할 배열을 사용할 수 있게 초기화 하는 반복문.
+				//2차원배열로 사용할 배열은 미리 초기화하여 이후에 사용할 것임.
 				for (let i = 0; i < list.length; i++) {
 					flagList.push(false);
 					uploadPostFileList[i] = [];
+					changedFiles[i] = [];
+					originFileList[i] = [];
 					postIdList.push($($('.updateBtn')[i]).val());
 					postFileIdList.push(new Array());
 					console.log(postIdList[i] + " 게시글의 파일의 길이 : " + $("#fileListSize" + postIdList[i]).val());
@@ -153,10 +156,11 @@
 						};
 						console.log("파일의 아이디번호 : " + originFileObj.postFileId);
 						console.log("파일의 이름 : " + originFileObj.postFileNm);
-						originFiles.push(originFileObj);
+						originFiles.push(originFileObj);	//새로 글쓰는 게시글의 원래 파일 정보.
+						originFileList[i].push(originFileObj);	//각 게시물들의 최신 파일 정보는 따로 리스트로 분리하여 처리.
 					}
 					//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
-					originFileList.push(originFiles);
+					//originFileList.push(originFiles);
 					console.log("게시글의 파일 정보 : " + originFileList[i]);
 				}
 
@@ -510,11 +514,14 @@
 									//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
 									console.log(obj)
 									page_num++;
+									let elements = obj.totalElements - 5;
 									for (let post of obj.content) {
 										let post_date = new Date(post.postDate);
 										//날짜 데이터 밀리초
 										post_date = now - post_date;
-
+										//인덱스번호를 받기위해 총 배열의 개수를 받아서 자동증가
+										elements++;
+										
 										text_scroll += `<div class="card recent-sales">`
 										text_scroll += `<div class="card-body">`
 										text_scroll += `<div class="filter" style="margin-top: 15px;">`
@@ -549,7 +556,7 @@
 												text += `<input type="file" id="changedFile${post.fileList[i].postFileId}" 
 													   name="changedFile${post.fileList[i].postFileId}"
 													   style="display: none;" 
-													   onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, event)">`;
+													   onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, ${post.postId}, event)">`;
 												if(post.fileList[i].postFileCate == "img") {
 													text += `<img id="img${post.fileList[i].postFileId}" 
 														 src="/upload/${post.fileList[i].postFileNm}"
@@ -621,7 +628,7 @@
 										text_scroll += `</form>`
 										text_scroll += `<div class="activity" style="text-align: center;">`
 										text_scroll += `<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>`
-										text_scroll += `<span>감성타코</span>에서 식사하셨어요!</a></div></div></div>`
+										text_scroll += `<span>감성타코</span>에서 식사하셨어요!</a></div></div></div>`;
 									}
 
 									$("#post_scroll_div").html(text_scroll);
@@ -933,7 +940,7 @@
 														<input type="file" th:id="'changedFile' + ${file.postFileId}" 
 															   th:name="'changedFile' + ${file.postFileId}"
 															   style="display: none;" 
-															   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], event)">
+															   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], [[${post.postId}]], event)">
 														
 														<img th:if="${file.postFileCate} == 'img'" 
 																 th:id="'img' + ${file.postFileId}" 
@@ -962,11 +969,15 @@
 											<div class="uploadFileSpace">
 												<input type="file" th:id="'updateBtnAtt' + ${post.postId}" name="uploadFiles" multiple="multiple">
 											</div>
+											<div class="changedFileSpace">
+												<input type="file" th:id="'changedFiles' + ${post.postId}" name="changedFiles" value="" multiple="multiple">
+											</div>
 											<div th:id="'postAttZone' + ${post.postId}" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>
-											<input type="hidden" th:id="'changedFiles' + ${post.postId}" name="changedFiles" value="" multiple="multiple">
+											<input type="hidden" name="postId" th:value="${post.postId}">
 											<input type="hidden" name="originFiles" th:id="'originFiles' + ${post.postId}" value="">
 											<input type="hidden" id="userId" name="userId" th:value="${post.userId}">
 											<input type="hidden" id="postContentIn" name="postContent" th:value="${post.postContent}">
+											<input type="hidden" name="postDate" th:value="${post.postDate}">
 										</form>
 										<div class="buttons fileBtns" th:id="'buttonBox' + ${post.postId}" th:if="${post.userId} eq ${loginUser.userId}" th:value="${post.postId}">
 											<button type="button" th:id="'fileRequest' + ${post.postId}">파일 관리창 열기</button>&emsp;
