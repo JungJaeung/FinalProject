@@ -283,7 +283,19 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	@Modifying
 	@Query(value="INSERT INTO T_MGLG_HOT_KEYWORDS "
 			+ 		"VALUES((SELECT IFNULL(MAX(A.KEYWORD_ID), 0) + 1 FROM T_MGLG_HOT_KEYWORDS A), :searchKeyword, NOW())", nativeQuery = true)
-	public void insertKeyword(@Param("searchKeyword") String searchKeyword);	
+	public void insertKeyword(@Param("searchKeyword") String searchKeyword);
+	
+	// // 인기 검색어를 SELECT
+	@Query(value="SELECT count(k.inserted_keyword) AS word_cnt, k.inserted_keyword\r\n"
+			+ "	  FROM T_MGLG_HOT_KEYWORDS k\r\n"
+			+ "   GROUP BY  k.inserted_keyword\r\n"
+			+ "   ORDER BY word_cnt DESC", 
+			countQuery="SELECT COUNT(*) "
+					+ "FROM (SELECT COUNT(k.inserted_keyword) AS word_cnt, k.inserted_keyword\r\n"
+					+ "FROM T_MGLG_HOT_KEYWORDS k\r\n"
+					+ "GROUP BY k.inserted_keyword\r\n"
+					+ "ORDER BY word_cnt DESC) a", nativeQuery = true)
+	public Page<CamelHashMap> getHotKeywords(Pageable pageable);	
 	
 	
 }

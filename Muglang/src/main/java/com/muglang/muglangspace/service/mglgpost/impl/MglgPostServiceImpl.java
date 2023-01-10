@@ -160,4 +160,12 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public void insertKeyword(String searchKeyword) {
 		mglgPostRepository.insertKeyword(searchKeyword);
 	}
+	
+	// 인기 검색어를 SELECT
+	@Override
+	public Page<CamelHashMap> getHotKeywords(Pageable pageable) {
+		System.out.println("인기 검색어 데이터 ↓");
+		mglgPostRepository.getHotKeywords(pageable).get().forEach(a -> System.out.println(a + " ＆ \r\n"));
+		return mglgPostRepository.getHotKeywords(pageable);
+	}
 }

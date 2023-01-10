@@ -49,4 +49,17 @@ public class SearchController {
 		return mv;
 		
 	}
+	
+	// HotKeywords 리스트 보는 화면
+	@GetMapping("/hotKeywords")
+	public ModelAndView hotKeywords(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+		
+		Page<CamelHashMap> mglgHotKeywords = mglgPostService.getHotKeywords(pageable);
+		
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/search/hotKeywords.html");
+		mv.addObject("mglgHotKeywords", mglgHotKeywords);
+		
+		return mv;
+	}
 }
