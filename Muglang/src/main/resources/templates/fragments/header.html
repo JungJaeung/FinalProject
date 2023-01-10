@@ -17,7 +17,7 @@
 		    <div class="search-bar w-">
 		      <form class="search-form d-flex align-items-center" method="GET" action="/search/searchByPost" id="searchForm">
 		        <input type="text" name="searchKeyword" placeholder="Search" title="Enter search keyword" th:value="${searchKeyword}" id="searchKeyword">
-		        <button type="submit" title="Search" id="searchBtn"><i class="bi bi-search"></i></button>
+		        <button type="button" title="Search" id="searchBtn"><i class="bi bi-search"></i></button>
 		      </form>
 		    </div><!-- End Search Bar -->
 		
@@ -181,35 +181,4 @@
 		    </nav><!-- End Icons Navigation -->
 		</header>
 	</body>
-	
-	<!-- 검색을 위한 버튼 실행 jQuery -->
-	<th:block layout:fragment="script">
-		<script th:inline="javascript">
-			$(function()  {
-				// searchKeyword 값 전달
-				localStorage.setItem("searchKeyword", $("#searchKeyword").val());
-				console.log($("#searchKeyword").val());
-				
-				$("#searchBtn").on("click", function() {
-					$("#searchForm").submit();
-				});
-			});
-		</script>
-	</th:block>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 </html>

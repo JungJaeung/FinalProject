@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
@@ -151,5 +152,12 @@ public class MglgPostServiceImpl implements MglgPostService {
 		System.out.println("해시태그가 끌고오는 데이터 ↓");
 		mglgPostRepository.searchByHashtag(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " ＆ \r\n"));
 		return mglgPostRepository.searchByHashtag(searchKeyword, pageable);
+	}
+	
+	// 검색어를 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
+	@Transactional
+	@Override
+	public void insertKeyword(String searchKeyword) {
+		mglgPostRepository.insertKeyword(searchKeyword);
 	}
 }

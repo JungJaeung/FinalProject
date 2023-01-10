@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,18 +30,14 @@ public class SearchController {
 		
 		log.info("searchByNick - SearchKeyword: " + searchKeyword);
 		
-
+		// 검색어를 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
+		mglgPostService.insertKeyword(searchKeyword);
+		
 		Page<CamelHashMap> mglgPostsContent = mglgPostService.searchByPost(searchKeyword, pageable);
 		
 		Page<CamelHashMap> mglgPostsNick = mglgPostService.searchByNick(searchKeyword, pageable);
 
 		Page<CamelHashMap> mglgPostsHashtag = mglgPostService.searchByHashtag(searchKeyword, pageable);
-		
-		System.out.println("=======================================" + mglgPostsContent.getContent());
-		
-		System.out.println("=======================================" + mglgPostsNick.getContent());
-		
-		System.out.println("=======================================" + mglgPostsHashtag.getContent());
 		
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("/search/searchByPost.html");

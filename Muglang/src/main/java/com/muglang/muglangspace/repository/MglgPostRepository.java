@@ -277,7 +277,13 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 	@Query(value = ""
 			+ "SELECT COUNT(*) FROM T_MGLG_POST WHERE POST_ID =:postId AND USER_ID=:userId"
 			+ "", nativeQuery = true)
-	int reportPostSelfCheck(@Param("postId") int postId,@Param("userId") int userId);	
+	int reportPostSelfCheck(@Param("postId") int postId,@Param("userId") int userId);
+	
+	// 검색어를 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
+	@Modifying
+	@Query(value="INSERT INTO T_MGLG_HOT_KEYWORDS "
+			+ 		"VALUES((SELECT IFNULL(MAX(A.KEYWORD_ID), 0) + 1 FROM T_MGLG_HOT_KEYWORDS A), :searchKeyword, NOW())", nativeQuery = true)
+	public void insertKeyword(@Param("searchKeyword") String searchKeyword);	
 	
 	
 }
