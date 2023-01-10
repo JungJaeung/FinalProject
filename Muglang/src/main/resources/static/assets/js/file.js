@@ -64,7 +64,6 @@ let changedFiles = [];
 				//배열에 있는 파일들을 하나씩 꺼내서 처리
 				for(f of fileArr) {
 					postImageLoader(f, postId, index);
-					$.fnGetChangedFileInfo()
 				}
 			});
 		}
@@ -374,7 +373,7 @@ let changedFiles = [];
 	//이미 게시된 포스트의 x버튼 클릭시 일어나는 이벤트
 	function fnPostImgDel(e) {
 		//클릭된 태그 가져오기
-		let ele = e.srcElement;
+		let ele = e.currentTarget;
 		//delFile속성 값 가져오기(boardFileNo)
 		let delFile = ele.getAttribute("data-del-file");	
 		console.log("삭제할 이미지 파일 번호 : " + delFile);
@@ -449,8 +448,14 @@ let changedFiles = [];
 			contentType: false,
 			success: function (obj) {
 				console.log(obj.item);
+				console.log(obj.items);
 				alert("수정작업을 성공하였습니다.");
-
+				for(let i = 0; i < obj.item.fileSize; i++) {
+					originFileList[index][i] = obj.item.updateFileList[i];
+					uploadPostFileList[index][i] = obj.item.updateFileList[i];
+					console.log(originFileList[index]);
+				}
+				console.log("변경된 파일을 토대로 갱신을 완료하였습니다.");
 				$("#postId").val('' + obj.item.getPost.postId);
 				$("#userId").val('' + obj.item.getPost.userId);
 				$("#postContentIn").val(obj.item.getPost.userId);
@@ -471,7 +476,7 @@ let changedFiles = [];
 			},
 			done: function (result) {
 				console.log(result);
-				$("#attZone").replaceWith(result);
+				$("#postAttZone" + postId).replaceWith(result);
 			}
 		});
 		return false;
