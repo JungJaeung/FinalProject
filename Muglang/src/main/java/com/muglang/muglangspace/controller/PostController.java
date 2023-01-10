@@ -291,8 +291,19 @@ public class PostController {
 			//최종적으로 변경을 완료한 파일리스트를 반영하는 서비스 호출
 			mglgPostFileService.updatePostFileList(uploadFileList);
 			
+			//파일 처리한 데이터를 화면단에 처리하기위한 DTO
+			List<MglgPostFileDTO> uploadFileListDTO = new ArrayList<MglgPostFileDTO>();
+			for(MglgPostFile file : uploadFileList) {
+				MglgPostFileDTO fileDTO = Load.toHtml(file);
+				fileDTO.setPostId(file.getMglgPost().getPostId());
+				uploadFileListDTO.add(fileDTO);
+			}
+			
+			System.out.println("수정된 파일 목록: " + uploadFileListDTO);
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("getPost", updateMglgPostDTO);
+			returnMap.put("updateFileList", uploadFileListDTO);
+			returnMap.put("fileSize", uploadFileList.size());
 			
 			responseDTO.setItem(returnMap);
 			System.out.println("수정 작업 마무리단계");
@@ -306,6 +317,7 @@ public class PostController {
 	}
 	
 	//삭제 작업 수행하기 - 삭제 후 넘어가는 페이지 리다이렉트가 두개가 겹쳐서 안되는거 같다.
+	@Transactional //쿼리가 실행된 후 바로 트랜잭션을 호출
 	@PostMapping("/deletePost")
 	public void deletePost(MglgPostDTO mglgPostDTO,
 			HttpServletResponse response,

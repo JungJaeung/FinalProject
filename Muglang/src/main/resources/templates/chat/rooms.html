@@ -1,24 +1,31 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layouts/layout_admin}">
+	layout:decorate="~{layouts/layout_chat}">
 
 <head>
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
+
+
 		</script>
 	</th:block>
 </head>
 
 <body>
 	<main layout:fragment="main" id="main" class="main">
-		<div>
-			<div>
-				<ul>
-					<li th:each="room : ${rooms}">
-						<a th:href="@{/chat/rooms/{id} (id=${room.id})}" th:text="${room.name}"></a>
-					</li>
-				</ul>
-			</div>
+		
+		<div id="aa">
+			<h1>&emsp;OPEN CHAT</h1>
+			<ul>
+				<li th:each="room : ${rooms}" style="list-style: none;">
+					<form th:action="@{/chat/rooms}" method="post">
+						<input type="hidden" id="enter" name="id" th:value="${room.chatRoomId}">
+						<input type="submit" th:value="${room.chatRoomName}" id="list" 
+							style="width: 600px; margin-bottom: 10px; height: 65px;
+							       border-radius: 10px; background-color: #C8D9FC; border-color: #C8D9FC;">
+					</form>
+				</li>
+			</ul>
 		</div>
 	</main>
 </body>
