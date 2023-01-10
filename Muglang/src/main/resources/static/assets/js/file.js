@@ -480,7 +480,7 @@ let changedFiles = [];
 				$("#contentIn" + postId).hide();
 				$("#deleteButton" + postId).remove();
 				$("#updateButton" + postId).remove();
-				flagList[index] = !flagList[index];
+				flagList[index] = false;
 				$($(".updateBtn")[index]).text("게시글 수정");
 			},
 			error: function (e) {

@@ -61,6 +61,7 @@ $(function() {
 			flagList[i] = !flagList[i];
 			if (flagList[i]) {
 				$(this).text("돌아가기");
+				$("#postAttZone" + postId).show();
 				$("<button type='button' id='deleteButton" + $(this).val() + "'>").appendTo($(this).parent());
 				$("#deleteButton" + $(this).val()).text("글 삭제");
 				$("<button type='button' id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
@@ -68,10 +69,12 @@ $(function() {
 				$($(".fileBtns")[i]).show();
 				
 			} else {
-				$(this).text("게시글 수정")
+				$(this).text("게시글 수정");
+				$("#postAttZone" + postId).hide();
 				$("#deleteButton" + $(this).val()).remove();
 				$("#updateButton" + $(this).val()).remove();
 				$($(".fileBtns")[i]).hide();
+				
 			}
 
 			$("#postContent" + $(this).val()).text();
@@ -88,9 +91,9 @@ $(function() {
 			console.log("버튼 파일 조작 화면단 활성화" + postIdList[0]);
 			//$.updateBtnAtt(postIdList[i], i);
 			//내 게시글 파일 관리 버튼
-			$("#fileRequest" + $(this).val()).click(function(e) {
+			$("#fileRequest" + postId).click(function(e) {
 				console.log("파일 요청 조작 활성화" + $(this).val());
-				$("#updateBtnAtt" + $(this).val()).click();
+				$("#updateBtnAtt" + postId).click();
 			});
 			
 			$("#fileRemove" + $(this).val()).click(function(e) {
