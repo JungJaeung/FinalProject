@@ -66,4 +66,12 @@ public class ChatServiceImpl implements ChatService {
 		chatMembersRepository.insertMsg(chatRoomId, userId, chatContent);
 	}
 	
+	@Override
+	public void leaveRoom(MglgChatMembers member) {
+		String chatRoomId = member.getChatRoomId();
+		int userId = member.getUserId();
+		
+		chatMembersRepository.leaveRoom(chatRoomId, userId);
+	}
+	
 }

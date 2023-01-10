@@ -92,5 +92,18 @@ public class ChatRoomController {
     	chatService.insertMsg(message);
     }
     
-    
+    @GetMapping("/leave/{id}")
+    public void leave(@PathVariable String id, @AuthenticationPrincipal CustomUserDetails loginUser, 
+    		HttpServletResponse response) throws IOException {
+    	
+    	int userId = loginUser.getMglgUser().getUserId();
+    	MglgChatMembers members = MglgChatMembers.builder()
+				 								 .chatRoomId(id)
+				 								 .userId(userId)
+				 								 .build();
+    	
+    	chatService.leaveRoom(members);
+    	
+    	response.sendRedirect("/chat/rooms");
+    }
 }

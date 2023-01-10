@@ -62,16 +62,28 @@
 							}
 						} else if(messageList != null && messageList != '') {
 							//7. 조회해온 messageList 출력
+							let readYn = 'R';
 							for(var i=0; i<messageList.length; i++) {
+								if(readYn != messageList[i].readYn) {
+									str += "<p style='text-align: center;'>------------여기까지 읽었습니다.------------</p>";
+								}
+								
 								if(messageList[i].writer == username) {
 									str += "<div style='text-align: right; margin-right:20px;'><span style='background-color: #91E7FC;'>";
 									str += "<b>" + messageList[i].writer + " : " + messageList[i].message + "</b>";
-									str += "</span></div>"/*</div>*/;
+									str += "</span></div>"/*</div>*/
 								} else {
 									str += "<div style='text-align: left;'>";
 									str += "<b>" + messageList[i].writer + ":" + messageList[i].message + "</b>";
 									str += "</div>"/*</div>*/;
 								}
+								
+								readYn = messageList[i].readYn;
+								
+								if(i == messageList.length - 1 && readYn == 'R') {
+									str += "<p style='text-align: center;'>------------여기까지 읽었습니다.------------</p>";
+								}
+								
 							}
 							$("#msgArea").append(str);
 							$("#msgArea").scrollTop($("#msgArea").prop('scrollHeight'));
@@ -82,7 +94,6 @@
 
 					stomp.send("/app/chat/message", {}, JSON.stringify({type: 'JOIN', chatRoomId: roomId, writer: username, userId: userId}));
 				});
-				
 				
 
 				$("#button-send").on("click", function (e) {
@@ -125,7 +136,8 @@
 <body>
 	<main layout:fragment="main" id="main" class="main">
 		<div>
-			<input type="button" value="목록으로 돌아가기" onclick="goBack();">
+		<!--	<input type="button" value="목록으로 돌아가기" onclick="goBack();">	-->
+			<a th:href="@{/chat/leave/{id} (id=${room.id})}">목록으로 돌아가기</a>
 			<a th:href="@{/chat/exit/{id} (id=${room.id})}">방 나가기</a>
 		</div>
 		<div class="row">
