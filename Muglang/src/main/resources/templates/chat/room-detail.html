@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layouts/layout_admin}">
+	layout:decorate="~{layouts/layout}">
 
 <head>
 	<th:block layout:fragment="script">
@@ -8,81 +8,149 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
 		<script th:inline="javascript">
-			$(document).ready(function() {
-				
-				const roomName = /*[[${room.name}]]*/;
-				const roomId = /*[[${room.id}]]*/;
-				const username = /*[[${#authentication.principal.mglgUser.userName}]]*/;
-				
+			$(document).ready(function () {
+
+				var roomName = /*[[${room.name}]]*/;
+				var roomId = /*[[${room.id}]]*/;
+				var username = /*[[${#authentication.principal.mglgUser.userName}]]*/;
+				var userId = /*[[${#authentication.principal.mglgUser.userId}]]*/;
+
 				//console.log(roomName + ", " + roomId + ", " + username);
+
+				var sock = new SockJS("/ws/chat");
+				var stomp = Stomp.over(sock);
 				
-				const sock = new SockJS("/ws/chat");
-				const stomp = Stomp.over(sock);
-				
-				stomp.connect({}, function() {
+				stomp.connect({}, function () {
 					//console.log("connected");
-					
-					stomp.subscribe("/topic/chat/room/" + roomId, function(chat) {
+
+					stomp.subscribe("/topic/chat/room/" + roomId, function (chat) {
+						console.log(chat);
 						var content = JSON.parse(chat.body);
 						var writer = content.writer;
 						var message = content.message;
+						var type = content.type;
 						var str = '';
-						
-						//console.log(content);
-						
-						if (writer === username) {
-							str = "<div class='col-6'>";
-							str += "<div class='alert alert-secondary'>";
-							str += "<b>" + writer + " : " + message + "</b>";
-							str += "</div></div>";
+						var messageList = content.messageList;
+
+						console.log(content);
+						if((message != null && message != '') && message.includes("님이 입장하였습니다.") || type == "CHAT") {
+							if (writer === username) {
+								//str += "<div class='alert alert-secondary'>";
+								if (type == 'JOIN') {
+									str = "<div style='text-align: center;'>";
+									str += "<b>" + message + "</b>";
+								} else {
+									str = "<div style='text-align: right; margin-right:20px;'><span style='background-color: #91E7FC;'>";
+									str += "<b>" + writer + " : " + message + "</b>";
+								}
+								str += "</span></div>"/*</div>*/;
+								$("#msgArea").append(str);
+								$("#msgArea").scrollTop($("#msgArea").prop('scrollHeight'));
+							}
+							else {
+								//str += "<div class='alert alert-warning'>";
+								if (type == 'JOIN') {
+									str = "<div style='text-align: center;'>";
+									str += "<b>" + message + "</b>";
+								} else {
+									str = "<div style='text-align: left;'>";
+									str += "<b>" + writer + ":" + message + "</b>";
+								}
+								str += "</div>"/*</div>*/;
+								$("#msgArea").append(str);
+								$("#msgArea").scrollTop($("#msgArea").prop('scrollHeight'));
+							}
+						} else if(messageList != null && messageList != '') {
+							//7. 조회해온 messageList 출력
+							for(var i=0; i<messageList.length; i++) {
+								if(messageList[i].writer == username) {
+									str += "<div style='text-align: right; margin-right:20px;'><span style='background-color: #91E7FC;'>";
+									str += "<b>" + messageList[i].writer + " : " + messageList[i].message + "</b>";
+									str += "</span></div>"/*</div>*/;
+								} else {
+									str += "<div style='text-align: left;'>";
+									str += "<b>" + messageList[i].writer + ":" + messageList[i].message + "</b>";
+									str += "</div>"/*</div>*/;
+								}
+							}
 							$("#msgArea").append(str);
-						}
-						else {
-							str = "<div class='col-6'>";
-							str += "<div class='alert alert-warning'>";
-							str += "<b>" + writer + " : " + message + "</b>";
-							str += "</div></div>";
-							$("#msgArea").append(str);
+							$("#msgArea").scrollTop($("#msgArea").prop('scrollHeight'));
 						}
 						
-						//$("#msgArea").append(str);
-						
+
 					});
-					
-					stomp.send("/app/chat/message", {}, JSON.stringify({type:'JOIN', chatRoomId:roomId, writer:username}));
+
+					stomp.send("/app/chat/message", {}, JSON.stringify({type: 'JOIN', chatRoomId: roomId, writer: username, userId: userId}));
 				});
 				
-				$("#button-send").on("click", function(e) {
-					var msg = document.getElementById("msg");
+				
+
+				$("#button-send").on("click", function (e) {
+					//8. ajax로 메시지 chatmsg table에 insert
 					
-					//console.log(username + ":" + msg.value);
-					stomp.send("/app/chat/message", {}, JSON.stringify({type:'CHAT', chatRoomId:roomId, writer:username, message:msg.value}));
-					msg.value = '';
+					var msg = document.getElementById("msg");
+					if(msg.value == '') {
+						alert('enter text');
+					} else {
+						stomp.send("/app/chat/message", {}, JSON.stringify({type: 'CHAT', chatRoomId: roomId, writer: username, message: msg.value, userId: userId}));
+						msg.value = '';
+					};
+					
+				});
+				
+				$("input[name=send]").on("keydown", function(e) {
+					var msg = document.getElementById("msg");
+					if(e.keyCode == 13) {
+						if(msg.value == '') {
+							alert("enter text");
+						} else {
+							stomp.send("/app/chat/message", {}, JSON.stringify({type: 'CHAT', chatRoomId: roomId, writer: username, message: msg.value, userId: userId}));
+							msg.value = '';
+						};
+							
+					};
+					
 				});
 			});
+			
+			function goBack() {
+				window.history.back();
+			};
+			
+			
 		</script>
 	</th:block>
 </head>
 
 <body>
 	<main layout:fragment="main" id="main" class="main">
-	<div class="container">
-            <div class="col-6">
-                <h1 th:text="${room.name}"></h1>
-            </div>
-            <div>
-                <div id="msgArea" class="col"></div>
-                <div class="col-6">
-                    <div class="input-group mb-3">
-                        <input type="text" id="msg" class="form-control">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" id="button-send">전송</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6"></div>
-        </div>
+		<div>
+			<input type="button" value="목록으로 돌아가기" onclick="goBack();">
+			<a th:href="@{/chat/exit/{id} (id=${room.id})}">방 나가기</a>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<div  style="width: 50%; margin:0 auto">
+					<h1 th:text="${room.name}"></h1>
+				</div>
+				<div  style="width: 50%; margin:0 auto">
+					<div id="msgArea" style="overflow-y: auto; 
+					overflow-x: hidden; 
+					height: 500px; 
+					box-shadow: 0 0 4px #c8c8c8;
+					border-radius: 8px;"></div>
+					<div>
+						<div class="input-group mb-3" style="margin-top: 5px;">
+							<input type="text" id="msg" class="form-control" name="send" style="outline: none;">
+							<div class="input-group-append">
+								<button class="btn btn-outline-secondary" type="button" id="button-send">전송</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
 	</main>
 </body>
 
