@@ -57,6 +57,7 @@ $(function() {
 		$($('.changedFileSpace')[i]).hide();
 		$(this).on('click', function() {
 			console.log("초기 화면 수정 버튼 활성화.");
+			const postId = $(this).val();
 			flagList[i] = !flagList[i];
 			if (flagList[i]) {
 				$(this).text("돌아가기");
@@ -85,11 +86,11 @@ $(function() {
 			console.log("버튼 이벤트 html단 활성화");
 			
 			console.log("버튼 파일 조작 화면단 활성화" + postIdList[0]);
-			$.updateBtnAtt(postIdList[i], i);
+			//$.updateBtnAtt(postIdList[i], i);
 			//내 게시글 파일 관리 버튼
 			$("#fileRequest" + $(this).val()).click(function(e) {
-				console.log("파일 요청 조작 활성화");
-				$("#updateBtnAtt" + postIdList[i]).click();
+				console.log("파일 요청 조작 활성화" + $(this).val());
+				$("#updateBtnAtt" + $(this).val()).click();
 			});
 			
 			$("#fileRemove" + $(this).val()).click(function(e) {
@@ -97,10 +98,9 @@ $(function() {
 			});
 			
 			//내 게시물 수정, 삭제, 돌아가기 결정 버튼
-			$("#updateButton" + postIdList[i]).click(function(e) {
-				$($('.data')[i]).children('#postContentIn').val($("#contentIn" + postIdList[i]).val());
-				console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());
-				fnUpdatePost(postIdList[i], i);
+			$("#updateButton" + postId).click(function(e) {
+				//console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());\
+				fnUpdatePost(postId, i);
 			});
 			$("#deleteButton" + postIdList[i]).click(function(e) {
 				console.log("delete");
@@ -206,7 +206,7 @@ function post(item, insertIndex) {
 				text += `<input type="button" class="btnDel" value="x" data-del-file="${item.postFileList[i].postFileId}"
 						   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
 						   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-						   onclick="fnImgDel(event)">`;
+						   onclick="fnPostImgDel(event, ${insertIndex})">`;
 				text += `<p id="fileNm${item.postFileList[i].postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
 					   onclick="fnFileDown(${item.insertPost.postId}, ${item.postFileList[i].postFileId})"
 					   >${item.postFileList[i].postFileOriginNm}</p>`;

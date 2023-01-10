@@ -173,9 +173,8 @@ public class PostController {
 	@Transactional //쿼리가 실행된 후 바로 트랜잭션을 호출
 	@PutMapping("/updatePost")
 	public ResponseEntity<?> updatePost(MglgPostDTO mglgPostDTO, 
-			MglgPostFileDTO mglgPostFileDTO, MultipartFile[] uploadFiles, 
-			MultipartFile[] changedFiles, HttpServletRequest request,
-			@RequestParam("originFiles") String originFiles,
+			MultipartFile[] uploadFiles, MultipartFile[] changedFiles, 
+			HttpServletRequest request, @RequestParam("originFiles") String originFiles,
 			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		//파일의 내용은 하나의 게시글을 가져오므로 1차원 배열을 가져오게됨.
 		//JSON string으로 파일의 원래 있던 파일을 가져오는 형식임.
@@ -291,10 +290,16 @@ public class PostController {
 			//최종적으로 변경을 완료한 파일리스트를 반영하는 서비스 호출
 			mglgPostFileService.updatePostFileList(uploadFileList);
 			
+			//파일의 DTO 처리를 위한 갱신한 파일을 다시 조회
+			uploadFileList = mglgPostFileService.getPostFileList(mglgPostDTO.getPostId());
+			
+			
 			//파일 처리한 데이터를 화면단에 처리하기위한 DTO
 			List<MglgPostFileDTO> uploadFileListDTO = new ArrayList<MglgPostFileDTO>();
 			for(MglgPostFile file : uploadFileList) {
+				System.out.println("파일 DTO 넣기후 : " + file);
 				MglgPostFileDTO fileDTO = Load.toHtml(file);
+				fileDTO.setPostId(file.getPostFileId());
 				fileDTO.setPostId(file.getMglgPost().getPostId());
 				uploadFileListDTO.add(fileDTO);
 			}
