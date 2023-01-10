@@ -28,14 +28,33 @@
 					$("#commentContent").text(obj.item.commentContent);
 					$("#postId").text(obj.item.postId);
 					$("#userId").text(obj.item.userId);
-					$("#postIds").val(obj.item.postId);
-					$("#commentIds").val(obj.item.commentId);
+
 
 				},
 				error: function (e) {
 					console.log(e);
 				}
 			});
+			$("#btn").click(function () {
+				$.ajax({
+					url: '/comment/deleteComment',
+					type: 'post',
+					data: {
+						postId :  postId,
+						commentId: commentId
+					},
+					success: function (obj) {
+						window.opener.closeCallback();
+
+					},
+					error: function (e) {
+						console.log(e);
+					}
+				});
+
+
+
+			})
 
 		});
 
@@ -44,7 +63,6 @@
 
 <body>
 	<main layout:fragment="main" id="main" class="main">
-		<form action="/comment/deleteComment" method="get">
 			<table id="boardTable" border="1" style="width: 700px; border-collapse: collapse;">
 				<tr style="border: 1px solid black;">
 					<th style="background-color: bisque; text-align: center;">댓글 번호</th>
@@ -60,13 +78,9 @@
 					<td id="commentContent" style="text-align: center;"></td>
 					<td id="commentDate" style="text-align: center;"></td>
 					<td id="userId" style="text-align: center;"></td>
-					<td> <input type="hidden" id="postIds" name="postId">
-						<input type="hidden" id="commentIds" name="commentId">
-						<input type="submit" value="삭제">
-					</td>
+					<td><input type="button" id="btn" value="삭제"></td>
 				</tr>
 			</table>
-		</form>
 
 	</main>
 </body>

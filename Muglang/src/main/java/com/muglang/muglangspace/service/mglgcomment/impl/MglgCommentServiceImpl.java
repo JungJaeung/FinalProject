@@ -53,6 +53,23 @@ public class MglgCommentServiceImpl implements MglgCommentService{
 			
 		}
 
+		@Override
+		public String reportComment(int postId, int commentId,int postUserId, int userId) {
+			if(postUserId == userId) {
+				return "self";
+			}
+			//동일 신고가 존재하면 리턴시킴
+			if(0 != mglgCommentRepository.reportCommentCheck(postId,commentId,userId)) {
+				return "fail";
+			}
+			
+			
+			//신고하는 로직
+			mglgCommentRepository.reportComment(postId,commentId,postUserId,userId);
+			return "success";
+
+		}
+
 //		@Override
 //		public void insertComment(MglgComment comment) {
 //			// TODO Auto-generated method stub

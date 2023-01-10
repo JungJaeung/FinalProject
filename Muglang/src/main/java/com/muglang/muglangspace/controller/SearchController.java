@@ -36,7 +36,7 @@ public class SearchController {
 		Page<CamelHashMap> mglgPostsContent = mglgPostService.searchByPost(searchKeyword, pageable);
 		
 		Page<CamelHashMap> mglgPostsNick = mglgPostService.searchByNick(searchKeyword, pageable);
-		
+
 		Page<CamelHashMap> mglgPostsHashtag = mglgPostService.searchByHashtag(searchKeyword, pageable);
 		
 		ModelAndView mv = new ModelAndView();

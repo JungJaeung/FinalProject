@@ -37,6 +37,7 @@ public class MglgHotKeywords {
 			generator="MglgHotKeywordsSequenceGenerator"
 	)
 	private int keywordId;
+	
 	private String insertedKeyword;
 	private LocalDateTime searchedTime;
 }

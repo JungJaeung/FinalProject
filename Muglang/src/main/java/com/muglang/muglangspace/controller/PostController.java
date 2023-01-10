@@ -92,6 +92,7 @@ public class PostController {
 		System.out.println("가져온 파일의 정보 : " + uploadFiles);
 
 		try {
+			System.out.println("게시글 등록 시작.");
 			MglgPost mglgPost = MglgPost.builder()
 					.postId(mglgPostDTO.getPostId())
 					.mglgUser(loginUser.getMglgUser())
@@ -157,7 +158,9 @@ public class PostController {
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
 			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
-			System.out.println("반환하는 포스팅 데이터 : " + returnMap.get("insertPost"));
+			returnMap.put("postFileList", uploadFileList);
+			
+			System.out.println("파일 리스트 : " + uploadFileList);
 			responseDTO.setItem(returnMap);
 			System.out.println("새로운 글을 추가합니다.");
 			return ResponseEntity.ok().body(responseDTO); 
@@ -174,17 +177,23 @@ public class PostController {
 			MultipartFile[] changedFiles, HttpServletRequest request,
 			@RequestParam("originFiles") String originFiles,
 			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		//파일의 내용은 하나의 게시글을 가져오므로 1차원 배열을 가져오게됨.
 		//JSON string으로 파일의 원래 있던 파일을 가져오는 형식임.
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
 		
-		List<MglgPostFile> originFileList = new ObjectMapper().readValue(originFiles, 
-				new TypeReference<List<MglgPostFile>>() {});
+		System.out.println("수정 작업 할 맵 DTO 생성 완료" + uploadFiles);
+		System.out.println("가져온 게시글의 정보 : " + mglgPostDTO);
 		
-		System.out.println("수정 작업을 실행합니다." + mglgPostDTO);
+		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles, 
+				new TypeReference<List<MglgPostFileDTO>>() {});
+		
+		System.out.println("수정 작업을 실행합니다. 원래 파일의 목록을 불러옵니다." + originFileList);
 		
 		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
 		
 		System.out.println("게시글 수정 작업 attachPath : " + attachPath);
+		
+		System.out.println("변경된 파일들을 불러옵니다. " + changedFiles);
 		
 		File directory = new File(attachPath);
 		
@@ -193,17 +202,25 @@ public class PostController {
 		}
 		
 		List<MglgPostFile> uploadFileList = new ArrayList<MglgPostFile>();	
-		
+
 		try {
+			System.out.println("파일들을 수정할 작업을 시작합니다.");
 			//수정될 게시글의 정보를 모두 담아 갱신하려는 객체 생성.
 			MglgPost mglgPost = MglgPost.builder()
-										.postId(mglgPostDTO.getPostId())
-										.mglgUser(loginUser.getMglgUser())
-										.postContent(mglgPostDTO.getPostContent())
-										.restNm(mglgPostDTO.getRestNm())
-										.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate()))
-										.build();
-			
+					.postId(mglgPostDTO.getPostId())
+					.mglgUser(loginUser.getMglgUser())
+					.postContent(mglgPostDTO.getPostContent())
+					.restNm(mglgPostDTO.getRestNm())
+					.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate()))
+					.postRating(mglgPostDTO.getPostRating())
+					.restRating(mglgPostDTO.getRestRating())
+					.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
+					.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
+					.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
+					.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
+					.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
+					.build();
+			System.out.println("파일이 아닌 게시글의 내용을 수정할 정보를 가져옵니다.");
 			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
 			
 			System.out.println("파일 정보를 확인하고 있습니다." + uploadFiles);
@@ -215,7 +232,7 @@ public class PostController {
 			//변경하기전의 파일리스트들을 모두 돌아서 해당 파일의 상태에 따라 삭제와 수정을 처리함.
 			for(int i = 0; i < originFileList.size(); i++) {
 				//수정되는 파일 처리
-				if(originFileList.get(i).getPostFileStat().equals("U")) {
+				if(originFileList.get(i).getPostFileStatus().equals("U")) {
 					for(int j = 0; j < changedFiles.length; j++) {
 						if(originFileList.get(i).getNewFileNm().equals(changedFiles[j].getOriginalFilename())) {
 							MglgPostFile targetFile = new MglgPostFile();
@@ -226,24 +243,29 @@ public class PostController {
 							
 							targetFile.setMglgPost(mglgPost);
 							targetFile.setPostFileId(originFileList.get(i).getPostFileId());
-							targetFile.setPostFileStat("U");
+							targetFile.setPostFileStatus("U");
 							
 							uploadFileList.add(targetFile);
+							System.out.println("해당 파일의 상태 : " + targetFile.getPostFileStatus());
+							System.out.println("수정된 파일들을 적용 완료 하였습니다." + targetFile);
 						}
 					}
+
 				}
 				//삭제되는 파일 처리
-				else if(originFileList.get(i).getPostFileStat().equals("D")) {
+				else if(originFileList.get(i).getPostFileStatus().equals("D")) {
 					MglgPostFile targetFile = new MglgPostFile();
 					
 					targetFile.setMglgPost(mglgPost);
 					targetFile.setPostFileId(originFileList.get(i).getPostFileId());
-					targetFile.setPostFileStat("D");
+					targetFile.setPostFileStatus("D");
 					
 					File deleteFile = new File(attachPath + originFileList.get(i).getPostFileNm());
 					deleteFile.delete();
 					
 					uploadFileList.add(targetFile);
+					System.out.println("해당 파일의 상태 : " + targetFile.getPostFileStatus());
+					System.out.println("삭제된 파일들을 적용 완료 하였습니다." + targetFile);
 				}
 			}
 			//수정, 삭제 처리를 완료하고 더 추가된 파일을 적용한 뒤 마지막으로 다시 파일들을 업로드한다.
@@ -258,14 +280,16 @@ public class PostController {
 						uploadFile = FileUtils.parseFileInfo(file, attachPath);
 						
 						uploadFile.setMglgPost(mglgPost);
-						uploadFile.setPostFileStat("I");
+						uploadFile.setPostFileStatus("I");
 						uploadFileList.add(uploadFile);
-						System.out.println("등록하려는 파일의 원래 이름 : " + uploadFile.getPostFileOriginNm());
-						mglgPostFileService.insertPostFile(uploadFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
+						System.out.println("해당 파일의 상태 : " + uploadFile.getPostFileStatus());
+						System.out.println("새로 등록하려는 파일의 원래 이름 : " + uploadFile.getPostFileOriginNm());
+						//mglgPostFileService.insertPostFile(uploadFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
 					}
 				}
 			}
-			
+			//최종적으로 변경을 완료한 파일리스트를 반영하는 서비스 호출
+			mglgPostFileService.updatePostFileList(uploadFileList);
 			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("getPost", updateMglgPostDTO);
@@ -339,6 +363,7 @@ public class PostController {
 							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
 					)
 			);
+			pagePostList.getContent().get(i).put("index", i);
 		}
 		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열처럼 사용됨.
 		//반복문을 통해 한 게시글의 전체 정보를 담을 맵을 반복자로 잡아서 반복문을 돌림.
@@ -448,28 +473,26 @@ public class PostController {
 	//팔로우 하고 있는사람 포스트만 불러오는 로직
 	@GetMapping("/getFollowerPost")
 	public ResponseEntity<?> getFollowerPost(@PageableDefault(page=0,size=5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
-		MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
+		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 		int userId = loginUser.getMglgUser().getUserId();
 		try {		
 			
-		Page<MglgPost> pagePostList = mglgPostService.getFollowerPost(userId,pageable);
-		Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
-																						.userId(pageMglgPost.getMglgUser().getUserId())
-																						.postId(pageMglgPost.getPostId())
-																						.postContent(pageMglgPost.getPostContent())
-																						.postDate(pageMglgPost.getPostDate().toString())
-																						.restNm(pageMglgPost.getRestNm())
-																						.restRating(pageMglgPost.getRestRating())
-																						.postRating(pageMglgPost.getPostRating())
-																						.hashTag1(pageMglgPost.getHashTag1())
-																						.hashTag2(pageMglgPost.getHashTag2())
-																						.hashTag3(pageMglgPost.getHashTag3())
-																						.hashTag4(pageMglgPost.getHashTag4())
-																						.hashTag5(pageMglgPost.getHashTag5())
-																						.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
-																						.build()
-		);
-				response.setPageItems(pagePostListDTO);
+			Page<CamelHashMap> pagePostList = mglgPostService.getFollowerPost(userId,pageable);
+			for (int i = 0; i < pagePostList.getContent().size(); i++) {
+				pagePostList.getContent().get(i).put(
+					"between_date", Duration.between(
+							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
+							LocalDateTime.now()).getSeconds()
+				);
+				
+				pagePostList.getContent().get(i).put(
+						"post_date",
+						String.valueOf(
+								((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
+						)
+				);
+			}
+				response.setPageItems(pagePostList);
 				return ResponseEntity.ok().body(response);
 			} catch (Exception e) {
 				response.setErrorMessage(e.getMessage());
@@ -481,28 +504,28 @@ public class PostController {
 	//팔로우 하고 있는사람 포스트만 불러오는 로직
 		@GetMapping("/getFollowingPost")
 		public ResponseEntity<?> getFollowingPost(@PageableDefault(page=0,size=5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
-			MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
+			MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 			int userId = loginUser.getMglgUser().getUserId();
 			try {		
 				
-			Page<MglgPost> pagePostList = mglgPostService.getFollowingPost(userId,pageable);
-			Page<MglgPostDTO> pagePostListDTO = pagePostList.map(pageMglgPost->MglgPostDTO.builder()
-																							.userId(pageMglgPost.getMglgUser().getUserId())
-																							.postId(pageMglgPost.getPostId())
-																							.postContent(pageMglgPost.getPostContent())
-																							.postDate(pageMglgPost.getPostDate().toString())
-																							.restNm(pageMglgPost.getRestNm())
-																							.restRating(pageMglgPost.getRestRating())
-																							.postRating(pageMglgPost.getPostRating())
-																							.hashTag1(pageMglgPost.getHashTag1())
-																							.hashTag2(pageMglgPost.getHashTag2())
-																							.hashTag3(pageMglgPost.getHashTag3())
-																							.hashTag4(pageMglgPost.getHashTag4())
-																							.hashTag5(pageMglgPost.getHashTag5())
-																							.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds())
-																							.build()
-			);
-					response.setPageItems(pagePostListDTO);
+				
+				Page<CamelHashMap> pagePostList = mglgPostService.getFollowingPost(userId,pageable);
+				for (int i = 0; i < pagePostList.getContent().size(); i++) {
+					pagePostList.getContent().get(i).put(
+						"between_date", Duration.between(
+								((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
+								LocalDateTime.now()).getSeconds()
+					);
+					
+					pagePostList.getContent().get(i).put(
+							"post_date",
+							String.valueOf(
+									((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
+							)
+					);
+				}
+				
+					response.setPageItems(pagePostList);
 					return ResponseEntity.ok().body(response);
 				} catch (Exception e) {
 					response.setErrorMessage(e.getMessage());

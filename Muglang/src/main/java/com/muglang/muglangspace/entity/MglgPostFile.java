@@ -49,7 +49,7 @@ public class MglgPostFile {
 	private LocalDateTime postFileRegdate = LocalDateTime.now();
 	private String postFileCate;
 	@Transient
-	private String postFileStat;
+	private String postFileStatus;
 	@Transient
 	private String newFileNm;
 	

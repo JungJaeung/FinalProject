@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
@@ -85,13 +86,13 @@ public class MglgPostServiceImpl implements MglgPostService {
 	}
 
 	@Override
-	public Page<MglgPost> getFollowerPost(int userId, Pageable pageable) {
+	public Page<CamelHashMap> getFollowerPost(int userId, Pageable pageable) {
 
 		return mglgPostRepository.getFollowerPost(userId, pageable);
 	}
 	
 	@Override
-	public Page<MglgPost> getFollowingPost(int userId, Pageable pageable) {
+	public Page<CamelHashMap> getFollowingPost(int userId, Pageable pageable) {
 
 		return mglgPostRepository.getFollowingPost(userId, pageable);
 	}
@@ -154,6 +155,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 	}
 	
 	// 검색어를 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
+	@Transactional
 	@Override
 	public void insertKeyword(String searchKeyword) {
 		mglgPostRepository.insertKeyword(searchKeyword);
