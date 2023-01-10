@@ -48,4 +48,10 @@ public interface MglgPostService {
 	// 해시태그를 기준으로 검색
 	public Page<CamelHashMap> searchByHashtag(String searchKeyword, Pageable pageable);
 	
+	// 검색어 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
+	public void insertKeyword(String searchKeyword);
+	
+	// 인기 검색어를 SELECT
+	public Page<CamelHashMap> getHotKeywords(Pageable pageable);
+	
 }

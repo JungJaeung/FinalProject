@@ -53,21 +53,21 @@ let changedFiles = [];
 		
 		
 		//게시글 수정에서 파일을 수정하는 버튼의 파일관리 이벤트 처리 함수.
-		$.updateBtnAtt = function(postId, index) {
-			$("#updateBtnAtt" + postId).on("change", function(e) {
-				console.log(postId + "번 게시글의 업데이트 파일 변경을 감지.");
-				//input type=file에 추가된 파일들을 변수로 받아옴
-				const files = e.target.files;
-				//변수로 받아온 파일들을 배열 형태로 변환
-				const fileArr = Array.prototype.slice.call(files);
-				
-				//배열에 있는 파일들을 하나씩 꺼내서 처리
-				for(f of fileArr) {
-					postImageLoader(f, postId, index);
-					$.fnGetChangedFileInfo()
-				}
-			});
-		}
+		$(".updateBtnAtt").on("change", function(e) {
+			//console.log(postId + "번 게시글의 업데이트 파일 변경을 감지.");
+			//input type=file에 추가된 파일들을 변수로 받아옴
+			const files = e.target.files;
+			//변수로 받아온 파일들을 배열 형태로 변환
+			const fileArr = Array.prototype.slice.call(files);
+			
+			const postId = $(e.target).attr("data-post-id");
+			console.log(postId);
+			
+			//배열에 있는 파일들을 하나씩 꺼내서 처리
+			for(f of fileArr) {
+				postImageLoader(f, postId);
+			}
+		});
 
 		$.btnAtt = function() {
 			$("#btnAtt").on("change", function(e) {
@@ -229,10 +229,10 @@ let changedFiles = [];
 	
 	//게시글 작성이 아닌 이미 게시된 게시글의 파일 입력 미리보기 로드.
 	//배열안에 배열을 생성.
-	function postImageLoader(file, postId, index) {
-		uploadPostFileList[index].push(file);
-		console.log(postId + "번의 게시글의 해당 게시글의 파일 목록을 확인함.");
-		console.log(uploadPostFileList[index]);
+	function postImageLoader(file, postId) {
+		uploadFiles.push(file);
+		//console.log(postId + "번의 게시글의 해당 게시글의 파일 목록을 확인함.");
+		//console.log(uploadPostFileList[index]);
 		//uploadFiles.push(file);
 		
 		let reader = new FileReader();
@@ -255,7 +255,7 @@ let changedFiles = [];
 			//미리보기 이미지 태그와 삭제 버튼 그리고 파일명을 표출하는 p태그를 묶어주는 div 만들어서
 			//미리보기 영역에 추가
 			//미리보기 영역을 다른거로 대체해야함.
-			$("#postAttZone" + postId).append(makePostDiv(img, file, postId, index));
+			$("#postAttZone" + postId).append(makePostDiv(img, file, postId));
 			//로딩된 이미지의 이벤트를 추가함.
 		};
 		//파일을 Base64 인코딩된 문자열로 변경
@@ -316,9 +316,9 @@ let changedFiles = [];
 		const fileArr = Array.prototype.slice.call(files);
 	
 		//변경된 파일들은 변경된 파일 배열에 담아준다.
-		changedFiles[index].push(fileArr[0]);
+		changedFiles.push(fileArr[0]);
 		console.log("바꾼 파일의 변경사항을 저장하였습니다. 몇번째 게시글의 : "  + index);
-		console.log(changedFiles[index]);
+		console.log(changedFiles);
 		//미리보기 화면에서 변경된 파일의 이미지 출력
 		const reader = new FileReader();
 
@@ -339,14 +339,21 @@ let changedFiles = [];
 
 		//기존 파일을 담고있는 배열에서 변경이 일어난 파일 수정
 		console.log("게시글의 개수 : " + originFileList.length);
-		for (let i = 0; i < originFileList.length; i++) {
+		
+		for(let i = 0; i < originFiles.length; i++) {
+			if(postFileId == originFiles[i].postFileId) {
+				originFiles[i].postFileStatus = "U";
+				originFiles[i].newFileNm = fileArr[0].name;
+			}
+		}
+		/*for (let i = 0; i < originFileList.length; i++) {
 			for (let j = 0; j < originFileList[i].length; j++) {
 				if (postFileId == originFileList[i][j].postFileId) {
 					originFileList[i][j].postFileStatus = "U";
 					originFileList[i][j].newFileNm = fileArr[0].name;
 				}
 			}
-		}
+		}*/
 
 		console.log("변경된 파일 다시 정렬 중");
 	}
@@ -374,16 +381,14 @@ let changedFiles = [];
 	//이미 게시된 포스트의 x버튼 클릭시 일어나는 이벤트
 	function fnPostImgDel(e) {
 		//클릭된 태그 가져오기
-		let ele = e.srcElement;
+		let ele = e.currentTarget;
 		//delFile속성 값 가져오기(boardFileNo)
 		let delFile = ele.getAttribute("data-del-file");	
 		console.log("삭제할 이미지 파일 번호 : " + delFile);
 		
-		for(let i = 0; i < originFileList.length; i++) {
-			for(let j = 0; j < originFileList[i].length; j++) {
-				if(delFile == originFileList[i][j].postFileId) {
-					originFileList[i][j].postFileStatus = "D";
-				}
+		for(let i = 0; i < originFiles.length; i++) {
+			if(delFile == originFiles[i].postFileId) {
+				originFiles[i].postFileStatus = "D";
 			}
 		}
 		//부모 요소인 div 삭제
@@ -404,9 +409,9 @@ let changedFiles = [];
 	function fnUpdatePost(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
 		dt = new DataTransfer();
 		console.log(postId + "번의 업로드 되는 파일 목록 : ");
-		console.log(uploadPostFileList[index]);
-		for (f in uploadPostFileList[index]) {
-		   let file = uploadPostFileList[index][f];
+		console.log(uploadFiles);
+		for (f in uploadFiles) {
+		   let file = uploadFiles[f];
 		   dt.items.add(file);
 		}
 
@@ -417,29 +422,34 @@ let changedFiles = [];
 		//파일 하나씩만 담기는 현상이 발생해서 dt를 두 개로 분리하여 사용
 		dt2 = new DataTransfer();
 
-		for (f in changedFiles[index]) {
-		   let file = changedFiles[index][f];
+		for (f in changedFiles) {
+		   let file = changedFiles[f];
 		   dt2.items.add(file);
 		}
 
 		$("#changedFiles" + postId)[0].files = dt2.files;
 		console.log(postId + "번 게시글의 파일 수정을 진행하고 있습니다.");
-		console.log(changedFiles[index]);
+		console.log(changedFiles);
+		
+		//해당 postId에 대한 originsFiles만 남김
+		originFiles = originFiles.filter(file => file.postId === postId)
+		
 		//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
 		//배열 형태로 전송 시 백단(Java)에서 처리불가
 		//JSON String 형태로 변환하여 전송한다.
-		$("#originFiles" + postIdList[index]).val(JSON.stringify(originFileList[index]));
-		console.log("원래 파일의 이름 : " + $("#originFiles" + postIdList[index]).val());
+		$("#originFiles" + postId).val(JSON.stringify(originFiles));
+		console.log("원래 파일의 이름 : " + $("#originFiles").val());
 		//ajax에서 multipart/form-data형식을 전송하기 위해서는
 		//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
 		//form.serialize()는 multipart/form-data 전송불가
 		//let formData = new FormData($("#updateForm")[0]);
-		let formData = new FormData($("#updateForm" + postIdList[index])[0]);
+		let formData = new FormData($("#updateForm" + postId)[0]);
 
 		//ajax에 enctype: multipart/form-data, 
 		//processData: false, contentType: false로 설정               
 		console.log("updating-service 실행");
-		console.log("수정 할 내용 : " + $("#contentIn" + postId).val());
+		//console.log("수정 할 내용 : " + $("#contentIn" + postId).val());
+		//console.log(originFileList[index]);
 		$.ajax({
 			enctype: 'multipart/form-data',
 			url: '/post/updatePost',
@@ -449,8 +459,13 @@ let changedFiles = [];
 			contentType: false,
 			success: function (obj) {
 				console.log(obj.item);
+				console.log(obj.items);
 				alert("수정작업을 성공하였습니다.");
+				console.log("현재 파일의 개수는 ? : " + obj.item.fileSize);
 
+				$("#imgArea" + postId).html(imageTag(obj.item, obj.item.fileSize));
+
+				console.log("변경된 파일을 토대로 갱신을 완료하였습니다.");
 				$("#postId").val('' + obj.item.getPost.postId);
 				$("#userId").val('' + obj.item.getPost.userId);
 				$("#postContentIn").val(obj.item.getPost.userId);
@@ -459,11 +474,13 @@ let changedFiles = [];
 				$("#contentIn" + postId).text(obj.item.getPost.postContent);
 				$("#restNmIn").val(obj.item.getPost.restNm);
 				//수정 다하면 태그들을 다시 원래대로 돌린다.
+				$("#postAttZone" + postId).html('');
+				$("#buttonBox" + postId).hide();
 				$("#postContent" + postId).show();
 				$("#contentIn" + postId).hide();
 				$("#deleteButton" + postId).remove();
 				$("#updateButton" + postId).remove();
-				flagList[index] = !flagList[index];
+				flagList[index] = false;
 				$($(".updateBtn")[index]).text("게시글 수정");
 			},
 			error: function (e) {
@@ -471,7 +488,7 @@ let changedFiles = [];
 			},
 			done: function (result) {
 				console.log(result);
-				$("#attZone").replaceWith(result);
+				$("#postAttZone" + postId).replaceWith(result);
 			}
 		});
 		return false;
@@ -543,7 +560,7 @@ let changedFiles = [];
 	}
 	
 	//이미 게시된 게시글의 미리보기 영역에 들어가 div(img+button+p)를 생성하고 리턴
-	function makePostDiv(img, file, postId, index) {
+	function makePostDiv(img, file, postId) {
 		//div 생성
 		let div = document.createElement("div");
 		div.setAttribute("style", "display: inline-block; position: relative;"
@@ -567,17 +584,17 @@ let changedFiles = [];
 			//delFile(파일이름) 속성 꺼내오기: 삭제될 파일명
 			const delFile = ele.getAttribute("data-del-file");
 
-			for(let i = 0; i < uploadPostFileList[index].length; i++) {
+			for(let i = 0; i < uploadFiles.length; i++) {
 				//배열에 담아놓은 파일들중에 해당 파일 삭제
-				if(delFile == uploadPostFileList[index][i].name) {
-					console.log("del-file : " + delFile + ", uploadFiles : " + uploadPostFileList[index][i].name);
+				if(delFile == uploadFiles[i].name) {
+					console.log("del-file : " + delFile + ", uploadFiles : " + uploadFiles[i].name);
 					//배열에서 i번째 한개만 제거
-					let del = uploadPostFileList[index].splice(i, 1);
+					let del = uploadFiles.splice(i, 1);
 					console.log(del[0].name);
 				}
 				
 			}
-			console.log(uploadPostFileList[index]);
+			//console.log(uploadPostFileList[index]);
 			//버튼 클릭 시 btnAtt에 첨부된 파일도 삭제
 			//input type=file은 첨부된 파일들을 fileList 형태로 관리
 			//fileList에 일반적인 File객체를 넣을 수 없고
@@ -585,8 +602,8 @@ let changedFiles = [];
 			//input.files에 넣어줘야 된다.
 			dt = new DataTransfer();
 			
-			for(f in uploadFileList[index]) {
-				const file = uploadFileList[index][f];
+			for(f in uploadFiles) {
+				const file = uploadFiles[f];
 				dt.items.add(file);
 			}
 			

@@ -17,7 +17,7 @@
 		    <div class="search-bar w-">
 		      <form class="search-form d-flex align-items-center" method="GET" action="/search/searchByPost" id="searchForm">
 		        <input type="text" name="searchKeyword" placeholder="Search" title="Enter search keyword" th:value="${searchKeyword}" id="searchKeyword">
-		        <button type="submit" title="Search" id="searchBtn"><i class="bi bi-search"></i></button>
+		        <button type="button" title="Search" id="searchBtn"><i class="bi bi-search"></i></button>
 		      </form>
 		    </div><!-- End Search Bar -->
 		
@@ -109,107 +109,19 @@
 		        </li><!-- End Notification Nav -->
 		
 				<!--메세지 아이콘-->
-		        <li class="nav-item dropdown">
+		        
 		
-		          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-		            <i class="bi bi-chat-left-text"></i>
-		            <!--메세지 숫자-->
-		            <span class="badge bg-success badge-number">3</span>
+		          <a class="nav-link nav-icon" th:href="@{/chat/rooms}">
+		            <i class="bi bi-chat-right-text"></i>
 		          </a><!-- End Messages Icon -->
 		
-		          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
-		            <li class="dropdown-header">
-		              You have 3 new messages
-		              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-		            </li>
-		            <li>
-		              <hr class="dropdown-divider">
-		            </li>
+		          
 		
-		            <li class="message-item">
-		              <a href="#">
-		                <img th:src="@{/assets/img/messages-1.jpg}" alt="" class="rounded-circle">
-		                <div>
-		                  <h4>Maria Hudson</h4>
-		                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-		                  <p>4 hrs. ago</p>
-		                </div>
-		              </a>
-		            </li>
-		            <li>
-		              <hr class="dropdown-divider">
-		            </li>
-		
-		            <li class="message-item">
-		              <a href="#">
-		                <img th:src="@{/assets/img/messages-2.jpg}" alt="" class="rounded-circle">
-		                <div>
-		                  <h4>Anna Nelson</h4>
-		                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-		                  <p>6 hrs. ago</p>
-		                </div>
-		              </a>
-		            </li>
-		            <li>
-		              <hr class="dropdown-divider">
-		            </li>
-		
-		            <li class="message-item">
-		              <a href="#">
-		                <img th:src="@{/assets/img/messages-3.jpg}" alt="" class="rounded-circle">
-		                <div>
-		                  <h4>David Muldon</h4>
-		                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-		                  <p>8 hrs. ago</p>
-		                </div>
-		              </a>
-		            </li>
-		            <li>
-		              <hr class="dropdown-divider">
-		            </li>
-		
-		            <li class="dropdown-footer">
-		              <a th:href="@{/chat/rooms}">Show all messages</a>
-		            </li>
-		
-		          </ul><!-- End Messages Dropdown Items -->
-		
-		        </li><!-- End Messages Nav -->
+		        
 		
 		
 		      </ul>
 		    </nav><!-- End Icons Navigation -->
 		</header>
 	</body>
-	
-	<!-- 검색을 위한 버튼 실행 jQuery -->
-	<th:block layout:fragment="script">
-		<script th:inline="javascript">
-			$(function()  {
-				// searchKeyword 값 전달
-				localStorage.setItem("searchKeyword", $("#searchKeyword").val());
-				console.log($("#searchKeyword").val());
-				
-				$("#searchBtn").on("click", function() {
-					$("#searchForm").submit();
-				});
-			});
-		</script>
-	</th:block>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 </html>

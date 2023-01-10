@@ -173,9 +173,8 @@ public class PostController {
 	@Transactional //쿼리가 실행된 후 바로 트랜잭션을 호출
 	@PutMapping("/updatePost")
 	public ResponseEntity<?> updatePost(MglgPostDTO mglgPostDTO, 
-			MglgPostFileDTO mglgPostFileDTO, MultipartFile[] uploadFiles, 
-			MultipartFile[] changedFiles, HttpServletRequest request,
-			@RequestParam("originFiles") String originFiles,
+			MultipartFile[] uploadFiles, MultipartFile[] changedFiles, 
+			HttpServletRequest request, @RequestParam("originFiles") String originFiles,
 			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		//파일의 내용은 하나의 게시글을 가져오므로 1차원 배열을 가져오게됨.
 		//JSON string으로 파일의 원래 있던 파일을 가져오는 형식임.
@@ -290,10 +289,31 @@ public class PostController {
 			}
 			//최종적으로 변경을 완료한 파일리스트를 반영하는 서비스 호출
 			mglgPostFileService.updatePostFileList(uploadFileList);
+			for(int i = 0; i < uploadFileList.size(); i++) {
+				System.out.println("파일 DTO 넣기전 : " + uploadFileList.get(i));	
+			}
 			
+			//파일의 DTO 처리를 위한 갱신한 파일을 다시 조회
+			List<MglgPostFile> newUploadFileList = mglgPostFileService.getPostFileList(mglgPostDTO.getPostId());
+			
+			
+			//파일 처리한 데이터를 화면단에 처리하기위한 DTO
+			//새롭게 변경된 파일의 정보를 다시 불러와 DTO로 저장한다.
+			//파일의 상태를 임시로 저장하는 정보도 화면단에 다시 뿌리기 위해 정보를 다시 담음.
+			List<MglgPostFileDTO> uploadFileListDTO = new ArrayList<MglgPostFileDTO>();
+			for(int i = 0; i < newUploadFileList.size(); i++) {
+				MglgPostFileDTO fileDTO = Load.toHtml(newUploadFileList.get(i));
+				fileDTO.setPostFileId(newUploadFileList.get(i).getPostFileId());
+				fileDTO.setPostId(newUploadFileList.get(i).getMglgPost().getPostId());
+				fileDTO.setPostFileStatus("N");
+				uploadFileListDTO.add(fileDTO);
+			}
+			
+			System.out.println("수정된 파일 목록: " + uploadFileListDTO);
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("getPost", updateMglgPostDTO);
-			
+			returnMap.put("updateFileList", uploadFileListDTO);
+			returnMap.put("fileSize", newUploadFileList.size());
 			responseDTO.setItem(returnMap);
 			System.out.println("수정 작업 마무리단계");
 			return ResponseEntity.ok().body(responseDTO);
@@ -306,6 +326,7 @@ public class PostController {
 	}
 	
 	//삭제 작업 수행하기 - 삭제 후 넘어가는 페이지 리다이렉트가 두개가 겹쳐서 안되는거 같다.
+	@Transactional //쿼리가 실행된 후 바로 트랜잭션을 호출
 	@PostMapping("/deletePost")
 	public void deletePost(MglgPostDTO mglgPostDTO,
 			HttpServletResponse response,

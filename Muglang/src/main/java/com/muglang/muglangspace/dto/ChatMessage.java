@@ -1,5 +1,9 @@
 package com.muglang.muglangspace.dto;
 
+import java.util.List;
+
+import com.muglang.muglangspace.common.CamelHashMap;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,4 +18,6 @@ public class ChatMessage {
     private String writer;
     private String message;
     private MessageType type;
+    private List<CamelHashMap> messageList;
+    private int userId;
 }
