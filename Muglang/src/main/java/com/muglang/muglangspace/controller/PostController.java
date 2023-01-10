@@ -289,18 +289,23 @@ public class PostController {
 			}
 			//최종적으로 변경을 완료한 파일리스트를 반영하는 서비스 호출
 			mglgPostFileService.updatePostFileList(uploadFileList);
+			for(int i = 0; i < uploadFileList.size(); i++) {
+				System.out.println("파일 DTO 넣기전 : " + uploadFileList.get(i));	
+			}
 			
 			//파일의 DTO 처리를 위한 갱신한 파일을 다시 조회
-			uploadFileList = mglgPostFileService.getPostFileList(mglgPostDTO.getPostId());
+			List<MglgPostFile> newUploadFileList = mglgPostFileService.getPostFileList(mglgPostDTO.getPostId());
 			
 			
 			//파일 처리한 데이터를 화면단에 처리하기위한 DTO
+			//새롭게 변경된 파일의 정보를 다시 불러와 DTO로 저장한다.
+			//파일의 상태를 임시로 저장하는 정보도 화면단에 다시 뿌리기 위해 정보를 다시 담음.
 			List<MglgPostFileDTO> uploadFileListDTO = new ArrayList<MglgPostFileDTO>();
-			for(MglgPostFile file : uploadFileList) {
-				System.out.println("파일 DTO 넣기후 : " + file);
-				MglgPostFileDTO fileDTO = Load.toHtml(file);
-				fileDTO.setPostId(file.getPostFileId());
-				fileDTO.setPostId(file.getMglgPost().getPostId());
+			for(int i = 0; i < newUploadFileList.size(); i++) {
+				MglgPostFileDTO fileDTO = Load.toHtml(newUploadFileList.get(i));
+				fileDTO.setPostFileId(newUploadFileList.get(i).getPostFileId());
+				fileDTO.setPostId(newUploadFileList.get(i).getMglgPost().getPostId());
+				fileDTO.setPostFileStatus("N");
 				uploadFileListDTO.add(fileDTO);
 			}
 			
@@ -308,8 +313,7 @@ public class PostController {
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("getPost", updateMglgPostDTO);
 			returnMap.put("updateFileList", uploadFileListDTO);
-			returnMap.put("fileSize", uploadFileList.size());
-			
+			returnMap.put("fileSize", newUploadFileList.size());
 			responseDTO.setItem(returnMap);
 			System.out.println("수정 작업 마무리단계");
 			return ResponseEntity.ok().body(responseDTO);

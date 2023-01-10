@@ -461,11 +461,10 @@ let changedFiles = [];
 				console.log(obj.item);
 				console.log(obj.items);
 				alert("수정작업을 성공하였습니다.");
-				for(let i = 0; i < obj.item.fileSize; i++) {
-					originFileList[index][i] = obj.item.updateFileList[i];
-					uploadPostFileList[index][i] = obj.item.updateFileList[i];
-					console.log(originFileList[index]);
-				}
+				console.log("현재 파일의 개수는 ? : " + obj.item.fileSize);
+
+				$("#imgArea" + postId).html(imageTag(obj.item, obj.item.fileSize));
+
 				console.log("변경된 파일을 토대로 갱신을 완료하였습니다.");
 				$("#postId").val('' + obj.item.getPost.postId);
 				$("#userId").val('' + obj.item.getPost.userId);
@@ -475,6 +474,8 @@ let changedFiles = [];
 				$("#contentIn" + postId).text(obj.item.getPost.postContent);
 				$("#restNmIn").val(obj.item.getPost.restNm);
 				//수정 다하면 태그들을 다시 원래대로 돌린다.
+				$("#postAttZone" + postId).html('');
+				$("#buttonBox" + postId).hide();
 				$("#postContent" + postId).show();
 				$("#contentIn" + postId).hide();
 				$("#deleteButton" + postId).remove();

@@ -954,50 +954,52 @@
 
 										<form th:id="'updateForm' + ${post.postId}" enctype="multipart/form-data">
 											<!-- 게시글 사진 부분 -->
-											<!-- imgBox는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
-											<div class="activity" style="margin-bottom: 10px;" id="restImgBox">
-												<div th:each="file : ${post.fileList}" class="fileList"
-													th:value="${file.postFileId}">
-													<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
-													<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-													<div th:if="${#authentication.principal.mglgUser.userId == post.userId}" style="position: relative;">
-														<input type="hidden" th:id="'postFileId' + ${file.postFileId}" th:class="'postFileId' + ${file.postId}" 
-																name="postFileId" 
-																th:value="${file.postFileId}">
-														<input type="hidden" th:id="'postFileNm' + ${file.postFileId}" class="postFileNm" 
-																name="postFileNm" 
-																th:value="${file.postFileNm}">
-														<input type="hidden" th:id="'postId' + ${file.postFileId}" th:class="'postId' + ${file.postId}" 
-																name="postId" 
-																th:value="${file.postId}">
-	
-														<input type="file" th:id="'changedFile' + ${file.postFileId}" 
-															   th:name="'changedFile' + ${file.postFileId}"
-															   style="display: none;" 
-															   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], [[${postStat.index}]], event)">
-														
-														<img th:if="${file.postFileCate} == 'img'" 
-																 th:id="'img' + ${file.postFileId}" 
-																 th:src="@{'/upload/' + ${file.postFileNm}}"
-															 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-																 class="fileImg" 
-																 th:onclick="fnImgChange([[${file.postFileId}]])">
-														<img th:unless="${file.postFileCate} == 'img'" 
-																 th:id="'img' + ${file.postFileId}"
-																 th:src="@{/assets/img/defaultFileImg.png}"
-																 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-																 class="fileImg" 
-																 th:onclick="fnImgChange([[${file.postFileId}]])">
-														<input th:if="${post.userId} eq ${loginUser.userId}" type="button" class="btnDel" value="x" th:data-del-file="${file.postFileId}"
-																   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-																   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-																   th:onclick="fnPostImgDel(event)">
-														<p th:id="'fileNm' + ${file.postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
-															   th:onclick="fnFileDown([[${file.postId}]], [[${file.postFileId}]])"
-															   th:text="${file.postFileOriginNm}">
-													</div>
-													<div th:if="${#authentication.principal.mglgUser.userId != post.userId}">
-														<img th:src="@{'/upload/' + ${file.postFileNm}}">
+											<!-- imgArea는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
+											<div class="activity" style="margin-bottom: 10px;" th:id="'restImgBox' + ${post.postId}">
+												<div th:id="'imgArea' + ${post.postId}">
+													<div th:each="file : ${post.fileList}" th:class="'fileList' + ${post.postId}"
+														th:value="${file.postFileId}">
+														<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
+														<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
+														<div th:if="${#authentication.principal.mglgUser.userId == post.userId}" style="position: relative;">
+															<input type="hidden" th:id="'postFileId' + ${file.postFileId}" th:class="'postFileId' + ${file.postId}" 
+																	name="postFileId" 
+																	th:value="${file.postFileId}">
+															<input type="hidden" th:id="'postFileNm' + ${file.postFileId}" class="postFileNm" 
+																	name="postFileNm" 
+																	th:value="${file.postFileNm}">
+															<input type="hidden" th:id="'postId' + ${file.postFileId}" th:class="'postId' + ${file.postId}" 
+																	name="postId" 
+																	th:value="${file.postId}">
+		
+															<input type="file" th:id="'changedFile' + ${file.postFileId}" 
+																   th:name="'changedFile' + ${file.postFileId}"
+																   style="display: none;" 
+																   th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], [[${postStat.index}]], event)">
+															
+															<img th:if="${file.postFileCate} == 'img'" 
+																	 th:id="'img' + ${file.postFileId}" 
+																	 th:src="@{'/upload/' + ${file.postFileNm}}"
+																 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+																	 class="fileImg" 
+																	 th:onclick="fnImgChange([[${file.postFileId}]])">
+															<img th:unless="${file.postFileCate} == 'img'" 
+																	 th:id="'img' + ${file.postFileId}"
+																	 th:src="@{/assets/img/defaultFileImg.png}"
+																	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+																	 class="fileImg" 
+																	 th:onclick="fnImgChange([[${file.postFileId}]])">
+															<input th:if="${post.userId} eq ${loginUser.userId}" type="button" class="btnDel" value="x" th:data-del-file="${file.postFileId}"
+																	   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+																	   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+																	   th:onclick="fnPostImgDel(event)">
+															<p th:id="'fileNm' + ${file.postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
+																   th:onclick="fnFileDown([[${file.postId}]], [[${file.postFileId}]])"
+																   th:text="${file.postFileOriginNm}">
+														</div>
+														<div th:if="${#authentication.principal.mglgUser.userId != post.userId}">
+															<img th:src="@{'/upload/' + ${file.postFileNm}}">
+														</div>
 													</div>
 												</div>
 											<div class="uploadFileSpace">

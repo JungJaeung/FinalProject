@@ -130,9 +130,44 @@ function inputTitle(title) {
 	$('#inputRestNm').val(title)
 }
 
-function updateFormOn() {
-	text = "";
-	text += ``;
+//수정작업을 진행한후 이미지 갱신을 위한 태그 생성. 수정작업때만 사용되는 html단 텍스트 이므로 로그인 여부를 사용하지 않아도됨.
+function imageTag(item, fileSize) {
+	let tag  = "";
+	for(let i = 0; i < fileSize; i++) {
+		tag += `<div class="fileList${item.getPost.postId}" value="${item.updateFileList[i].postFileId}">`;
+		tag += `<div style="position: relative;">`;
+		tag += `<input type="hidden" id="postFileId${item.updateFileList[i].postFileId}" 
+					class="postFileId${item.updateFileList[i].postId}" name="postFileId" value="${item.updateFileList[i].postFileId}">`;
+		tag += `<input type="hidden" id="postFileNm${item.updateFileList[i].postFileId}" 
+					class="postFileNm" name="postFileNm" value="${item.updateFileList[i].postFileNm}">`;
+		tag += `<input type="hidden" id="postId${item.updateFileList[i].postFileId}" 
+					class="postId${item.updateFileList[i].postId}" name="postId" value="${item.updateFileList[i].postId}">`;
+		tag += `<input type="file" id="changedFile${item.updateFileList[i].postFileId}" name="changedFile${item.updateFileList[i].postFileId}" style="display: none;" 
+					onchange="fnGetChangedFileInfo(${item.updateFileList[i].postFileId}, ${i}, event)">`;												
+		if(item.updateFileList[i].postFileCate == 'img') {
+		tag += `<img id="img${item.updateFileList[i].postFileId}" 
+				src="/upload/${item.updateFileList[i].postFileNm}" 
+		 		style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+				class="fileImg" 
+				onclick="fnImgChange(${item.updateFileList[i].postFileId})">`;	
+		} else {
+		tag += `<img id="img${item.updateFileList[i].postFileId}" 
+				src="/assets/img/defaultFileImg.png" 
+				style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+				class="fileImg" 
+			 	onclick="fnImgChange(${item.updateFileList[i].postFileId})">`;			
+		}
+		tag += `<input type="button" class="btnDel" value="x" data-del-file="${item.updateFileList[i].postFileId}"
+				   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+				   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+				   onclick="fnPostImgDel(event)">`;	
+		tag += `<p id="fileNm${item.updateFileList[i].postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
+					onclick="fnFileDown(${item.updateFileList[i].postId}, ${item.updateFileList[i].postFileId})"
+					>${item.updateFileList[i].postFileOriginNm}</div>`;				
+		tag += `</div>`;
+	}
+
+	return tag;
 }
 
 //포스팅 html단에 표시하는 함수. 문자열 값을 반환
