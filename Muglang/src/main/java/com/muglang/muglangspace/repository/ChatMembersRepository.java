@@ -43,6 +43,11 @@ public interface ChatMembersRepository extends JpaRepository<MglgChatMembers, In
 			+ "	 , A.CHAT_CONTENT AS MESSAGE\n"
 			+ "     , DATE_FORMAT(A.CHAT_TIME, '%m-%d') AS CHAT_DATE\n"
 			+ "     , DATE_FORMAT(A.CHAT_TIME, '%H-%i') AS CHAT_TIME\n"
+			+ ", CASE\n"
+			+ "		WHEN A.CHAT_TIME <= B.LEAVE_DATE\n"
+			+ "        THEN 'R'\n"
+			+ "        ELSE 'N'\n"
+			+ "	   END AS READ_YN"
 			+ "	FROM T_MGLG_CHAT_MSG A\n"
 			+ "	   , T_MGLG_CHAT_MEMBERS B\n"
 			+ "       , T_MGLG_USER C\n"
@@ -65,4 +70,13 @@ public interface ChatMembersRepository extends JpaRepository<MglgChatMembers, In
 			+ " :chatContent,"
 			+ " NOW())", nativeQuery = true)
 	void insertMsg(@Param("chatRoomId") String chatRoomId, @Param("userId") int userId, @Param("chatContent") String chatContent);
+	
+	
+	@Modifying
+	@Query(value=""
+			+ " UPDATE T_MGLG_CHAT_MEMBERS "
+			+ " SET LEAVE_DATE = NOW()"
+			+ " WHERE CHAT_ROOM_ID = :chatRoomId"
+			+ " AND USER_ID = :userId", nativeQuery = true)
+	void leaveRoom(@Param("chatRoomId") String chatRoomId, @Param("userId") int userId);
 }

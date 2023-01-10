@@ -21,4 +21,6 @@ public interface ChatService {
 	
 	void insertMsg(MglgChatMessage message);
 	
+	void leaveRoom(MglgChatMembers member);
+	
 }

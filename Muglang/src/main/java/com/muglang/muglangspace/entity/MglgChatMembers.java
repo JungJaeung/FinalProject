@@ -28,6 +28,6 @@ public class MglgChatMembers {
 	@Id
 	private int userId;
 	private LocalDateTime enterDate = LocalDateTime.now();
-	private int leaveDate;
+	private LocalDateTime leaveDate = LocalDateTime.now();
 	
 }
