@@ -11,7 +11,7 @@ import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserProfile;
 
 @Transactional
-public interface MglgUserProfileRepository extends JpaRepository<MglgUserProfile, Integer>{
+public interface MglgUserProfileRepository extends JpaRepository<MglgUserProfile, MglgUser>{
 	
 	@Modifying
 	@Query(value = "INSERT INTO t_mglg_user_profile "
@@ -21,5 +21,6 @@ public interface MglgUserProfileRepository extends JpaRepository<MglgUserProfile
 	public int insertDefault(@Param("userId") int userId,@Param("attachPath") String attachPath);
 
 	MglgUserProfile findByUserId(@Param("userId") int userId);
-
 }
+
+
