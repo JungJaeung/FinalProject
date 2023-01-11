@@ -37,7 +37,6 @@ public interface MglgUserProfileRepository extends JpaRepository<MglgUserProfile
 									  @Param("profileCate") String profileCate,@Param("originNm") String originNm,
 									  @Param("path") String path);	
 
-
 }
 
 
