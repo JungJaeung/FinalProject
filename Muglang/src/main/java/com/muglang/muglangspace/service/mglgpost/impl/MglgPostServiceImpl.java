@@ -142,7 +142,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 	@Override
 	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable) {
 		System.out.println("닉네임이 끌고오는 데이터 ↓");
-		mglgPostRepository.searchByNick(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " ＆ \r\n"));
+		mglgPostRepository.searchByNick(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " \r\n"));
 		return mglgPostRepository.searchByNick(searchKeyword, pageable);
 	}
 	  
@@ -150,7 +150,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 	@Override
 	public Page<CamelHashMap> searchByHashtag(String searchKeyword, Pageable pageable) {
 		System.out.println("해시태그가 끌고오는 데이터 ↓");
-		mglgPostRepository.searchByHashtag(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " ＆ \r\n"));
+		mglgPostRepository.searchByHashtag(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " \r\n"));
 		return mglgPostRepository.searchByHashtag(searchKeyword, pageable);
 	}
 	
@@ -159,5 +159,14 @@ public class MglgPostServiceImpl implements MglgPostService {
 	@Override
 	public void insertKeyword(String searchKeyword) {
 		mglgPostRepository.insertKeyword(searchKeyword);
+	}
+	
+	// 인기 검색어를 SELECT
+	@Override
+	public Page<CamelHashMap> getHotKeywords(Pageable pageable) {
+		System.out.println("인기 검색어 데이터 ↓");
+		mglgPostRepository.getHotKeywords(pageable).get().forEach(a -> System.out.println(a + " \r\n"));
+		System.out.println("데이터의 총 개수: " + mglgPostRepository.getHotKeywords(pageable).getTotalElements());
+		return mglgPostRepository.getHotKeywords(pageable);
 	}
 }

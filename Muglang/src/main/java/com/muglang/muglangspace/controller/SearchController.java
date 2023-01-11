@@ -26,7 +26,7 @@ public class SearchController {
 	// 포스트 닉 해쉬태그를 기준으로 검색
 	@GetMapping("/searchByPost")
 	public ModelAndView searchByPost(@RequestParam("searchKeyword") String searchKeyword,
-									 @PageableDefault(page = 0, size = 20) Pageable pageable) {
+									 @PageableDefault(page = 0, size = 5) Pageable pageable) {
 		
 		log.info("searchByNick - SearchKeyword: " + searchKeyword);
 		
@@ -48,5 +48,18 @@ public class SearchController {
 		
 		return mv;
 		
+	}
+	
+	// HotKeywords 리스트 보는 화면
+	@GetMapping("/hotKeywords")
+	public ModelAndView hotKeywords(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+		
+		Page<CamelHashMap> mglgHotKeywords = mglgPostService.getHotKeywords(pageable);
+		
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("/search/hotKeywords.html");
+		mv.addObject("mglgHotKeywords", mglgHotKeywords);
+		
+		return mv;
 	}
 }

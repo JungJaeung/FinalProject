@@ -22,14 +22,21 @@ public class ChatRoomRepository {
 
     public ChatRoomRepository() {
         chatRoomMap = Collections.unmodifiableMap(
-                Stream.of(ChatRoom.create("room1"), ChatRoom.create("room2"), ChatRoom.create("room3"))
+                Stream.of(ChatRoom.create("서울", "1"), 
+                		  ChatRoom.create("인천", "2"), 
+                		  ChatRoom.create("부산", "3"), 
+                		  ChatRoom.create("대전", "4"), 
+                		  ChatRoom.create("대구", "5"), 
+                		  ChatRoom.create("광주", "6"), 
+                		  ChatRoom.create("울산", "7"),
+                		  ChatRoom.create("제주", "8"))
                       .collect(Collectors.toMap(ChatRoom::getId, Function.identity())));
         
-        chatRooms = Collections.unmodifiableCollection(chatRoomMap.values());
+        chatRooms = Collections.synchronizedCollection(chatRoomMap.values());
     }
 
     public ChatRoom getChatRoom(String id) {
         return chatRoomMap.get(id);
     }
-
+    
 }
