@@ -1,7 +1,10 @@
 package com.muglang.muglangspace.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -21,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @DynamicInsert
 @Data
+@IdClass(MglgUserProfileId.class)
 public class MglgUserProfile {
 	//외래키로 1대1 대응되는 유저 사진의 정보를 담는 데이터 베이스
 	//해당 유저아이디의 프로필은 유저 1명당 1개씩 가짐.
@@ -30,7 +34,7 @@ public class MglgUserProfile {
 	@OneToOne
 	@JoinColumn(name="USER_ID")
 	private MglgUser mglgUser;
-	
+	@Id
 	private String userProfileImg;
 	private String userProfileOriginNm;
 	private String userProfilePath;
