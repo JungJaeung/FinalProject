@@ -35,7 +35,7 @@ public class MglgUserProfile {
 	@JoinColumn(name="USER_ID")
 	private MglgUser mglgUser;
 	@Id
-	private String userProfileImg;
+	private String userProfileNm;
 	private String userProfileOriginNm;
 	private String userProfilePath;
 	private String userProfileCate;
