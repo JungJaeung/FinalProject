@@ -478,6 +478,7 @@ let changedFiles = [];
 				$("#buttonBox" + postId).hide();
 				$("#postContent" + postId).show();
 				$("#contentIn" + postId).hide();
+				$("");
 				$("#deleteButton" + postId).remove();
 				$("#updateButton" + postId).remove();
 				flagList[index] = false;
