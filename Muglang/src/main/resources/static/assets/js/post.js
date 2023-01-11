@@ -128,6 +128,81 @@ $(function() {
 
 		});
 	});
+	//스크롤 확장시 다시 이벤트를 발생시킬 스크립트를 다시 로드함.
+	$.updateBtn = function() {
+		$(".updateBtn").each(function(i, e) {
+			$($('.uploadFileSpace')[i]).hide();
+			$($('.changedFileSpace')[i]).hide();
+			$("#upTitle" + $(this).val()).hide();
+			$("#contentIn" + $(this).val()).hide();
+			$(this).on('click', function() {
+				console.log("초기 화면 수정 버튼 활성화.");
+				const postId = $(this).val();
+				flagList[i] = !flagList[i];
+				if (flagList[i]) {
+					$(this).text("돌아가기");
+					$("#postAttZone" + postId).show();
+					$("<button type='button' id='deleteButton" + $(this).val() + "'>").appendTo($(this).parent());
+					$("#deleteButton" + $(this).val()).text("글 삭제");
+					$("<button type='button' id='updateButton" + $(this).val() + "'>").appendTo($(this).parent());
+					$("#updateButton" + $(this).val()).text("게시글 수정하기");
+					$($(".fileBtns")[i]).show();
+					
+				} else {
+					$(this).text("게시글 수정");
+					$("#postAttZone" + postId).hide();
+					$("#deleteButton" + $(this).val()).remove();
+					$("#updateButton" + $(this).val()).remove();
+					$($(".fileBtns")[i]).hide();
+					
+				}
+	
+				$("#postContent" + $(this).val()).text();
+	
+				if (!flagList[i]) {
+					$("#postContent" + $(this).val()).show();
+					$("#contentIn" + $(this).val()).hide();
+					$("#upTitle" + $(this).val()).hide();
+					
+				} else {
+					$("#postContent" + $(this).val()).hide();
+					$("#contentIn" + $(this).val()).show();
+					$("#upTitle" + $(this).val()).show();
+				}
+				console.log("버튼 이벤트 html단 활성화");
+				
+				console.log("버튼 파일 조작 화면단 활성화" + postIdList[0]);
+				//$.updateBtnAtt(postIdList[i], i);
+				//내 게시글 파일 관리 버튼
+				$("#fileRequest" + postId).click(function(e) {
+					console.log("파일 요청 조작 활성화" + $(this).val());
+					$("#updateBtnAtt" + postId).click();
+				});
+				
+				$("#fileRemove" + $(this).val()).click(function(e) {
+					console.log("파일 삭제 요청 활성화");	
+				});
+				
+				//내 게시물 수정, 삭제, 돌아가기 결정 버튼
+				$("#updateButton" + postId).click(function(e) {
+					//console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());\
+					fnUpdatePost(postId, i);
+				});
+				$("#deleteButton" + postId).click(function(e) {
+					console.log("delete");
+					$($('.data')[i]).submit();
+				});
+	
+				//글 내용 수정하는 키입력을 받음.
+				$("#contentIn" + postId).keyup(function(e) {
+					$("#postContent" + postId).text($(this).val());
+					console.log($(this).val());
+					fnChangeContent(this);
+				});
+
+			});
+		});
+	}
 	
 	//자신이 게시한 글의 파일을 수정할 수 있는 버튼에 대한 이벤트 조작 생성.
 	/*

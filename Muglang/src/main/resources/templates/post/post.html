@@ -553,7 +553,9 @@
 										post_date = now - post_date;
 										//인덱스번호를 받기위해 총 배열의 개수를 받아서 자동증가
 										elements++;
-
+										text_scroll += `<div class="col-12 post">`;
+										text_scroll += `<input type="hidden" value="${post.betweenDate}">`;
+										text_scroll += `<input type="text" id="fileList${post.postId}" value="${post.fileLength}">`;
 										text_scroll += `<div class="card recent-sales">`
 										text_scroll += `<div class="card-body">`
 										text_scroll += `<div class="filter" style="margin-top: 15px;">`
@@ -577,18 +579,18 @@
 										text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
 										text_scroll += `</ul></div>`
 										text_scroll += `<div class="card-title">`
-										
 										text_scroll += `<form id="updateForm${post.postId}" enctype="multipart/form-data">`;
 										//<!-- 게시글 사진 부분 -->
 										//<!-- imgArea는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
 										text_scroll	+= `<div class="activity" style="margin-bottom: 10px;"
 														th:id="restImgBox${post.postId}">`; 
 										text_scroll	+= `<div id="imgArea${post.postId}">`;
-										for(let i = 0; i < post.fileLength; i++){
-											text_scroll	+= `<div class="fileList${post.postId}" value="${post.fileList[i].postFileId}">`;
+										if (loginUserId == post.userId) {
+											for(let i = 0; i < post.fileLength; i++){
+												text_scroll	+= `<div class="fileList${post.postId}" value="${post.fileList[i].postFileId}">`;
 											//<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
 											//<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-											if (loginUserId == post.userId) {
+											
 												text_scroll	+= `<div style="position: relative;">`;	
 												text_scroll	+= `<input type="hidden" id="postFileId${post.fileList[i].postFileId}"
 																class="postFileId${post.fileList[i].postId}" name="postFileId"
@@ -596,109 +598,37 @@
 												text_scroll	+= `<input type="hidden"id="postFileNm${post.fileList[i].postFileId}"
 																class="postFileNm" name="postFileNm"
 																value="${post.fileList[i].postFileNm}">`;
-												text_scroll	+= ``;
-												text_scroll	+= ``;
-												text_scroll	+= ``;
-											}
-																				
-										}	
-		
-
-																		
-															
-															
-															<input type="hidden" th:id="'postId' + ${file.postFileId}"
-																th:class="'postId' + ${file.postId}" name="postId"
-																th:value="${file.postId}">
-	
-															<input type="file" th:id="'changedFile' + ${file.postFileId}"
-																th:name="'changedFile' + ${file.postFileId}"
+												text_scroll	+= `<input type="hidden" id="postId${post.fileList[i].postFileId}"
+																class="postId${post.fileList[i].postId}" name="postId"
+																value="${post.fileList[i].postId}">`;
+												text_scroll	+= `<input type="file" th:id="changedFile${post.fileList[i].postFileId}"
+																th:name="changedFile${post.fileList[i].postFileId}"
 																style="display: none;"
-																th:onchange="fnGetChangedFileInfo([[${file.postFileId}]], [[${postStat.index}]], event)">
-	
-															<img th:if="${file.postFileCate} == 'img'"
-																th:id="'img' + ${file.postFileId}"
-																th:src="@{'/upload/' + ${file.postFileNm}}"
-																style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
-																class="fileImg"
-																th:onclick="fnImgChange([[${file.postFileId}]])">
-										text_scroll	+= ``;					<img th:unless="${file.postFileCate} == 'img'"
-																th:id="'img' + ${file.postFileId}"
-																th:src="@{/assets/img/defaultFileImg.png}"
-																style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
-																class="fileImg"
-																th:onclick="fnImgChange([[${file.postFileId}]])">
-										text_scroll	+= ``;					<input th:if="${post.userId} eq ${loginUser.userId}"
-																type="button" class="btnDel" value="x"
-																th:data-del-file="${file.postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-																		   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-																th:onclick="fnPostImgDel(event)">
-										text_scroll	+= ``;					<p th:id="'fileNm' + ${file.postFileId}"
-																style="display: none; font-size: 8px; cursor: pointer;"
-																th:onclick="fnFileDown([[${file.postId}]], [[${file.postFileId}]])"
-																th:text="${file.postFileOriginNm}">
-										text_scroll	+= ``;				</div>
-										text_scroll	+= ``;				<div
-															th:if="${#authentication.principal.mglgUser.userId != post.userId}">
-															<img th:src="@{'/upload/' + ${file.postFileNm}}">
-														</div>
-													</div>
-												</div>
-											</div>
-										text_scroll	+= ``;	<div class="uploadFileSpace">
-												<input type="file" th:id="'updateBtnAtt' + ${post.postId}"
-													class="updateBtnAtt" th:data-post-id="${post.postId}" name="uploadFiles"
-													multiple="multiple">
-											</div>
-										text_scroll	+= ``;	<div class="changedFileSpace">
-												<input type="file" th:id="'changedFiles' + ${post.postId}"
-													name="changedFiles" value="" multiple="multiple">
-											</div>
-										text_scroll	+= ``;	<div th:id="'postAttZone' + ${post.postId}"
-												data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>
-										text_scroll	+= ``;	<input type="hidden" name="postId" th:value="${post.postId}">
-										text_scroll	+= ``;	<input type="hidden" name="originFiles" th:id="'originFiles' + ${post.postId}"
-												value="">
-										text_scroll	+= ``;	<input type="hidden" id="userId" name="userId" th:value="${post.userId}">
-										text_scroll	+= ``;	<input type="hidden" id="postContentIn" name="postContent"
-												th:value="${post.postContent}">
-										text_scroll	+= ``;	<input type="hidden" name="postDate" th:value="${post.postDate}">
-										text_scroll	+= ``;	<input type="hidden" name="restNm" th:value="${post.restNm}">
-										</form>
-										
-										
-										if (loginUserId == post.userId) {
-											for (let i = 0; i < post.fileLength; i++) {
-												text_scroll += `<input type="hidden" id="postFileId" class="postFileId${post.postId}" 
-														name="postFileId" 
-														value="${post.fileList[i].postFileId}">`;
-												text_scroll += `<input type="hidden" id="postFileNm" class="postFileNm" 
-														name="postFileNm" 
-														value="${post.fileList[i].postFileNm}">`;
-												text_scroll += `<input type="file" id="changedFile${post.fileList[i].postFileId}" 
-													   name="changedFile${post.fileList[i].postFileId}"
-													   style="display: none;" 
-													   onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, ${elements}, event)">`;
-												if (post.fileList[i].postFileCate == "img") {
-													text_scroll += `<img id="img${post.fileList[i].postFileId}" 
-														 src="/upload/${post.fileList[i].postFileNm}"
-													 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-														 class="fileImg" 
-														 onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+																th:onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, ${i}, event)">`;
+												if(post.fileList[i].postFileCate == "img") {
+													text_scroll	+= `<img id="img${post.fileList[i].postFileId}"
+																	src="/upload/${post.fileList[i].postFileNm}"
+																	style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
+																	class="fileImg"
+																	onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+																	
 												} else {
-													text_scroll += `<img id="img${post.fileList[i].postFileId}"
-														 src="/assets/img/defaultFileImg.png"
-														 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-														 class="fileImg" 
-														 onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+													text_scroll	+= `<img id="img${post.fileList[i].postFileId}"
+																	src="/assets/img/defaultFileImg.png"
+																	style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
+																	class="fileImg"
+																	onclick="fnImgChange(${post.fileList[i].postFileId})">`;
 												}
-												text_scroll += `<input type="button" class="btnDel" value="x" data-del-file="${post.fileList[i].postFileId}"
-														   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-														   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-														   onclick="fnPostImgDel(event, ${elements})">`;
-												text_scroll += `<p id="fileNm${post.fileList[i].postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
-													   onclick="fnFileDown(${post.fileList[i].postId}, ${post.fileList[i].postFileId})"
-													   >${post.fileList[i].postFileOriginNm}</p>`;
+												
+												text_scroll	+= `<input type="button" class="btnDel" value="x"
+																data-del-file="${post.fileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+																z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+																onclick="fnPostImgDel(event)">`;
+												text_scroll	+= `<p id="fileNm${post.fileList[i].postFileId}"
+																style="display: none; font-size: 8px; cursor: pointer;"
+																onclick="fnFileDown(${post.fileList[i].postId}, ${post.fileList[i].postFileId})">
+																${post.fileList[i].postFileOriginNm}</p>`;
+												text_scroll	+= `</div>`;
 											}
 										} else {
 											for (let i = 0; i < post.fileLength; i++) {
@@ -717,12 +647,41 @@
 												}
 											}
 										}
-										text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
+										text_scroll	+= `</div></div>`;						
+										text_scroll	+= `<div class="uploadFileSpace">
+														<input type="file" id="updateBtnAtt${post.postId}"
+															class="updateBtnAtt" data-post-id="${post.postId}" name="uploadFiles"
+															multiple="multiple">
+														</div>`;
+										text_scroll	+= `<div class="changedFileSpace">
+														<input type="file" id="changedFiles${post.postId}"
+															name="changedFiles" value="" multiple="multiple">
+														</div>`;	
+										text_scroll	+= `<div id="postAttZone${post.postId}"
+														data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>`;	
+										text_scroll	+= `<input type="hidden" name="postId" value="${post.postId}">`;	
+										text_scroll	+= `<input type="hidden" name="originFiles" id="originFiles${post.postId}" value="">`;	
+										text_scroll	+= `<input type="hidden" id="userId" name="userId" value="${post.userId}">`;	
+										text_scroll	+= `<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">`;	
+										text_scroll	+= `<input type="hidden" name="postDate" value="${post.postDate}">`;	
+										text_scroll	+= `<input type="hidden" name="restNm" value="${post.restNm}"></form>`;	
+										
+										//text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
 										text_scroll += `<a href="#" class="card-title"> ${post.restNm}</a></div>`
 										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
 										text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;"></div>`
+										if(loginUserId == post.postId) {
+											text_scroll += `<div class="buttons fileBtns" id="buttonBox${post.postId}" value="${post.postId}">
+															<button type="button" id="fileRequest${post.postId}"
+															value="${post.postId}">파일 관리창 열기</button>&emsp;
+															<!--<button type="button" id="fileRemove${post.postId}">파일 전부 삭제</button>-->
+														</div>`;
+										}
 										text_scroll += `<div class="activity">`
 										text_scroll += `<div th:id="'postContent' + ${post.postId}">${post.postContent}</div>`
+										text_scroll += `<div id="upTitle${post.postId}">수정할 게시글 내용</div>`;
+										text_scroll += `<textarea id="contentIn${post.postId}" name="contentIn" col="85%"
+														row="40" style="display: none; resize: none;">${post.postContent}</textarea>`;
 										//여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
 										text_scroll += `<br>`
 										text_scroll += `</div>`
@@ -739,7 +698,6 @@
 										text_scroll += `<br>`
 										text_scroll += `<a>좋아요 <span id="likeCnt${post.postId}">${post.likeCnt}</span>개</a>`;			
 
-										
 										text_scroll += `<hr></div>`
 										//내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. 
 										text_scroll += `<form class="data" action="/post/deletePost" method="post">`
@@ -753,13 +711,19 @@
 										if(post.resCnt != 0) {
 											text_scroll += `<div class="activity" style="text-align: center;"><hr>
 												<a href="#"><span th:text="${item.loginUser.userName}"></span>님의 친구 <span>${post.resCnt}</span>명이
-													<span>${post.resName}</span> 에서 식사하셨어요!</a>
-												</div>`;		
+													<span>${post.resName}</span> 에서 식사하셨어요!</a></div>`;		
 										}
+										if(loginUserId == post.userId)
+										text_scroll += `<button type="button" class="updateBtn" id="updateButton"
+														value="${post.postId}">게시글 수정</button>`;									
+										text_scroll += `</div></div></div>`;
 									}
 
 									$("#post_scroll_div").html(text_scroll);
+									$(".uploadFileSpace").hide();
+									$(".changedFileSpace").hide();
 									//이벤트 리스너 함수 호출
+									$.updateBtn();
 									$.like_button();
 									$.comment_button();
 									$.map_button();
@@ -1188,11 +1152,11 @@
 									수정</button>
 								</div>
 							</div>
-						</div><!-- End Left side columns -->
-						<!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
-						<div id="post_scroll_div" class="col-12"></div>
-
+						</div>
 					</div>
+					<!-- End Left side columns -->
+					<!--스크롤이 맨 아래에 닿으면 이 위치에 작성됨-->
+					<div id="post_scroll_div" class="row"></div>
 				</div>
 				<!-- Right side columns -->
 				<div class="col-lg-4 col-xxl-3">
