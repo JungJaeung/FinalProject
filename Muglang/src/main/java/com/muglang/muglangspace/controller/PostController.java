@@ -384,6 +384,13 @@ public class PostController {
 							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
 					)
 			);
+			
+			//해당 글에 등록된 식당이 팔로우 하고있는 유저의 포스트에 몇개 등록되어 있는지
+			pagePostList.getContent().get(i).put(
+					"res_cnt",
+					mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
+			);
+			
 			pagePostList.getContent().get(i).put("index", i);
 		}
 		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열처럼 사용됨.
@@ -436,6 +443,16 @@ public class PostController {
 		pageable = PageRequest.of(page_num, 5);
 		
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
+		
+		for (int i = 0; i < pagePostList.getContent().size(); i++) {
+			//해당 글에 등록된 식당이 팔로우 하고있는 유저의 포스트에 몇개 등록되어 있는지
+			pagePostList.getContent().get(i).put(
+					"res_cnt",
+					mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
+			);
+			
+			pagePostList.getContent().get(i).put("index", i);
+		}
 		
 		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열
 		for(CamelHashMap file : pagePostList) {

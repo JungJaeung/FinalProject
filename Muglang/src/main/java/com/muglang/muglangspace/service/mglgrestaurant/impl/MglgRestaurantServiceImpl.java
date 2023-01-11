@@ -1,7 +1,5 @@
 package com.muglang.muglangspace.service.mglgrestaurant.impl;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,5 +25,16 @@ public class MglgRestaurantServiceImpl implements MglgRestaurantService {
 	@Override
 	public MglgRestaurant selectRes(int postId) {
 		return mglgRestaurantRepository.selectRes(postId);
+	}
+
+	@Override
+	public String countRes(int userId, String resName) {
+		String countRes = mglgRestaurantRepository.countRes(userId, resName);
+		if(countRes == null) {
+			return "0";
+		}
+		else {
+			return countRes;
+		}
 	}
 }
