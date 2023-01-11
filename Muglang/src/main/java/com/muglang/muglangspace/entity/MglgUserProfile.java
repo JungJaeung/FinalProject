@@ -2,6 +2,8 @@ package com.muglang.muglangspace.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -20,10 +22,11 @@ import lombok.NoArgsConstructor;
 @DynamicInsert
 @Data
 public class MglgUserProfile {
-	@Id
-	private int userId;
-	
-	private String userProfileImg;
+    @Id
+    @OneToOne
+    @JoinColumn(name="USER_ID")
+    private MglgUser mglgUser;
+	private String userProfileNm;
 	private String userProfileOriginNm;
 	private String userProfilePath;
 	private String userProfileCate;

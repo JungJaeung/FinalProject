@@ -71,20 +71,37 @@
 					console.log(e);
 				}
 			});
+			//이미지 불러오는 로직
 				$.ajax({
-				url: '/social/otherUserDetail',
-				type: 'get',
-				success: function (obj) {
-					console.log(obj)
-					let name = "";
-					name+= obj.item.userName+'('+obj.item.userNick+')'
-					$("#loginUserId").text(name)
-					$("#loginUserEmail").text(obj.item.email)
-				},
-				error: function (e) {
-					console.log(e);
-				}
-			});
+					url: '/user/getUserImg',
+					type: 'get',
+					success: function (obj) {
+						console.log(obj)
+						let src = "";
+						src+= obj.item.userProfilePath+'('+obj.item.userProfileNm+')'
+						$("#imgBox").attr("src",src);
+						
+					},
+					error: function (e) {
+						console.log(e);
+					}
+				});
+			
+			//이름불러오는 로직
+				$.ajax({
+					url: '/social/otherUserDetail',
+					type: 'get',
+					success: function (obj) {
+						console.log(obj)
+						let name = "";
+						name+= obj.item.userName+'('+obj.item.userNick+')'
+						$("#loginUserId").text(name)
+						$("#loginUserEmail").text(obj.item.email)
+					},
+					error: function (e) {
+						console.log(e);
+					}
+				});
 
 
 			$('.toggle-sidebar-btn').on('click', function () {

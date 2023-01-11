@@ -3,15 +3,13 @@ package com.muglang.muglangspace.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -28,17 +26,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
-import com.muglang.muglangspace.dto.MglgPostDTO;
-import com.muglang.muglangspace.dto.MglgReportDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
-import com.muglang.muglangspace.dto.ResponseDTO;
+import com.muglang.muglangspace.dto.MglgUserProfileDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
-import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglgsocial.UserRelationService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
+import com.muglang.muglangspace.service.mglguserprofile.MglgUserProfileService;
 
 @RestController
 @RequestMapping("/user")
@@ -47,7 +44,8 @@ public class UserController {
 	private MglgUserService mglgUserService;
 	@Autowired
 	private UserRelationService userRelationService;
-	
+	@Autowired
+	private MglgUserProfileService mglgUserProfileService;
 	//계정 관련 컨트롤
 	@Autowired
 	private MglgPostService mglgPostService;
@@ -250,7 +248,7 @@ public class UserController {
 	//유저 정보를 추가하는 자리를 추가할 경우 여기를 수정하여 수정하면됩니다.
 	@PostMapping("/socialNewLogin")
 	public void socialLoginView(MglgUserDTO mglgUserDTO, HttpSession session,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response,HttpServletRequest request) throws IOException {
 		CustomUserDetails userInfo = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
 //		System.out.println("연동되어있는 정보 표시 : " + userInfo.getAttributes().keySet());
@@ -267,8 +265,14 @@ public class UserController {
 						   .regDate(LocalDateTime.now())
 						   .userRole(userInfo.getMglgUser().getUserRole())
 						   .build();
-		
+
 		newUser = mglgUserService.socialLoginProcess(newUser);
+		
+		//가입시 디폴트 이미지 넣는 로직
+		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/" + "defaultImg.png";
+		 mglgUserProfileService.insertDefault(newUser.getUserId(),attachPath);
+		
+		
 		System.out.println("회원가입을 축하드립니다. 게시판으로 이동합니다.");
 		//로그인한 유저의 세션 정보는 엔티티가 아닌 DTO로 따로 저장하여 사용할것임.
 //		MglgUser loginUser = mglgUserService.socialLoginUser(newUser);
@@ -442,6 +446,35 @@ public class UserController {
 		response.sendRedirect("/user/profile");
 
 	}
+	//사이들바 프로필 파일 불러오는 로직
+	@GetMapping("getUserImg")
+	public ResponseEntity<?> orderWindow(@AuthenticationPrincipal CustomUserDetails loginUser) {
+		MglgResponseDTO<MglgUserProfileDTO> response = new MglgResponseDTO<>();
+		try {
+			MglgUserProfile userProfile = mglgUserProfileService.getUserImg(loginUser.getMglgUser().getUserId());
+			MglgUserProfileDTO userProfileDTO = MglgUserProfileDTO.builder()
+																  .userId(userProfile.getMglgUser().getUserId())
+																  .userProfileNm(userProfile.getNewUserProfileNm())
+																  .userProfilePath(userProfile.getUserProfilePath())
+																  .userProfileCate(userProfile.getUserProfileCate())
+																  .userProfileOriginNm(userProfile.getUserProfileOriginNm())
+																  .build();
+			response.setItem(userProfileDTO);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+
+				
+			
+			
+	}
+	
+	
+	
+	
 
 }//페이지 끝
 
