@@ -41,6 +41,8 @@
 	<script th:src="@{/js/jquery-3.6.1.min.js}"></script>
 	<script th:src="@{/assets/js/post.js}"></script>
 	<script th:src="@{/assets/js/file.js}"></script>
+	<script th:src="@{/assets/js/profile.js}"></script>
+
 	<!-- Vendor JS Files -->
 	<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
 	<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
@@ -78,8 +80,10 @@
 					success: function (obj) {
 						console.log(obj)
 						let src = "";
-						src+= obj.item.userProfilePath+'('+obj.item.userProfileNm+')'
-						$("#imgBox").attr("src",src);
+						src+= '/upload/'
+						src+= obj.item.userProfileNm;
+						console.log(src);
+						$(".profileBox").attr("src",src);
 						
 					},
 					error: function (e) {

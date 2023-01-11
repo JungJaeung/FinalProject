@@ -32,6 +32,7 @@ public class MglgUserProfile {
 	@OneToOne
 	@JoinColumn(name="USER_ID")
 	private MglgUser mglgUser;
+	@Id
 	private String userProfileNm;
 	private String userProfileOriginNm;
 	private String userProfilePath;

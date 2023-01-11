@@ -13,14 +13,30 @@ public class MglgUserProfileServiceImpl implements MglgUserProfileService{
 	MglgUserProfileRepository mglgUserProfileRepository;
 
 	@Override
-	public void insertDefault(int userId,String attachPath) {
+	public void insertDefault(int userId, String attachPath) {
 		mglgUserProfileRepository.insertDefault(userId,attachPath);
 	}
 
 	@Override
 	public MglgUserProfile getUserImg(int userId) {
-		return mglgUserProfileRepository.findByUserId(userId);
+		return mglgUserProfileRepository.getUserImg(userId);
 
+	}
+
+	@Override
+	public void updateProfileFile(MglgUserProfile mglgUserProfile) {
+		int userId = mglgUserProfile.getMglgUser().getUserId();
+		String profileNm = mglgUserProfile.getUserProfileNm();
+		String profileCate = mglgUserProfile.getUserProfileCate();
+		String originNm = mglgUserProfile.getUserProfileOriginNm();
+		String path = mglgUserProfile.getUserProfilePath();
+	
+		System.out.println(mglgUserProfile);
+		
+		mglgUserProfileRepository.updateProfile(userId, profileNm, profileCate, originNm, path);
+		
+		mglgUserProfileRepository.flush();
+		
 	}
 	
 	

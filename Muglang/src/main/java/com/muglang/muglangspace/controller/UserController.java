@@ -1,8 +1,13 @@
 package com.muglang.muglangspace.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,13 +28,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
+import com.muglang.muglangspace.common.FileUtils;
+import com.muglang.muglangspace.common.Load;
+import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
+import com.muglang.muglangspace.dto.MglgRestaurantDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.MglgUserProfileDTO;
+import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
+import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgPostFile;
+import com.muglang.muglangspace.entity.MglgRestaurant;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
@@ -61,7 +75,6 @@ public class UserController {
 																					 .build()
 		);
 		long followCnt = requestFollowDTOList.getTotalElements();
-		System.out.println("리퀘스트 개수 "+ followCnt);
 		
 
 		ModelAndView mv = new ModelAndView();
@@ -202,7 +215,6 @@ public class UserController {
 	@GetMapping("/login")
 	public ModelAndView loginView() {
 		ModelAndView mv = new ModelAndView();
-		System.out.println("최초 로그인 시스템작동");
 		mv.setViewName("user/login.html");
 		return mv;
 	}
@@ -301,7 +313,6 @@ public class UserController {
 	//유저 신고 -----메인 포스트에서 사용
 	@PostMapping("reportUser")
 	public void reportUser(String msg, String url,HttpServletResponse response,@RequestParam("userId") int postUserId,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
-		System.out.println("포스트 매핑 탔음");
 		url = "/post/mainPost";
 		reportUserBase(msg,url,response,postUserId,loginUser);
 	}
@@ -332,79 +343,6 @@ public class UserController {
 			e.printStackTrace();
 	    }
 	}
-	
-	//로그인 시도하는 임시 url
-//	@PostMapping("/login")
-//	public ModelAndView loginProcess(@PageableDefault(page=0, size=5) Pageable pageable, MglgUserDTO userDTO, HttpSession session) {
-//		ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>();
-//		Map<String, String> returnMap = new HashMap<String, String>();
-//		ModelAndView mv = new ModelAndView();
-//		
-//		System.out.println(userDTO);
-//		//로그인 과정 수행하는 부분
-//		try {
-//			MglgUser user = MglgUser.builder()
-//							.userId(userDTO.getUserId())
-//							.build();
-//			MglgUser checkedUser = mglgUserService.loginUser(user);
-//			System.out.println("비교군 계정 : " + checkedUser);
-//			if(checkedUser == null) {
-//				System.out.println("로그인을 실패함.");
-//				returnMap.put("msg", "idFail");
-//			} else {
-//				MglgUserDTO loginUser = MglgUserDTO.builder()
-//									 	.userId(checkedUser.getUserId())
-//									 	.userName(checkedUser.getUserName())
-//									 	.password(checkedUser.getPassword())
-//									 	.email(checkedUser.getEmail())
-//									 	.phone(checkedUser.getPhone())
-//									 	.userRole(checkedUser.getUserRole())
-//									 	.build();
-//					
-//				session.setAttribute("loginUser", loginUser);
-//				System.out.println("로그인한 유저 아이디 : " + loginUser);
-//			}
-//			responseDTO.setItem(returnMap);
-//			mv.addObject("loginUser", (MglgUserDTO)session.getAttribute("loginUser"));
-//			//로그인후 게시글 페이지로 이동함. 게시글의 정보를 조회하고 이 정보를 다음 화면단에 넘김.
-//			Page<MglgPost> postList = mglgPostService.getPagePostList(pageable);
-//			Page<MglgPostDTO> postListDTO = postList.map(pageMglgPost -> MglgPostDTO.builder()
-//																					.postId(pageMglgPost.getPostId())
-//																					.userId(pageMglgPost.getMglgUser().getUserId())
-//																					.postContent(pageMglgPost.getPostContent())
-//																					.postDate((pageMglgPost.getPostDate()).toString())
-//																					.restNm(pageMglgPost.getRestNm())
-//																					.restRating(pageMglgPost.getRestRating())
-//																					.postRating(pageMglgPost.getPostRating())
-//																					.hashTag1(pageMglgPost.getHashTag1())
-//																					.hashTag2(pageMglgPost.getHashTag2())
-//																					.hashTag3(pageMglgPost.getHashTag3())
-//																					.hashTag4(pageMglgPost.getHashTag4())
-//																					.hashTag5(pageMglgPost.getHashTag5())
-//																					//.betweenDate(Duration.between(LocalDateTime.now(), pageMglgPost.getPostDate()).getSeconds())
-//																					.build()
-//														);
-//			mv.addObject("postList", postListDTO);
-//			
-//			System.out.println(postListDTO.getContent().size());
-//			
-//			for(int i = 0; i < postListDTO.getContent().size(); i++) {
-//				System.out.println("111111111111111111111111111111111");
-//				System.out.println(postListDTO.getContent().get(i).getBetweenDate());
-//			}
-//			
-//			mv.setViewName("post/post.html");
-//			
-//			return mv;
-//		} catch(Exception e) {
-//			responseDTO.setErrorMessage(e.getMessage());
-//			
-//			mv.setViewName("user/login.html");
-//			
-//			return mv;
-//		}
-//	}
-
 	//로그아웃을 하는 매핑 메소드(아무것도 없어도 securityFilter에 정의 되어 있음.)
 	@GetMapping("/logout")
 	public void logout() {
@@ -412,9 +350,9 @@ public class UserController {
 	}
 	//유저 정보 업데이트 폼
 	@PostMapping("/updateUser")
-	public void updateUser(MglgUserDTO mglgUserDTO, HttpSession session,
-			HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails customUser) throws IOException {
-		System.out.println(mglgUserDTO);
+	public void updateUser(MglgUserDTO mglgUserDTO, HttpSession session,HttpServletRequest request,
+		HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails customUser,MultipartFile[] profileUpload) throws IOException {
+		System.out.println("멀티파트 ==="+profileUpload);
 		MglgUser user = MglgUser.builder()
 						   .userNick(mglgUserDTO.getUserNick())
 						   .userName(customUser.getMglgUser().getUserName())
@@ -431,7 +369,33 @@ public class UserController {
 						   .userBanYn(customUser.getMglgUser().getUserBanYn())				
 						   .build();
 
-		System.out.println(user);
+		
+		List<MglgUserProfile> uploadFileList = new ArrayList<MglgUserProfile>();		
+		if(profileUpload.length > 0) {
+			String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
+			
+			File directory = new File(attachPath);
+			
+			if(!directory.exists()) {
+				directory.mkdir();
+			}
+			//파일의 개수 만큼 하나씩 파일을 DB에 저장함.
+			for(int i=0; i < profileUpload.length; i++) {
+				MultipartFile file = profileUpload[i];
+				
+				if(!file.getOriginalFilename().equals("") && file.getOriginalFilename() != null) {
+					MglgUserProfile mglgUserProfile = FileUtils.parseProfileInfo(file, attachPath);
+					mglgUserProfile.setMglgUser(user);	//파일의 게시글 id 정보를 담음.
+					System.out.println("p----------------------="+mglgUserProfile);
+					uploadFileList.add(mglgUserProfile);
+					mglgUserProfileService.updateProfileFile(mglgUserProfile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
+				}
+			}
+			
+		}
+		System.out.println("파일 자료 입력 완료");
+		
+		
 		MglgUser updateUser = mglgUserService.updateUser(user);
 
 		CustomUserDetails customUserDetails = mglgUserService.loadByUserId(updateUser.getUserId());
@@ -449,12 +413,13 @@ public class UserController {
 	//사이들바 프로필 파일 불러오는 로직
 	@GetMapping("getUserImg")
 	public ResponseEntity<?> orderWindow(@AuthenticationPrincipal CustomUserDetails loginUser) {
+		int userId = loginUser.getMglgUser().getUserId();
 		MglgResponseDTO<MglgUserProfileDTO> response = new MglgResponseDTO<>();
 		try {
-			MglgUserProfile userProfile = mglgUserProfileService.getUserImg(loginUser.getMglgUser().getUserId());
+			MglgUserProfile userProfile = mglgUserProfileService.getUserImg(userId);
 			MglgUserProfileDTO userProfileDTO = MglgUserProfileDTO.builder()
 																  .userId(userProfile.getMglgUser().getUserId())
-																  .userProfileNm(userProfile.getNewUserProfileNm())
+																  .userProfileNm(userProfile.getUserProfileNm())
 																  .userProfilePath(userProfile.getUserProfilePath())
 																  .userProfileCate(userProfile.getUserProfileCate())
 																  .userProfileOriginNm(userProfile.getUserProfileOriginNm())
@@ -471,8 +436,7 @@ public class UserController {
 			
 			
 	}
-	
-	
+
 	
 	
 

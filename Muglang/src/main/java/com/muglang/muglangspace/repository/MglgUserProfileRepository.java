@@ -9,9 +9,10 @@ import org.springframework.data.repository.query.Param;
 
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserProfile;
+import com.muglang.muglangspace.entity.MglgUserProfileId;
 
 @Transactional
-public interface MglgUserProfileRepository extends JpaRepository<MglgUserProfile, MglgUser>{
+public interface MglgUserProfileRepository extends JpaRepository<MglgUserProfile, MglgUserProfileId>{
 	
 	@Modifying
 	@Query(value = "INSERT INTO t_mglg_user_profile "
@@ -19,8 +20,24 @@ public interface MglgUserProfileRepository extends JpaRepository<MglgUserProfile
 			+ ":attachPath,'defaultImg.png')",
 	nativeQuery = true)
 	public int insertDefault(@Param("userId") int userId,@Param("attachPath") String attachPath);
+	@Query(value = "SELECT * FROM T_MGLG_USER_PROFILE WHERE USER_ID=:userId",
+	nativeQuery = true)
+	MglgUserProfile getUserImg(@Param("userId") int userId);
+	
+	
+		@Modifying
+		@Query(value = ""
+				+ "UPDATE T_MGLG_USER_PROFILE "
+				+ "SET USER_PROFILE_NM = :profileNm, "
+				+ "	   USER_PROFILE_CATE = :profileCate,"
+				+ "	   USER_PROFILE_ORIGIN_NM = :originNm,"
+				+ "	   USER_PROFILE_path = :path "
+				+ "WHERE USER_ID = :userId",nativeQuery = true)
+		public void updateProfile(@Param("userId") int userId,@Param("profileNm") String profileNm,
+									  @Param("profileCate") String profileCate,@Param("originNm") String originNm,
+									  @Param("path") String path);	
 
-	MglgUserProfile findByUserId(@Param("userId") int userId);
+
 }
 
 
