@@ -390,7 +390,7 @@ public class PostController {
 					"res_cnt",
 					mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
 			);
-			
+			//해당 글에 등록된 식당 이름 정보 없음.
 			pagePostList.getContent().get(i).put("index", i);
 		}
 		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열처럼 사용됨.
