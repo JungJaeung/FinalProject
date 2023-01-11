@@ -15,6 +15,9 @@ import com.muglang.muglangspace.repository.MglgPostFileRepository;
 import com.muglang.muglangspace.repository.MglgPostRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class MglgPostServiceImpl implements MglgPostService {
 	@Autowired
@@ -133,24 +136,18 @@ public class MglgPostServiceImpl implements MglgPostService {
 	// 포스트 내용을 기준으로 검색
 	@Override
 	public Page<CamelHashMap> searchByPost(String searchKeyword, Pageable pageable) {
-		System.out.println("포스트 내용이 끌고오는 데이터 ↓");
-		mglgPostRepository.searchByPost(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " ＆ \r\n"));
 		return mglgPostRepository.searchByPost(searchKeyword, pageable);
 	}
 	
 	// 닉네임을 기준으로 검색
 	@Override
 	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable) {
-		System.out.println("닉네임이 끌고오는 데이터 ↓");
-		mglgPostRepository.searchByNick(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " \r\n"));
 		return mglgPostRepository.searchByNick(searchKeyword, pageable);
 	}
 	  
 	// 해시태그를 기준으로 검색
 	@Override
 	public Page<CamelHashMap> searchByHashtag(String searchKeyword, Pageable pageable) {
-		System.out.println("해시태그가 끌고오는 데이터 ↓");
-		mglgPostRepository.searchByHashtag(searchKeyword, pageable).get().forEach(a -> System.out.println(a + " \r\n"));
 		return mglgPostRepository.searchByHashtag(searchKeyword, pageable);
 	}
 	
@@ -164,9 +161,6 @@ public class MglgPostServiceImpl implements MglgPostService {
 	// 인기 검색어를 SELECT
 	@Override
 	public Page<CamelHashMap> getHotKeywords(Pageable pageable) {
-		System.out.println("인기 검색어 데이터 ↓");
-		mglgPostRepository.getHotKeywords(pageable).get().forEach(a -> System.out.println(a + " \r\n"));
-		System.out.println("데이터의 총 개수: " + mglgPostRepository.getHotKeywords(pageable).getTotalElements());
 		return mglgPostRepository.getHotKeywords(pageable);
 	}
 }
