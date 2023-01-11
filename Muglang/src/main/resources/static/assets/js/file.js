@@ -20,7 +20,6 @@ let changedFiles = [];
 		//게시글 작성 부분의 파일 입력 관리 이벤트.
 		$("#postFileRequest").click(function(e) {
 			e.preventDefault();
-			console.log("파일의 등록 요청.")
 			//숨어있던 파일 조작 메뉴 등장.
 			//이벤트 새로 생성.
 			if(!flagList) {
@@ -47,21 +46,18 @@ let changedFiles = [];
 		});
 
 		
-		console.log("게시글 아이디 리스트 표시 : ");
 		
 		//이미 등록된 게시글의 수정 과정에서 사용하는 이벤트 처리 버튼.
 		
 		
 		//게시글 수정에서 파일을 수정하는 버튼의 파일관리 이벤트 처리 함수.
 		$(".updateBtnAtt").on("change", function(e) {
-			//console.log(postId + "번 게시글의 업데이트 파일 변경을 감지.");
 			//input type=file에 추가된 파일들을 변수로 받아옴
 			const files = e.target.files;
 			//변수로 받아온 파일들을 배열 형태로 변환
 			const fileArr = Array.prototype.slice.call(files);
 			
 			const postId = $(e.target).attr("data-post-id");
-			console.log(postId);
 			
 			//배열에 있는 파일들을 하나씩 꺼내서 처리
 			for(f of fileArr) {
@@ -71,7 +67,6 @@ let changedFiles = [];
 
 		$.btnAtt = function() {
 			$("#btnAtt").on("change", function(e) {
-				console.log("파일 변경을 감지.");
 				//input type=file에 추가된 파일들을 변수로 받아옴
 				const files = e.target.files;
 				//변수로 받아온 파일들을 배열 형태로 변환
@@ -88,7 +83,6 @@ let changedFiles = [];
 		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
 		//수업 때 했던 게시글은 1개이고, 지금 이건 여러개를 뿌려야하기 때문에 게시된 데이터를 다 가지고 와야함.
 		for(let i = 0; i < postIdList.length; i++) {
-			console.log("파일 정보 입력 시작하기 : " + i);
 			for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
 				const originFileObj = {
 					postId: postIdList[i],
@@ -98,7 +92,6 @@ let changedFiles = [];
 					//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
 					postFileStatus: "N"
 				};
-				console.log("파일의 정보 : " + originFileObj);
 				originFiles.push(originFileObj);
 			}
 			//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
@@ -142,8 +135,6 @@ let changedFiles = [];
 	
 			//ajax에 enctype: multipart/form-data, 
 			//processData: false, contentType: false로 설정               
-			console.log("updating-service");
-			console.log("수정 할 내용 : " + $("#contentIn" + postId).val());
 			$.ajax({
 				enctype: 'multipart/form-data',
 				url: '/post/updatePost',
@@ -152,7 +143,6 @@ let changedFiles = [];
 				processData: false,
 				contentType: false,
 				success: function (obj) {
-					console.log(obj.item);
 					alert("수정작업을 성공하였습니다.");
 	
 					$("#postId").val('' + obj.item.getPost.postId);
@@ -198,7 +188,6 @@ let changedFiles = [];
 	//미리보기가 가능하게 해줌
 	function imageLoader(file) {
 		uploadFiles.push(file);
-		console.log(uploadFiles);
 		let reader = new FileReader();
 		
 		reader.onload = function(e) {
@@ -222,7 +211,6 @@ let changedFiles = [];
 			//$("#imagePrview").append(makeDiv(img,file));
 			$("#attZone").append(makeDiv(img, file));
 		};
-		console.log("파일 이미지 로드 중...");
 		//파일을 Base64 인코딩된 문자열로 변경
 		reader.readAsDataURL(file);
 	}
@@ -231,8 +219,6 @@ let changedFiles = [];
 	//배열안에 배열을 생성.
 	function postImageLoader(file, postId) {
 		uploadFiles.push(file);
-		//console.log(postId + "번의 게시글의 해당 게시글의 파일 목록을 확인함.");
-		//console.log(uploadPostFileList[index]);
 		//uploadFiles.push(file);
 		
 		let reader = new FileReader();
@@ -264,7 +250,6 @@ let changedFiles = [];
 	
 	/*
 	function fnGetChangedFileInfo(postFileId, e) {
-		console.log("바꾸는 파일 아이디 : " + postFileId);
 		//변경된 파일 받아오기
 		const files = e.target.files;
 		//받아온 파일 배열 형태로 변경(싱글파일 업로드여서 파일배열 한개의 인자만 담김)
@@ -338,7 +323,6 @@ let changedFiles = [];
 		reader.readAsDataURL(fileArr[0]);
 
 		//기존 파일을 담고있는 배열에서 변경이 일어난 파일 수정
-		console.log("게시글의 개수 : " + originFileList.length);
 		
 		for(let i = 0; i < originFiles.length; i++) {
 			if(postFileId == originFiles[i].postFileId) {
@@ -355,7 +339,6 @@ let changedFiles = [];
 			}
 		}*/
 
-		console.log("변경된 파일 다시 정렬 중");
 	}
 	
 	
@@ -438,7 +421,6 @@ let changedFiles = [];
 		//배열 형태로 전송 시 백단(Java)에서 처리불가
 		//JSON String 형태로 변환하여 전송한다.
 		$("#originFiles" + postId).val(JSON.stringify(originFiles));
-		console.log("원래 파일의 이름 : " + $("#originFiles").val());
 		//ajax에서 multipart/form-data형식을 전송하기 위해서는
 		//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
 		//form.serialize()는 multipart/form-data 전송불가
@@ -447,7 +429,6 @@ let changedFiles = [];
 
 		//ajax에 enctype: multipart/form-data, 
 		//processData: false, contentType: false로 설정               
-		console.log("updating-service 실행");
 		//console.log("수정 할 내용 : " + $("#contentIn" + postId).val());
 		//console.log(originFileList[index]);
 		$.ajax({
@@ -458,14 +439,10 @@ let changedFiles = [];
 			processData: false,
 			contentType: false,
 			success: function (obj) {
-				console.log(obj.item);
-				console.log(obj.items);
 				alert("수정작업을 성공하였습니다.");
-				console.log("현재 파일의 개수는 ? : " + obj.item.fileSize);
 
 				$("#imgArea" + postId).html(imageTag(obj.item, obj.item.fileSize));
 
-				console.log("변경된 파일을 토대로 갱신을 완료하였습니다.");
 				$("#postId").val('' + obj.item.getPost.postId);
 				$("#userId").val('' + obj.item.getPost.userId);
 				$("#postContentIn").val(obj.item.getPost.userId);
@@ -613,7 +590,6 @@ let changedFiles = [];
 			//해당 img를 담고있는 부모태그인 div 삭제
 			const parentDiv = ele.parentNode;
 			$(parentDiv).remove();
-			console.log("게시글의 업로드할 파일이 제거 됨.");
 		};
 		
 		//파일명 표출할 p태그 생성

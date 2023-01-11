@@ -186,13 +186,13 @@ public class PostController {
 		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles, 
 				new TypeReference<List<MglgPostFileDTO>>() {});
 		
-		System.out.println("수정 작업을 실행합니다. 원래 파일의 목록을 불러옵니다." + originFileList);
+//		System.out.println("수정 작업을 실행합니다. 원래 파일의 목록을 불러옵니다." + originFileList);
 		
 		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
-		
-		System.out.println("게시글 수정 작업 attachPath : " + attachPath);
-		
-		System.out.println("변경된 파일들을 불러옵니다. " + changedFiles);
+//		
+//		System.out.println("게시글 수정 작업 attachPath : " + attachPath);
+//		
+//		System.out.println("변경된 파일들을 불러옵니다. " + changedFiles);
 		
 		File directory = new File(attachPath);
 		
@@ -334,8 +334,8 @@ public class PostController {
 			@RequestParam("fileSize") int fileSize
 			) throws IOException {
 		
-		System.out.println("삭제 작업 실행 : " + mglgPostDTO.getPostId());
-		System.out.println("파일의 크기 : " + fileSize);// 파일의 개수를 미리 받아서 개수만큼 모두 삭제하는 용도로 사용.
+		//System.out.println("삭제 작업 실행 : " + mglgPostDTO.getPostId());
+		//System.out.println("파일의 크기 : " + fileSize);// 파일의 개수를 미리 받아서 개수만큼 모두 삭제하는 용도로 사용.
 		//외래키로 가지고 있는 파일들을 모두 삭제
 		if(fileSize > 0) {
 			mglgPostFileService.deletePostFileList(mglgPostDTO.getPostId());
@@ -398,13 +398,13 @@ public class PostController {
 		for(CamelHashMap file : pagePostList) {
 			//파일 정보를 화면단에 출력하기위해서 DTO를 담을 때 엔티티에서는 있지만, DTO에서는 이것을 따로 담아서 사용한다.
 			//해당 포스팅 게시글에 해당하는 파일들을 모두 검색하기 위해 포스트 ID를 따로 가져와서 쿼리로 검색한다.
-			System.out.println("변경된 맵 : " + file);
+//			System.out.println("변경된 맵 : " + file);
 			int findId = (int)file.get("postId");
 			//한 게시글의 모든 파일들을 로드함.
 			//파일을 등록하지 않은 경우 파일 없이 수행. if문의 조건에 만족하지 못하면 file 데이터는 없는것.
 			//fileList 객체의 결과가 없으면 if문을 들어가지 않고 바로 빠져나와 파일의 개수가 0이고, 내용은 비어있음.
 			List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
-			System.out.println("파일의 개수 : " + fileList.size());
+			//System.out.println("파일의 개수 : " + fileList.size());
 			List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
 			if(!fileList.isEmpty()) {
 				for(int j = 0; j < fileList.size(); j++) {
@@ -418,11 +418,7 @@ public class PostController {
 			file.put("file_length", fileList.size());	//방금 작업 완료한 게시글의 파일 개수 저장.
 			file.put("file_list", fileListDTO);	//키값은 스네이크형으로 적고 오버라이딩된 camelHashMap클래스의 메소드를 따라감. 
 			//camel형으로 키값을 자동으로 바꿈.
-			System.out.println("멥에 다 넣은 결과 : " + file);
 		}
-		System.out.println("파일 리스트 정보 담기 완료..... 화면단으로 넘길 준비를 합니다." );
-		System.out.println("파일 한개의 담긴 형태 : " + pagePostList.getContent().get(0));
-		
 		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
@@ -456,7 +452,6 @@ public class PostController {
 		
 		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열
 		for(CamelHashMap file : pagePostList) {
-			System.out.println("변경된 맵 : " + file);
 			int findId = (int)file.get("postId");
 			//한 게시글의 모든 파일들을 생성함.
 			List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
@@ -465,7 +460,6 @@ public class PostController {
 				for(int j=0; j < fileList.size(); j++) {
 					fileListDTO.add(Load.toHtml(fileList.get(j)));
 					fileListDTO.get(j).setPostId(findId);
-					System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
 				}
 				file.put("file_length", fileList.size());
 				file.put("file_list", fileListDTO);

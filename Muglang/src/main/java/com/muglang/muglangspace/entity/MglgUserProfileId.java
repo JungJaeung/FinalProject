@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class MglgUserProfileId implements Serializable{
-	private int mglgUser;
-	private String userProfileNm;
+    private int mglgUser;
+    private String userProfileNm;
 }
+
