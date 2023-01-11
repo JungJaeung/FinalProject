@@ -129,13 +129,14 @@ $(function() {
 		});
 	});
 	//스크롤 확장시 다시 이벤트를 발생시킬 스크립트를 다시 로드함.
-	$.updateBtn = function() {
-		$(".updateBtn").each(function(i, e) {
+	$.updateBtn = function(startIndex) {
+		for(let i = startIndex; i < startIndex + 5; i++) {
+			flagList[i] = false;
 			$($('.uploadFileSpace')[i]).hide();
 			$($('.changedFileSpace')[i]).hide();
 			$("#upTitle" + $(this).val()).hide();
 			$("#contentIn" + $(this).val()).hide();
-			$(this).on('click', function() {
+			$($(".updateBtn")[i]).on('click', function(e) {
 				console.log("초기 화면 수정 버튼 활성화.");
 				const postId = $(this).val();
 				flagList[i] = !flagList[i];
@@ -199,9 +200,10 @@ $(function() {
 					console.log($(this).val());
 					fnChangeContent(this);
 				});
-
+	
 			});
-		});
+
+		}
 	}
 	
 	//자신이 게시한 글의 파일을 수정할 수 있는 버튼에 대한 이벤트 조작 생성.

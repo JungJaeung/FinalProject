@@ -669,13 +669,13 @@
 										//text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
 										text_scroll += `<a href="#" class="card-title"> ${post.restNm}</a></div>`
 										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
-										text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;"></div>`
+										text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`
 										if(loginUserId == post.postId) {
 											text_scroll += `<div class="buttons fileBtns" id="buttonBox${post.postId}" value="${post.postId}">
 															<button type="button" id="fileRequest${post.postId}"
 															value="${post.postId}">파일 관리창 열기</button>&emsp;
-															<!--<button type="button" id="fileRemove${post.postId}">파일 전부 삭제</button>-->
-														</div>`;
+															<button type="button" id="fileRemove${post.postId}">파일 전부 삭제</button>
+															</div></div>`;
 										}
 										text_scroll += `<div class="activity">`
 										text_scroll += `<div th:id="'postContent' + ${post.postId}">${post.postContent}</div>`
@@ -723,7 +723,7 @@
 									$(".uploadFileSpace").hide();
 									$(".changedFileSpace").hide();
 									//이벤트 리스너 함수 호출
-									$.updateBtn();
+									$.updateBtn(elements);
 									$.like_button();
 									$.comment_button();
 									$.map_button();
