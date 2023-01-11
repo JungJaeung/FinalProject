@@ -2,12 +2,16 @@
 
 
 $(function() {
-
+	
 	$('.fileBtns').hide();
 	
 	//ajax로 이벤트 함수를 다시 빌드하는 객체를 따로 정의
 	$.update_post = function() {
 		$($(".updateBtn")[0]).click(function(e) {
+			$($('.uploadFileSpace')[0]).hide();
+			$($('.changedFileSpace')[0]).hide();
+			$("#upTitle" + $(this).val()).hide();
+			$("#contentIn" + $(this).val()).hide();
 			console.log("회원의 수정버튼 이벤트 함수 적용 확인.");
 			flagList[0] = !flagList[0];
 			if (flagList[0]) {
@@ -55,6 +59,8 @@ $(function() {
 	$(".updateBtn").each(function(i, e) {
 		$($('.uploadFileSpace')[i]).hide();
 		$($('.changedFileSpace')[i]).hide();
+		$("#upTitle" + $(this).val()).hide();
+		$("#contentIn" + $(this).val()).hide();
 		$(this).on('click', function() {
 			console.log("초기 화면 수정 버튼 활성화.");
 			const postId = $(this).val();
@@ -82,9 +88,12 @@ $(function() {
 			if (!flagList[i]) {
 				$("#postContent" + $(this).val()).show();
 				$("#contentIn" + $(this).val()).hide();
+				$("#upTitle" + $(this).val()).hide();
+				
 			} else {
 				$("#postContent" + $(this).val()).hide();
 				$("#contentIn" + $(this).val()).show();
+				$("#upTitle" + $(this).val()).show();
 			}
 			console.log("버튼 이벤트 html단 활성화");
 			
@@ -105,14 +114,14 @@ $(function() {
 				//console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());\
 				fnUpdatePost(postId, i);
 			});
-			$("#deleteButton" + postIdList[i]).click(function(e) {
+			$("#deleteButton" + postId).click(function(e) {
 				console.log("delete");
 				$($('.data')[i]).submit();
 			});
 
 			//글 내용 수정하는 키입력을 받음.
-			$("#contentIn" + postIdList[i]).keyup(function(e) {
-				$("#postContent" + postIdList[i]).text($(this).val());
+			$("#contentIn" + postId).keyup(function(e) {
+				$("#postContent" + postId).text($(this).val());
 				console.log($(this).val());
 				fnChangeContent(this);
 			});
@@ -211,7 +220,7 @@ function post(item, insertIndex) {
 		text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox">`;
 		//text += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`;
 		//text +=	`</div>`;
-		text += `<div class="box" id="imageBox${post.postId}">`;
+		text += `<div class="box" id="imageBox${item.insertPost.postId}">`;
 		for(let i = 0; i < item.postFileList.length; i++) {
 			console.log("파일의 개수 : " + item.postFileList.length);
 			if(item.loginUser.userId != item.insertPost.userId) {
@@ -252,17 +261,56 @@ function post(item, insertIndex) {
 		}
 
 		text += `</div>`;
-		text +=	`<div class="buttons" id="buttonBox${post.postId}">
-					<button id="fileRequest${post.postId}">파일 관리창 열기</button>&emsp;
-					<button id="fileRemove${post.postId}">파일 삭제</button>
+		text +=	`<div class="buttons" id="buttonBox${item.insertPost.postId}">
+					<button id="fileRequest${item.insertPost.postId}">파일 관리창 열기</button>&emsp;
+					<!--<button id="fileRemove${item.insertPost.postId}">파일 삭제</button>-->
 				</div></div>`;
+	text += `<div class="activity"><br>`;
+	
+									//<!-- 해시태그 -->
+	if(item.insertPost.hashTag1 != "") {
+		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag1}!=''">&emsp;#<span th:text="${item.insertPost.hashTag1}"></span></a>`;
+	}
+	if(item.insertPost.hashTag2 != "") {
+		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag2}!=''">&emsp;#<span th:text="${item.insertPost.hashTag2}"></span></a>`;		
+	}
+	if(item.insertPost.hashTag3 != "") {
+		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag3}!=''">&emsp;#<span th:text="${item.insertPost.hashTag3}"></span></a>`;			
+	}
+	if(item.insertPost.hashTag4 != "") {
+		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag4}!=''">&emsp;#<span th:text="${item.insertPost.hashTag4}"></span></a>`;	
+	}
+	if(item.insertPost.hashTag5 != "") {
+		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag5}!=''">&emsp;#<span th:text="${item.insertPost.hashTag5}"></span></a>`;		
+	}
+	text +=	`</div>`;
+	/*
+	//<!--좋아요 댓글 지도-->									
 	text += `<div class="activity">`;
+	if(item.insertPost.postLike == "N") {
+		text += `<i class="ri-heart-3-line post_like" id="${item.insertPost.postId}"
+		style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`;
+	}
+	if(item.insertPost.PostLike == "Y") {
+		text += `<i class="ri-heart-3-line post_like" id="${item.insertPost.postId}"
+		style="font-size: 30px; margin-right: 5px; color:red; cursor: pointer;"></i>`;
+	}
+	text += `<i class="ri-message-3-line msg_icon" id="${item.insertPost.postId}"
+			style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`;*/
+	
+	//식당 관련 내용을 적용하는 버튼	
+	if(item.insertPost.restaurant == "Y") {
+		text += `<i class="ri-map-pin-2-line map_icon"
+		id="${item.insertPost.postId}"
+		style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i><br>`;		
+	}								
+	//<!--좋아요 숫자 필드-->
+	text += `<a>좋아요 <span id="likeCnt${item.insertPost.postId}"
+			>${item.insertPost.likeCnt}</span>개</a></div>`;									
+									
 	text += `<div id="postContent${item.insertPost.postId}">${item.insertPost.postContent}</div>
 				<textarea id="contentIn${item.insertPost.postId}" name="contentIn" col="200"
 				row="40" style="display: none; resize: none;">${item.insertPost.postContent}</textarea><br>`;
-	text += `<a href="#" style="color: blue;">&emsp;#강남맛집</a>
-				<a href="#" style="color: blue;">&emsp;#˘ᗜ˘</a>
-				<a href="#" style="color: blue;">&emsp;#(๑╹ワ╹)</a></div>`;
 	text += `<div class="activity">`;
 	if (item.insertPost.postLike == "Y")
 		text += `<i class="ri-heart-3-line post_like" id="${item.insertPost.postId}" style="font-size: 30px; margin-right: 5px; color:red; cursor: pointer;"></i>`
@@ -271,7 +319,6 @@ function post(item, insertIndex) {
 	text += `<i class="ri-message-3-line msg_icon" id="${item.insertPost.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
 	if (item.insertPost.restaurant == "Y")
 		text += `<i class="ri-map-pin-2-line map_icon" id="${item.insertPost.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
-	text += `<a>좋아요 <span id="like_num${item.insertPost.postId}">21</span>개</a><hr></div><br>`;
 	text += `<form class="data" action="/post/deletePost" method="post">
 					<input type="hidden" id="restNmIn" name="restNm" value="${item.insertPost.restNm}">
 					<input type="hidden" id="postContentIn" name="postContent"
@@ -281,10 +328,13 @@ function post(item, insertIndex) {
 					<input type="hidden" id="postDate" name="postDate"
 					value="${item.insertPost.postDate}">
 				</form>`;
-	text += `<div class="activity" style="text-align: center;">
-					<a href="#"><span>six</span>님 외 16명이 <span>서울 강남구 강남대로 36</span>
-					<span>감성타코</span>에서 식사하셨어요!</a>
-					<input type="hidden" class="test" value="">`;
+	//<!-- 친구 식사 했는지 확인 필드 -->
+	if(item.insertPost.restCnt != 0) {
+		text += `<div class="activity" style="text-align: center;"><hr>
+		<a href="#"><span th:text="${item.loginUser.userName}"></span>님의 친구 <span>${item.insertPost.resCnt}</span>명이
+			<span>${item.insertPost.resName}</span> 에서 식사하셨어요!</a>
+		</div>`;	
+	}
 	if (item.insertPost.userId == item.loginUser.userId) {
 		text += `<button class="updateBtn" id="updateButton" value="${item.insertPost.postId}">게시글 수정</button></div>`;
 	}

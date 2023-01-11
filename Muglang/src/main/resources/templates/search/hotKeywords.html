@@ -7,30 +7,243 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
   </head>
   <body>
-		<table class="table" id="topList">
-		  <thead>
-		    <tr>
-			  <th scope="col">
-				  <input type="checkbox" name="checkAll" id="checkAll" value="Y" title="Check/Uncheck All">
-			  </th>	
-		      <th scope="col">순위</th>
-		      <th scope="col">키워드</th>
-		    </tr>
-		  </thead>
-		  <tbody>
-		    <tr id="hotKeywordSet" th:each="hot, stat : ${mglgHotKeywords}">
-			  <td>
-				  <input type="checkbox" name="checkEach" id="checkEach" value="${hot.insertedKeyword}">
-			  </td>
-		      <th scope="row" th:text="${stat.count}"></th>
-		      <td th:text="${hot.insertedKeyword}"></td>
-		    </tr>
-		  </tbody>
-		</table>
+	  <div class="m-5">
+		  <div class="col-sm-12" style="width: 40%; float: left;">
+		  	<div class="tit">
+				<h4 class="box-title">DB에 저장된 검색어 순위</h4>
+			</div>
+			<div class="d-flex justify-content-end">
+				<button type="button" class="btn btn-outline-primary">추가</button>&emsp;
+				<button type="button" class="btn btn-outline-success">수정</button>&emsp;
+			</div><br>
+			<table class="table" id="topList">
+			  <colgroup>
+				<col style="width: 60px;">
+				<col style="width: 70px;">
+				<col style="width: auto;">
+			  </colgroup>
+			  <thead>
+			    <tr>
+				  <th scope="col">
+					  <input type="checkbox" name="checkAll" id="checkAll" value="Y" title="Check/Uncheck All">
+				  </th>	
+			      <th scope="col" style="text-align: center;">순위</th>
+			      <th scope="col" style="text-align: center;">키워드</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <tr id="hotKeywordSet" th:each="hot, stat : ${mglgHotKeywords}" th:id="|wordList${stat.count}|" class="tac">
+				  <td>
+					  <input type="checkbox" name="checkEach" th:id="|hotWord${stat.count}|" th:value="${hot.insertedKeyword}">
+				  </td>
+			      <th style="text-align: center;" th:text="${stat.count}"></th>
+			      <td style="text-align: center;" th:text="${hot.insertedKeyword}"></td>
+			    </tr>
+			  </tbody>
+			</table>
+			<nav aria-label="Page navigation" class="d-flex justify-content-center">
+			  <ul class="pagination" th:if="${mglgHotKeywords.totalElements > 0}"
+			  						 th:with="pageNumber = ${mglgHotKeywords.pageable.pageNumber},
+			  						          pageSize = ${mglgHotKeywords.pageable.pageSize},
+			  						          totalPages = ${mglgHotKeywords.totalPages},
+			  						          startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+			  						          tempEndPage = ${startPage + pageSize -1},
+			  						          endPage = ${tempEndPage > totalPages ? totalPages : tempEndPage}">
+			    <li class="page-item" th:if="${pageNumber > 0}">
+			      <a class="page-link" th:href="@{/search/hotKeywords(page=${pageNumber - 1})}" aria-label="Previous">
+			        <span aria-hidden="true">&laquo;</span>
+			      </a>
+			    </li>
+			    <li class="page-item" th:each="page : ${#numbers.sequence(startPage, endPage)}">
+					<a class="page-link" th:href="@{/search/hotKeywords(page=${page -1})}" th:text="${page}"></a>
+				</li>
+			    <li class="page-item" th:if="${pageNumber < totalPages - 1}">
+			      <a class="page-link" th:href="@{/search/hotKeywords(page=${pageNumber + 1})}" aria-label="Next">
+			        <span aria-hidden="true">&raquo;</span>
+			      </a>
+			    </li>
+			  </ul>
+			</nav>
+		</div>
+			
+			<!-- 사용자 화면에 보여줄 HotKeywords -->
+			<div class="col-sm-12" style="width: 40%; float: right;">
+				<div class="tit">
+					<h4 class="box-title">사용자 화면 검색 순위</h4>
+				</div>
+				<div class="d-flex justify-content-end">
+					<button type="button" class="btn btn-outline-danger" onclick="fn_chkDel()">삭제</button>
+				</div><br>
+				<table class="table table-bordered">
+					<colgroup>
+						<col style="width: 55px;">
+						<col style="width: 70px;">
+						<col style="width: auto;">
+						<col style="width: 70px;">
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col"><input type="checkbox" name="chkAlltwo" id="chkAlltwo" value="Y" title="전체선택/해제" onclick="ItgJs.fn_checkAll(this, 'chkIdtwo');" /></th>
+							<th scope="col">순위</th>
+							<th scope="col">사용자화면</th>
+							<th scope="col">위치</th>
+						</tr>
+					</thead>
+					<tbody id="usrPopTable">
+						<tr class="tac" th:id="|usrWordForm${stat.count}|" name="usrWordForm" th:each="showHot, stat : ${mglgShowHotKeywords}">
+							<td class="text-c"><input type="checkbox" name="chkIdtwo" th:id="|usrWord${stat.count}|"></td>
+							<td class="countNum" style="text-align: center;">${stat.count}</td>
+							<td style="text-align: center;">
+			                	<div class="form-inline">
+									<input type="text" name="usrPopWord" th:id="|usrPopWord${stat.count}|" maxlength="40" value="${showHot.showHotKeyword}" class="required form-control input-sm f-wd-300px">
+								</div>
+			                </td>
+							<td id="sortBtn" class="text-c">
+								<div class='btn-group-vertical' style='width: 20px;'>
+									<button type="button" id="upBtn" class="btn btn-primary btn-xs-up sort-btn">
+										<span class='fa fa-sort-up'></span>
+									</button>
+									<button type="button" id="downBtn" class="btn btn-primary btn-xs-down sort-btn">
+										<span class='fa fa-sort-desc'></span>
+									</button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="d-flex justify-content-end">
+					<button type="button" class="btn btn-outline-info">저장</button>
+				</div>
+			</div>
+		</div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-    <script>
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+			$(function() {
+				// 체크 박스 체크 해제를 기본 상태로
+				$("input[name=checkAll]").prop("checked", false);
+				$("input[name=checkEach]").prop("checked", false);
+				
+				function chkAdd() {
+					let userWord = $(".tac").find(".form-inline").length;
+					let checkEach = $("input[name=checkEach]:checked");
+					
+					let checkArray = new Array();
+					
+					checkEach.each(function() {
+						checkArray.push($(this).val());
+					});
+					
+					if(checkEach.length == 0) {
+						alert("인기 검색어로 올릴 검색어를 선택해주세요!!!");
+						return false;
+					} else {
+						if(userWord + checkEach.length > 10) {
+							alert("검색어는 10개만 선택해주세요!!!");
+							return false;
+						} else {
+				            let sortBtn = '<div class="btn-group-vertical" style="width: 20px;"><button type="button" id="upBtn" class="btn btn-primary btn-xs up" class="sort-btn"><span class="fa fa-sort-up"></span></button>';
+				            sortBtn += '<button type="button" id="downBtn" class="btn btn-primary btn-xs down" class="sort-btn"><span class="fa fa-sort-desc"></span></button></div>';
+				            $("#usrPopTable").children("tr:eq("+(userWord-1)+")").find("#sortBtn").html(sortBtn);
+				            
+				            for(a=1; a<=checkEach.length; a++){
+				               let idIndex = getidIndex();
+				               let html = '';
+				               html += '<tr class="tac" id="usrWordForm'+idIndex+'" name="usrWordForm">';
+				               html += '<td class="text-c"><input type="checkbox" name="chkIdtwo" id="usrWord'+idIndex+'"></td>';
+				               html += '<td class="countNum" style="text-align:center;">'+(userWord+1)+'</td>';
+				               html += '<td style="text-align:center;"><div class="form-inline">';
+				               html += '<input type="text" name="usrPopWord" id="usrPopWord'+idIndex+'" maxlength="40" value="'+checkArray[a-1]+'" class="required form-control input-sm f-wd-300px" >';
+				               html += '</div></td>';
+				               html += '<td id="sortBtn" class="text-c">';
+				               html += sortBtn;
+				               html += '</td></tr>';
+				
+				               $("#usrPopTable").append(html);
+				               userWord++;
+							}
+							sortBtnUpdate();
+						}
+					}
+				}
+				
+				function getIdIndex() {
+					let len = 10;
+					let userId = getRandomNumber() + 1;
+					let docObj = $("usrWordForm" + userId);
+					
+					while(docObj.length != 0) {
+						userId = getRandomNumber() + 1;
+						docObj = $("#usrWordForm" + userId);
+					}
+					return userId;
+				}
+				
+				function getRandomNumber() {
+					let num = "0123456789";
+					let rNum = Math.floor(Math.random() * num.length);
+					
+					return rNum;
+				}
+				
+				function sortBtnUpdate() {
+					let userWord = $(".tac").find(".form-inline").length;
+					
+					$("#usrPopTable").children("tr:eq(0)").find("#upBtn").remove();
+					$("#usrPopTable").children("tr:eq(" + (userWord - 1) + ")").find("#downBtn").remove();
+				}
+				
+				// append 이후 버튼 동적클릭
+				$(document).on("click",".up",function() {
+					let index = $(this).parents("tr").index();
 		
-	</script>
+					let clickValue = $("#usrPopTable").children("tr:eq("+(index)+")").find("input[name=usrPopWord]").val();
+					let prevValue = $("#usrPopTable").children("tr:eq("+(index-1)+")").find("input[name=usrPopWord]").val();
+		
+					temp = clickValue;
+					clickValue = prevValue;
+					prevValue = temp;
+		
+					$("#usrPopTable").children("tr:eq("+(index)+")").find("input[name=usrPopWord]").val(clickValue);
+					$("#usrPopTable").children("tr:eq("+(index-1)+")").find("input[name=usrPopWord]").val(prevValue);
+				});
+		
+				$(document).on("click",".down",function() {
+					let index = $(this).parents("tr").index();
+		
+					let clickValue = $("#usrPopTable").children("tr:eq("+(index)+")").find("input[name=usrPopWord]").val();
+					let nextValue = $("#usrPopTable").children("tr:eq("+(index+1)+")").find("input[name=usrPopWord]").val();
+		
+					temp = clickValue;
+					clickValue = nextValue;
+					nextValue = temp;
+		
+					$("#usrPopTable").children("tr:eq("+(index+1)+")").find("input[name=usrPopWord]").val(nextValue);
+					$("#usrPopTable").children("tr:eq("+(index)+")").find("input[name=usrPopWord]").val(clickValue);
+				});
+				
+				// 삭제 기능
+				function fn_chkDel() {
+					let delSize = $("input[name=chkIdtwo]:checked").length;
+					let userWord = $(".tac").find(".form-inline").length;
+			
+					if(delSize == 0){
+						alert("삭제할 검색어를 선택해주세요.");
+						return false;
+					}
+					else{
+						for(a=1;a<=userWord;a++){
+							if($("#usrWord"+a).is(":checked")==true){
+								$("#usrWordForm"+a).remove();
+								renumbering();
+							}
+						}
+						sortBtnUpdate();
+					}
+				}	
+			});
+		</script>
+	</th:block>
   </body>
 </html>
 

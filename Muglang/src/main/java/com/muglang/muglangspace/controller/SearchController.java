@@ -26,7 +26,7 @@ public class SearchController {
 	// 포스트 닉 해쉬태그를 기준으로 검색
 	@GetMapping("/searchByPost")
 	public ModelAndView searchByPost(@RequestParam("searchKeyword") String searchKeyword,
-									 @PageableDefault(page = 0, size = 20) Pageable pageable) {
+									 @PageableDefault(page = 0, size = 5) Pageable pageable) {
 		
 		log.info("searchByNick - SearchKeyword: " + searchKeyword);
 		
@@ -62,4 +62,8 @@ public class SearchController {
 		
 		return mv;
 	}
+	
+	
+	
+	
 }
