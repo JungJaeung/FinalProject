@@ -76,7 +76,9 @@
 				type: 'get',
 				success: function (obj) {
 					console.log(obj)
-					$("#loginUserId").text(obj.item.userName)
+					let name = "";
+					name+= obj.item.userName+'('+obj.item.userNick+')'
+					$("#loginUserId").text(name)
 					$("#loginUserEmail").text(obj.item.email)
 				},
 				error: function (e) {
