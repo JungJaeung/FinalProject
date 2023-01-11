@@ -1084,7 +1084,8 @@
 										<a>좋아요 <span th:id="'likeCnt' + ${post.postId}"
 												th:text="${post.likeCnt}"></span>개</a>
 									</div>
-
+									<!--식당 이름 임시 디버깅-->
+									<span th:text="${post.resName}"></span>
 									<!-- 친구 식사 했는지 확인 필드 -->
 									<div class="activity" style="text-align: center;" th:if="${post.resCnt} != '0'">
 										<hr>
