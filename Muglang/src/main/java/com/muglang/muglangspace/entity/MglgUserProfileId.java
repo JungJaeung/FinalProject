@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class MglgUserProfileId implements Serializable{
 	private int mglgUser;
+	private String userProfileNm;
 }
