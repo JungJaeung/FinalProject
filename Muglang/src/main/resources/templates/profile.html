@@ -6,6 +6,8 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
+
+				
 				var page_num = 1;
 				let totalPages = 0;
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -13,6 +15,7 @@
 					return new bootstrap.Tooltip(tooltipTriggerEl)
 				})
 
+				
 				$("#btn_next").click(function () {
 					page_num = page_num + 1;
 					console.log("누르기전page_num===" + page_num)
@@ -181,7 +184,7 @@
 
 					<div class="card">
 						<div class="card-title profile-card pt-4 d-flex flex-column align-items-center">
-							<img th:src="@{/assets/img/profile-img.jpg}" alt="Profile" class="rounded-circle">
+							<img src="/upload/defaultImg.png" alt="Profile" class="rounded-circle profileBox">
 							<h2 th:text="${user.userNick}"></h2>
 							<h6 style="color: #aaaaaa;" th:if="${user.bio != null}" th:text="${user.bio}"></h6>
 							<h6 style="color: #aaaaaa;" th:if="${user.bio == null}">
@@ -266,21 +269,26 @@
 									<div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
 										<!-- Profile Edit Form -->
-										<form action="/user/updateUser" method="post">
-											<!--인풋 히든으로 낫널인 값들 주기-->
-
-
+										<form action="/user/updateUser" method="post" enctype="multipart/form-data">
 
 											<div class="row mb-3">
 												<label for="profileImage"
 													class="col-md-4 col-lg-3 col-form-label">Profile
 													Image</label>
 												<div class="col-md-8 col-lg-9">
-													<img th:src="@{/assets/img/profile-img.jpg}" alt="Profile">
+														<div id="profileImgBox">
+															<img style="width:100px; height:100px;" class="profileBox"
+																src="/upload/defaultImg.png" alt="Profile" id="defaultBox">
+														</div>
 													<div class="pt-2">
-														<a href="#" class="btn btn-primary btn-sm"
+														<!--텔레포트-->
+														<a id="updateProfile" class="btn btn-primary btn-sm"
 															title="Upload new profile image"><i
 																class="bi bi-upload"></i></a>
+																
+														<input style="display:none" type="file" id="profileBtnAtt"
+															name="profileUpload" multiple="multiple">
+															
 														<a href="#" class="btn btn-danger btn-sm"
 															title="Remove my profile image"><i
 																class="bi bi-trash"></i></a>
@@ -372,33 +380,35 @@
 							</div>
 						</div>
 						<hr>
-						<button id="btnFull" style="margin-top: -17px; background: none; border: none; padding: 10px 0 10px 0;">전체 요청 보기</button>
-						
+						<button id="btnFull"
+							style="margin-top: -17px; background: none; border: none; padding: 10px 0 10px 0;">전체 요청
+							보기</button>
+
 					</div>
 				</div>
 			</div>
 		</section>
-		
+
 		<!--모달 처리-->
 		<div class="modal fade" id="followModal" role="dialog">
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content" id="modal-content">
 					<div class="modal-body overflow-auto" style="position: relative;">
 						<div id="fallowing_request">
-						
+
 						</div>
 						<button id="btn_prev"
-								style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%); background:none; border:none;">
-									<img th:src="@{/assets/img/left_btn.png}">
-								</button>
-							<button id="btn_next"
-								style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%); background:none; border:none;">
-									<img th:src="@{/assets/img/right_btn.png}">
-								</button>
+							style="position: absolute;  top: 40%; left:4%; transform: translate(-50%, -50%); background:none; border:none;">
+							<img th:src="@{/assets/img/left_btn.png}">
+						</button>
+						<button id="btn_next"
+							style="position: absolute;  top: 40%; right:4%; transform: translate(50%, -50%); background:none; border:none;">
+							<img th:src="@{/assets/img/right_btn.png}">
+						</button>
 					</div>
 				</div>
 			</div>
-		
+
 		</div>
 	</main><!-- End #main -->
 </body>

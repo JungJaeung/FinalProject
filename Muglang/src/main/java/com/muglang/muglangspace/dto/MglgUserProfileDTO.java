@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 public class MglgUserProfileDTO {
 	private int userId;
-	private String userProfileImg;
+	private String userProfileNm;
 	private String userProfileOriginNm;
 	private String userProfilePath;
 	private String userProfileCate;
