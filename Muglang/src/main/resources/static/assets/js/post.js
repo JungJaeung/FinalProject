@@ -281,7 +281,7 @@ function imageTag(item, fileLength) {
 function post(item, insertIndex) {
 	console.log("게시글 작성자 Id : " + item.loginUser.userId);
 	let text = "";
-	text += `<div class="col-12 post">`;
+	text += `<div class="col-12 post" id="posts">`;
 	text += `<input type="hidden" value="${item.insertPost.betweenDate}">`;
 	text += `<div class="card recent-sales">`;
 	text += `<div class="card-body">`;

@@ -243,13 +243,38 @@
 
 							//화면에 표시된 게시글 수 갱신
 							let postNumber = Number($("#cntPost").text()) + 1;
+							const inPostId = obj.item.insertPost.postId;
+							const inFileLength = obj.item.postFileList.length;
 							$("#cntPost").text(postNumber);
 							//$("#posts").html(insert_post);
 							//html단 뿌리기
 							$("#posts").prepend($(insert_post));
 							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
 							flagList.unshift(false);
-							postIdList.unshift($($('.updateBtn')[0]).val());
+							
+							//postIdList.unshift(Number($($('.updateBtn')[0]).val()));	
+							//postFileIdList.unshift(Number($($('.updateBtn')[0]).val()));
+							postIdList.unshift(inPostId);
+							let inputFile = [];
+							for(let i = 0; i < inFileLength; i++) {
+								inputFile.push(obj.item.postFileList[i]);
+							}
+							console.log("임시 배열 출력 : ");
+							console.log(inputFile);
+							for(let i = 0; i < inFileLength; i++) {
+								postFileIdList.unshift(inputFile[inFileLength - i].postFileId);
+								const originFileObj = {
+									postId: inPostId,
+									postFileId: inputFile[inFileLength - i].postFileId,
+									postFileNm: $("#postFileNm" + inputFile[inFileLength - i].postFileId).val(),
+									//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
+									//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
+									postFileStatus: "N"
+								};
+								originFiles.unshift(originFileObj);
+							}
+							
+
 							//이벤트 다시 적용
 							$.like_button(loginUserId);
 							$.comment_button();
@@ -846,7 +871,7 @@
 				<!--왼쪽 라인을 8로 오른쪽 라인을 4 비율로 나눔(페이지 100% = 12)-->
 				<!-- Left side columns -->
 				<div class="col-lg-8">
-					<div class="row">
+					<div class="row" id="posts">
 						<!-- Recent Sales -->
 						<div class="col-12">
 							<!-- 작성 하는 부분 -->

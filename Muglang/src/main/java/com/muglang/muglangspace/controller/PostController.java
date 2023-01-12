@@ -135,10 +135,19 @@ public class PostController {
 						uploadFileList.add(mglgPostFile);
 						mglgPostFileService.insertPostFile(mglgPostFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
 					}
+					
 				}
-				
 			}
-			System.out.println("파일 자료 입력 완료");
+			//입력 작업 수행후 출력할 파일들의 정보를 가져오는 리스트 생성
+			List<MglgPostFile> completeFile = mglgPostFileService.getPostFileList(mglgPost.getPostId());
+			//DTO로 변경하여 ResponseDTO로 옮김.
+			List<MglgPostFileDTO> completeFileDTO = new ArrayList<MglgPostFileDTO>(); 
+			for(int i = 0; i < completeFile.size(); i++) {
+				completeFileDTO.add(Load.toHtml(completeFile.get(i)));
+				completeFileDTO.get(i).setPostId(mglgPost.getPostId());
+			}
+			
+			System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFile.get(0).getPostFileId());
 			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
 			
@@ -158,7 +167,7 @@ public class PostController {
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
 			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
-			returnMap.put("postFileList", uploadFileList);
+			returnMap.put("postFileList", completeFileDTO);
 			
 			System.out.println("파일 리스트 : " + uploadFileList);
 			responseDTO.setItem(returnMap);
