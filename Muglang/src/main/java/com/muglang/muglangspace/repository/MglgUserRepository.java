@@ -88,7 +88,7 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer> {
 
 	// 팔로워 리스트
 	@Query(value = "SELECT * FROM T_MGLG_USER WHERE USER_ID IN (SELECT FOLLOWER_ID FROM t_mglg_user_relation WHERE USER_ID= :userId)", nativeQuery = true)
-	Page<MglgUser> followList(@Param("userId") int userId, Pageable pageable);
+	Page<CamelHashMap> followList(@Param("userId") int userId, Pageable pageable);
 
 	// 팔로워 서치
 	@Query(value = "SELECT A.* FROM T_MGLG_USER A WHERE "
@@ -99,13 +99,13 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer> {
 					+ "			IN (SELECT B.FOLLOWER_ID FROM T_MGLG_USER_RELATION B WHERE B.USER_ID= :userId)"
 					+ "			AND A.USER_NAME LIKE CONCAT('%',:searchKeyword,'%')) C",
 			nativeQuery = true)
-	Page<MglgUser> searchFollowList(@Param("searchKeyword") String searchKeyword, @Param("userId") int userId,
+	Page<CamelHashMap> searchFollowList(@Param("searchKeyword") String searchKeyword, @Param("userId") int userId,
 			Pageable pageable);
 
 	// 팔로잉 리스트
 		@Query(value = "SELECT * FROM T_MGLG_USER WHERE USER_ID IN "
 				+ "(SELECT USER_ID FROM t_mglg_user_relation WHERE FOLLOWER_ID= :userId)", nativeQuery = true)
-		Page<MglgUser> followingList(@Param("userId") int userId, Pageable pageable);
+		Page<CamelHashMap> followingList(@Param("userId") int userId, Pageable pageable);
 
 		// 팔로잉 서치
 		@Query(value = "SELECT A.* FROM T_MGLG_USER A WHERE "
@@ -116,7 +116,7 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer> {
 						+ "			IN (SELECT B.USER_ID FROM T_MGLG_USER_RELATION B WHERE B.FOLLOWER_ID= :userId)"
 						+ "			AND A.USER_NAME LIKE CONCAT('%',:searchKeyword,'%')) C",
 				nativeQuery = true)
-		Page<MglgUser> searchFollowingList(@Param("searchKeyword") String searchKeyword, @Param("userId") int userId,
+		Page<CamelHashMap> searchFollowingList(@Param("searchKeyword") String searchKeyword, @Param("userId") int userId,
 				Pageable pageable);
 
 	//유저 신고 로직
