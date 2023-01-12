@@ -6,6 +6,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
+import com.muglang.muglangspace.dto.MglgShowHotKeywordsDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUserRelation;
@@ -53,5 +54,7 @@ public interface MglgPostService {
 	
 	// 인기 검색어를 SELECT
 	public Page<CamelHashMap> getHotKeywords(Pageable pageable);
+	
+
 	
 }

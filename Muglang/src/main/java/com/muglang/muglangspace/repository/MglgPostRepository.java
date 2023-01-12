@@ -137,22 +137,6 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
  	@Query(value="SELECT COUNT(*) AS postCount FROM T_MGLG_POST WHERE USER_ID = :userId", nativeQuery=true)
 	int postCnt(@Param("userId") int userId);
 
-	//모두 검색
-
-	Page<MglgPost> findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5OrSearchKeywordContainingOrderByPostDateDesc(
-			@Param("searchKeyword") String searchKeyword1,
-			@Param("searchKeyword") String searchKeyword2,
-			@Param("searchKeyword") String searchKeyword3,
-			@Param("searchKeyword") String searchKeyword4,
-			@Param("searchKeyword") String searchKeyword5,
-			@Param("searchKeyword") String searchKeyword6,
-			@Param("searchKeyword") String searchKeyword7,
-			@Param("searchKeyword") String searchKeyword8,
-			Pageable pageable
-			);
-	
-
-	//
 	///개인 작성글 조회
  	 @Query(value="SELECT * FROM T_MGLG_POST WHERE USER_ID = :userId", nativeQuery=true)
 	 Page<MglgPost> findByUserId(@Param("userId") int userId, Pageable pageable);

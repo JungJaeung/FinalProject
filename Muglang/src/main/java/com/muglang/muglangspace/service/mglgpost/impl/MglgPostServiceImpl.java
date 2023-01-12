@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
+import com.muglang.muglangspace.dto.MglgShowHotKeywordsDTO;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserRelation;
@@ -163,4 +164,5 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public Page<CamelHashMap> getHotKeywords(Pageable pageable) {
 		return mglgPostRepository.getHotKeywords(pageable);
 	}
+	
 }
