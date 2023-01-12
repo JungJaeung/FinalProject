@@ -6,7 +6,6 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
-				var searchKeyword = "";
 				var page_num = 0;
 				let totalPages = 0;
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -148,8 +147,9 @@
                      			<div class="" style="width: 100%; height: 70px; border-radius: 16px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
-												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
-												style="width: 50px;"></div>
+												class="img-fluid rounded-circle" 
+												src="/upload/${obj.pageItems.content[i].followingprofile.userProfileNm}"
+												style="width: 50px; height:50px"></div>
 										<!--친구 닉네임, 아이디-->
 										<div style="width: 60%; margin-top: 13px; float: left;">
 											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
@@ -171,7 +171,6 @@
 					}
 				});
 				$("#btn_next").click(function () {
-					searchKeyword = ""
 					console.log("누르기전page_num===" + page_num)
 					if (page_num == totalPages - 1) {
 						return;
@@ -183,7 +182,7 @@
 						type: 'get',
 						data: {
 							page: page_num,
-							searchKeyword: searchKeyword
+							searchKeyword: ""
 						},
 						success: function (obj) {
 							console.log(obj)
@@ -191,11 +190,12 @@
 							totalPages = obj.pageItems.totalPages;
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; ">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
-												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
-												style="width: 50px;"></div>
+												class="img-fluid rounded-circle" 
+												src="/upload/${obj.pageItems.content[i].followingprofile.userProfileNm}"
+												style="width: 50px; height:50px"></div>
 										<!--친구 닉네임, 아이디-->
 										<div style="width: 60%; margin-top: 13px; float: left;">
 											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
@@ -217,7 +217,6 @@
 
 				})
 				$("#btn_prev").click(function () {
-					searchKeyword = ""
 					console.log("누르기전page_num===" + page_num);
 					if (page_num < 1) {
 						return;
@@ -229,7 +228,7 @@
 						type: 'get',
 						data: {
 							page: page_num,
-							searchKeyword: searchKeyword
+							searchKeyword: ""
 						},
 						success: function (obj) {
 							console.log(obj)
@@ -237,11 +236,12 @@
 							totalPages = obj.pageItems.totalPages;
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
-												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
-												style="width: 50px;"></div>
+												class="img-fluid rounded-circle" 
+												src="/upload/${obj.pageItems.content[i].followingprofile.userProfileNm}"
+												style="width: 50px; height:50px"></div>
 										<!--친구 닉네임, 아이디-->
 										<div style="width: 60%; margin-top: 13px; float: left;">
 											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
@@ -262,16 +262,16 @@
 					});
 
 				})
-				//검색 이벤트 //질문
+				//검색 이벤트 
 				$("#btn_search").click(function () {
 
-					searchKeyword = $("#searchKeyword").val()
+					let followingSearch = $("#followingSearch").val()
 					$.ajax({
 						url: '/social/followingSearch',
 						type: 'get',
 						data: {
 							page: 0,
-							searchKeyword: searchKeyword
+							searchKeyword: followingSearch
 						},
 						success: function (obj) {
 							console.log(obj)
@@ -279,7 +279,7 @@
 							totalPages = obj.pageItems.totalPages;
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; background-color: #B4E5FF;">
+                     			<div class="" style="width: 100%; height: 70px; border-radius: 16px; ">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
 												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
@@ -318,11 +318,11 @@
 <body>
 	<main layout:fragment="main" id="main" class="main">
 		<div class="pagetitle">
-			<h1>Follower</h1>
+			<h1>Following</h1>
 			<nav>
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
-					<li class="breadcrumb-item active">Follower</li>
+					<li class="breadcrumb-item active">Following</li>
 				</ol>
 			</nav>
 		</div><!-- End Page Title -->
@@ -342,11 +342,11 @@
 				<!-- Right side columns -->
 				<div class="col-lg-4 col-xxl-3">
 					<div class="card" style="text-align: center;">
-						<h5 class="card-title" style="font-weight: bold;">Follower</h5>
+						<h5 class="card-title" style="font-weight: bold;">Following</h5>
 						<!--검색-->
 						<div class="card-body">
 							<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
-								onblur="this.placeholder='이름으로 검색'" id="searchKeyword">
+								onblur="this.placeholder='이름으로 검색'" id="followingSearch">
 							<input type="button" value="검색" id="btn_search">
 						</div>
 						<!--붙여넣는곳-->

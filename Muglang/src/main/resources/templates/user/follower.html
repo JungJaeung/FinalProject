@@ -76,6 +76,7 @@
 					type: 'get',
 					data: {page: page_num},
 					success: function (obj) {
+						console.log("--------")
 						console.log(obj);
 						htmlStr = '';
 
@@ -137,7 +138,7 @@
 										<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
 											style="width: 40px;">
 										<!--이름-->
-										<a href="#" class="card-title">${obj.pageItems.content[i].userName}</a>
+										<a href="#" class="card-title">${obj.pageItems.content[i].userNick}</a>
 									</div>
 									<div class="activity" style="margin-bottom: 10px;">
 										<!--내용 사진-->
@@ -204,15 +205,18 @@
 						searchKeyword: ""
 					},
 					success: function (obj) {
+						console.log(obj);
 						let htmlStr = '';
 						for (let i = 0; i < obj.pageItems.content.length; i++) {
 							htmlStr += `
+						
 
                      			<div class="" style="width: 100%; height: 70px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
-												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
-												style="width: 50px;"></div>
+												class="img-fluid rounded-circle" 
+												src="/upload/${obj.pageItems.content[i].followerprofile.userProfileNm}"
+												style="width: 50px; height:50px"></div>
 										<!--친구 닉네임, 아이디-->
 										<div style="width: 60%; margin-top: 13px; float: left;">
 											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
@@ -229,7 +233,6 @@
 						totalPages = obj.pageItems.totalPages;
 					},
 					error: function (e) {
-						console.log("ㅁㄴㅇㅁㄴㅇ실패")
 						console.log(e);
 					}
 				});
@@ -240,7 +243,7 @@
 						return;
 					}
 					page_num = page_num + 1;
-
+					console.log("누른 후 page_num===" + page_num)
 					$.ajax({
 						url: '/social/follower',
 						type: 'get',
@@ -257,8 +260,8 @@
                      			<div class="" style="width: 100%; height: 70px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
-												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
-												style="width: 50px;"></div>
+												class="img-fluid rounded-circle" src="/upload/${obj.pageItems.content[i].followerprofile.userProfileNm}"
+												style="width: 50px; height:50px"></div>
 										<!--친구 닉네임, 아이디-->
 										<div style="width: 60%; margin-top: 13px; float: left;">
 											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
@@ -303,8 +306,8 @@
                      			<div class="" style="width: 100%; height: 70px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
-												class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
-												style="width: 50px;"></div>
+												class="img-fluid rounded-circle" src="/upload/${obj.pageItems.content[i].followerprofile.userProfileNm}"
+												style="width: 50px; height:50px"></div>
 										<!--친구 닉네임, 아이디-->
 										<div style="width: 60%; margin-top: 13px; float: left;">
 											<div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
@@ -325,7 +328,7 @@
 					});
 
 				})
-				//검색 이벤트 //질문
+				//검색 이벤트 
 				$("#btn_search").click(function(){
 						
 						searchKeyword = $("#searchKeyword").val()
