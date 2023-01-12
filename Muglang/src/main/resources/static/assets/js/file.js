@@ -64,7 +64,25 @@ let changedFiles = [];
 				postImageLoader(f, postId);
 			}
 		});
+		
+		$.updateBtnAtt = function(targetPostId) {
+			$("#updateBtnAtt" + targetPostId).on("change", function(e) {
+				console.log("새로운 파일 등록 감지");
+				//input type=file에 추가된 파일들을 변수로 받아옴
+				const files = e.target.files;
+				//변수로 받아온 파일들을 배열 형태로 변환
+				const fileArr = Array.prototype.slice.call(files);
+				
+				const postId = $(e.target).attr("data-post-id");
+				
+				//배열에 있는 파일들을 하나씩 꺼내서 처리
+				for(f of fileArr) {
+					postImageLoader(f, postId);
+				}
+			});
+		}
 
+		
 		$.btnAtt = function() {
 			$("#btnAtt").on("change", function(e) {
 				//input type=file에 추가된 파일들을 변수로 받아옴
@@ -98,79 +116,6 @@ let changedFiles = [];
 			originFileList.push(originFiles);
 		}
 		*/
-		/*
-		//게시글을 수정하는 로직 함수.
-		$.fnUpdateBtn = function(postId, index) {   //파일 입출력이나 수정을 위한 ajax 데이터 묶음 처리
-			dt = new DataTransfer();
-	
-			for (f in uploadFiles) {
-			   let file = uploadFiles[f];
-			   dt.items.add(file);
-			}
-	
-			$("#btnAtt")[0].files = dt.files;
-	
-			//dt.clearData();
-			//clearData() 사용하면 배열의 모든 내용이 담기지 않고
-			//파일 하나씩만 담기는 현상이 발생해서 dt를 두 개로 분리하여 사용
-			dt2 = new DataTransfer();
-	
-			for (f in changedFiles) {
-			   let file = changedFiles[f];
-			   dt2.items.add(file);
-			}
-			//바뀐 파일의 정보를 임시로 저장
-			$("#changedFiles")[0].files = dt2.files;
-		    
-			//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
-			//배열 형태로 전송 시 백단(Java)에서 처리불가
-			//JSON String 형태로 변환하여 전송한다.
-			$("#originFiles").val(JSON.stringify(originFileList[index]));
-			
-			//ajax에서 multipart/form-data형식을 전송하기 위해서는
-			//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
-			//form.serialize()는 multipart/form-data 전송불가
-			//let formData = new FormData($("#updateForm")[0]);
-			let formData = new FormData($($(".data")[index])[0]);
-	
-			//ajax에 enctype: multipart/form-data, 
-			//processData: false, contentType: false로 설정               
-			$.ajax({
-				enctype: 'multipart/form-data',
-				url: '/post/updatePost',
-				type: 'put',
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function (obj) {
-					alert("수정작업을 성공하였습니다.");
-	
-					$("#postId").val('' + obj.item.getPost.postId);
-					$("#userId").val('' + obj.item.getPost.userId);
-					$("#postContentIn").val(obj.item.getPost.userId);
-					$("#postContent").text(obj.item.getPost.postContent);
-					$("#postContent" + postId).text(obj.item.getPost.postContent);
-					$("#contentIn" + postId).text(obj.item.getPost.postContent);
-					$("#restNmIn").val(obj.item.getPost.restNm);
-					//수정 다하면 태그들을 다시 원래대로 돌린다.
-					$("#postContent" + postId).show();
-					$("#contentIn" + postId).hide();
-					$("#deleteButton" + postId).remove();
-					$("#updateButton" + postId).remove();
-					flagList[index] = !flagList[index];
-					$($(".updateBtn")[index]).text("게시글 수정");
-				},
-				error: function (e) {
-					console.log(e);
-				},
-				done: function (result) {
-					console.log(result);
-					$("#attZone").replaceWith(result);
-				}
-			});
-			return false;
-		}
-		*/
 	});
 	
 	//파일 추가창을 활성화하는 이벤트 생성 함수
@@ -181,6 +126,11 @@ let changedFiles = [];
 					<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>
 				</div>`;
 		return text;
+	}
+	
+	//파일 리스트 배열을 갱신하는 함수.
+	function refreshFileList (targetPostId) {
+
 	}
 	
 	//게시글 작성 영역의 파일 이미지 미리보기 로드하는 함수.
@@ -348,7 +298,7 @@ let changedFiles = [];
 		let ele = e.srcElement;
 		//delFile속성 값 가져오기(boardFileNo)
 		let delFile = ele.getAttribute("data-del-file");	
-		console.log("삭제할 이미지 파일 번호 : " + delFile);
+		console.log("게시글 삭제할 이미지 파일 번호 : " + delFile);
 		
 		for(let i = 0; i < originFiles.length; i++) {
 			if(delFile == originFiles[i].postFileId) {
@@ -367,19 +317,23 @@ let changedFiles = [];
 		let ele = e.currentTarget;
 		//delFile속성 값 가져오기(boardFileNo)
 		let delFile = ele.getAttribute("data-del-file");	
-		console.log("삭제할 이미지 파일 번호 : " + delFile);
-		
+	
+		console.log("이미지 파일 번호 : " + delFile);
 		for(let i = 0; i < originFiles.length; i++) {
 			if(delFile == originFiles[i].postFileId) {
 				originFiles[i].postFileStatus = "D";
+				console.log("삭제할 이미지 파일 번호 : " + delFile);
+				console.log(originFiles[i]);
 			}
 		}
+		
 		//부모 요소인 div 삭제
 		let div = ele.parentNode;
 		$(div).remove();
 	}
 	
 	function fnImgChange(postFileId) {
+		console.log("변경하는 파일의 아이디 : " + postFileId)
 		//기존 파일의 이미지를 클릭했을 때 같은 레벨의 input type="file"을 가져온다.
 		let changedFile = document.getElementById("changedFile" + postFileId);
 		//위에서 가져온 input 강제클릭 이벤트 발생시킴
@@ -412,15 +366,21 @@ let changedFiles = [];
 
 		$("#changedFiles" + postId)[0].files = dt2.files;
 		console.log(postId + "번 게시글의 파일 수정을 진행하고 있습니다.");
-		console.log(changedFiles);
 		
+		console.log("해당 포스트 아이디만 필터링 하기 전 originFiles 배열 : ");
+		console.log(postId);
+		console.log(typeof(postId));
+		console.log(originFiles);
 		//해당 postId에 대한 originsFiles만 남김
-		originFiles = originFiles.filter(file => file.postId === postId)
+		//===은 값과 형태 둘다 같아야 해당 값을 저장함.
+		//this.val로 변환한 값은 string 이므로 해당 값은 db의 형태와 통일시켜 비교하여야한다.
+		originFiles = originFiles.filter(file => file.postId === postId);
 		
 		//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
 		//배열 형태로 전송 시 백단(Java)에서 처리불가
 		//JSON String 형태로 변환하여 전송한다.
 		$("#originFiles" + postId).val(JSON.stringify(originFiles));
+		console.log($("#originFiles" + postId).val());
 		//ajax에서 multipart/form-data형식을 전송하기 위해서는
 		//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
 		//form.serialize()는 multipart/form-data 전송불가
@@ -440,22 +400,21 @@ let changedFiles = [];
 			contentType: false,
 			success: function (obj) {
 				alert("수정작업을 성공하였습니다.");
-
+				console.log(obj);
 				$("#imgArea" + postId).html(imageTag(obj.item, obj.item.fileSize));
-
 				$("#postId").val('' + obj.item.getPost.postId);
 				$("#userId").val('' + obj.item.getPost.userId);
-				$("#postContentIn").val(obj.item.getPost.userId);
-				$("#postContent").text(obj.item.getPost.postContent);
+				
+				$("#postContentIn" + postId).val(obj.item.getPost.postContent);
 				$("#postContent" + postId).text(obj.item.getPost.postContent);
 				$("#contentIn" + postId).text(obj.item.getPost.postContent);
 				$("#restNmIn").val(obj.item.getPost.restNm);
 				//수정 다하면 태그들을 다시 원래대로 돌린다.
 				$("#postAttZone" + postId).html('');
+				$("#upTitle" + postId).hide();
 				$("#buttonBox" + postId).hide();
 				$("#postContent" + postId).show();
 				$("#contentIn" + postId).hide();
-				$("");
 				$("#deleteButton" + postId).remove();
 				$("#updateButton" + postId).remove();
 				flagList[index] = false;

@@ -186,7 +186,7 @@ public class PostController {
 		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles, 
 				new TypeReference<List<MglgPostFileDTO>>() {});
 		
-//		System.out.println("수정 작업을 실행합니다. 원래 파일의 목록을 불러옵니다." + originFileList);
+		System.out.println("수정 작업을 실행합니다. 원래 파일의 목록을 불러옵니다." + originFileList);
 		
 		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
 //		
@@ -390,7 +390,8 @@ public class PostController {
 					"res_cnt",
 					mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
 			);
-			
+			// 이미 쿼리 카멜 해쉬에서 가져와서 쓸필요 없음.
+			//pagePostList.getContent().get(i).put("res_name", mglgRestaurantService.selectRes((Integer)pagePostList.getContent().get(i).get("postId")).getResName());
 			pagePostList.getContent().get(i).put("index", i);
 		}
 		//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열처럼 사용됨.
@@ -413,7 +414,6 @@ public class PostController {
 					fileListDTO.get(j).setPostId(findId);	//바로 직전 메소드에서 postID는 넣지 않음. 따로 넣는 과정.
 					System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
 				}
-
 			}
 			file.put("file_length", fileList.size());	//방금 작업 완료한 게시글의 파일 개수 저장.
 			file.put("file_list", fileListDTO);	//키값은 스네이크형으로 적고 오버라이딩된 camelHashMap클래스의 메소드를 따라감. 
@@ -441,6 +441,18 @@ public class PostController {
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		
 		for (int i = 0; i < pagePostList.getContent().size(); i++) {
+			pagePostList.getContent().get(i).put(
+				"between_date", Duration.between(
+						((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
+						LocalDateTime.now()).getSeconds()
+			);
+			
+			pagePostList.getContent().get(i).put(
+					"post_date",
+					String.valueOf(
+							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
+					)
+			);
 			//해당 글에 등록된 식당이 팔로우 하고있는 유저의 포스트에 몇개 등록되어 있는지
 			pagePostList.getContent().get(i).put(
 					"res_cnt",
@@ -461,9 +473,10 @@ public class PostController {
 					fileListDTO.add(Load.toHtml(fileList.get(j)));
 					fileListDTO.get(j).setPostId(findId);
 				}
-				file.put("file_length", fileList.size());
-				file.put("file_list", fileListDTO);
 			}
+			file.put("file_length", fileList.size());
+			file.put("file_list", fileListDTO);
+			System.out.println("확장 페이지의 파일의 개수 : " + file);
 		}
 		
 		return ResponseEntity.ok().body(pagePostList);
