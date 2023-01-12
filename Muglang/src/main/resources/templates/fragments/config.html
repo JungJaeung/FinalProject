@@ -41,7 +41,11 @@
 	<script th:src="@{/js/jquery-3.6.1.min.js}"></script>
 	<script th:src="@{/assets/js/post.js}"></script>
 	<script th:src="@{/assets/js/file.js}"></script>
+
 	<script th:src="@{/assets/js/like.js}"></script>
+
+	<script th:src="@{/assets/js/profile.js}"></script>
+
 	<!-- Vendor JS Files -->
 	<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
 	<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
@@ -72,18 +76,39 @@
 					console.log(e);
 				}
 			});
+			//이미지 불러오는 로직
 				$.ajax({
-				url: '/social/otherUserDetail',
-				type: 'get',
-				success: function (obj) {
-					console.log(obj)
-					$("#loginUserId").text(obj.item.userName)
-					$("#loginUserEmail").text(obj.item.email)
-				},
-				error: function (e) {
-					console.log(e);
-				}
-			});
+					url: '/user/getUserImg',
+					type: 'get',
+					success: function (obj) {
+						console.log(obj)
+						let src = "";
+						src+= '/upload/'
+						src+= obj.item.userProfileNm;
+						console.log(src);
+						$(".profileBox").attr("src",src);
+						
+					},
+					error: function (e) {
+						console.log(e);
+					}
+				});
+			
+			//이름불러오는 로직
+				$.ajax({
+					url: '/social/otherUserDetail',
+					type: 'get',
+					success: function (obj) {
+						console.log(obj)
+						let name = "";
+						name+= obj.item.userName+'('+obj.item.userNick+')'
+						$("#loginUserId").text(name)
+						$("#loginUserEmail").text(obj.item.email)
+					},
+					error: function (e) {
+						console.log(e);
+					}
+				});
 
 
 			$('.toggle-sidebar-btn').on('click', function () {

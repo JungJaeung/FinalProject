@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.muglang.muglangspace.entity.MglgPostFile;
+import com.muglang.muglangspace.entity.MglgUserProfile;
 
 
 public class FileUtils {
@@ -60,5 +61,51 @@ public class FileUtils {
 		file.transferTo(uploadFile);
 		
 		return postFile;
+	}
+	public static MglgUserProfile parseProfileInfo(MultipartFile file, 
+			String attachPath) throws IOException {
+		MglgUserProfile profileFile = new MglgUserProfile();
+		
+		String profileFileOriginNm = file.getOriginalFilename();
+		
+		//같은 파일명을 업로드했을 때 덮어써지지 않게 하기위한 실제 업로드되는 파일명 설정
+		SimpleDateFormat formmater = new SimpleDateFormat("yyyyMMddHHmmss");
+		Date nowDate = new Date();
+		String nowDateStr = formmater.format(nowDate);
+		UUID uuid = UUID.randomUUID();
+		
+		System.out.println("222222222222222222222222222222222222222222222");
+		
+		String profileFileNm = nowDateStr + "_" + uuid.toString() + "_" + profileFileOriginNm;
+		
+		String profileFilePath = attachPath;
+		
+		//이미지인지 다른 파일형태인지 검사
+		File checkFile = new File(profileFileOriginNm);
+		//업로드한 파일의 형식 가져옴(이미지파일들은 image/jpg, image/png ...)
+		String type = Files.probeContentType(checkFile.toPath());
+		System.out.println("파일의 형식 : " + type);
+		
+		if(type != null) {
+			if(type.startsWith("image")) {
+				profileFile.setUserProfileCate("img");
+			} else {
+				profileFile.setUserProfileCate("etc");
+			}
+		} else {
+			profileFile.setUserProfileCate("etc");
+		}
+		
+		profileFile.setUserProfileNm(profileFileNm);
+		profileFile.setUserProfileOriginNm(profileFileOriginNm);
+		profileFile.setUserProfilePath(profileFilePath);
+
+		//실제 파일 업로드
+		File uploadFile = new File(attachPath + profileFileNm);
+		//매개변수는 업로드될 폴더와 파일명을 파일객체 형태로 넣어준다.
+		//파일업로드 시 IOException 처리
+		file.transferTo(uploadFile);
+		
+		return profileFile;
 	}
 }

@@ -38,7 +38,7 @@
 <body>
 	<main layout:fragment="main" id="main" class="main">
 		<div class="pagetitle">
-			<h1>Admin Page</h1>
+			<h1>Admin Page(유저번호)</h1>
 			<nav>
 				<ol class="breadcrumb">
 				</ol>
@@ -130,7 +130,7 @@
 												</option>
 												<option value="이름" th:selected="${searchCondition == '이름'}">이름
 												</option>
-												<option value="아이디" th:selected="${searchCondition == '아이디'}">아이디
+												<option value="아이디" th:selected="${searchCondition == '아이디'}">유저ID
 												</option>
 											</select>
 											<input type="text" name="searchKeyword" th:value="${searchKeyword}">
