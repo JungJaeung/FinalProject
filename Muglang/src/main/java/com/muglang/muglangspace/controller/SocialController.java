@@ -3,6 +3,7 @@ package com.muglang.muglangspace.controller;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
@@ -28,10 +30,12 @@ import com.muglang.muglangspace.dto.MglgUserRelationDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.entity.MglgUserRelation;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglgsocial.UserRelationService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
+import com.muglang.muglangspace.service.mglguserprofile.MglgUserProfileService;
 
 @RestController
 @RequestMapping("/social")
@@ -43,6 +47,9 @@ public class SocialController {
 
 	@Autowired
 	private MglgPostService mglgPostService;
+	@Autowired
+	private MglgUserProfileService mglgUserProfileService;
+;
 
 	// 팔로워 개수세기
 	@GetMapping("/cntFollow")
@@ -119,9 +126,12 @@ public class SocialController {
 				.hashTag4(pageMglgPost.getHashTag4()).hashTag5(pageMglgPost.getHashTag5())
 				.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds()).build());
 
-		// System.out.println(postList.getContent().get(0).getBetweenDate());
+		//조회대상 유저의 프로필 사진 가져옴
+		MglgUserProfile userProfile = mglgUserProfileService.getUserImg(userId);
+		
 		ModelAndView mv = new ModelAndView();
-
+		
+		mv.addObject("userProfile", userProfile);
 		mv.addObject("postList", postList);
 		mv.addObject("user", userDTO);
 		mv.setViewName("/user/otherUserProfile.html");
@@ -137,18 +147,27 @@ public class SocialController {
 		int loginUser = customUser.getMglgUser().getUserId();
 		int followYn = userRelationService.followingOrNot(userId, loginUser);
 
-		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 
 		try {
 			MglgUser user = MglgUser.builder().userId(userId).build();
-			Page<MglgUser> pageUserFollow = userRelationService.followList(user, pageable);
-			Page<MglgUserDTO> pageUserFollowDTO = pageUserFollow
-					.map(page -> MglgUserDTO.builder().userId(page.getUserId()).email(page.getEmail())
-							.userName(page.getUserName()).userNick(page.getUserNick())
-							// 리포트 cnt는 안쓰니까 yn받아와서 쓰겠음 ㅎㅎㅎㅎ
-							.reportCnt(followYn).build());
+			
+			int i =0;
+			Page<CamelHashMap> pageUserFollow = userRelationService.followList(user, pageable);
+			for(CamelHashMap a : pageUserFollow) {
+				
+				int eachUserId = (int)pageUserFollow.getContent().get(i).get("userId");
+				MglgUserProfile followerProfile = mglgUserProfileService.followerProfile(eachUserId);
+				pageUserFollow.getContent().get(i).put("followerProfile", followerProfile);
+				if(i==10) {
+					i=0;
+				}else {
+					i++;
+				}
 
-			response.setPageItems(pageUserFollowDTO);
+			}
+			pageUserFollow.getContent().get(0).put("followYn", followYn);
+			response.setPageItems(pageUserFollow);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
 			response.setErrorMessage(e.getMessage());
@@ -160,16 +179,25 @@ public class SocialController {
 	@GetMapping("otherUserFollowing")
 	public ResponseEntity<?> otherUserFollowing(@RequestParam("userId") int userId,
 			@PageableDefault(page = 0, size = 10) Pageable pageable) {
+		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 
-		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
 		try {
 			MglgUser user = MglgUser.builder().userId(userId).build();
-			Page<MglgUser> pageUserFollow = userRelationService.followingList(user, pageable);
-			Page<MglgUserDTO> pageUserFollowDTO = pageUserFollow
-					.map(page -> MglgUserDTO.builder().userId(page.getUserId()).email(page.getEmail())
-							.userName(page.getUserName()).userNick(page.getUserNick()).build());
+			
+			int i =0;
+			Page<CamelHashMap> pageUserFollowing = userRelationService.followingList(user, pageable);
+			for(CamelHashMap a : pageUserFollowing) {
+				int eachUserId = (int)pageUserFollowing.getContent().get(i).get("userId");
+				MglgUserProfile followingProfile = mglgUserProfileService.followingProfile(eachUserId);
+				pageUserFollowing.getContent().get(i).put("followingProfile", followingProfile);
+				if(i==10) {
+					i=0;
+				}else {
+					i++;
+				}
 
-			response.setPageItems(pageUserFollowDTO);
+			}
+			response.setPageItems(pageUserFollowing);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
 			response.setErrorMessage(e.getMessage());
@@ -178,27 +206,6 @@ public class SocialController {
 
 	}
 
-	@GetMapping("otherUserFollowingPaging")
-	public ResponseEntity<?> otherUserFollowing(@RequestParam("userId") int userId,
-			@RequestParam("page_num") int page_num, Pageable pageable) {
-		pageable = PageRequest.of(page_num, 10);
-		System.out.println("팔로우로 넘어옴" + page_num);
-		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-		try {
-			MglgUser user = MglgUser.builder().userId(userId).build();
-			Page<MglgUser> pageUserFollow = userRelationService.followingList(user, pageable);
-			Page<MglgUserDTO> pageUserFollowDTO = pageUserFollow
-					.map(page -> MglgUserDTO.builder().userId(page.getUserId()).email(page.getEmail())
-							.userName(page.getUserName()).userNick(page.getUserNick()).build());
-
-			response.setPageItems(pageUserFollowDTO);
-			return ResponseEntity.ok().body(response);
-		} catch (Exception e) {
-			response.setErrorMessage(e.getMessage());
-			return ResponseEntity.badRequest().body(response);
-		}
-
-	}
 
 	// 유저를 팔로잉하는 로직
 	@GetMapping("/followOtherUser")
@@ -222,89 +229,57 @@ public class SocialController {
 
 	}
 
-	// 에이작스로 이름 바꿔치기 위한 로직(유저를 팔로잉한사람 이름 다 가져옴)
-	// 유저 오더 윈도우
-	@GetMapping("/followUserName")
-	public ResponseEntity<?> followUserName(@PageableDefault(page = 0, size = 10000) Pageable pageable) {
-		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-		try {
-			Page<MglgUser> getUser = mglguserService.getUserLists(pageable);
-
-			Page<MglgUserDTO> pageUserFollowDTO = getUser.map(page -> MglgUserDTO.builder().userId(page.getUserId())
-					.userName(page.getUserName()).userNick(page.getUserNick()).build());
-
-			response.setPageItems(pageUserFollowDTO);
-			return ResponseEntity.ok().body(response);
-		} catch (Exception e) {
-			response.setErrorMessage(e.getMessage());
-			return ResponseEntity.badRequest().body(response);
-		}
-
-	}
 
 	// 팔로워 유저 에이작스 처리를 위한 전부 수정함
 	@GetMapping("/follower")
 	public ResponseEntity<?> followerList(@RequestParam("searchKeyword") String searchKeyword 
 			,@PageableDefault(page = 0, size = 5) Pageable pageable,@AuthenticationPrincipal CustomUserDetails customUser) {
-		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-		System.out.println("트라이 들어가기전");
+		
+		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 		try {
-		System.out.println("트라이 들어감");
 
 		MglgUser user = MglgUser.builder().searchKeyword(searchKeyword)
 										  .userId(customUser.getMglgUser().getUserId())
 									      .build();
+		int i =0;
+		Page<CamelHashMap> pagefollowList = userRelationService.followList(user, pageable);
+		for(CamelHashMap a : pagefollowList) {
+			System.out.println(i+"번째"+pagefollowList.getContent().get(i));
+			
+			int eachUserId = (int)pagefollowList.getContent().get(i).get("userId");
+			MglgUserProfile followerProfile = mglgUserProfileService.followerProfile(eachUserId);
+			pagefollowList.getContent().get(i).put("followerProfile", followerProfile);
+			System.out.println(i+"번째"+pagefollowList.getContent().get(i)+"끝");
+			if(i==5) {
+				i=0;
+			}else {
+				i++;
+			}
 
-		Page<MglgUser> pagefollowList = userRelationService.followList(user, pageable);
-		System.out.println("pagefollowList ====" + pagefollowList.getContent());
-		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> MglgUserDTO.builder()
-														.userId(pageUser.getUserId())
-														.userName(pageUser.getUserName())
-														.email(pageUser.getEmail())
-														.userNick(pageUser.getUserNick())
-														.build());
-		for(int i =0;i<pagefollowDTOList.getContent().size();i++) {
-			System.out.println(pagefollowDTOList.getContent().get(i));
 		}
-		
-		
-		
-			response.setPageItems(pagefollowDTOList);
+		    response.setPageItems(pagefollowList);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
-
+			System.out.println("오류발생==== "+e);
 			response.setErrorMessage(e.getMessage());
 			return ResponseEntity.badRequest().body(response);
 		}
 	}
 	
-	// 팔로워 유저 에이작스 처리를 위한 전부 수정함
+	// 팔로워 유저 서치
 	@GetMapping("/followerSearch")
 	public ResponseEntity<?> followerSearch(@RequestParam("searchKeyword") String searchKeyword 
 			,@PageableDefault(page = 0, size = 10000) Pageable pageable,@AuthenticationPrincipal CustomUserDetails customUser) {
-		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-		System.out.println("트라이 들어가기전");
+		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 		try {
-		System.out.println("트라이 들어감");
 
 		MglgUser user = MglgUser.builder().searchKeyword(searchKeyword)
 										  .userId(customUser.getMglgUser().getUserId())
 									      .build();
 
-		Page<MglgUser> pagefollowList = userRelationService.followList(user, pageable);
-		System.out.println("pagefollowList ====" + pagefollowList.getContent());
-		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> MglgUserDTO.builder()
-														.userId(pageUser.getUserId())
-														.userName(pageUser.getUserName())
-														.email(pageUser.getEmail())
-														.userNick(pageUser.getUserNick())
-														.build());
-		for(int i =0;i<pagefollowDTOList.getContent().size();i++) {
-			System.out.println(pagefollowDTOList.getContent().get(i));
-		}
-			
-		
-			response.setPageItems(pagefollowDTOList);
+		Page<CamelHashMap> pagefollowList = userRelationService.followList(user, pageable);
+
+			response.setPageItems(pagefollowList);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
 
@@ -315,35 +290,35 @@ public class SocialController {
 	
 	// 팔로잉 유저 에이작스 처리를 위한 전부 수정함
 	@GetMapping("/following")
-	public ResponseEntity<?> followingList(@RequestParam("searchKeyword") String searchKeyword 
+	public ResponseEntity<?> followeringList(@RequestParam("searchKeyword") String searchKeyword 
 			,@PageableDefault(page = 0, size = 5) Pageable pageable,@AuthenticationPrincipal CustomUserDetails customUser) {
-		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-		System.out.println("트라이 들어가기전");
+		
+		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 		try {
-		System.out.println("트라이 들어감");
 
 		MglgUser user = MglgUser.builder().searchKeyword(searchKeyword)
 										  .userId(customUser.getMglgUser().getUserId())
 									      .build();
+		int i =0;
+		Page<CamelHashMap> pagefollowingList = userRelationService.followingList(user, pageable);
+		for(CamelHashMap a : pagefollowingList) {
+			System.out.println(i+"번째"+pagefollowingList.getContent().get(i));
+			
+			int eachUserId = (int)pagefollowingList.getContent().get(i).get("userId");
+			MglgUserProfile followingProfile = mglgUserProfileService.followingProfile(eachUserId);
+			pagefollowingList.getContent().get(i).put("followingProfile", followingProfile);
+			System.out.println(i+"번째"+pagefollowingList.getContent().get(i)+"끝");
+			if(i==5) {
+				i=0;
+			}else {
+				i++;
+			}
 
-		Page<MglgUser> pagefollowList = userRelationService.followingList(user, pageable);
-		System.out.println("pagefollowList ====" + pagefollowList.getContent());
-		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> MglgUserDTO.builder()
-														.userId(pageUser.getUserId())
-														.userName(pageUser.getUserName())
-														.email(pageUser.getEmail())
-														.userNick(pageUser.getUserNick())
-														.build());
-		for(int i =0;i<pagefollowDTOList.getContent().size();i++) {
-			System.out.println(pagefollowDTOList.getContent().get(i));
 		}
-		
-		
-		
-			response.setPageItems(pagefollowDTOList);
+		    response.setPageItems(pagefollowingList);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
-
+			System.out.println("오류발생==== "+e);
 			response.setErrorMessage(e.getMessage());
 			return ResponseEntity.badRequest().body(response);
 		}
@@ -353,29 +328,17 @@ public class SocialController {
 	@GetMapping("/followingSearch")
 	public ResponseEntity<?> followingSearch(@RequestParam("searchKeyword") String searchKeyword 
 			,@PageableDefault(page = 0, size = 10000) Pageable pageable,@AuthenticationPrincipal CustomUserDetails customUser) {
-		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
-		System.out.println("트라이 들어가기전");
+		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
+		System.out.println("searchkeyword===="+searchKeyword);
 		try {
-		System.out.println("트라이 들어감");
-
 		MglgUser user = MglgUser.builder().searchKeyword(searchKeyword)
 										  .userId(customUser.getMglgUser().getUserId())
 									      .build();
 
-		Page<MglgUser> pagefollowList = userRelationService.followingList(user, pageable);
+		Page<CamelHashMap> pagefollowList = userRelationService.followingList(user, pageable);
 		System.out.println("pagefollowList ====" + pagefollowList.getContent());
-		Page<MglgUserDTO> pagefollowDTOList = pagefollowList.map(pageUser -> MglgUserDTO.builder()
-														.userId(pageUser.getUserId())
-														.userName(pageUser.getUserName())
-														.email(pageUser.getEmail())
-														.userNick(pageUser.getUserNick())
-														.build());
-		for(int i =0;i<pagefollowDTOList.getContent().size();i++) {
-			System.out.println(pagefollowDTOList.getContent().get(i));
-		}
-			
-		
-			response.setPageItems(pagefollowDTOList);
+
+			response.setPageItems(pagefollowList);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
 

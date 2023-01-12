@@ -42,7 +42,7 @@ public interface ChatMembersRepository extends JpaRepository<MglgChatMembers, In
 			+ "SELECT C.USER_NAME AS WRITER\n"
 			+ "	 , A.CHAT_CONTENT AS MESSAGE\n"
 			+ "     , DATE_FORMAT(A.CHAT_TIME, '%m-%d') AS CHAT_DATE\n"
-			+ "     , DATE_FORMAT(A.CHAT_TIME, '%H-%i') AS CHAT_TIME\n"
+			+ "     , DATE_FORMAT(A.CHAT_TIME, '%H:%i') AS CHAT_TIME\n"
 			+ ", CASE\n"
 			+ "		WHEN A.CHAT_TIME <= B.LEAVE_DATE\n"
 			+ "        THEN 'R'\n"

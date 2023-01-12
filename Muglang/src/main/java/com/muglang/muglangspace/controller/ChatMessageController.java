@@ -1,5 +1,8 @@
 package com.muglang.muglangspace.controller;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -72,6 +75,12 @@ public class ChatMessageController {
 					 								 .userId(message.getUserId())
 					 								 .chatContent(message.getMessage())
 					 								 .build();
+			
+			LocalTime currentTime = LocalTime.now();
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("HH:mm");
+            String chatTime = currentTime.format(df);
+            message.setChatTime(chatTime);
+			
 			chatService.insertMsg(messageParam);
 		}
 		sendingOperations.convertAndSend("/topic/chat/room/" + message.getChatRoomId(), message);

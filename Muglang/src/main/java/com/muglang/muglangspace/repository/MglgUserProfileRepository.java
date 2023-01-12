@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.entity.MglgUserProfileId;
+import com.muglang.muglangspace.service.mglguserprofile.MglgUserProfileService;
 
 @Transactional
 public interface MglgUserProfileRepository extends JpaRepository<MglgUserProfile, MglgUserProfileId>{
@@ -34,8 +35,10 @@ public interface MglgUserProfileRepository extends JpaRepository<MglgUserProfile
 				+ "	   USER_PROFILE_path = :path "
 				+ "WHERE USER_ID = :userId",nativeQuery = true)
 		public void updateProfile(@Param("userId") int userId,@Param("profileNm") String profileNm,
-									  @Param("profileCate") String profileCate,@Param("originNm") String originNm,
-									  @Param("path") String path);	
+							      @Param("profileCate") String profileCate,@Param("originNm") String originNm,@Param("path") String path);	
+		
+		@Query(value = "SELECT * FROM T_MGLG_USER_PROFILE WHERE USER_ID=:eachUserId",nativeQuery = true)
+		public MglgUserProfile followerProfile(@Param("eachUserId") int eachUserId);
 
 }
 
