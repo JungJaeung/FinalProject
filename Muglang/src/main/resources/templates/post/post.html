@@ -1038,7 +1038,7 @@
 										<input type="hidden" name="originFiles" th:id="'originFiles' + ${post.postId}"
 											value="">
 										<input type="hidden" id="userId" name="userId" th:value="${post.userId}">
-										<input type="hidden" id="postContentIn" name="postContent"
+										<input type="hidden" th:id="'postContentIn' + ${post.postId}" name="postContent"
 											th:value="${post.postContent}">
 										<input type="hidden" name="postDate" th:value="${post.postDate}">
 										<input type="hidden" name="restNm" th:value="${post.restNm}">
