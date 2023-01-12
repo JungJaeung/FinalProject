@@ -19,6 +19,8 @@
 					type: 'get',
 					data: {userId: $("#hiddenId").val()},
 					success: function (obj) {
+						console.log("asdas")
+						console.log(obj);
 						let formStr = `
 						<a href="/social/followOtherUser?userId=${userId}">
 						팔로우 하기
@@ -30,7 +32,7 @@
 						</a>
 						`
 
-						if(obj.pageItems.content[0].reportCnt ==0){
+						if(obj.pageItems.content[0].followyn==0){
 							$("#followYn").html(formStr);
 								console.log(formStr)
 							}else{
@@ -38,7 +40,7 @@
 								console.log(formStr)
 
 							}
-						console.log(obj.pageItems.content[0].reportCnt);
+						console.log(obj.pageItems.content[0].followyn);
 						let htmlStr = '';
 						for (let i = 0; i < obj.pageItems.content.length; i++) {
 							totalPages = obj.pageItems.totalPages;
@@ -59,6 +61,7 @@
 						$("#appendDiv1").html(htmlStr);
 					},
 					error: function (e) {
+						console.log("여기서 오류")
 						console.log(e);
 					}
 				});

@@ -38,6 +38,18 @@ public class MglgUserProfileServiceImpl implements MglgUserProfileService{
 		mglgUserProfileRepository.flush();
 		
 	}
+
+	@Override
+	public MglgUserProfile followerProfile(int eachUserId) {
+		
+		return mglgUserProfileRepository.followerProfile(eachUserId);
+	}
+
+	@Override
+	public MglgUserProfile followingProfile(int eachUserId) {
+		
+		return mglgUserProfileRepository.followerProfile(eachUserId);
+	}
 	
 	
 }

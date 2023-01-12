@@ -1,13 +1,12 @@
 package com.muglang.muglangspace.service.mglgsocial.impl;
 
 
-import java.time.LocalDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserRelation;
 import com.muglang.muglangspace.repository.MglgUserRelationRepository;
@@ -34,11 +33,10 @@ public class UserRelationServiceImpl implements UserRelationService {
 	}
 	
 	@Override
-	public Page<MglgUser> followList(MglgUser user, Pageable pageable) {
+	public Page<CamelHashMap> followList(MglgUser user, Pageable pageable) {
 		int userId = user.getUserId();
 		String searchKeyword = user.getSearchKeyword();
 
-		
 		if(user.getSearchKeyword() != null && !user.getSearchKeyword().equals("")) {
 			return mglgUserRepository.searchFollowList(searchKeyword,userId, pageable);
 			
@@ -49,7 +47,7 @@ public class UserRelationServiceImpl implements UserRelationService {
 
 	}
 	@Override
-	public Page<MglgUser> followingList(MglgUser user, Pageable pageable) {
+	public Page<CamelHashMap> followingList(MglgUser user, Pageable pageable) {
 		int userId = user.getUserId();
 		String searchKeyword = user.getSearchKeyword();
 
