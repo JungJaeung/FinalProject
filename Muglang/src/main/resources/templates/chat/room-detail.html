@@ -19,7 +19,7 @@
 
 				var sock = new SockJS("/ws/chat");
 				var stomp = Stomp.over(sock);
-				
+
 				stomp.connect({}, function () {
 					//console.log("connected");
 
@@ -33,17 +33,19 @@
 						var messageList = content.messageList;
 
 						console.log(content);
-						if((message != null && message != '') && message.includes("님이 입장하였습니다.") || type == "CHAT") {
+						if ((message != null && message != '') && message.includes("님이 입장하였습니다.") || type == "CHAT") {
 							if (writer === username) {
 								//str += "<div class='alert alert-secondary'>";
 								if (type == 'JOIN') {
 									str = "<div style='text-align: center;'>";
-									str += "<b>" + message + "</b>";
-								} else {
-									str = "<div style='text-align: right; margin-right:20px;'><span style='background-color: #91E7FC;'>";
-									str += "<b>" + writer + " : " + message + "</b>";
+									str += "<b>" + message + "</b></span>";
+								} 
+								//실시간 채팅 본인
+								else {
+									str = "<div style='text-align: right; margin: 10px 20px 10px 0px;'><div class='my_chat'>";
+									str += "<b>" + message + "</b></div>";
 								}
-								str += "</span></div>"/*</div>*/;
+								str += "</div>"/*</div>*/;
 								$("#msgArea").append(str);
 								$("#msgArea").scrollTop($("#msgArea").prop('scrollHeight'));
 							}
@@ -52,83 +54,90 @@
 								if (type == 'JOIN') {
 									str = "<div style='text-align: center;'>";
 									str += "<b>" + message + "</b>";
-								} else {
-									str = "<div style='text-align: left;'>";
-									str += "<b>" + writer + ":" + message + "</b>";
+								} 
+								//실시간 채팅 타인
+								else {
+									str = "<div style='text-align: left; margin: 35px 0px 35px 80px;'> ";
+									str += "<div class='other_chat'>"
+									str += "<img class='img-fluid rounded-circle' src='../assets/img/messages-1.jpg' style='width:40px; height:40px; position:absolute; top:-8px; left:-60px;'>"
+									str += "<span style='position:absolute; top:-18px; left:0px; font-size:small;'><b>" + writer + "</b></span>";
+									str += "<b>" + message + "</b></div>";
 								}
 								str += "</div>"/*</div>*/;
 								$("#msgArea").append(str);
 								$("#msgArea").scrollTop($("#msgArea").prop('scrollHeight'));
 							}
-						} else if(messageList != null && messageList != '') {
+						} else if (messageList != null && messageList != '') {
 							//7. 조회해온 messageList 출력
 							let readYn = 'R';
-							for(var i=0; i<messageList.length; i++) {
-								if(readYn != messageList[i].readYn) {
+							for (var i = 0; i < messageList.length; i++) {
+								if (readYn != messageList[i].readYn) {
 									str += "<p style='text-align: center;'>------------여기까지 읽었습니다.------------</p>";
 								}
-								
-								if(messageList[i].writer == username) {
-									str += "<div style='text-align: right; margin-right:20px;'><span style='background-color: #91E7FC;'>";
-									str += "<b>" + messageList[i].writer + " : " + messageList[i].message + "</b>";
-									str += "</span></div>"/*</div>*/
-								} else {
-									str += "<div style='text-align: left;'>";
-									str += "<b>" + messageList[i].writer + ":" + messageList[i].message + "</b>";
-									str += "</div>"/*</div>*/;
+								//불러온 채팅 본인
+								if (messageList[i].writer == username) {
+									str += "<div style='text-align: right; margin: 10px 20px 10px 0px;'><div class='my_chat'>";
+									str += "<b>" + messageList[i].message + "</b>";
+									str += "</div></div>";
+								} 
+								//불러온 채팅 타인(확인 못했음 체크후 틀리면 수정 요함)
+								else {
+									str += "<div style='text-align: left; margin: 35px 0px 35px 80px;'> ";
+									str += "<div class='other_chat'>"
+									str += "<img class='img-fluid rounded-circle' src='../assets/img/messages-1.jpg' style='width:40px; height:40px; position:absolute; top:-8px; left:-60px;'>"
+									str += "<span style='position:absolute; top:-18px; left:0px; font-size:small;'><b>" + messageList[i].writer + "</b></span>";
+									str += "<b>" + messageList[i].message + "</b>";
+									str += "</div></div>";
 								}
-								
+
 								readYn = messageList[i].readYn;
-								
-								if(i == messageList.length - 1 && readYn == 'R') {
+
+								if (i == messageList.length - 1 && readYn == 'R') {
 									str += "<p style='text-align: center;'>------------여기까지 읽었습니다.------------</p>";
 								}
-								
+
 							}
 							$("#msgArea").append(str);
 							$("#msgArea").scrollTop($("#msgArea").prop('scrollHeight'));
 						}
-						
+
 
 					});
 
 					stomp.send("/app/chat/message", {}, JSON.stringify({type: 'JOIN', chatRoomId: roomId, writer: username, userId: userId}));
 				});
-				
+
 
 				$("#button-send").on("click", function (e) {
-					//8. ajax로 메시지 chatmsg table에 insert
-					
 					var msg = document.getElementById("msg");
-					if(msg.value == '') {
+					if (msg.value == '') {
 						alert('enter text');
 					} else {
 						stomp.send("/app/chat/message", {}, JSON.stringify({type: 'CHAT', chatRoomId: roomId, writer: username, message: msg.value, userId: userId}));
 						msg.value = '';
 					};
-					
+
 				});
-				
-				$("input[name=send]").on("keydown", function(e) {
+
+				$("input[name=send]").on("keydown", function (e) {
 					var msg = document.getElementById("msg");
-					if(e.keyCode == 13) {
-						if(msg.value == '') {
+					if (e.keyCode == 13) {
+						if (msg.value == '') {
 							alert("enter text");
 						} else {
 							stomp.send("/app/chat/message", {}, JSON.stringify({type: 'CHAT', chatRoomId: roomId, writer: username, message: msg.value, userId: userId}));
 							msg.value = '';
 						};
-							
+
 					};
-					
+
 				});
 			});
-			
+
 			function goBack() {
 				window.history.back();
 			};
-			
-			
+
 		</script>
 	</th:block>
 </head>
@@ -136,28 +145,27 @@
 <body>
 	<main layout:fragment="main" id="main" class="main">
 		<div>
-		<!--	<input type="button" value="목록으로 돌아가기" onclick="goBack();">	-->
+			<!--	<input type="button" value="목록으로 돌아가기" onclick="goBack();">	-->
 			<a th:href="@{/chat/leave/{id} (id=${room.id})}">목록으로 돌아가기</a>
 			<a th:href="@{/chat/exit/{id} (id=${room.id})}">방 나가기</a>
 		</div>
 		<div class="row">
 			<div class="col-12">
-				<div  style="width: 50%; margin:0 auto">
+				<div style="width: 50%; margin:0 auto">
 					<h1 th:text="${room.name}"></h1>
 				</div>
-				<div  style="width: 50%; margin:0 auto">
+				<div style="width: 50%; margin:0 auto">
 					<div id="msgArea" style="overflow-y: auto; 
 					overflow-x: hidden; 
 					height: 500px; 
 					box-shadow: 0 0 4px #c8c8c8;
 					border-radius: 8px;"></div>
-					<div>
-						<div class="input-group mb-3" style="margin-top: 5px;">
-							<input type="text" id="msg" class="form-control" name="send" style="outline: none;">
-							<div class="input-group-append">
-								<button class="btn btn-outline-secondary" type="button" id="button-send">전송</button>
-							</div>
-						</div>
+					<div class="mt-2">
+						<input type="text" id="msg" class="form-control" name="send"
+							style="width:80%; float:left; outline: none;">
+
+						<button class="btn btn-outline-secondary" type="button" id="button-send"
+							style="width:19%; margin-left:1%;">전송</button>
 					</div>
 				</div>
 
