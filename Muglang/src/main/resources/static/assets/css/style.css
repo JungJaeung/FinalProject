@@ -1182,3 +1182,20 @@ h6 {
 --------------------------------------------------------------*/  
   .hashTag_text{width: 100px; border: none; border-bottom: 1px solid #bbb; outline: none;}
   
+  
+/*--------------------------------------------------------------
+# 채팅방
+--------------------------------------------------------------*/  
+  .my_chat{ position:relative; padding: 10px; max-width: 70%; display:inline-block;
+   background:#288CFF; border-radius: 10px; color:white; text-align: left;}
+  .my_chat:after{ border-top:7px solid #288CFF; border-left: 0px solid transparent;
+   border-right:10px solid transparent; border-bottom: 0px solid transparent;
+   content:"";  position:absolute; top:15px; right:-10px;}
+   
+  .other_chat{ position:relative; padding: 10px; max-width: 70%; display:inline-block;
+   background:#dcdcdc; border-radius: 10px; }
+  .other_chat:after{ border-top:7px solid #dcdcdc; border-left: 10px solid transparent;
+   border-right:0px solid transparent; border-bottom: 0px solid transparent;
+   content:"";  position:absolute; top:15px; left:-10px;}
+
+  
