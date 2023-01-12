@@ -147,7 +147,7 @@ public class PostController {
 				completeFileDTO.get(i).setPostId(mglgPost.getPostId());
 			}
 			
-			System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFile.get(0).getPostFileId());
+			System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFileDTO.get(0).getPostFileId());
 			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
 			

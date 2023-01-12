@@ -248,6 +248,7 @@
 							$("#cntPost").text(postNumber);
 							//$("#posts").html(insert_post);
 							//html단 뿌리기
+							console.log(insert_post);
 							$("#posts").prepend($(insert_post));
 							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
 							flagList.unshift(false);
@@ -262,11 +263,11 @@
 							console.log("임시 배열 출력 : ");
 							console.log(inputFile);
 							for(let i = 0; i < inFileLength; i++) {
-								postFileIdList.unshift(inputFile[inFileLength - i].postFileId);
+								postFileIdList.unshift(inputFile[inFileLength - i - 1].postFileId);
 								const originFileObj = {
 									postId: inPostId,
-									postFileId: inputFile[inFileLength - i].postFileId,
-									postFileNm: $("#postFileNm" + inputFile[inFileLength - i].postFileId).val(),
+									postFileId: inputFile[inFileLength - i - 1].postFileId,
+									postFileNm: $("#postFileNm" + inputFile[inFileLength - i - 1].postFileId).val(),
 									//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
 									//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
 									postFileStatus: "N"
