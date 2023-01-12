@@ -523,6 +523,11 @@ public class PostController {
 								((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
 						)
 				);
+				//해당 글에 등록된 식당이 팔로우 하고있는 유저의 포스트에 몇개 등록되어 있는지
+				pagePostList.getContent().get(i).put(
+						"res_cnt",
+						mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
+				);
 			}
 				response.setPageItems(pagePostList);
 				return ResponseEntity.ok().body(response);
@@ -554,6 +559,11 @@ public class PostController {
 							String.valueOf(
 									((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
 							)
+					);
+					//해당 글에 등록된 식당이 팔로우 하고있는 유저의 포스트에 몇개 등록되어 있는지
+					pagePostList.getContent().get(i).put(
+							"res_cnt",
+							mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
 					);
 				}
 				
