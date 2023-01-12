@@ -31,6 +31,7 @@
 						var type = content.type;
 						var str = '';
 						var messageList = content.messageList;
+						var chatTime = content.chatTime;
 
 						console.log(content);
 						if ((message != null && message != '') && message.includes("님이 입장하였습니다.") || type == "CHAT") {
@@ -43,6 +44,7 @@
 								//실시간 채팅 본인
 								else {
 									str = "<div style='text-align: right; margin: 10px 20px 10px 0px;'><div class='my_chat'>";
+									str += "<span style='position:absolute; bottom:-1px; left:-38px; font-size:small; color:black;'>" + chatTime + "</span>";
 									str += "<b>" + message + "</b></div>";
 								}
 								str += "</div>"/*</div>*/;
@@ -61,6 +63,7 @@
 									str += "<div class='other_chat'>"
 									str += "<img class='img-fluid rounded-circle' src='../assets/img/messages-1.jpg' style='width:40px; height:40px; position:absolute; top:-8px; left:-60px;'>"
 									str += "<span style='position:absolute; top:-18px; left:0px; font-size:small;'><b>" + writer + "</b></span>";
+									str += "<span style='position:absolute; bottom:-1px; right:-38px; font-size:small;'>" + chatTime + "</span>";
 									str += "<b>" + message + "</b></div>";
 								}
 								str += "</div>"/*</div>*/;
@@ -77,6 +80,7 @@
 								//불러온 채팅 본인
 								if (messageList[i].writer == username) {
 									str += "<div style='text-align: right; margin: 10px 20px 10px 0px;'><div class='my_chat'>";
+									str += "<span style='position:absolute; bottom:-1px; left:-38px; font-size:small; color:black;'>" + messageList[i].chatTime + "</span>";
 									str += "<b>" + messageList[i].message + "</b>";
 									str += "</div></div>";
 								} 
@@ -86,6 +90,7 @@
 									str += "<div class='other_chat'>"
 									str += "<img class='img-fluid rounded-circle' src='../assets/img/messages-1.jpg' style='width:40px; height:40px; position:absolute; top:-8px; left:-60px;'>"
 									str += "<span style='position:absolute; top:-18px; left:0px; font-size:small;'><b>" + messageList[i].writer + "</b></span>";
+									str += "<span style='position:absolute; bottom:-1px; right:-38px; font-size:small;'>" + messageList[i].chatTime + "</span>";
 									str += "<b>" + messageList[i].message + "</b>";
 									str += "</div></div>";
 								}
