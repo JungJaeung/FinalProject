@@ -8,6 +8,8 @@ $(function() {
 	//ajax로 이벤트 함수를 다시 빌드하는 객체를 따로 정의
 	$.update_post = function() {
 		$($(".updateBtn")[0]).click(function(e) {
+			const postId = Number($(this).val());
+			//const postId = e.target.postId;
 			$($('.uploadFileSpace')[0]).hide();
 			$($('.changedFileSpace')[0]).hide();
 			$("#upTitle" + $(this).val()).hide();
@@ -35,8 +37,18 @@ $(function() {
 				$("#postContent" + $(this).val()).hide();
 				$("#contentIn" + $(this).val()).show();
 			}
-
+			
 			console.log("버튼 이벤트 html단 활성화");
+			
+			$("#fileRequest" + $(this).val()).click(function(e) {
+				console.log("파일 요청 조작 활성화" + $(this).val());
+				$("#updateBtnAtt" + $(this).val()).click();
+			});
+			
+			$("#fileRemove" + $(this).val()).click(function(e) {
+				console.log("파일 삭제 요청 활성화");	
+			});
+
 			$("#updateButton" + postIdList[0]).click(function(e) {
 				$($('.data')[0]).children('#postContentIn').val($("#contentIn" + postIdList[0]).val());
 				console.log("update될 내용 : " + $("#contentIn" + postIdList[0]).val());
@@ -51,7 +63,7 @@ $(function() {
 			$("#contentIn" + postIdList[0]).keyup(function(e) {
 				$("#postContent" + postIdList[0]).text($(this).val());
 				console.log($(this).val());
-				fnChangeContent(this);
+				fnChangeContent(this, postId);
 			});
 		});
 	}
@@ -123,22 +135,23 @@ $(function() {
 			$("#contentIn" + postId).keyup(function(e) {
 				$("#postContent" + postId).text($(this).val());
 				console.log($(this).val());
-				fnChangeContent(this);
+				fnChangeContent(this, postId);
 			});
 
 		});
 	});
 	//스크롤 확장시 다시 이벤트를 발생시킬 스크립트를 다시 로드함.
-	$.updateBtn = function(startIndex) {
-		for(let i = startIndex; i < startIndex + 5; i++) {
+	$.updateBtn = function(startIndex, size) {
+		for(let i = startIndex; i < startIndex + size; i++) {
 			flagList[i] = false;
+			$($(".fileBtns")[i]).hide();
 			$($('.uploadFileSpace')[i]).hide();
 			$($('.changedFileSpace')[i]).hide();
 			$("#upTitle" + $(this).val()).hide();
 			$("#contentIn" + $(this).val()).hide();
 			$($(".updateBtn")[i]).on('click', function(e) {
 				console.log("초기 화면 수정 버튼 활성화.");
-				const postId = $(this).val();
+				const postId = Number($(this).val());
 				flagList[i] = !flagList[i];
 				if (flagList[i]) {
 					$(this).text("돌아가기");
@@ -198,31 +211,36 @@ $(function() {
 				$("#contentIn" + postId).keyup(function(e) {
 					$("#postContent" + postId).text($(this).val());
 					console.log($(this).val());
-					fnChangeContent(this);
+					fnChangeContent(this, postId);
 				});
 	
 			});
 
 		}
-	}
-	
-	//자신이 게시한 글의 파일을 수정할 수 있는 버튼에 대한 이벤트 조작 생성.
-	/*
-	$('.fileBtns').each(function(i, e) {
-		console.log("파일 버튼의 아이디 : " + $(this).val());
 		
-	});
-	*/
+	}
+
 });
 
 function inputTitle(title) {
 	$('#inputRestNm').val(title)
 }
 
+//수정모드에서  내용 변경시 실행될 메소드
+function fnChangeContent(input, postId) {
+	console.log("내용 변경 이벤트 발생");
+	//글을 변경하기위해 텍스트박스를 수정할 경우 해당 텍스트박스의 내용을 숨겨진 태그들에 뿌려줌.
+	//$("#postContent").text($(input).text() + "");
+	$("#postContentIn" + postId).val($(input).val());
+	//console.log($("#post").val($(input).val()));
+	$("#postContent" + postId).val()
+}
+
+
 //수정작업을 진행한후 이미지 갱신을 위한 태그 생성. 수정작업때만 사용되는 html단 텍스트 이므로 로그인 여부를 사용하지 않아도됨.
-function imageTag(item, fileSize) {
+function imageTag(item, fileLength) {
 	let tag  = "";
-	for(let i = 0; i < fileSize; i++) {
+	for(let i = 0; i < fileLength; i++) {
 		tag += `<div class="fileList${item.getPost.postId}" value="${item.updateFileList[i].postFileId}">`;
 		tag += `<div style="position: relative;">`;
 		tag += `<input type="hidden" id="postFileId${item.updateFileList[i].postFileId}" 
@@ -230,7 +248,7 @@ function imageTag(item, fileSize) {
 		tag += `<input type="hidden" id="postFileNm${item.updateFileList[i].postFileId}" 
 					class="postFileNm" name="postFileNm" value="${item.updateFileList[i].postFileNm}">`;
 		tag += `<input type="hidden" id="postId${item.updateFileList[i].postFileId}" 
-					class="postId${item.updateFileList[i].postId}" name="postId" value="${item.updateFileList[i].postId}">`;
+					class="postId${item.getPost.postId}" name="postId" value="${item.updateFileList[i].postId}">`;
 		tag += `<input type="file" id="changedFile${item.updateFileList[i].postFileId}" name="changedFile${item.updateFileList[i].postFileId}" style="display: none;" 
 					onchange="fnGetChangedFileInfo(${item.updateFileList[i].postFileId}, ${i}, event)">`;												
 		if(item.updateFileList[i].postFileCate == 'img') {

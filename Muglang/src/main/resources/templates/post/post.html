@@ -82,9 +82,9 @@
 					}
 					console.log("파일들의 리스트 목록 배열 : " + postFileIdList[i]);*/
 				}
-
+				//초기 화면에 도착시 파일의 목록 아이디를 저장해둠.
 				$("input[name='postFileId']").each(function () {
-					postFileIdList.push($(this).val());
+					postFileIdList.push(Number($(this).val()));
 				});
 
 				console.log("게시글 : " + postIdList);
@@ -155,10 +155,10 @@
 					});
 				}
 
-				//게시글 등록에서 사용되는 파일리스트 보관.
+				//게시글 등록에서 사용되는 파일리스트 보관. 새로 로드시 파일리스트를 배열로 저장함.
 				for (let i = 0; i < postFileIdList.length; i++) {
 					const originFileObj = {
-						postId: $("#postId" + postFileIdList[i]).val(),
+						postId: Number($("#postId" + postFileIdList[i]).val()),
 						postFileId: postFileIdList[i],
 						postFileNm: $("#postFileNm" + postFileIdList[i]).val(),
 						//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
@@ -544,15 +544,16 @@
 								data: {page_num: page_num},
 								success: function (obj) {
 									//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
-									console.log(obj)
-									page_num++;
-									let elements = obj.totalElements - 5;
+									console.log(obj);
+									
+									let elements = page_num * obj.numberOfElements;
+									console.log("시작 인덱스 표시 : " + elements);
 									for (let post of obj.content) {
 										let post_date = new Date(post.postDate);
 										//날짜 데이터 밀리초
 										post_date = now - post_date;
 										//인덱스번호를 받기위해 총 배열의 개수를 받아서 자동증가
-										elements++;
+										//elements++;
 										text_scroll += `<div class="col-12 post">`;
 										text_scroll += `<input type="hidden" value="${post.betweenDate}">`;
 										text_scroll += `<input type="text" id="fileList${post.postId}" value="${post.fileLength}">`;
@@ -578,12 +579,16 @@
 										text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
 										text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
 										text_scroll += `</ul></div>`
-										text_scroll += `<div class="card-title">`
+										text_scroll += `<div class="card-title">`;
+										text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
+														style="width: 40px;">
+														<a href="#" class="card-title">${post.userNick}</a>`;
+										text_scroll += `</div>`;
 										text_scroll += `<form id="updateForm${post.postId}" enctype="multipart/form-data">`;
 										//<!-- 게시글 사진 부분 -->
 										//<!-- imgArea는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
 										text_scroll	+= `<div class="activity" style="margin-bottom: 10px;"
-														th:id="restImgBox${post.postId}">`; 
+														id="restImgBox${post.postId}">`; 
 										text_scroll	+= `<div id="imgArea${post.postId}">`;
 										if (loginUserId == post.userId) {
 											for(let i = 0; i < post.fileLength; i++){
@@ -601,10 +606,10 @@
 												text_scroll	+= `<input type="hidden" id="postId${post.fileList[i].postFileId}"
 																class="postId${post.fileList[i].postId}" name="postId"
 																value="${post.fileList[i].postId}">`;
-												text_scroll	+= `<input type="file" th:id="changedFile${post.fileList[i].postFileId}"
-																th:name="changedFile${post.fileList[i].postFileId}"
+												text_scroll	+= `<input type="file" id="changedFile${post.fileList[i].postFileId}"
+																name="changedFile${post.fileList[i].postFileId}"
 																style="display: none;"
-																th:onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, ${i}, event)">`;
+																onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, ${i}, event)">`;
 												if(post.fileList[i].postFileCate == "img") {
 													text_scroll	+= `<img id="img${post.fileList[i].postFileId}"
 																	src="/upload/${post.fileList[i].postFileNm}"
@@ -622,13 +627,13 @@
 												
 												text_scroll	+= `<input type="button" class="btnDel" value="x"
 																data-del-file="${post.fileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-																z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+																z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;" 
 																onclick="fnPostImgDel(event)">`;
 												text_scroll	+= `<p id="fileNm${post.fileList[i].postFileId}"
 																style="display: none; font-size: 8px; cursor: pointer;"
 																onclick="fnFileDown(${post.fileList[i].postId}, ${post.fileList[i].postFileId})">
 																${post.fileList[i].postFileOriginNm}</p>`;
-												text_scroll	+= `</div>`;
+												text_scroll	+= `</div></div>`;
 											}
 										} else {
 											for (let i = 0; i < post.fileLength; i++) {
@@ -647,7 +652,8 @@
 												}
 											}
 										}
-										text_scroll	+= `</div></div>`;						
+										text_scroll	+= `</div>`;
+										text_scroll += `</div>`;						
 										text_scroll	+= `<div class="uploadFileSpace">
 														<input type="file" id="updateBtnAtt${post.postId}"
 															class="updateBtnAtt" data-post-id="${post.postId}" name="uploadFiles"
@@ -656,32 +662,33 @@
 										text_scroll	+= `<div class="changedFileSpace">
 														<input type="file" id="changedFiles${post.postId}"
 															name="changedFiles" value="" multiple="multiple">
-														</div>`;	
+														</div>`;				
 										text_scroll	+= `<div id="postAttZone${post.postId}"
 														data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>`;	
 										text_scroll	+= `<input type="hidden" name="postId" value="${post.postId}">`;	
-										text_scroll	+= `<input type="hidden" name="originFiles" id="originFiles${post.postId}" value="">`;	
+										text_scroll	+= `<input type="hidden" name="originFiles" id="originFiles${post.postId}">`;	
 										text_scroll	+= `<input type="hidden" id="userId" name="userId" value="${post.userId}">`;	
-										text_scroll	+= `<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">`;	
+										text_scroll	+= `<input type="hidden" id="postContentIn${post.postId}" name="postContent" value="${post.postContent}">`;	
 										text_scroll	+= `<input type="hidden" name="postDate" value="${post.postDate}">`;	
 										text_scroll	+= `<input type="hidden" name="restNm" value="${post.restNm}"></form>`;	
-										
-										//text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
-										text_scroll += `<a href="#" class="card-title"> ${post.restNm}</a></div>`
-										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
-										text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`
-										if(loginUserId == post.postId) {
+
+										if(loginUserId == post.userId) {
 											text_scroll += `<div class="buttons fileBtns" id="buttonBox${post.postId}" value="${post.postId}">
 															<button type="button" id="fileRequest${post.postId}"
 															value="${post.postId}">파일 관리창 열기</button>&emsp;
 															<button type="button" id="fileRemove${post.postId}">파일 전부 삭제</button>
-															</div></div>`;
+															</div>`;
 										}
-										text_scroll += `<div class="activity">`
-										text_scroll += `<div th:id="'postContent' + ${post.postId}">${post.postContent}</div>`
+										
+										//text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
+										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
+										//text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`
+										
+										text_scroll += `</div><div class="activity">`
+										text_scroll += `<div id="postContent${post.postId}">${post.postContent}</div>`
 										text_scroll += `<div id="upTitle${post.postId}">수정할 게시글 내용</div>`;
-										text_scroll += `<textarea id="contentIn${post.postId}" name="contentIn" col="85%"
-														row="40" style="display: none; resize: none;">${post.postContent}</textarea>`;
+										text_scroll += `<textarea id="contentIn${post.postId}" name="contentIn"
+														row="40" style="display: none; resize: none; width: 85%;">${post.postContent}</textarea>`;
 										//여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
 										text_scroll += `<br>`
 										text_scroll += `</div>`
@@ -716,17 +723,34 @@
 										if(loginUserId == post.userId)
 										text_scroll += `<button type="button" class="updateBtn" id="updateButton"
 														value="${post.postId}">게시글 수정</button>`;									
-										text_scroll += `</div></div></div>`;
+										text_scroll += `</div></div></div></div></div>`;
+										
 									}
 
 									$("#post_scroll_div").html(text_scroll);
 									$(".uploadFileSpace").hide();
 									$(".changedFileSpace").hide();
 									//이벤트 리스너 함수 호출
-									$.updateBtn(elements);
+									$.updateBtn(elements, obj.numberOfElements);
+									for(let i = 0; i < obj.numberOfElements; i++) {
+										for(let j = 0; j < obj.content[i].fileLength; j++) {
+											postFileIdList.push(obj.content[i].fileList[j].postFileId);
+											const originFileObj = {
+												postId: obj.content[i].postId,
+												postFileId: obj.content[i].fileList[j].postFileId,
+												postFileNm: $("#postFileNm" + obj.content[i].fileList[j].postFileId).val(),
+												//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
+												//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
+												postFileStatus: "N"
+											};
+											originFiles.push(originFileObj);
+										}
+										$.updateBtnAtt(obj.content[i].postId);									
+									}
 									$.like_button();
 									$.comment_button();
 									$.map_button();
+									page_num++;
 								},
 								error: function (e) {
 									console.log(e);
@@ -848,25 +872,6 @@
 				pop.close();
 			}
 
-			//수정모드에서 제목변경시 실행될 메소드
-			function fnChangeContent(input) {
-				//글을 변경하기위해 텍스트박스를 수정할 경우 해당 텍스트박스의 내용을 숨겨진 태그들에 뿌려줌.
-				//$("#postContent").text($(input).text() + "");
-				$("#postContentIn").val($(input).val());
-				console.log($("#post").val($(input).val()));
-				$("#postContent").val()
-				/*
-				if($(input).val() != $(input).parent().attr("data-board-title")) {
-				   $(input).parent().attr("data-new-title", $(input).val());
-				   $("#statusTd" + $(input).parent().attr("data-board-no")).text("U");
-				   $("#status" + $(input).parent().attr("data-board-no")).val("U");
-				   $("#status" + $(input).parent().attr("data-board-no")).attr("data-new-title", $(input).val());
-				} else {
-				   $("#statusTd" + $(input).parent().attr("data-board-no")).text("");
-				   $("#status" + $(input).parent().attr("data-board-no")).val("");
-				}      
-				*/
-			}
 
 		</script>
 	</th:block>

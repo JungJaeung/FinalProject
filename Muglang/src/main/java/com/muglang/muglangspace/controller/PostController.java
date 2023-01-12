@@ -186,7 +186,7 @@ public class PostController {
 		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles, 
 				new TypeReference<List<MglgPostFileDTO>>() {});
 		
-//		System.out.println("수정 작업을 실행합니다. 원래 파일의 목록을 불러옵니다." + originFileList);
+		System.out.println("수정 작업을 실행합니다. 원래 파일의 목록을 불러옵니다." + originFileList);
 		
 		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
 //		
