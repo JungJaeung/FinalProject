@@ -257,6 +257,7 @@
 							//postFileIdList.unshift(Number($($('.updateBtn')[0]).val()));
 							postIdList.unshift(inPostId);
 							let inputFile = [];
+							//$.update_post();
 							for(let i = 0; i < inFileLength; i++) {
 								inputFile.push(obj.item.postFileList[i]);
 							}
@@ -267,19 +268,21 @@
 								const originFileObj = {
 									postId: inPostId,
 									postFileId: inputFile[inFileLength - i - 1].postFileId,
-									postFileNm: $("#postFileNm" + inputFile[inFileLength - i - 1].postFileId).val(),
+									postFileNm: inputFile[inFileLength - i - 1].postFileNm,
 									//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
 									//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
 									postFileStatus: "N"
 								};
 								originFiles.unshift(originFileObj);
 							}
-							
+							console.log("파일 정보 입력이 되었는지 확인. : ")
+							console.log(originFiles);
 
 							//이벤트 다시 적용
+							$.update_post();
 							$.like_button(loginUserId);
 							$.comment_button();
-							$.update_post();
+							$.map_button();
 							insertIndex += 1;
 							return false;
 						}, error: function (e) {

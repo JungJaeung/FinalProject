@@ -150,6 +150,7 @@ public class PostController {
 			System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFileDTO.get(0).getPostFileId());
 			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
+			System.out.println("게시글 정보 확인 : " + returnDTO);
 			
 			//returnDTO의 postId를 이용해서 restaurant 테이블에 내용 insert
 			MglgRestaurant mglgRes = MglgRestaurant.builder()
@@ -164,10 +165,22 @@ public class PostController {
 			//쿼리문 실행
 			mglgRestaurantService.insertRestaurant(mglgRes);
 			
+			//식당 정보를 DTO로 바꿔서 맵으로 출력함.
+			MglgRestaurantDTO mglgResDTO = MglgRestaurantDTO.builder()
+															.postId(mglgRes.getPostId())
+															.resName(mglgRes.getResName())
+															.resAddress(mglgRes.getResAddress())
+															.resRoadAddress(mglgRes.getResRoadAddress())
+															.resPhone(mglgRes.getResPhone())
+															.resCategory(mglgRes.getResCategory())
+															.build();
+			
+			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
 			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
 			returnMap.put("postFileList", completeFileDTO);
+			returnMap.put("restaurant", mglgResDTO);
 			
 			System.out.println("파일 리스트 : " + uploadFileList);
 			responseDTO.setItem(returnMap);

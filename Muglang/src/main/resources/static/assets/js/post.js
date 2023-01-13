@@ -7,13 +7,15 @@ $(function() {
 	
 	//ajax로 이벤트 함수를 다시 빌드하는 객체를 따로 정의
 	$.update_post = function() {
+		console.log("새로 등록한 게시글 입력 확인 이벤트");
+		$($('.uploadFileSpace')[0]).hide();
+		$($('.changedFileSpace')[0]).hide();
+		$("#upTitle" + $(this).val()).hide();
+		$("#contentIn" + $(this).val()).hide();
+		$($(".fileBtns")[0]).hide();
 		$($(".updateBtn")[0]).click(function(e) {
 			const postId = Number($(this).val());
 			//const postId = e.target.postId;
-			$($('.uploadFileSpace')[0]).hide();
-			$($('.changedFileSpace')[0]).hide();
-			$("#upTitle" + $(this).val()).hide();
-			$("#contentIn" + $(this).val()).hide();
 			console.log("회원의 수정버튼 이벤트 함수 적용 확인.");
 			flagList[0] = !flagList[0];
 			if (flagList[0]) {
@@ -311,21 +313,18 @@ function post(item, insertIndex) {
 	text += `<div class="card-title">
 					<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
 						style="width: 40px;">
-					<a href="#" class="card-title">${item.insertPost.restNm}</a>
+					<a href="#" class="card-title">${item.restaurant.restName}</a>
 			</div>`;
 	text += `<form id="updateForm${item.insertPost.postId}" enctype="multipart/form-data">`;
 	text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox${item.insertPost.postId}">`;
 	//text += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`;
 	//text +=	`</div>`;
-	text += `<div class="box" id="imageBox${item.insertPost.postId}">`;
 	text += `<div id="imgArea${item.insertPost.postId}">`;
 	//item.postFileList[i].postFileNm
 	//item.postFileList[i].postFileId
-	if(item.loginUser.userId != item.insertPost.userId) {
+	if(item.loginUser.userId == item.insertPost.userId) {
 		for(let i = 0; i < item.postFileList.length; i++) {
 			text	+= `<div class="fileList${item.insertPost.postId}" value="${item.postFileList[i].postFileId}">`;
-			//<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
-			//<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
 		
 			text	+= `<div style="position: relative;">`;	
 			text	+= `<input type="hidden" id="postFileId${item.postFileList[i].postFileId}"
@@ -420,19 +419,19 @@ function post(item, insertIndex) {
 					row="40" style="display: none; resize: none; width: 85%;">${item.insertPost.postContent}</textarea>`;
 									//<!-- 해시태그 -->
 	if(item.insertPost.hashTag1 != "") {
-		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag1}!=''">&emsp;#<span th:text="${item.insertPost.hashTag1}"></span></a>`;
+		text += `<a href="#" style="color: blue;">&emsp;#<span>${item.insertPost.hashTag1}</span></a>`;
 	}
 	if(item.insertPost.hashTag2 != "") {
-		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag2}!=''">&emsp;#<span th:text="${item.insertPost.hashTag2}"></span></a>`;		
+		text += `<a href="#" style="color: blue;">&emsp;#<span>${item.insertPost.hashTag2}</span></a>`;		
 	}
 	if(item.insertPost.hashTag3 != "") {
-		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag3}!=''">&emsp;#<span th:text="${item.insertPost.hashTag3}"></span></a>`;			
+		text += `<a href="#" style="color: blue;">&emsp;#<span>${item.insertPost.hashTag3}</span></a>`;			
 	}
 	if(item.insertPost.hashTag4 != "") {
-		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag4}!=''">&emsp;#<span th:text="${item.insertPost.hashTag4}"></span></a>`;	
+		text += `<a href="#" style="color: blue;">&emsp;#<span>${item.insertPost.hashTag4}</span></a>`;	
 	}
 	if(item.insertPost.hashTag5 != "") {
-		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag5}!=''">&emsp;#<span th:text="${item.insertPost.hashTag5}"></span></a>`;		
+		text += `<a href="#" style="color: blue;">&emsp;#<span>${item.insertPost.hashTag5}</span></a>`;		
 	}
 	text +=	`<br></div>`;
 	text += `<div class="activity">`
@@ -447,12 +446,7 @@ function post(item, insertIndex) {
 		text += `<i class="ri-map-pin-2-line map_icon" id="${item.insertPost.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
 	text += `<br>`
 	text += `<a>좋아요 <span id="likeCnt${item.insertPost.postId}">${item.insertPost.likeCnt}</span>개</a>`;			
-
-	//식당 관련 내용을 적용하는 버튼	
-	if (item.insertPost.restaurant == "Y")
-		text += `<i class="ri-map-pin-2-line map_icon" id="${item.insertPost.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
-	text += `<br>`
-	text += `<a>좋아요 <span id="likeCnt${item.insertPost.postId}">${post.likeCnt}</span>개</a>`;		
+		
 	text += `<hr></div>`;								
 	text += `<form class="data" action="/post/deletePost" method="post">
 					<input type="hidden" id="restNmIn" name="restNm" value="${item.insertPost.restNm}">
@@ -464,10 +458,10 @@ function post(item, insertIndex) {
 					value="${item.insertPost.postDate}">
 				</form>`;
 	//<!-- 친구 식사 했는지 확인 필드 -->
-	if(item.insertPost.restCnt != 0) {
+	if(item.insertPost.restCnt > 0) {
 		text += `<div class="activity" style="text-align: center;"><hr>
-		<a href="#"><span th:text="${item.loginUser.userName}"></span>님의 친구 <span>${item.insertPost.resCnt}</span>명이
-			<span>${item.insertPost.resName}</span> 에서 식사하셨어요!</a>
+		<a href="#"><span>${item.loginUser.userName}</span>님의 친구 <span>${item.insertPost.resCnt}</span>명이
+			<span>${item.restaurant.resName}</span> 에서 식사하셨어요!</a>
 		</div>`;	
 	}
 	if (item.insertPost.userId == item.loginUser.userId) {
