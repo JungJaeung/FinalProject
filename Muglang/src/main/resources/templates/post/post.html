@@ -12,9 +12,9 @@
 			const loginUserId = /*[[${loginUser.userId}]]*/;
 
 			//댓글 관련 전역변수
-			let postId;
-			let commentId;
-			let text_comment;
+			let postId = 0;
+			let commentId = 0;
+			let text_comment = "";
 				//화면단에 최초로 뿌릴 때 해당 정보를 임시로 저장하는 변수
 			let thisCommentTotalPages = 0;
 			let thisCommentTotalElements = 0;
@@ -325,7 +325,7 @@
 									//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
 									console.log(obj);
 									
-									let elements = page_num * obj.numberOfElements;
+									let elements = page_num * obj.pageable.pageSize;
 									console.log("시작 인덱스 표시 : " + elements);
 									for (let post of obj.content) {
 										let post_date = new Date(post.postDate);
@@ -454,12 +454,10 @@
 										if(loginUserId == post.userId) {
 											text_scroll += `<div class="buttons fileBtns" id="buttonBox${post.postId}" value="${post.postId}">
 															<button type="button" id="fileRequest${post.postId}"
-															value="${post.postId}">파일 관리창 열기</button>&emsp;
-															<button type="button" id="fileRemove${post.postId}">파일 전부 삭제</button>
-															</div>`;
+															value="${post.postId}">파일 관리창 열기</button></div>`;
+
 										}
 										
-										//text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
 										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
 										//text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`
 										
@@ -510,8 +508,8 @@
 									$(".uploadFileSpace").hide();
 									$(".changedFileSpace").hide();
 									//이벤트 리스너 함수 호출
-									$.updateBtn(elements, obj.numberOfElements);
-									console.log(obj.numberOfElements +  ", " + elements);
+									console.log();
+									console.log(elements +  ", " + obj.numberOfElements);
 									for(let i = 0; i < obj.numberOfElements; i++) {
 										for(let j = 0; j < obj.content[i].fileLength; j++) {
 											postFileIdList.push(obj.content[i].fileList[j].postFileId);
@@ -528,7 +526,7 @@
 										$.updateBtnAtt(obj.content[i].postId);									
 									}
 									$.like_button(loginUserId);
-
+									$.updateBtn(elements, obj.numberOfElements);
 									$.comment_button();
 									$.map_button();
 									page_num++;

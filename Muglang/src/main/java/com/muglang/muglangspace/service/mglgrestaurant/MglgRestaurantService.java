@@ -8,4 +8,6 @@ public interface MglgRestaurantService {
 	public MglgRestaurant selectRes(int postId);
 	
 	public String countRes(int userId, String resName);
+	
+	public void deleteRes(int postId);
 }
