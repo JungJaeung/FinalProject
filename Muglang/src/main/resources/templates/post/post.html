@@ -249,7 +249,7 @@
 							//$("#posts").html(insert_post);
 							//html단 뿌리기
 							console.log(insert_post);
-							$("#posts").prepend($(insert_post));
+							$("#posts:nth-child(2)").prev($(insert_post));
 							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
 							flagList.unshift(false);
 							
