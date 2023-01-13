@@ -17,6 +17,7 @@ import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserRelation;
 import com.muglang.muglangspace.repository.MglgPostFileRepository;
 import com.muglang.muglangspace.repository.MglgPostRepository;
+import com.muglang.muglangspace.repository.MglgShowHotKeywordsRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,9 @@ public class MglgPostServiceImpl implements MglgPostService {
 
 	@Autowired
 	private MglgPostFileRepository mglgPostFileRepository;
+	
+	@Autowired
+	private MglgShowHotKeywordsRepository mglgShowHotKeywordsRepository;
 
 	// 포스팅 관련 서비스 제공
 	@Override
@@ -167,11 +171,11 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public Page<CamelHashMap> getHotKeywords(Pageable pageable) {
 		return mglgPostRepository.getHotKeywords(pageable);
 	}
-
+	
+	@Transactional
 	@Override
 	public void insertShowHotKeywords(List<MglgShowHotKeywords> mglgHotShowHotKeywords) {
-		// TODO Auto-generated method stub
-		
+		mglgShowHotKeywordsRepository.saveAll(mglgHotShowHotKeywords);
 	}
 
 

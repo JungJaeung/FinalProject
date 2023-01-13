@@ -1,5 +1,7 @@
 package com.muglang.muglangspace.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -11,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgShowHotKeywords;
 
 @Transactional
 public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
@@ -281,7 +284,5 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 					+ "FROM T_MGLG_HOT_KEYWORDS k\r\n"
 					+ "GROUP BY k.inserted_keyword\r\n"
 					+ "ORDER BY word_cnt DESC) a", nativeQuery = true)
-	public Page<CamelHashMap> getHotKeywords(Pageable pageable);	
-	
-	
+	public Page<CamelHashMap> getHotKeywords(Pageable pageable);
 }
