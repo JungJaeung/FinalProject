@@ -7,13 +7,15 @@ $(function() {
 	
 	//ajax로 이벤트 함수를 다시 빌드하는 객체를 따로 정의
 	$.update_post = function() {
+		console.log("새로 등록한 게시글 입력 확인 이벤트");
+		$($('.uploadFileSpace')[0]).hide();
+		$($('.changedFileSpace')[0]).hide();
+		$("#upTitle" + $(this).val()).hide();
+		$("#contentIn" + $(this).val()).hide();
+		$($(".fileBtns")[0]).hide();
 		$($(".updateBtn")[0]).click(function(e) {
 			const postId = Number($(this).val());
 			//const postId = e.target.postId;
-			$($('.uploadFileSpace')[0]).hide();
-			$($('.changedFileSpace')[0]).hide();
-			$("#upTitle" + $(this).val()).hide();
-			$("#contentIn" + $(this).val()).hide();
 			console.log("회원의 수정버튼 이벤트 함수 적용 확인.");
 			flagList[0] = !flagList[0];
 			if (flagList[0]) {
@@ -281,139 +283,171 @@ function imageTag(item, fileLength) {
 function post(item, insertIndex) {
 	console.log("게시글 작성자 Id : " + item.loginUser.userId);
 	let text = "";
+	let now = new Date();
+	let post_date = new Date(item.insertPost.postDate);
+	post_date = now - post_date;
 	text += `<div class="col-12 post">`;
 	text += `<input type="hidden" value="${item.insertPost.betweenDate}">`;
 	text += `<div class="card recent-sales">`;
 	text += `<div class="card-body">`;
 	text += `<div class="filter" style="margin-top: 15px;">`;
-	text += `<a style="margin-right: 20px;">`;
-	if (item.insertPost.betweenDate / 60 / 60 / 24 / 30 / 12 >= 1)
-		text += `<span>${Math.floor(item.insertPost.betweenDate / 60 / 60 / 24 / 30 / 12)}년 전</span>`;
-	else if (item.insertPost.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && item.insertPost.betweenDate / 60 / 60 / 24 / 30 >= 1)
-		text += `<span>${Math.floor(item.insertPost.betweenDate / 60 / 60 / 24 / 30)}달 전</span>`;
-	else if (item.insertPost.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && item.insertPost.betweenDate / 60 / 60 / 24 / 30 < 1 && item.insertPost.betweenDate / 60 / 60 / 24 >= 1)
-		text += `<span>${Math.floor(item.insertPost.betweenDate / 60 / 60 / 24)}일 전</span>`;
-	else if (item.insertPost.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && item.insertPost.betweenDate / 60 / 60 / 24 / 30 < 1 && item.insertPost.betweenDate / 60 / 60 / 24 < 1 && item.insertPost.betweenDate / 60 / 60 >= 1)
-		text += `<span>${Math.floor(item.insertPost.betweenDate / 60 / 60)}시간 전</span>`;
-	else if (item.insertPost.betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && item.insertPost.betweenDate / 60 / 60 / 24 / 30 < 1 && item.insertPost.betweenDate / 60 / 60 / 24 < 1 && item.insertPost.betweenDate / 60 / 60 < 1)
-		text += `<span>${Math.floor(item.insertPost.betweenDate / 60)}분 전</span>`;
-
-	text += `</a>`;
-	text += `<a class="icon" href="#" data-bs-toggle="dropdown"><i
-							class="bi bi-three-dots"></i></a>
-					<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-						<li><a class="dropdown-item" href="#"><i
-									class="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>
-					</ul>`;
-	text += `</div>`;
+	if (post_date / (1000 * 60 * 60 * 24 * 30 * 12) > 1) {
+		text += `<a style="margin-right: 20px;">${parseInt(post_date / (1000 * 60 * 60 * 24 * 30 * 12))}년 전</a>`
+	}
+	else if (post_date / (1000 * 60 * 60 * 24 * 30) > 1) {
+		text += `<a style="margin-right: 20px;">${parseInt(post_date / (1000 * 60 * 60 * 24 * 30))}달 전</a>`
+	}
+	else if (post_date / (1000 * 60 * 60 * 24) > 1) {
+		text += `<a style="margin-right: 20px;">${parseInt(post_date / (1000 * 60 * 60 * 24))}일 전</a>`
+	}
+	else if (post_date / (1000 * 60 * 60) > 1) {
+		text += `<a style="margin-right: 20px;">${parseInt(post_date / (1000 * 60 * 60))}시간 전</a>`
+	}
+	else {
+		text += `<a style="margin-right: 20px;">${parseInt(post_date / (1000 * 60))}분전</a>`
+	}
+	text += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
+	text += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
+	text += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
+	text += `</ul></div>`;
 	text += `<div class="card-title">
 					<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
 						style="width: 40px;">
-					<a href="#" class="card-title">${item.insertPost.restNm}</a>
-				</div>`;
-
-		text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox">`;
-		//text += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`;
-		//text +=	`</div>`;
-		text += `<div class="box" id="imageBox${item.insertPost.postId}">`;
+					<a href="#" class="card-title">${item.restaurant.restName}</a>
+			</div>`;
+	text += `<form id="updateForm${item.insertPost.postId}" enctype="multipart/form-data">`;
+	text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox${item.insertPost.postId}">`;
+	//text += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`;
+	//text +=	`</div>`;
+	text += `<div id="imgArea${item.insertPost.postId}">`;
+	//item.postFileList[i].postFileNm
+	//item.postFileList[i].postFileId
+	if(item.loginUser.userId == item.insertPost.userId) {
 		for(let i = 0; i < item.postFileList.length; i++) {
-			console.log("파일의 개수 : " + item.postFileList.length);
-			if(item.loginUser.userId != item.insertPost.userId) {
-				console.log("사용자가 같지않음.");
-				text += `<img src="/upload/${item.postFileList[i].postFileNm}">`;
+			text	+= `<div class="fileList${item.insertPost.postId}" value="${item.postFileList[i].postFileId}">`;
+		
+			text	+= `<div style="position: relative;">`;	
+			text	+= `<input type="hidden" id="postFileId${item.postFileList[i].postFileId}"
+							class="postFileId${item.postFileList[i].postId}" name="postFileId"
+							value="${item.postFileList[i].postFileId}">`;
+			text	+= `<input type="hidden"id="postFileNm${item.postFileList[i].postFileId}"
+							class="postFileNm" name="postFileNm"
+							value="${item.postFileList[i].postFileNm}">`;
+			text	+= `<input type="hidden" id="postId${item.postFileList[i].postFileId}"
+							class="postId${item.postFileList[i].postId}" name="postId"
+							value="${item.postFileList[i].postId}">`;
+			text	+= `<input type="file" id="changedFile${item.postFileList[i].postFileId}"
+							name="changedFile${item.postFileList[i].postFileId}"
+							style="display: none;"
+							onchange="fnGetChangedFileInfo(${item.postFileList[i].postFileId}, ${i}, event)">`;
+			if(item.postFileList[i].postFileCate == "img") {
+				text	+= `<img id="img${item.postFileList[i].postFileId}"
+								src="/upload/${item.postFileList[i].postFileNm}"
+								style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
+								class="fileImg"
+								onclick="fnImgChange(${item.postFileList[i].postFileId})">`;
+								
 			} else {
-				text += `<input type="hidden" id="postFileId" class="postFileId${item.insertPost.postId}" 
-						name="postFileId" 
-						value="${item.postFileList[i].postFileId}">`;
-				text += `<input type="hidden" id="postFileNm" class="postFileNm" 
-						name="postFileNm" 
-						value="${item.postFileList[i].postFileNm}">`;
-				text += `<input type="file" id="changedFile${item.postFileList[i].postFileId}" 
-					   name="changedFile${item.postFileList[i].postFileId}"
-					   style="display: none;" 
-					   onchange="fnGetChangedFileInfo(${item.postFileList[i].postFileId}, ${insertIndex}, event)">`;
-				if(item.postFileList[i].postFileCate == "img") {
-					text += `<img id="img${item.postFileList[i].postFileId}" 
-						 src="/upload/${item.postFileList[i].postFileNm}"
-					 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-						 class="fileImg" 
-						 onclick="fnImgChange(${item.postFileList[i].postFileId})">`;
-				} else {
-					text += `<img id="img${item.postFileList[i].postFileId}"
-						 src="/assets/img/defaultFileImg.png"
-						 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-						 class="fileImg" 
-						 onclick="fnImgChange(${item.postFileList[i].postFileId})">`;
-				}
-				text += `<input type="button" class="btnDel" value="x" data-del-file="${item.postFileList[i].postFileId}"
-						   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-						   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-						   onclick="fnPostImgDel(event, ${insertIndex})">`;
-				text += `<p id="fileNm${item.postFileList[i].postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
-					   onclick="fnFileDown(${item.insertPost.postId}, ${item.postFileList[i].postFileId})"
-					   >${item.postFileList[i].postFileOriginNm}</p>`;
+				text	+= `<img id="img${item.postFileList[i].postFileId}"
+								src="/assets/img/defaultFileImg.png"
+								style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
+								class="fileImg"
+								onclick="fnImgChange(${item.postFileList[i].postFileId})">`;
+			}
+			
+			text	+= `<input type="button" class="btnDel" value="x"
+							data-del-file="${item.postFileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+							z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;" 
+							onclick="fnPostImgDel(event)">`;
+			text	+= `<p id="fileNm${item.postFileList[i].postFileId}"
+							style="display: none; font-size: 8px; cursor: pointer;"
+							onclick="fnFileDown(${item.postFileList[i].postId}, ${item.postFileList[i].postFileId})">
+							${item.postFileList[i].postFileOriginNm}</p>`;
+			text	+= `</div></div>`;		
+		}
+	} else {
+		for (let i = 0; i < item.postFileList.fileLength; i++) {
+			if (item.postFileList[i].postFileCate == "img") {
+				text += `<img id="img${item.postFileList[i].postFileId}" 
+					 src="/upload/${item.postFileList[i].postFileNm}"
+				 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+					 class="fileImg" 
+					 onclick="fnImgChange(${item.postFileList[i].postFileId})">`;
+			} else {
+				text += `<img id="img${item.postFileList[i].postFileId}"
+					 src="/assets/img/defaultFileImg.png"
+					 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+					 class="fileImg" 
+					 onclick="fnImgChange(${item.postFileList[i].postFileId})">`;
 			}
 		}
-
-		text += `</div>`;
-		text +=	`<div class="buttons" id="buttonBox${item.insertPost.postId}">
-					<button id="fileRequest${item.insertPost.postId}">파일 관리창 열기</button>&emsp;
-					<!--<button id="fileRemove${item.insertPost.postId}">파일 삭제</button>-->
-				</div></div>`;
-	text += `<div class="activity"><br>`;
+	}
 	
+	text += `</div></div>`;
+	text += `<div class="uploadFileSpace">
+					<input type="file" id="updateBtnAtt${item.insertPost.postId}"
+						class="updateBtnAtt" data-post-id="${item.insertPost.postId}" name="uploadFiles"
+						multiple="multiple">
+					</div>`;
+	text += `<div class="changedFileSpace">
+					<input type="file" id="changedFiles${item.insertPost.postId}"
+						name="changedFiles" value="" multiple="multiple">
+					</div>`;				
+	text += `<div id="postAttZone${item.insertPost.postId}"
+					data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>`;
+	text	+= `<input type="hidden" name="postId" value="${item.insertPost.postId}">`;	
+	text	+= `<input type="hidden" name="originFiles" id="originFiles${item.insertPost.postId}">`;	
+	text	+= `<input type="hidden" id="userId" name="userId" value="${item.insertPost.userId}">`;	
+	text	+= `<input type="hidden" id="postContentIn${item.insertPost.postId}" name="postContent" value="${item.insertPost.postContent}">`;	
+	text	+= `<input type="hidden" name="postDate" value="${item.insertPost.postDate}">`;	
+	text	+= `<input type="hidden" name="restNm" value="${item.insertPost.restNm}"></form>`;	
+	if(item.loginUser.userId == item.insertPost.userId) {
+		text += `<div class="buttons fileBtns" id="buttonBox${item.insertPost.postId}" value="${item.insertPost.postId}">
+				<button type="button" id="fileRequest${item.insertPost.postId}"
+				value="${item.insertPost.postId}">파일 관리창 열기</button>&emsp;
+				<button type="button" id="fileRemove${item.insertPost.postId}">파일 전부 삭제</button>
+				</div>`;
+	}
+	//text += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"style="width: 40px;">`
+	text += `<div class="activity" style="margin-bottom: 10px;">`
+	//text += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`
+	
+	text += `</div><div class="activity">`
+	text += `<div id="postContent${item.insertPost.postId}">${item.insertPost.postContent}</div>`
+	text += `<div id="upTitle${item.insertPost.postId}">수정할 게시글 내용</div>`;
+	text += `<textarea id="contentIn${item.insertPost.postId}" name="contentIn"
+					row="40" style="display: none; resize: none; width: 85%;">${item.insertPost.postContent}</textarea>`;
 									//<!-- 해시태그 -->
 	if(item.insertPost.hashTag1 != "") {
-		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag1}!=''">&emsp;#<span th:text="${item.insertPost.hashTag1}"></span></a>`;
+		text += `<a href="#" style="color: blue;">&emsp;#<span>${item.insertPost.hashTag1}</span></a>`;
 	}
 	if(item.insertPost.hashTag2 != "") {
-		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag2}!=''">&emsp;#<span th:text="${item.insertPost.hashTag2}"></span></a>`;		
+		text += `<a href="#" style="color: blue;">&emsp;#<span>${item.insertPost.hashTag2}</span></a>`;		
 	}
 	if(item.insertPost.hashTag3 != "") {
-		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag3}!=''">&emsp;#<span th:text="${item.insertPost.hashTag3}"></span></a>`;			
+		text += `<a href="#" style="color: blue;">&emsp;#<span>${item.insertPost.hashTag3}</span></a>`;			
 	}
 	if(item.insertPost.hashTag4 != "") {
-		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag4}!=''">&emsp;#<span th:text="${item.insertPost.hashTag4}"></span></a>`;	
+		text += `<a href="#" style="color: blue;">&emsp;#<span>${item.insertPost.hashTag4}</span></a>`;	
 	}
 	if(item.insertPost.hashTag5 != "") {
-		text += `<a href="#" style="color: blue;" th:if="${item.insertPost.hashTag5}!=''">&emsp;#<span th:text="${item.insertPost.hashTag5}"></span></a>`;		
+		text += `<a href="#" style="color: blue;">&emsp;#<span>${item.insertPost.hashTag5}</span></a>`;		
 	}
-	text +=	`</div>`;
-	/*
-	//<!--좋아요 댓글 지도-->									
-	text += `<div class="activity">`;
-	if(item.insertPost.postLike == "N") {
-		text += `<i class="ri-heart-3-line post_like" id="${item.insertPost.postId}"
-		style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`;
-	}
-	if(item.insertPost.PostLike == "Y") {
-		text += `<i class="ri-heart-3-line post_like" id="${item.insertPost.postId}"
-		style="font-size: 30px; margin-right: 5px; color:red; cursor: pointer;"></i>`;
-	}
-	text += `<i class="ri-message-3-line msg_icon" id="${item.insertPost.postId}"
-			style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`;*/
-	
-	//식당 관련 내용을 적용하는 버튼	
-	if(item.insertPost.restaurant == "Y") {
-		text += `<i class="ri-map-pin-2-line map_icon"
-		id="${item.insertPost.postId}"
-		style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i><br>`;		
-	}								
-	//<!--좋아요 숫자 필드-->
-	text += `<a>좋아요 <span id="likeCnt${item.insertPost.postId}"
-			>${item.insertPost.likeCnt}</span>개</a></div>`;									
-									
-	text += `<div id="postContent${item.insertPost.postId}">${item.insertPost.postContent}</div>
-				<textarea id="contentIn${item.insertPost.postId}" name="contentIn" col="200"
-				row="40" style="display: none; resize: none;">${item.insertPost.postContent}</textarea><br>`;
-	text += `<div class="activity">`;
+	text +=	`<br></div>`;
+	text += `<div class="activity">`
+	//<!--좋아요 댓글 지도-->	
 	if (item.insertPost.postLike == "Y")
 		text += `<i class="ri-heart-3-line post_like" id="${item.insertPost.postId}" style="font-size: 30px; margin-right: 5px; color:red; cursor: pointer;"></i>`
 	else if (item.insertPost.postLike == "N")
 		text += `<i class="ri-heart-3-line post_like" id="${item.insertPost.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
 	text += `<i class="ri-message-3-line msg_icon" id="${item.insertPost.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+	//식당 관련 내용을 적용하는 버튼	
 	if (item.insertPost.restaurant == "Y")
 		text += `<i class="ri-map-pin-2-line map_icon" id="${item.insertPost.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+	text += `<br>`
+	text += `<a>좋아요 <span id="likeCnt${item.insertPost.postId}">${item.insertPost.likeCnt}</span>개</a>`;			
+		
+	text += `<hr></div>`;								
 	text += `<form class="data" action="/post/deletePost" method="post">
 					<input type="hidden" id="restNmIn" name="restNm" value="${item.insertPost.restNm}">
 					<input type="hidden" id="postContentIn" name="postContent"
@@ -424,15 +458,15 @@ function post(item, insertIndex) {
 					value="${item.insertPost.postDate}">
 				</form>`;
 	//<!-- 친구 식사 했는지 확인 필드 -->
-	if(item.insertPost.restCnt != 0) {
+	if(item.insertPost.restCnt > 0) {
 		text += `<div class="activity" style="text-align: center;"><hr>
-		<a href="#"><span th:text="${item.loginUser.userName}"></span>님의 친구 <span>${item.insertPost.resCnt}</span>명이
-			<span>${item.insertPost.resName}</span> 에서 식사하셨어요!</a>
+		<a href="#"><span>${item.loginUser.userName}</span>님의 친구 <span>${item.insertPost.resCnt}</span>명이
+			<span>${item.restaurant.resName}</span> 에서 식사하셨어요!</a>
 		</div>`;	
 	}
 	if (item.insertPost.userId == item.loginUser.userId) {
-		text += `<button class="updateBtn" id="updateButton" value="${item.insertPost.postId}">게시글 수정</button></div>`;
+		text += `<button class="updateBtn" id="updateButton" value="${item.insertPost.postId}">게시글 수정</button>`;
 	}
-	text += `</div></div></div></div>`;
+	text += `</div></div></div></div></div>`;
 	return text;
 }
