@@ -5,6 +5,7 @@ $.like_button = function(loginUserId) {
 		postId = e.target.id;
 		if ($(e.target).css("color") == "rgb(0, 0, 0)") {
 			console.log("좋아요 누른 포스트 id: " + postId);
+			console.log("타입 : " + typeof(postId));
 			$(e.target).css("color", "red");
 			//좋아요를 눌렀을때 ajax
 			$.ajax({

@@ -20,8 +20,7 @@
 			let thisCommentTotalElements = 0;
 			
 			//좋아요, 댓글 이벤트 리스너 함수 호출
-			$.like_button(loginUserId);
-			$.comment_button();
+
 
 			//새 게시글에서 추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
 			let uploadFiles = [];
@@ -298,12 +297,14 @@
 					});
 
 				});
-
+				$.like_button(loginUserId);
+				$.comment_button();
 				//게시글 작성에서 사진 버튼 누르면 input-file 실행
 				//주석_창혁(quill쓰면 사진 필요 없어져서 일단 삭제)
 				//$("#file_select_btn").click(function (e) {
 				//   $("#file_select").click();
 				//});
+
 
 				//게시글 입력 하는 입력창 조작
 				$("#inputRestNm").keyup(function (e) {
@@ -510,6 +511,7 @@
 									$(".changedFileSpace").hide();
 									//이벤트 리스너 함수 호출
 									$.updateBtn(elements, obj.numberOfElements);
+									console.log(obj.numberOfElements +  ", " + elements);
 									for(let i = 0; i < obj.numberOfElements; i++) {
 										for(let j = 0; j < obj.content[i].fileLength; j++) {
 											postFileIdList.push(obj.content[i].fileList[j].postFileId);
