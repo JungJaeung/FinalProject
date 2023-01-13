@@ -1,5 +1,6 @@
 package com.muglang.muglangspace.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgShowHotKeywordsDTO;
+import com.muglang.muglangspace.entity.MglgShowHotKeywords;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -70,8 +72,19 @@ public class SearchController {
 	
 	@ResponseBody
 	@PostMapping("/insrtSHKs")
-	public void insertShowHotKeywords(@RequestBody List<MglgShowHotKeywordsDTO> showHotKeywordsList) {
-		showHotKeywordsList.forEach(a -> System.out.println(a));
+	public void insertShowHotKeywords(@RequestBody List<MglgShowHotKeywordsDTO> showHotKeywordsListDTO) {
+		
+		List<MglgShowHotKeywords> mglgHotShowHotKeywords = new ArrayList();
+		
+		for(int i=0; i<showHotKeywordsListDTO.size(); i++) {
+			MglgShowHotKeywords returnHotKeywords = MglgShowHotKeywords.builder()
+																	   .keywordOrder(showHotKeywordsListDTO.get(i).getKeywordOrder())
+																	   .showHotKeyword(showHotKeywordsListDTO.get(i).getShowHotKeyword())
+																	   .build();
+			mglgHotShowHotKeywords.add(returnHotKeywords);
+		}
+		
+		mglgPostService.insertShowHotKeywords(mglgHotShowHotKeywords);
 	}
 	
 }

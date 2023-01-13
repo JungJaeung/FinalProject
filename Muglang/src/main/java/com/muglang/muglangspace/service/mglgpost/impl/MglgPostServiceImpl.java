@@ -1,5 +1,7 @@
 package com.muglang.muglangspace.service.mglgpost.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +12,7 @@ import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgShowHotKeywordsDTO;
 import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgShowHotKeywords;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserRelation;
 import com.muglang.muglangspace.repository.MglgPostFileRepository;
@@ -164,5 +167,12 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public Page<CamelHashMap> getHotKeywords(Pageable pageable) {
 		return mglgPostRepository.getHotKeywords(pageable);
 	}
-	
+
+	@Override
+	public void insertShowHotKeywords(List<MglgShowHotKeywords> mglgHotShowHotKeywords) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 }
