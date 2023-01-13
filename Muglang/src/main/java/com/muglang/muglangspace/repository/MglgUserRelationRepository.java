@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgUser;
 
 @Transactional
@@ -39,7 +40,7 @@ public interface MglgUserRelationRepository extends JpaRepository<MglgUser, Inte
 		+ "				  (SELECT C.FOLLOWER_ID FROM T_MGLG_USER_RELATION C WHERE C.USER_ID = :userId)"
 		+ " 		) F",
 		nativeQuery = true)
-	public Page<MglgUser> requestFollowList(@Param("userId") int userId, Pageable pageable);
+	public Page<CamelHashMap> requestFollowList(@Param("userId") int userId, Pageable pageable);
 
 	/// 맞팔
 	@Modifying
