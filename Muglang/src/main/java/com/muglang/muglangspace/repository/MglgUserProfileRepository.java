@@ -40,6 +40,16 @@ public interface MglgUserProfileRepository extends JpaRepository<MglgUserProfile
 		@Query(value = "SELECT * FROM T_MGLG_USER_PROFILE WHERE USER_ID=:eachUserId",nativeQuery = true)
 		public MglgUserProfile followerProfile(@Param("eachUserId") int eachUserId);
 
+		@Modifying
+		@Query(value = ""
+				+ "UPDATE T_MGLG_USER_PROFILE "
+				+ "SET USER_PROFILE_NM = 'defaultImg.png' , "
+				+ "	   USER_PROFILE_CATE = 'png',"
+				+ "	   USER_PROFILE_ORIGIN_NM = 'defaultImg.png', "
+				+ "	   USER_PROFILE_path = 'C:\\Springboot\\PROJECT\\PROJECT\\Muglang\\src\\main\\webapp\\/upload/' "
+				+ " WHERE USER_ID = :userId",nativeQuery = true)
+		public void changeDefaultImg(@Param("userId") int userId) ;
+
 }
 
 

@@ -16,35 +16,63 @@ $(function() {
 		e.preventDefault();
 		$("#profileBtnAtt").click();
 	});
-	$("#profileBtnAtt").on("change", function(e) {
-		const profileFiles = e.target.files;
-		profileArr = Array.prototype.slice.call(profileFiles)
 
-
-		let img = document.createElement("img");
-		img.setAttribute("style", "width: 100%; height: 100%; z-index: none;");
-
-		profileArr.forEach(function(f) {
-			var reader = new FileReader();
-			reader.readAsDataURL(f)
-			reader.onload = function(e) {
-
-				if (f.name.toLowerCase().match(/(.*?)\.(jpg|jpeg|png|gif|svg|bmp)$/)) {
-					//이미지 파일 미리보기 처리
-					img.src = e.target.result;
-				} else {
-					//일반 파일 미리보기 처리
-					alert("이미지 파일만 등록할 수 있습니다.")
-					return;
+	$("#defaultProfileImg").click(function(e) {
+		e.preventDefault();
+		if (confirm("확인 혹은 취소 버튼을 누르세요")) {
+			$.ajax({
+				url: '/user/changeDefaultImg',
+				type: 'get',
+				success: function(obj) {
+					console.log(obj)
+				},
+				error: function(e) {
+					console.log(e);
 				}
+			});
+			alert("확인 버튼을 누르셨습니다.");
+		} else {  // 취소 버튼을 눌렀을 때
+			alert("취소 버튼을 누르셨습니다.");
+		}
+	});
 
+
+
+
+
+
+
+
+
+$("#profileBtnAtt").on("change", function(e) {
+	const profileFiles = e.target.files;
+	profileArr = Array.prototype.slice.call(profileFiles)
+
+
+	let img = document.createElement("img");
+	img.setAttribute("style", "width: 100%; height: 100%; z-index: none;");
+
+	profileArr.forEach(function(f) {
+		var reader = new FileReader();
+		reader.readAsDataURL(f)
+		reader.onload = function(e) {
+
+			if (f.name.toLowerCase().match(/(.*?)\.(jpg|jpeg|png|gif|svg|bmp)$/)) {
+				//이미지 파일 미리보기 처리
+				img.src = e.target.result;
+			} else {
+				//일반 파일 미리보기 처리
+				alert("이미지 파일만 등록할 수 있습니다.")
+				return;
 			}
-			$("#defaultBox").remove();
-			$("#profileImgBox").append(img);
 
-		})
+		}
+		$("#defaultBox").remove();
+		$("#profileImgBox").append(img);
 
 	})
+
+})
 
 
 })
