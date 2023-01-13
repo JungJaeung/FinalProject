@@ -70,7 +70,7 @@ $.comment_list = function() {
 				text_comment += `</ul>`
 				text_comment += `</div>`
 				//프사 넣는부분
-				text_comment += `<img class="img-fluid rounded-circle" src="../assets/img/messages-2.jpg" style="width: 40px;">`
+				text_comment += `<img class="img-fluid rounded-circle" src="/upload/default.png" style="width: 40px;">`
 				text_comment += `<span style="margin-left: 10px;"><a href="#" style="color: black; cursor:pointer;">${comment.mglgUser.userName}</a></span>`
 				text_comment += `<div style="word-break: keep-all;">${comment.commentContent}`
 				text_comment += `<br><textarea id="update_text${comment.commentId}" style="width:100%; overflow:hidden; resize: none; display:none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)">${comment.commentContent}</textarea>`

@@ -365,7 +365,9 @@ public class PostController {
 		} else {
 			System.out.println("게시글에 파일이 없었습니다.");
 		}
-
+		//외래키로 지정은 안되어 있어서 삭제가 없어도 된다. 추후에 이것을 사용하지 않을 수도 있음.
+		mglgRestaurantService.deleteRes(mglgPostDTO.getPostId());
+		
 		//게시글 삭제 수행.
 		MglgPost mglgPost = MglgPost.builder()
 									.postId(mglgPostDTO.getPostId())

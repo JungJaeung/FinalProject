@@ -37,4 +37,11 @@ public class MglgRestaurantServiceImpl implements MglgRestaurantService {
 			return countRes;
 		}
 	}
+
+	//게시글을 지울 시 사용하는 삭제 쿼리 호출하는 구문.
+	@Override
+	public void deleteRes(int postId) {
+		// TODO Auto-generated method stub
+		mglgRestaurantRepository.deleteRes(postId);
+	}
 }

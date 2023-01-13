@@ -2,7 +2,6 @@
 
 
 $(function() {
-	
 	$('.fileBtns').hide();
 	
 	//ajax로 이벤트 함수를 다시 빌드하는 객체를 따로 정의
@@ -69,8 +68,11 @@ $(function() {
 			});
 		});
 	}
+	
+	
 	//게시글 수정과 삭제를 활성화하는 버튼을 생성함. 게시글이 자기꺼인 것만 표시함.
 	$(".updateBtn").each(function(i, e) {
+
 		$($('.uploadFileSpace')[i]).hide();
 		$($('.changedFileSpace')[i]).hide();
 		$("#upTitle" + $(this).val()).hide();
@@ -141,6 +143,7 @@ $(function() {
 			});
 
 		});
+		
 	});
 	//스크롤 확장시 다시 이벤트를 발생시킬 스크립트를 다시 로드함.
 	$.updateBtn = function(startIndex, size) {
