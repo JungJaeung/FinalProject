@@ -6,8 +6,6 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 			$(function () {
-
-				
 				var page_num = 1;
 				let totalPages = 0;
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -15,7 +13,7 @@
 					return new bootstrap.Tooltip(tooltipTriggerEl)
 				})
 
-				
+
 				$("#btn_next").click(function () {
 					page_num = page_num + 1;
 					console.log("누르기전page_num===" + page_num)
@@ -158,6 +156,27 @@
 					});
 
 				})
+				///리무브 버튼 알려주기
+				$("#resetImgYn").click(function () {
+					if (confirm("이미지를 초기화 하시겠습니까?")) {
+						$.ajax({
+							url: '/user/profileAjax',
+							type: 'get',
+							success: function (obj) {
+								console.log(obj)
+							},
+							error: function (e) {
+								console.log(e);
+							}
+						});
+
+
+						alert("확인 버튼을 누르셨습니다.");
+					} else {
+					}
+				})
+
+
 			});
 		</script>
 	</th:block>
@@ -276,20 +295,20 @@
 													class="col-md-4 col-lg-3 col-form-label">Profile
 													Image</label>
 												<div class="col-md-8 col-lg-9">
-														<div id="profileImgBox">
-															<img style="width:100px; height:100px;" class="profileBox"
-																src="/upload/defaultImg.png" alt="Profile" id="defaultBox">
-														</div>
+													<div id="profileImgBox">
+														<img style="width:100px; height:100px;" class="profileBox"
+															src="/upload/defaultImg.png" alt="Profile" id="defaultBox">
+													</div>
 													<div class="pt-2">
 														<!--텔레포트-->
 														<a id="updateProfile" class="btn btn-primary btn-sm"
 															title="Upload new profile image"><i
 																class="bi bi-upload"></i></a>
-																
+
 														<input style="display:none" type="file" id="profileBtnAtt"
 															name="profileUpload" multiple="multiple">
-															
-														<a href="#" class="btn btn-danger btn-sm"
+
+														<a id="defaultProfileImg" class="btn btn-danger btn-sm"
 															title="Remove my profile image"><i
 																class="bi bi-trash"></i></a>
 													</div>

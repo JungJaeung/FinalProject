@@ -135,12 +135,22 @@ public class PostController {
 						uploadFileList.add(mglgPostFile);
 						mglgPostFileService.insertPostFile(mglgPostFile);	//파일이 파일을 한개씩 넣고 다 넣으면 끝냄.
 					}
+					
 				}
-				
 			}
-			System.out.println("파일 자료 입력 완료");
+			//입력 작업 수행후 출력할 파일들의 정보를 가져오는 리스트 생성
+			List<MglgPostFile> completeFile = mglgPostFileService.getPostFileList(mglgPost.getPostId());
+			//DTO로 변경하여 ResponseDTO로 옮김.
+			List<MglgPostFileDTO> completeFileDTO = new ArrayList<MglgPostFileDTO>(); 
+			for(int i = 0; i < completeFile.size(); i++) {
+				completeFileDTO.add(Load.toHtml(completeFile.get(i)));
+				completeFileDTO.get(i).setPostId(mglgPost.getPostId());
+			}
+			
+			System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFileDTO.get(0).getPostFileId());
 			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
+			System.out.println("게시글 정보 확인 : " + returnDTO);
 			
 			//returnDTO의 postId를 이용해서 restaurant 테이블에 내용 insert
 			MglgRestaurant mglgRes = MglgRestaurant.builder()
@@ -155,10 +165,22 @@ public class PostController {
 			//쿼리문 실행
 			mglgRestaurantService.insertRestaurant(mglgRes);
 			
+			//식당 정보를 DTO로 바꿔서 맵으로 출력함.
+			MglgRestaurantDTO mglgResDTO = MglgRestaurantDTO.builder()
+															.postId(mglgRes.getPostId())
+															.resName(mglgRes.getResName())
+															.resAddress(mglgRes.getResAddress())
+															.resRoadAddress(mglgRes.getResRoadAddress())
+															.resPhone(mglgRes.getResPhone())
+															.resCategory(mglgRes.getResCategory())
+															.build();
+			
+			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
 			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
-			returnMap.put("postFileList", uploadFileList);
+			returnMap.put("postFileList", completeFileDTO);
+			returnMap.put("restaurant", mglgResDTO);
 			
 			System.out.println("파일 리스트 : " + uploadFileList);
 			responseDTO.setItem(returnMap);
@@ -343,7 +365,9 @@ public class PostController {
 		} else {
 			System.out.println("게시글에 파일이 없었습니다.");
 		}
-
+		//외래키로 지정은 안되어 있어서 삭제가 없어도 된다. 추후에 이것을 사용하지 않을 수도 있음.
+		mglgRestaurantService.deleteRes(mglgPostDTO.getPostId());
+		
 		//게시글 삭제 수행.
 		MglgPost mglgPost = MglgPost.builder()
 									.postId(mglgPostDTO.getPostId())
