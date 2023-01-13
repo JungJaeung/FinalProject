@@ -50,6 +50,14 @@ public class MglgUserProfileServiceImpl implements MglgUserProfileService{
 		
 		return mglgUserProfileRepository.followerProfile(eachUserId);
 	}
+
+	@Override
+	public void changeDefaultImg(int userId) {
+		mglgUserProfileRepository.changeDefaultImg(userId);
+		
+		mglgUserProfileRepository.flush();
+
+	}
 	
 	
 }
