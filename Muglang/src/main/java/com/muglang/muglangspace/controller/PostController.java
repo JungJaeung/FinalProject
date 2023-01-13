@@ -547,7 +547,10 @@ public class PostController {
 		try {		
 			
 			Page<CamelHashMap> pagePostList = mglgPostService.getFollowerPost(userId,pageable);
+			
 			for (int i = 0; i < pagePostList.getContent().size(); i++) {
+				int targetPostId = (Integer)pagePostList.getContent().get(i).get("postId");
+				List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(targetPostId);
 				pagePostList.getContent().get(i).put(
 					"between_date", Duration.between(
 							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
@@ -565,14 +568,19 @@ public class PostController {
 						"res_cnt",
 						mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
 				);
+				//파일의 리스트를 저장해둔다.
+				pagePostList.getContent().get(i).put("file_list", fileList);
+				pagePostList.getContent().get(i).put("file_size", fileList.size());
+				
 			}
-				response.setPageItems(pagePostList);
-				return ResponseEntity.ok().body(response);
-			} catch (Exception e) {
-				response.setErrorMessage(e.getMessage());
-				return ResponseEntity.badRequest().body(response);
-			}
+			//response.setPageItems(pagePostList);
+			//response.setItem(pagePostList);
+			return ResponseEntity.ok().body(pagePostList);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
 		}
+	}
 	
 	
 	//팔로우 하고 있는사람 포스트만 불러오는 로직

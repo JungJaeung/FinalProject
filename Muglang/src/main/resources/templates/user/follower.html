@@ -81,7 +81,8 @@
 						htmlStr = '';
 
 						for (let i = 0; i < obj.pageItems.content.length; i++) {
-
+							const postId = obj.pageItems.content[i].postId;
+							const userId = obj.pageItems.content[i].userId;
 							//시간 바꾸기
 							let timeVel;
 							if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 >= 1) {
@@ -140,10 +141,15 @@
 										<!--이름-->
 										<a href="#" class="card-title">${obj.pageItems.content[i].userNick}</a>
 									</div>
-									<div class="activity" style="margin-bottom: 10px;">
-										<!--내용 사진-->
-										<img src="/assets/img/news-1.jpg" style="width: 100%;">
-									</div>
+									<div class="activity" style="margin-bottom: 10px;">`;
+									
+							for(let j = 0; j < obj.pageItems.content[i].fileSize; j++) {
+								//파일의 길이를 찾아 그 횟수만큼 반복하여 이미지를 로드함.
+								let file = obj.pageItems.content[i].fileList[j].postFileNm;
+								htmlStr	+= `<img src="/upload/${file}" style="width: 100%;">`;
+							}
+
+							htmlStr +=	`</div>
 									<div class="activity">
 										<div>
 											<b>${obj.pageItems.content[i].postContent}</b>
@@ -177,15 +183,16 @@
 									</div>
 									<!--친구, 외 몇명, 위치, 상호명-->
 									<div class="activity" style="text-align: center;">
-										<a href="#"><span>six</span>님 외 <span>16</span>명이 <span>서울 강남구 강남대로 36</span>
-											<span>감성타코</span>에서 식사하셨어요!</a>
+										<a href="#"><span>${obj.pageItems.content[i].userNick}</span>님 외 <span>${obj.pageItems.content[i].resCnt}</span>명이 
+											<span>${obj.pageItems.content[i].resName}</span>에서 식사하셨어요!</a>
 									</div>
 								</div>
 							</div>
-					`
+					`;
 						}
 						$("#divContent").html(htmlStr);
 						$.like_button();
+						$.comment_button();
 					}
 
 					,
