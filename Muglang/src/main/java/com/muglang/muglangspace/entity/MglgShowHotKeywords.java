@@ -2,7 +2,6 @@ package com.muglang.muglangspace.entity;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,9 +39,8 @@ public class MglgShowHotKeywords {
 	)
 	private int showKeywordId;
 	
-	private String showHotKeyword;
-	@Column
-	@ColumnDefault("LocalDateTime.now()")
-	private LocalDateTime showedTime;
 	private int keywordOrder;
+	private String showHotKeyword;
+	
+	private LocalDateTime showTime;
 }

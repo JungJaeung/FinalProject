@@ -61,6 +61,9 @@ public interface MglgPostService {
 	// 보여줄 인기 검색어를 T_MGLG_SHOW _HOT_KEYWORDS 테이블에 INSERT
 	public void insertShowHotKeywords(List<MglgShowHotKeywords> mglgHotShowHotKeywords);
 	
+	// 인기 검색어 가져오기
+	public List<MglgShowHotKeywordsDTO> getShowHotKeywords();
+	
 
 	
 }

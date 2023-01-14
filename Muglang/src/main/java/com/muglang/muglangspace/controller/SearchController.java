@@ -1,5 +1,6 @@
 package com.muglang.muglangspace.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +81,7 @@ public class SearchController {
 			MglgShowHotKeywords returnHotKeywords = MglgShowHotKeywords.builder()
 																	   .keywordOrder(showHotKeywordsListDTO.get(i).getKeywordOrder())
 																	   .showHotKeyword(showHotKeywordsListDTO.get(i).getShowHotKeyword())
+																	   .showTime(LocalDateTime.now())
 																	   .build();
 			mglgHotShowHotKeywords.add(returnHotKeywords);
 		}

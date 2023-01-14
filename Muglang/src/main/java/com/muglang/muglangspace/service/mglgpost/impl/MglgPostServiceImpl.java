@@ -1,5 +1,6 @@
 package com.muglang.muglangspace.service.mglgpost.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,7 +161,6 @@ public class MglgPostServiceImpl implements MglgPostService {
 	}
 	
 	// 검색어를 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
-	@Transactional
 	@Override
 	public void insertKeyword(String searchKeyword) {
 		mglgPostRepository.insertKeyword(searchKeyword);
@@ -172,10 +172,26 @@ public class MglgPostServiceImpl implements MglgPostService {
 		return mglgPostRepository.getHotKeywords(pageable);
 	}
 	
-	@Transactional
 	@Override
 	public void insertShowHotKeywords(List<MglgShowHotKeywords> mglgHotShowHotKeywords) {
 		mglgShowHotKeywordsRepository.saveAll(mglgHotShowHotKeywords);
+	}
+
+	@Override
+	public List<MglgShowHotKeywordsDTO> getShowHotKeywords() {
+		
+		List<MglgShowHotKeywordsDTO> mglgShowHotKeywordsDTO = new ArrayList();
+		
+		List<MglgShowHotKeywords> mglgShowHotKeywords = mglgShowHotKeywordsRepository.findAll();
+		
+		for(int i=0; i<mglgShowHotKeywords.size(); i++) {
+			MglgShowHotKeywordsDTO returnKeywords = MglgShowHotKeywordsDTO.builder()
+					                                                      .keywordOrder(mglgShowHotKeywords.get(i).getKeywordOrder())
+					                                                      .showHotKeyword(mglgShowHotKeywords.get(i).getShowHotKeyword())
+					                                                      .build();
+			mglgShowHotKeywordsDTO.add(returnKeywords);
+		}
+		return mglgShowHotKeywordsDTO;
 	}
 
 

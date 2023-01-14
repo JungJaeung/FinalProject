@@ -37,8 +37,8 @@ public class SecurityConfiguration {
 								.antMatchers("/home/**").permitAll()
 								//권한을 가진 유저들만 접근 할 수 있는 요청 리소드들
 								//.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")//관리자 페이지는 관리자만 조회가능
-//								.antMatchers("/index/**").access("hasAnyRole('ROLE_USER', ROLE_ADMIN')")//index = main 페이지는 사용자, 관리자 모두 조회가능
-//								.antMatchers("/profile/**").access("hasAnyRole('ROLE_USER', ROLE_ADMIN')")//profile 페이지는 사용자, 관리자 모두 조회가능
+//								.antMatchers("/index/**").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")//index = main 페이지는 사용자, 관리자 모두 조회가능
+//								.antMatchers("/profile/**").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")//profile 페이지는 사용자, 관리자 모두 조회가능
 									
 								//나머지 요청 리소스들은 인정된 사용자만 접근 할 수 있게 설정
 								.anyRequest().authenticated();
