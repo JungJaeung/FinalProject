@@ -5,12 +5,69 @@
 <head>
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
+			const loginUserId = /*[[${loginUser.userId}]]*/;
+
+			//댓글 관련 전역변수
+			let postId = 0;
+			let commentId = 0;
+			let text_comment = "";
+				//화면단에 최초로 뿌릴 때 해당 정보를 임시로 저장하는 변수
+			let thisCommentTotalPages = 0;
+			let thisCommentTotalElements = 0;
+			
+			//좋아요, 댓글 이벤트 리스너 함수 호출
+
+
+			//새 게시글에서 추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
+			let uploadFiles = [];
+			//이미 게시된 게시글의 파일들을 담을 게시글 구분 새로운 임시 배열
+			let uploadPostFileList = [];
+			//기존 첨부파일 배열
+			let originFiles = [];
+			//각 게시글들의 첨부파일들을 모은 것을 따로 담을 것임..
+			let originFileList = [];
+			//변경된 첨부파일 배열
+			let changedFiles = [];
+
+			//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
+			//포스팅 글들의 id를 관리하는데 사용함.
+			//해당 배열은 파일 처리 이벤트에서 많이 쓰게될 예정.
+			let postIdList = [];
+			let flagList = [];
+			let postFileIdList = [];
+			//게시글 등록후 해당 인덱스 번호에 대한 파일 이미지 조작할 게시글 위치를 등록할 변수
+			//새로 고침을 하거나 다른 페이지로 가면 이 정보는 0으로 초기화됨.
+			let insertIndex = 0;
+			//댓글 페이지수
+			let comment_page_num = 0;
+
+			
+
+			//현재시간
+			let now = new Date();
+
+			//댓글 수정 texteara 크기 자동 증가
+			function resize(obj) {
+				obj.style.height = "1px";
+				obj.style.height = (12 + obj.scrollHeight) + "px";
+			}
+
+			
+			
 			$(function () {
+				let list = $('.post').get();
+				for (let i = 0; i < list.length; i++) {
+					flagList.push(false);
+				}
+				//const userId = /*[[${#authentication.principal.username}]]*/;
+				
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
 				})
 			});
+			
+			
 		</script>
 	</th:block>
 
