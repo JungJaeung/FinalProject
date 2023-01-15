@@ -858,7 +858,7 @@
 							<div class="activity">
 								<div id="today_eat" th:each="showHotKeyword : ${showHotKeywords}">
 									<ul style="list-style:none;">
-										<li><a href="#" th:text="|${showHotKeyword.keywordOrder}.  #${showHotKeyword.showHotKeyword}|"></a></li>
+										<li><a th:href="@{/search/searchByPost(searchKeyword=${showHotKeyword.showHotKeyword})}" th:text="|${showHotKeyword.keywordOrder}.  #${showHotKeyword.showHotKeyword}|"></a></li>
 									</ul>
 								</div>
 							</div>
