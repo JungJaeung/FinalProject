@@ -5,13 +5,20 @@
 <head>
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
+			let postIdList = [];
+			let flagList = [];
+			let list = $('.post').get();
+			
+			for(let i = 0; i < list.length; i++) {
+				flagList.push(false);
+			}
 			$(function () {
-				var page_num = 0;
+				let page_num = 0;
 				let totalPages = 0;
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
-				})
+				});
 
 				//시작시 포스트 리스트 불러오는 로직
 				$.ajax({
@@ -20,118 +27,31 @@
 					data: {page: page_num},
 					success: function (obj) {
 						console.log(obj);
+						console.log(obj.pageItems);
 						htmlStr = '';
-
+						let elements = page_num * obj.pageItems.pageable.pageSize;
+						console.log("시작 인덱스 : " + elements + ", 게시글 개수 : " + obj.pageItems.numberOfElements);
 						for (let i = 0; i < obj.pageItems.content.length; i++) {
-
-							//시간 바꾸기
-							let timeVel;
-							if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 >= 1) {
-								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12) + '년 전'
-							} else if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 >= 1) {
-								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30) + '달 전'
-							} else if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 >= 1) {
-								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60 / 24) + '일 전'
-							} else if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 >= 1) {
-								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60) + '시간 전'
-							} else {
-								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60) + '분 전'
-							}
-							//해쉬태그 공백화
-							let hash1 = obj.pageItems.content[i].hashTag1;
-							let hash2 = obj.pageItems.content[i].hashTag2;
-							let hash3 = obj.pageItems.content[i].hashTag3;
-							let hash4 = obj.pageItems.content[i].hashTag4;
-							let hash5 = obj.pageItems.content[i].hashTag5;
-							if (obj.pageItems.content[i].hashTag1 == null) {
-								hash1 = "";
-							}
-							if (obj.pageItems.content[i].hashTag2 == null) {
-								hash2 = "";
-							}
-							if (obj.pageItems.content[i].hashTag3 == null) {
-								hash3 = "";
-							}
-							if (obj.pageItems.content[i].hashTag4 == null) {
-								hash4 = "";
-							}
-							if (obj.pageItems.content[i].hashTag5 == null) {
-								hash5 = "";
-							}
-
-							htmlStr += `
-							<div class="card recent-sales" >
-								<div class="card-body">
-									<div class="filter" style="margin-top: 15px;">
-										<!--위에 시간-->
-										<a style="margin-right: 20px;">
-											<span>${timeVel}</span>				
-									    </a>
-										<!--신고하기 있는 버튼-->
-										<a class="icon" href="#" data-bs-toggle="dropdown"><i
-												class="bi bi-three-dots"></i></a>
-										<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-											<li><a class="dropdown-item" href="#"><i
-														class="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>
-										</ul>
-									</div>
-									<div class="card-title">
-										<!--프로필 사진-->
-										<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
-											style="width: 40px;">
-										<!--이름-->
-										<a href="#" class="card-title"> ${obj.pageItems.content[i].userName}</a>
-									</div>
-									<div class="activity" style="margin-bottom: 10px;">
-										<!--내용 사진-->
-										<img src="/assets/img/news-1.jpg" style="width: 100%;">
-									</div>
-									<div class="activity">
-										<div>
-											<b>${obj.pageItems.content[i].postContent}</b>
-										</div>
-										<br>
-										<!--태그-->
-										<a href="#" style="color: blue;">&emsp;${hash1}</a>
-										<a href="#" style="color: blue;">&emsp;${hash2}</a>
-										<a href="#" style="color: blue;">&emsp;${hash3}</a>
-										<a href="#" style="color: blue;">&emsp;${hash4}</a>
-										<a href="#" style="color: blue;">&emsp;${hash5}</a>
-					
-									</div>
-									<!--아이콘들-->
-									<div class="activity">
-										<a href="#"><i class="ri-heart-3-line"
-												style="font-size: 30px; margin-right: 5px; color:black"></i></a>
-										<a href="#" id="msg_btn"><i class="ri-message-3-line"
-												style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
-										<a href="#"><i class="ri-send-plane-2-line"
-												style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
-										<br>
-										<!--좋아요 숫자 넣는곳-->
-										<a>좋아요 <span>${obj.pageItems.content[i].likeCnt}</span>개</a>
-										<hr>
-									</div>
-									<!--친구, 외 몇명, 위치, 상호명-->
-									<div class="activity" style="text-align: center;">
-										<a href="#"><span>six</span>님 외 <span>16</span>명이 <span>서울 강남구 강남대로 36</span>
-											<span>감성타코</span>에서 식사하셨어요!</a>
-									</div>
-								</div>
-							</div>
-					`
+							htmlStr += followPost(obj.pageItems.content[i]);
+							
 						}
 						$("#divContent").html(htmlStr);
-					}
-
-					,
+						for(let i = 0; i < obj.pageItems.content.length; i++) {
+							$.followingEvent(elements + i, obj.pageItems.content[i].postId);
+						}
+						console.log("html 화면단 세팅 완료!@#");
+						$.like_button(loginUserId);
+						$.comment_button();
+						//$.map_button();
+						page_num++;
+					},
 					error: function (e) {
 						console.log("실패")
 						console.log(e);
 					}
 				});
 
-				//시작시 팔로워 리스트 불러옴
+				//시작시 팔로잉 리스트 불러옴
 				$.ajax({
 					url: '/social/following',
 					type: 'get',
@@ -148,7 +68,7 @@
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
 												class="img-fluid rounded-circle" 
-												src="/upload/${obj.pageItems.content[i].followingprofile.userProfileNm}"
+												src="/upload/${obj.pageItems.content[i].followingProfile.userProfileNm}"
 												style="width: 50px; height:50px"></div>
 										<!--친구 닉네임, 아이디-->
 										<div style="width: 60%; margin-top: 13px; float: left;">
@@ -194,7 +114,7 @@
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
 												class="img-fluid rounded-circle" 
-												src="/upload/${obj.pageItems.content[i].followingprofile.userProfileNm}"
+												src="/upload/${obj.pageItems.content[i].followingProfile.userProfileNm}"
 												style="width: 50px; height:50px"></div>
 										<!--친구 닉네임, 아이디-->
 										<div style="width: 60%; margin-top: 13px; float: left;">
@@ -367,23 +287,10 @@
 
 			</div>
 		</section>
-		<!--모달모달-->
-		<div class="modal fade" id="followModal" role="dialog">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content" id="modal-content">
-					<div class="modal-body overflow-auto" id="modalBody">
-
-
-					</div>
-				</div>
-			</div>
-
-		</div>
-
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">
 			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
+				<div class="modal-content" id="modal-content">
 					<div class="modal-header">
 						<form class="form-inline" role="form">
 							<input type="text" placeholder="댓글을 작성하세요!!" onfocus="this.placeholder=''"

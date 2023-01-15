@@ -5,6 +5,7 @@
 <head>
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
+		
 			$(function () {
 				let postId;
 				let commentId;
@@ -76,45 +77,52 @@
 					type: 'get',
 					data: {page: page_num},
 					success: function (obj) {
-						console.log("--------")
+						console.log("--------팔로워 게시물----------------");
 						console.log(obj);
-						htmlStr = '';
-
-						for (let i = 0; i < obj.pageItems.content.length; i++) {
-							const postId = obj.pageItems.content[i].postId;
-							const userId = obj.pageItems.content[i].userId;
+						console.log(obj.content);
+						console.log("가져온 게시글의 개수!!!! : " + obj.content.length);
+						
+						let elements = page_num * obj.pageable.pageSize;
+						console.log("시작 인덱스 : " + elements + ", 게시글 개수 : " + obj.numberOfElements);
+						htmlStr = "";
+						//조건에 해당하는 게시글을 불러옴.
+						for (let i = 0; i < obj.content.length; i++) {
+							htmlStr += followPost(obj.content[i]);
+							/*
+							const postId = obj.content[i].postId;
+							const userId = obj.content[i].userId;
 							//시간 바꾸기
 							let timeVel;
-							if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 >= 1) {
-								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12) + '년 전'
-							} else if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 >= 1) {
-								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30) + '달 전'
-							} else if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 >= 1) {
-								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60 / 24) + '일 전'
-							} else if (obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 / 30 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 / 24 < 1 && obj.pageItems.content[i].betweenDate / 60 / 60 >= 1) {
-								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60 / 60) + '시간 전'
+							if (obj.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 >= 1) {
+								timeVel = Math.floor(obj.content[i].betweenDate / 60 / 60 / 24 / 30 / 12) + '년 전'
+							} else if (obj.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.content[i].betweenDate / 60 / 60 / 24 / 30 >= 1) {
+								timeVel = Math.floor(obj.content[i].betweenDate / 60 / 60 / 24 / 30) + '달 전'
+							} else if (obj.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.content[i].betweenDate / 60 / 60 / 24 / 30 < 1 && obj.content[i].betweenDate / 60 / 60 / 24 >= 1) {
+								timeVel = Math.floor(obj.content[i].betweenDate / 60 / 60 / 24) + '일 전'
+							} else if (obj.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.content[i].betweenDate / 60 / 60 / 24 / 30 < 1 && obj.content[i].betweenDate / 60 / 60 / 24 < 1 && obj.content[i].betweenDate / 60 / 60 >= 1) {
+								timeVel = Math.floor(obj.content[i].betweenDate / 60 / 60) + '시간 전'
 							} else {
-								timeVel = Math.floor(obj.pageItems.content[i].betweenDate / 60) + '분 전'
+								timeVel = Math.floor(obj.content[i].betweenDate / 60) + '분 전'
 							}
 							//해쉬태그 공백화
-							let hash1 = obj.pageItems.content[i].hashTag1;
-							let hash2 = obj.pageItems.content[i].hashTag2;
-							let hash3 = obj.pageItems.content[i].hashTag3;
-							let hash4 = obj.pageItems.content[i].hashTag4;
-							let hash5 = obj.pageItems.content[i].hashTag5;
-							if (obj.pageItems.content[i].hashTag1 == null) {
+							let hash1 = obj.content[i].hashTag1;
+							let hash2 = obj.content[i].hashTag2;
+							let hash3 = obj.content[i].hashTag3;
+							let hash4 = obj.content[i].hashTag4;
+							let hash5 = obj.content[i].hashTag5;
+							if (obj.content[i].hashTag1 == null) {
 								hash1 = "";
 							}
-							if (obj.pageItems.content[i].hashTag2 == null) {
+							if (obj.content[i].hashTag2 == null) {
 								hash2 = "";
 							}
-							if (obj.pageItems.content[i].hashTag3 == null) {
+							if (obj.content[i].hashTag3 == null) {
 								hash3 = "";
 							}
-							if (obj.pageItems.content[i].hashTag4 == null) {
+							if (obj.content[i].hashTag4 == null) {
 								hash4 = "";
 							}
-							if (obj.pageItems.content[i].hashTag5 == null) {
+							if (obj.content[i].hashTag5 == null) {
 								hash5 = "";
 							}
 
@@ -139,20 +147,20 @@
 										<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
 											style="width: 40px;">
 										<!--이름-->
-										<a href="#" class="card-title">${obj.pageItems.content[i].userNick}</a>
+										<a href="#" class="card-title">${obj.content[i].userNick}</a>
 									</div>
 									<div class="activity" style="margin-bottom: 10px;">`;
 									
-							for(let j = 0; j < obj.pageItems.content[i].fileSize; j++) {
+							for(let j = 0; j < obj.content[i].fileSize; j++) {
 								//파일의 길이를 찾아 그 횟수만큼 반복하여 이미지를 로드함.
-								let file = obj.pageItems.content[i].fileList[j].postFileNm;
+								let file = obj.content[i].fileList[j].postFileNm;
 								htmlStr	+= `<img src="/upload/${file}" style="width: 100%;">`;
 							}
 
 							htmlStr +=	`</div>
 									<div class="activity">
 										<div>
-											<b>${obj.pageItems.content[i].postContent}</b>
+											<b>${obj.content[i].postContent}</b>
 										</div>
 										<br>
 										<!--태그-->
@@ -166,10 +174,10 @@
 									<!--아이콘들-->
 									<div class="activity">`
 									
-										if (obj.pageItems.content[i].postLike == "Y")
-											htmlStr += ` <i class="ri-heart-3-line post_like" id="${obj.pageItems.content[i].postId}" style="font-size: 30px; margin-right: 5px; color:red; cursor: pointer;"></i>`  
-										else if (obj.pageItems.content[i].postLike == "N")
-										htmlStr += ` <i class="ri-heart-3-line post_like" id="${obj.pageItems.content[i].postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+										if (obj.content[i].postLike == "Y")
+											htmlStr += ` <i class="ri-heart-3-line post_like" id="${obj.content[i].postId}" style="font-size: 30px; margin-right: 5px; color:red; cursor: pointer;"></i>`  
+										else if (obj.content[i].postLike == "N")
+										htmlStr += ` <i class="ri-heart-3-line post_like" id="${obj.content[i].postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
 									
 									htmlStr += `	
 										<a href="#" id="msg_btn"><i class="ri-message-3-line"
@@ -178,24 +186,27 @@
 												style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
 										<br>
 										<!--좋아요 숫자 넣는곳-->
-										<a>좋아요 <span id="likeCnt${obj.pageItems.content[i].postId}">${obj.pageItems.content[i].likeCnt} </span>개</a>
+										<a>좋아요 <span id="likeCnt${obj.content[i].postId}">${obj.content[i].likeCnt} </span>개</a>
 										<hr>
 									</div>
 									<!--친구, 외 몇명, 위치, 상호명-->
 									<div class="activity" style="text-align: center;">
-										<a href="#"><span>${obj.pageItems.content[i].userNick}</span>님 외 <span>${obj.pageItems.content[i].resCnt}</span>명이 
-											<span>${obj.pageItems.content[i].resName}</span>에서 식사하셨어요!</a>
+										<a href="#"><span>${obj.content[i].userNick}</span>님 외 <span>${obj.content[i].resCnt}</span>명이 
+											<span>${obj.content[i].resName}</span>에서 식사하셨어요!</a>
 									</div>
 								</div>
 							</div>
-					`;
+					`;*/
 						}
 						$("#divContent").html(htmlStr);
-						$.like_button();
+						for(let i = 0; i < obj.content.length; i++) {
+							$.followingEvent(elements + i, obj.content[i].postId);
+						}
+						console.log("html 화면단 세팅 완료!@#");
+						$.like_button(loginUserId);
 						$.comment_button();
-					}
-
-					,
+						console.log("팔로워의 게시글 모두 게시 완료!!@#$%^^");
+					},
 					error: function (e) {
 						console.log("실패")
 
@@ -203,7 +214,7 @@
 					}
 				});
 
-				//시작시 팔로워 리스트 불러옴
+				//시작시 팔로워 리스트 불러옴 - 처음 팔로워 리스트 로드시 사용하는 처리
 				$.ajax({
 					url: '/social/follower',
 					type: 'get',
@@ -212,17 +223,19 @@
 						searchKeyword: ""
 					},
 					success: function (obj) {
+						console.log("**************팔로워 리스트 최초 로드*************");
 						console.log(obj);
-						let htmlStr = '';
-						for (let i = 0; i < obj.pageItems.content.length; i++) {
-							htmlStr += `
+						console.log(obj.pageItems);
+						console.log(obj.pageItems.content);
 						
-
-                     			<div class="" style="width: 100%; height: 70px;">
+						let htmlStr = '';
+						console.log("!!!!!!!!!!!!!!!!!!!!!팔로워 수 : "  + obj.pageItems.content.length);
+						for (let i = 0; i < obj.pageItems.content.length; i++) {
+							htmlStr += `<div class="" style="width: 100%; height: 70px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
 												class="img-fluid rounded-circle" 
-												src="/upload/${obj.pageItems.content[i].followerprofile.userProfileNm}"
+												src="/upload/${obj.pageItems.content[i].followerProfile.userProfileNm}"
 												style="width: 50px; height:50px"></div>
 										<!--친구 닉네임, 아이디-->
 										<div style="width: 60%; margin-top: 13px; float: left;">
@@ -233,16 +246,17 @@
 											</div>
 										</div>
 									</div>
-                     `
+                     `;
 						}
 
 						$("#div_body").html(htmlStr);
-						totalPages = obj.pageItems.totalPages;
+						totalPages = obj.totalPages;
 					},
 					error: function (e) {
 						console.log(e);
 					}
 				});
+				
 				$("#btn_next").click(function () {
 					searchKeyword = ""
 					console.log("누르기전page_num===" + page_num)
@@ -260,14 +274,14 @@
 						},
 						success: function (obj) {
 							console.log(obj)
-							var htmlStr = "";
+							let htmlStr = "";
 							totalPages = obj.pageItems.totalPages;
+							console.log("팔로워 수 : "  + obj.pageItems.content.length);
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
-								htmlStr += `
-                     			<div class="" style="width: 100%; height: 70px;">
+								htmlStr += `<div class="" style="width: 100%; height: 70px;">
 										<!--친구 사진-->
 										<div style="width: 30%; margin-top: 10px; float: left;"><img
-												class="img-fluid rounded-circle" src="/upload/${obj.pageItems.content[i].followerprofile.userProfileNm}"
+												class="img-fluid rounded-circle" src="/upload/${obj.pageItems.content[i].followerProfile.userProfileNm}"
 												style="width: 50px; height:50px"></div>
 										<!--친구 닉네임, 아이디-->
 										<div style="width: 60%; margin-top: 13px; float: left;">
@@ -277,8 +291,7 @@
 											${obj.pageItems.content[i].email}
 											</div>
 										</div>
-									</div>
-							`
+									</div>`;
 							}
 							$("#div_body").html(htmlStr)
 
@@ -288,7 +301,8 @@
 						}
 					});
 
-				})
+				});
+				
 				$("#btn_prev").click(function () {
 					searchKeyword =""
 					console.log("누르기전page_num===" + page_num);
@@ -347,8 +361,9 @@
 							searchKeyword: searchKeyword
 						},
 						success: function (obj) {
-							console.log(obj)
-							var htmlStr = "";
+							console.log(obj);
+							console.log("&&&&&&&&&& 검색 버튼 결과 가져오기 &&&&&&&&&&");
+							let htmlStr = "";
 							totalPages = obj.pageItems.totalPages;
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
@@ -441,23 +456,11 @@
 
 			</div>
 		</section>
-		<!--모달모달-->
-		<div class="modal fade" id="followModal" role="dialog">
-								<div class="modal-dialog modal-dialog-centered">
-									<div class="modal-content" id="modal-content">
-										<div class="modal-body overflow-auto" id="modalBody">
-
-
-										</div>					
-									</div>
-								</div>
-
-							</div>
 
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">
 			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
+				<div class="modal-content" id="modal-content">
 					<div class="modal-header">
 						<form class="form-inline" role="form">
 							<input type="text" placeholder="댓글을 작성하세요!!" onfocus="this.placeholder=''"

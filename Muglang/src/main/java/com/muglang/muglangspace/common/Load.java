@@ -6,9 +6,11 @@ import java.time.LocalDateTime;
 import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgPostFileDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
+import com.muglang.muglangspace.dto.MglgUserProfileDTO;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgPostFile;
 import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.entity.MglgUserProfile;
 
 
 public class Load {
@@ -62,6 +64,18 @@ public class Load {
 											  .postFileCate(mglgPostFile.getPostFileCate())
 											  .postFileStatus(mglgPostFile.getPostFileStatus())
 											  .build();
+		return info;
+	}
+	
+	public static MglgUserProfileDTO toHtml(MglgUserProfile mglgUserProfile) {
+		MglgUserProfileDTO info = MglgUserProfileDTO.builder()
+													.userId(mglgUserProfile.getMglgUser().getUserId())
+													.userProfileNm(mglgUserProfile.getUserProfileNm())
+													.userProfileOriginNm(mglgUserProfile.getUserProfileOriginNm())
+													.userProfilePath(mglgUserProfile.getUserProfilePath())
+													.userProfileCate(mglgUserProfile.getUserProfileCate())
+													.build();
+		
 		return info;
 	}
 	

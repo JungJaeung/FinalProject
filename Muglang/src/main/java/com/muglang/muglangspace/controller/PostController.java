@@ -43,17 +43,20 @@ import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgPostFileDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgRestaurantDTO;
+import com.muglang.muglangspace.dto.MglgUserProfileDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgPostFile;
 import com.muglang.muglangspace.entity.MglgRestaurant;
+import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglgpostfile.MglgPostFileService;
 import com.muglang.muglangspace.service.mglgrestaurant.MglgRestaurantService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
+import com.muglang.muglangspace.service.mglguserprofile.MglgUserProfileService;
 
 @RestController
 @RequestMapping("/post")
@@ -75,6 +78,9 @@ public class PostController {
 	
 	@Autowired
 	private MglgPostFileService mglgPostFileService;
+	
+	@Autowired
+	private MglgUserProfileService mglgUserProfileService;
 
 	
 	//글쓰기 버튼으로 적용되는 글 새로 작성, 새로 작성되는 글에 파일을 같이 넣음.
@@ -443,6 +449,22 @@ public class PostController {
 			file.put("file_list", fileListDTO);	//키값은 스네이크형으로 적고 오버라이딩된 camelHashMap클래스의 메소드를 따라감. 
 			//camel형으로 키값을 자동으로 바꿈.
 		}
+		//프로필의 정보를 가져오는 부분(가져온 정보는 표시만을 하기위해 사용)
+		for(CamelHashMap post: pagePostList) {
+			int writerId = (int)post.get("userId");
+			MglgUserProfile profile = mglgUserProfileService.getUserImg(writerId);
+			
+			MglgUserProfileDTO profileDTO = MglgUserProfileDTO.builder()
+															.userId(writerId)
+															.userProfileNm(profile.getUserProfileNm())
+															.userProfileOriginNm(profile.getUserProfileOriginNm())
+															.userProfilePath(profile.getUserProfilePath())
+															.userProfileCate(profile.getUserProfileCate())
+															.build();
+			post.put("profile", profileDTO);
+			
+		}
+		
 		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
@@ -503,6 +525,22 @@ public class PostController {
 			System.out.println("확장 페이지의 파일의 개수 : " + file);
 		}
 		
+		//프로필의 정보를 가져오는 부분(가져온 정보는 표시만을 하기위해 사용)
+		for(CamelHashMap post: pagePostList) {
+			int writerId = (int)post.get("userId");
+			MglgUserProfile profile = mglgUserProfileService.getUserImg(writerId);
+			
+			MglgUserProfileDTO profileDTO = MglgUserProfileDTO.builder()
+															.userId(writerId)
+															.userProfileNm(profile.getUserProfileNm())
+															.userProfileOriginNm(profile.getUserProfileOriginNm())
+															.userProfilePath(profile.getUserProfilePath())
+															.userProfileCate(profile.getUserProfileCate())
+															.build();
+			post.put("profile", profileDTO);
+			
+		}
+		
 		return ResponseEntity.ok().body(pagePostList);
 	}
 	
@@ -549,8 +587,7 @@ public class PostController {
 			Page<CamelHashMap> pagePostList = mglgPostService.getFollowerPost(userId,pageable);
 			
 			for (int i = 0; i < pagePostList.getContent().size(); i++) {
-				int targetPostId = (Integer)pagePostList.getContent().get(i).get("postId");
-				List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(targetPostId);
+
 				pagePostList.getContent().get(i).put(
 					"between_date", Duration.between(
 							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
@@ -569,8 +606,18 @@ public class PostController {
 						mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
 				);
 				//파일의 리스트를 저장해둔다.
+				int targetPostId = (Integer)pagePostList.getContent().get(i).get("postId");
+				List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(targetPostId);
+				
 				pagePostList.getContent().get(i).put("file_list", fileList);
 				pagePostList.getContent().get(i).put("file_size", fileList.size());
+				
+				//게시글의 작성자 프로필 이미지 정보 가져오기
+				int targetUserId = (Integer)pagePostList.getContent().get(i).get("userId");
+				MglgUserProfile profile = mglgUserProfileService.getUserImg(targetUserId);
+				MglgUserProfileDTO profileDTO = Load.toHtml(profile);
+				
+				pagePostList.getContent().get(i).put("profile", profileDTO);
 				
 			}
 			//response.setPageItems(pagePostList);
@@ -583,16 +630,17 @@ public class PostController {
 	}
 	
 	
-	//팔로우 하고 있는사람 포스트만 불러오는 로직
+	//팔로우 하고 있는사람 포스트만 불러오는 로직 - 팔로잉
 		@GetMapping("/getFollowingPost")
 		public ResponseEntity<?> getFollowingPost(@PageableDefault(page=0,size=5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
 			MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 			int userId = loginUser.getMglgUser().getUserId();
 			try {		
 				
-				
+				//팔로잉 하고 있는 상태의 유저들의 게시글만 표시함. 
 				Page<CamelHashMap> pagePostList = mglgPostService.getFollowingPost(userId,pageable);
 				for (int i = 0; i < pagePostList.getContent().size(); i++) {
+
 					pagePostList.getContent().get(i).put(
 						"between_date", Duration.between(
 								((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
@@ -610,7 +658,22 @@ public class PostController {
 							"res_cnt",
 							mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
 					);
+					
+					//해당 게시글의 아이디 수집. 게시글의 파일 정보를 모두 가져옴.
+					int targetPostId = (Integer)pagePostList.getContent().get(i).get("postId");
+					List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(targetPostId);
+					
+					pagePostList.getContent().get(i).put("file_list", fileList);
+					pagePostList.getContent().get(i).put("file_size", fileList.size());
+					
+					//게시글의 작성자 프로필 이미지 정보 가져오기
+					int targetUserId = (Integer)pagePostList.getContent().get(i).get("userId");
+					MglgUserProfile profile = mglgUserProfileService.getUserImg(targetUserId);
+					MglgUserProfileDTO profileDTO = Load.toHtml(profile);
+					
+					pagePostList.getContent().get(i).put("profile", profileDTO);
 				}
+				
 				
 					response.setPageItems(pagePostList);
 					return ResponseEntity.ok().body(response);

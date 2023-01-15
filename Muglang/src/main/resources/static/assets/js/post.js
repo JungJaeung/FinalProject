@@ -72,7 +72,7 @@ $(function() {
 	
 	//게시글 수정과 삭제를 활성화하는 버튼을 생성함. 게시글이 자기꺼인 것만 표시함.
 	$(".updateBtn").each(function(i, e) {
-
+		console.log("게시글의 수정버튼 이벤트 생성%$&^");
 		$($('.uploadFileSpace')[i]).hide();
 		$($('.changedFileSpace')[i]).hide();
 		$("#upTitle" + $(this).val()).hide();
@@ -145,9 +145,19 @@ $(function() {
 		});
 		
 	});
+	
+	$.followingEvent = function(targetIndex, postId) {
+		console.log("현재 인덱스 : " + targetIndex + ", 현재 게시글의 아이디 : " + postId);
+		$("#updateForm" + postId).hide();
+		$("#upTitle" + postId).hide();
+		$("#contentIn" + postId).hide();
+	}
+	
 	//스크롤 확장시 다시 이벤트를 발생시킬 스크립트를 다시 로드함.
 	$.updateBtn = function(startIndex, size) {
 		for(let i = startIndex; i < startIndex + size; i++) {
+			console.log($(this).val());
+			console.log("현재 인덱스 : " + i);
 			flagList[i] = false;
 			$($(".fileBtns")[i]).hide();
 			$($('.uploadFileSpace')[i]).hide();
@@ -280,6 +290,194 @@ function imageTag(item, fileLength) {
 	}
 
 	return tag;
+}
+
+function followerPostlisu(item) {
+	console.log("대상 게시글 : " + item.followerPost.postId + ", 대상 유저 : " + item.followerPost.userId);
+	let textHtml = "";
+	let now = new Date();
+	
+	
+}
+
+function followPost(post) {
+	console.log("팔로워 게시글!@#$^^7 : ");
+	console.log(post);
+	let htmlText = "";
+	let now = new Date();
+	let post_date = new Date(post.postDate);
+	post_date = now - post_date;
+	
+	htmlText += `<div class="col-12 post">`;
+	htmlText += `<input type="hidden" value="${post.betweenDate}">`;
+	htmlText += `<input type="text" id="fileList${post.postId}" value="${post.fileSize}">`;
+	htmlText += `<div class="card recent-sales">`
+	htmlText += `<div class="card-body">`
+	htmlText += `<div class="filter" style="margin-top: 15px;">`
+	if (post_date / (1000 * 60 * 60 * 24 * 30 * 12) > 1) {
+		htmlText += `<a style="margin-right: 20px;">${parseInt(post_date / (1000 * 60 * 60 * 24 * 30 * 12))}년 전</a>`
+	}
+	else if (post_date / (1000 * 60 * 60 * 24 * 30) > 1) {
+		htmlText += `<a style="margin-right: 20px;">${parseInt(post_date / (1000 * 60 * 60 * 24 * 30))}달 전</a>`
+	}
+	else if (post_date / (1000 * 60 * 60 * 24) > 1) {
+		htmlText += `<a style="margin-right: 20px;">${parseInt(post_date / (1000 * 60 * 60 * 24))}일 전</a>`
+	}
+	else if (post_date / (1000 * 60 * 60) > 1) {
+		htmlText += `<a style="margin-right: 20px;">${parseInt(post_date / (1000 * 60 * 60))}시간 전</a>`
+	}
+	else {
+		htmlText += `<a style="margin-right: 20px;">${parseInt(post_date / (1000 * 60))}분전</a>`
+	}
+	htmlText += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
+	htmlText += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
+	htmlText += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
+	htmlText += `</ul></div>`
+	htmlText += `<div class="card-title">`;
+	htmlText += `<img class="img-fluid rounded-circle" src="/upload/${post.profile.userProfileNm}"
+					style="width: 40px;">
+					<a href="#" class="card-title">${post.userNick}</a>`;
+	htmlText += `</div>`;
+	htmlText += `<form id="updateForm${post.postId}" enctype="multipart/form-data">`;
+	//<!-- 게시글 사진 부분 -->
+	//<!-- imgArea는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
+	htmlText	+= `<div class="activity" style="margin-bottom: 10px;"
+					id="restImgBox${post.postId}">`; 
+	htmlText	+= `<div id="imgArea${post.postId}">`;
+	if (loginUserId == post.userId) {
+		for(let i = 0; i < post.fileLength; i++){
+			htmlText	+= `<div class="fileList${post.postId}" value="${post.fileList[i].postFileId}">`;
+		//<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
+		//<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
+		
+			htmlText	+= `<div style="position: relative;">`;	
+			htmlText	+= `<input type="hidden" id="postFileId${post.fileList[i].postFileId}"
+							class="postFileId${post.fileList[i].postId}" name="postFileId"
+							value="${post.fileList[i].postFileId}">`;
+			htmlText	+= `<input type="hidden"id="postFileNm${post.fileList[i].postFileId}"
+							class="postFileNm" name="postFileNm"
+							value="${post.fileList[i].postFileNm}">`;
+			htmlText	+= `<input type="hidden" id="postId${post.fileList[i].postFileId}"
+							class="postId${post.fileList[i].postId}" name="postId"
+							value="${post.fileList[i].postId}">`;
+			htmlText	+= `<input type="file" id="changedFile${post.fileList[i].postFileId}"
+							name="changedFile${post.fileList[i].postFileId}"
+							style="display: none;"
+							onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, ${i}, event)">`;
+			if(post.fileList[i].postFileCate == "img") {
+				htmlText	+= `<img id="img${post.fileList[i].postFileId}"
+								src="/upload/${post.fileList[i].postFileNm}"
+								style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
+								class="fileImg"
+								onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+								
+			} else {
+				htmlText	+= `<img id="img${post.fileList[i].postFileId}"
+								src="/assets/img/defaultFileImg.png"
+								style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
+								class="fileImg"
+								onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+			}
+			
+			htmlText	+= `<input type="button" class="btnDel" value="x"
+							data-del-file="${post.fileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+							z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;" 
+							onclick="fnPostImgDel(event)">`;
+			htmlText	+= `<p id="fileNm${post.fileList[i].postFileId}"
+							style="display: none; font-size: 8px; cursor: pointer;"
+							onclick="fnFileDown(${post.fileList[i].postId}, ${post.fileList[i].postFileId})">
+							${post.fileList[i].postFileOriginNm}</p>`;
+			htmlText	+= `</div></div>`;
+		}
+	} else {
+		for (let i = 0; i < post.fileLength; i++) {
+			if (post.fileList[i].postFileCate == "img") {
+				htmlText += `<img id="img${post.fileList[i].postFileId}" 
+					 src="/upload/${post.fileList[i].postFileNm}"
+				 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+					 class="fileImg" 
+					 onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+			} else {
+				htmlText += `<img id="img${post.fileList[i].postFileId}"
+					 src="/assets/img/defaultFileImg.png"
+					 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
+					 class="fileImg" 
+					 onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+			}
+		}
+	}
+	htmlText	+= `</div>`;
+	htmlText += `</div>`;						
+	htmlText	+= `<div class="uploadFileSpace">
+					<input type="file" id="updateBtnAtt${post.postId}"
+						class="updateBtnAtt" data-post-id="${post.postId}" name="uploadFiles"
+						multiple="multiple">
+					</div>`;
+	htmlText	+= `<div class="changedFileSpace">
+					<input type="file" id="changedFiles${post.postId}"
+						name="changedFiles" value="" multiple="multiple">
+					</div>`;				
+	htmlText	+= `<div id="postAttZone${post.postId}"
+					data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>`;	
+	htmlText	+= `<input type="hidden" name="postId" value="${post.postId}">`;	
+	htmlText	+= `<input type="hidden" name="originFiles" id="originFiles${post.postId}">`;	
+	htmlText	+= `<input type="hidden" id="userId" name="userId" value="${post.userId}">`;	
+	htmlText	+= `<input type="hidden" id="postContentIn${post.postId}" name="postContent" value="${post.postContent}">`;	
+	htmlText	+= `<input type="hidden" name="postDate" value="${post.postDate}">`;	
+	htmlText	+= `<input type="hidden" name="restNm" value="${post.restNm}"></form>`;	
+
+	if(loginUserId == post.userId) {
+		htmlText += `<div class="buttons fileBtns" id="buttonBox${post.postId}" value="${post.postId}">
+						<button type="button" id="fileRequest${post.postId}"
+						value="${post.postId}">파일 관리창 열기</button></div>`;
+
+	}
+	
+	htmlText += `<div class="activity" style="margin-bottom: 10px;">`
+	//htmlText += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`
+	
+	htmlText += `</div><div class="activity">`
+	htmlText += `<div id="postContent${post.postId}">${post.postContent}</div>`
+	htmlText += `<div id="upTitle${post.postId}">수정할 게시글 내용</div>`;
+	htmlText += `<textarea id="contentIn${post.postId}" name="contentIn"
+					row="40" style="display: none; resize: none; width: 85%;">${post.postContent}</textarea>`;
+	//여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
+	htmlText += `<br>`
+	htmlText += `</div>`
+	htmlText += `<div class="activity">`
+	//<!--좋아요 댓글 지도-->	
+	if (post.postLike == "Y")
+		htmlText += `<i class="ri-heart-3-line post_like" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:red; cursor: pointer;"></i>`
+	else if (post.postLike == "N")
+		htmlText += `<i class="ri-heart-3-line post_like" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+	htmlText += `<i class="ri-message-3-line msg_icon" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+	//식당 관련 내용을 적용하는 버튼	
+	if (post.restaurant == "Y")
+		htmlText += `<i class="ri-map-pin-2-line map_icon" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
+	htmlText += `<br>`
+	htmlText += `<a>좋아요 <span id="likeCnt${post.postId}">${post.likeCnt}</span>개</a>`;			
+
+	htmlText += `<hr></div>`
+	//내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. 
+	htmlText += `<form class="data" action="/post/deletePost" method="post">`
+	htmlText += `<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">`
+	htmlText += `<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">`
+	htmlText += `<input type="hidden" id="userId" name="userId" value="''+${post.userId}">`
+	htmlText += `<input type="hidden" id="postId" name="postId" value="''+${post.postId}">`
+	htmlText += `<input type="hidden" id="postDate" name="postDate" value="''+${post.postDate}">`
+	htmlText += `</form>`
+	//<!-- 친구 식사 했는지 확인 필드 -->
+	if(post.resCnt != 0) {
+		htmlText += `<div class="activity" style="text-align: center;"><hr>
+			<a href="#"><span th:text="${item.loginUser.userName}"></span>님의 친구 <span>${post.resCnt}</span>명이
+				<span>${post.resName}</span> 에서 식사하셨어요!</a></div>`;		
+	}
+	if(loginUserId == post.userId)
+	htmlText += `<button type="button" class="updateBtn" id="updateButton"
+					value="${post.postId}">게시글 수정</button>`;									
+	htmlText += `</div></div></div></div></div>`;
+	
+	return htmlText;
 }
 
 //포스팅 html단에 표시하는 함수. 문자열 값을 반환
