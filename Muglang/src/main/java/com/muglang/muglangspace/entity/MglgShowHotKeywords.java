@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import lombok.AllArgsConstructor;
@@ -38,7 +39,8 @@ public class MglgShowHotKeywords {
 	)
 	private int showKeywordId;
 	
-	private String showHotKeyword;
-	private LocalDateTime showedTime;
 	private int keywordOrder;
+	private String showHotKeyword;
+	
+	private LocalDateTime showTime;
 }

@@ -1,17 +1,26 @@
 package com.muglang.muglangspace.controller;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
+import com.muglang.muglangspace.dto.MglgShowHotKeywordsDTO;
+import com.muglang.muglangspace.entity.MglgShowHotKeywords;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +72,28 @@ public class SearchController {
 		return mv;
 	}
 	
+	@ResponseBody
+	@PostMapping("/insrtSHKs")
+	public void insertShowHotKeywords(@RequestBody List<MglgShowHotKeywordsDTO> showHotKeywordsListDTO) {
+		
+		List<MglgShowHotKeywords> mglgHotShowHotKeywords = new ArrayList();
+		
+		for(int i=0; i<showHotKeywordsListDTO.size(); i++) {
+			MglgShowHotKeywords returnHotKeywords = MglgShowHotKeywords.builder()
+																	   .keywordOrder(showHotKeywordsListDTO.get(i).getKeywordOrder())
+																	   .showHotKeyword(showHotKeywordsListDTO.get(i).getShowHotKeyword())
+																	   .showTime(LocalDateTime.now())
+																	   .build();
+			mglgHotShowHotKeywords.add(returnHotKeywords);
+		}
+		
+		mglgPostService.insertShowHotKeywords(mglgHotShowHotKeywords);
+	}
 	
-	
+	// 인기 검색어 전체 삭제
+	@DeleteMapping("/delSHKs")
+	public void deleteShowHotKeywords () {
+		mglgPostService.deleteShowHotKeyword();
+	}
 	
 }

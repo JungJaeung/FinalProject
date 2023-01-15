@@ -9,6 +9,7 @@
   </head>
   <body>
 	  <main layout:fragment="main" id="main" class="main">
+		  <!-- 인기 검색어 DB에서 끌고온 HotKeywords -->
 	  <div class="m-5">
 		  <div class="col-sm-12" style="width: 40%; float: left;">
 		  	<div class="tit">
@@ -27,7 +28,7 @@
 			  <thead>
 			    <tr>
 				  <th scope="col">
-					  <input type="checkbox" name="checkAll" id="checkAll" title="Check All">
+					  <input class='form-check-input mt-0' type="checkbox" name="checkAll" id="checkAll" title="Check All">
 				  </th>	
 			      <th scope="col" style="text-align: center;">순위</th>
 			      <th scope="col" style="text-align: center;">키워드</th>
@@ -36,7 +37,7 @@
 			  <tbody>
 			    <tr id="hotKeywordSet" th:each="hot, stat : ${mglgHotKeywords}" th:id="|wordList${stat.count}|" class="tac">
 				  <td>
-					  <input type="checkbox" name="checkEach" th:id="|hotWord${stat.count}|" th:value="${hot.insertedKeyword}">
+					  <input class='form-check-input mt-0' type="checkbox" name="checkEach" th:id="|hotWord${stat.count}|" th:value="${hot.insertedKeyword}">
 				  </td>
 			      <th style="text-align: center;" th:text="${stat.count}"></th>
 			      <td style="text-align: center;" th:text="${hot.insertedKeyword}"></td>
@@ -74,28 +75,29 @@
 					<h4 class="box-title">사용자 화면 검색 순위</h4>
 				</div>
 				<div class="d-flex justify-content-end">
-					<button type="button" class="btn btn-outline-danger" onclick="fn_chkDel()">삭제</button>
+					<button type="button" class="btn btn-outline-danger" id="delBtn">삭제</button>
 				</div><br>
-				<table class="table table-bordered">
-					<colgroup>
-						<col style="width: 55px;">
-						<col style="width: 70px;">
-						<col style="width: auto;">
-						<col style="width: 70px;">
-					</colgroup>
-					<thead>
-						<tr>
-							<th scope="col"><input type="checkbox" name="checkAll2" id="checkAll2" title="Check All"></th>
-							<th scope="col">순위</th>
-							<th scope="col">사용자화면</th>
-						</tr>
-					</thead>
-					<tbody id="userTable">
-					</tbody>
-				</table>
-				<div class="d-flex justify-content-end">
-					<button type="button" class="btn btn-outline-info">저장</button>
-				</div>
+				<form id="userTableForm" enctype="multipart/form-data">
+					<table class="table table-bordered">
+						<colgroup>
+							<col style="width: 55px;">
+							<col style="width: 70px;">
+							<col style="width: auto;">
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col" style="text-align: center;">순위</th>
+								<th scope="col" style="text-align: center;">사용자화면</th>
+							</tr>
+						</thead>
+						<tbody id="userTable">
+
+						</tbody>
+					</table>
+					<div class="d-flex justify-content-end">
+						<button type="button" class="btn btn-outline-info" id="saveBtn">저장</button>
+					</div>
+				</form>
 			</div>
 		</div>
 		</main>
@@ -110,12 +112,6 @@
 						if($("#checkAll").is(":checked")) $("input[name='checkEach']").prop("checked", true);
 						else $("input[name='checkEach']").prop("checked", false); 
 				});
-				
-				// 사용자 테이블 체크박스 전체 선택
-				$("#checkAll2").on("click", function() {
-						if($("#checkAll2").is(":checked")) $("input[name='checkEach2']").prop("checked", true);
-						else $("input[name='checkEach']").prop("checked", false); 
-				});
 					
 				// 추가 버튼 작동
 				$("#addBtn").on("click", function() {
@@ -125,10 +121,11 @@
 					
 					// 가져온 값
 					let chkEch = $("input[name='checkEach']:checked");
-					console.log("아 값이 왜 날아갔어 ㅅㅂ" + chkEch);
+					console.log(chkEch);
+
 					// 검색어 10개 유효성 검사
 					if(chkEch.length > 10) {
-						alert("관리자님 검색어를 10개 이하로 선택해주세요!");
+						alert("검색어를 10개 이하로 선택해주세요!");
 						return;
 					} else {
 						// 가져온 value를 배열에 추가
@@ -136,18 +133,71 @@
 							chkEchArr.push($(this).val());
 						});						
 					}
-					
+					console.log(chkEchArr);
 					// 사용자 테이블에 가져온 value 순서대로 추가
 					for(i=0; i<chkEchArr.length; i++) {
-						let html = "<tr>";
-						html += "<td><input type='checkbox' name='checkEach2'></td>";
-						html += "<th style='text-align: center;' th:text='${stat.count}'>" + (i + 1) + "</th>";
-						html += "<td style='text-align: center;'>" + chkEchArr[i] + "</td>";
+						let html = "";
+						html += "<tr class='showHotKeywordsRow'>"
+						html += "<td><input class='form-control' type='text' name='keywordOrder' value='" + (i + 1) + "'></td>";
+						html += "<td><input class='form-control' type='text' name='showHotKeyword' value='" + chkEchArr[i] + "'></td>";
 						html += "</tr>"
 						
 						$("#userTable").append(html);
 					}						
-				});	
+				});	// 추가 버튼 작동
+				
+				// 사용자 화면 테이블 DB에 있는 데이터 전체 삭제 버튼 작동
+				$("#delBtn").on("click", function() {
+					$.ajax({
+						url: '/search/delSHKs',
+						type: 'delete',
+						success: function() {
+							alert("사용자 화면의 인기 검색어 내용이 모두 삭제되었습니다.");
+							window.location.reload();
+						},
+						error: function(e) {
+							console.log("ERROR: " + e);
+						}
+					});		
+				});
+				
+				
+				
+				// 저장 버튼을 눌러서 사용자 화면 DB(T_MGLG_SHOW_HOT_KEYWORDS)로 정보를 보냄
+				// 저장 버튼 작동
+				$("#saveBtn").on("click", function() {
+					let rowNum = $(".showHotKeywordsRow").length
+					
+					let ShowHotKeywords = function(keywordOrder, showHotKeyword) {
+						this.keywordOrder = keywordOrder;
+						this.showHotKeyword = showHotKeyword;
+					}
+					
+					let param = [];
+					for(i=0; i<rowNum; i++) {
+						let showHotKeywords = new ShowHotKeywords(
+							$("input[name='keywordOrder']").eq(i).val(),
+							$("input[name='showHotKeyword']").eq(i).val()
+						)
+						param.push(showHotKeywords);
+					}
+					
+					$.ajax({
+						url: '/search/insrtSHKs',
+						type: 'post',
+						data: JSON.stringify(param),
+						dataType: 'json',
+						contentType: 'application/json',
+						success: function() {
+							alert("데이터가 전송되었습니다.");
+							window.location.href="/post/mainPost";
+						},
+						error: function(e) {
+							console.log("ERROR: " + e);
+						}
+					});
+				});
+			
 			});							
 			/*]]>*/
 		</script>

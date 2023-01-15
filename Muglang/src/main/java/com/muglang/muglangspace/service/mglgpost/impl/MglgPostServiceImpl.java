@@ -1,5 +1,8 @@
 package com.muglang.muglangspace.service.mglgpost.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,11 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.dto.MglgPostDTO;
+import com.muglang.muglangspace.dto.MglgShowHotKeywordsDTO;
 import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgShowHotKeywords;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserRelation;
 import com.muglang.muglangspace.repository.MglgPostFileRepository;
 import com.muglang.muglangspace.repository.MglgPostRepository;
+import com.muglang.muglangspace.repository.MglgShowHotKeywordsRepository;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +31,9 @@ public class MglgPostServiceImpl implements MglgPostService {
 
 	@Autowired
 	private MglgPostFileRepository mglgPostFileRepository;
+	
+	@Autowired
+	private MglgShowHotKeywordsRepository mglgShowHotKeywordsRepository;
 
 	// 포스팅 관련 서비스 제공
 	@Override
@@ -152,7 +161,6 @@ public class MglgPostServiceImpl implements MglgPostService {
 	}
 	
 	// 검색어를 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
-	@Transactional
 	@Override
 	public void insertKeyword(String searchKeyword) {
 		mglgPostRepository.insertKeyword(searchKeyword);
@@ -163,4 +171,35 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public Page<CamelHashMap> getHotKeywords(Pageable pageable) {
 		return mglgPostRepository.getHotKeywords(pageable);
 	}
+	
+	@Override
+	public void insertShowHotKeywords(List<MglgShowHotKeywords> mglgHotShowHotKeywords) {
+		mglgShowHotKeywordsRepository.saveAll(mglgHotShowHotKeywords);
+	}
+
+	@Override
+	public List<MglgShowHotKeywordsDTO> getShowHotKeywords() {
+		
+		List<MglgShowHotKeywordsDTO> mglgShowHotKeywordsDTO = new ArrayList();
+		
+		List<MglgShowHotKeywords> mglgShowHotKeywords = mglgShowHotKeywordsRepository.findAll();
+		
+		for(int i=0; i<mglgShowHotKeywords.size(); i++) {
+			MglgShowHotKeywordsDTO returnKeywords = MglgShowHotKeywordsDTO.builder()
+					                                                      .keywordOrder(mglgShowHotKeywords.get(i).getKeywordOrder())
+					                                                      .showHotKeyword(mglgShowHotKeywords.get(i).getShowHotKeyword())
+					                                                      .build();
+			mglgShowHotKeywordsDTO.add(returnKeywords);
+		}
+		return mglgShowHotKeywordsDTO;
+	}
+	
+	// 인기 검색어 전체 삭제
+	@Override
+	public void deleteShowHotKeyword() {
+		mglgShowHotKeywordsRepository.deleteAll();
+		
+	}
+
+
 }

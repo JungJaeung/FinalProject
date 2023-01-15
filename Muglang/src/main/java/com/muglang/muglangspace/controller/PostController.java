@@ -32,9 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.common.FileUtils;
@@ -43,6 +41,7 @@ import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgPostFileDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgRestaurantDTO;
+import com.muglang.muglangspace.dto.MglgShowHotKeywordsDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
@@ -443,13 +442,19 @@ public class PostController {
 			file.put("file_list", fileListDTO);	//키값은 스네이크형으로 적고 오버라이딩된 camelHashMap클래스의 메소드를 따라감. 
 			//camel형으로 키값을 자동으로 바꿈.
 		}
+		
+		// 인기 검색어 받아오기
+		List<MglgShowHotKeywordsDTO> mglgShowHotKeywordsList = mglgPostService.getShowHotKeywords();
+		
 		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostList);
 		// 세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
 		mv.addObject("loginUser", Load.toHtml(loginUser.getMglgUser()));
-
+		// 인기 검색어 화면단으로 표시
+		mv.addObject("showHotKeywords", mglgShowHotKeywordsList);
+		
 		return mv;
 	}
 	
@@ -682,5 +687,4 @@ public class PostController {
 				return ResponseEntity.ok().body(e);
 			}
 		}
-
 }
