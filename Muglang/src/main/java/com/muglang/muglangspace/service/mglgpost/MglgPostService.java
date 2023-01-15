@@ -64,6 +64,9 @@ public interface MglgPostService {
 	// 인기 검색어 가져오기
 	public List<MglgShowHotKeywordsDTO> getShowHotKeywords();
 	
+	// 인기 검색어 전체 삭제
+	public void deleteShowHotKeyword();
+	
 
 	
 }

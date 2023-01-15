@@ -146,15 +146,19 @@
 					}						
 				});	// 추가 버튼 작동
 				
-				// 전체 삭제 버튼 작동
+				// 사용자 화면 테이블 DB에 있는 데이터 전체 삭제 버튼 작동
 				$("#delBtn").on("click", function() {
-					// 항목 개수
-					let chkEchLng = $("input[name='checkEach2']:checked").length;
-					
-					confirm("모든 검색어를 삭제 하시겠습니까?");
-					$("input[name='checkEach2']").each(function(a, val) {
-						val.parentElement.parentElement.remove();
-					});			
+					$.ajax({
+						url: '/search/delSHKs',
+						type: 'delete',
+						success: function() {
+							alert("사용자 화면의 인기 검색어 내용이 모두 삭제되었습니다.");
+							window.location.reload();
+						},
+						error: function(e) {
+							console.log("ERROR: " + e);
+						}
+					});		
 				});
 				
 				

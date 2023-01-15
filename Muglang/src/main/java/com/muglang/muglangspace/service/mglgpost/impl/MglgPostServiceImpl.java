@@ -193,6 +193,13 @@ public class MglgPostServiceImpl implements MglgPostService {
 		}
 		return mglgShowHotKeywordsDTO;
 	}
+	
+	// 인기 검색어 전체 삭제
+	@Override
+	public void deleteShowHotKeyword() {
+		mglgShowHotKeywordsRepository.deleteAll();
+		
+	}
 
 
 }
