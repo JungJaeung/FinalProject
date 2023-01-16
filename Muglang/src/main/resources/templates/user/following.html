@@ -40,6 +40,7 @@
 							$.followingEvent(elements + i, obj.pageItems.content[i].postId);
 						}
 						console.log("좋아요 이벤트, 댓글 기능 활성화 작업 시작.");
+						//선택자로 직접 id를 언급해서 사용하니깐 작동이 또 잘됨. 로드 순서에 따라 직접 지정과 #, . 지정의 적용시점이 다른거 같음.
 						console.log($("input[id='loginUserId']").val());
 						let myId = Number($("input[id='loginUserId']").val());
 						$.like_button(myId);
