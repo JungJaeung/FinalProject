@@ -313,7 +313,7 @@ function callPost(post) {
 	
 	htmlText += `<div class="col-12 post">`;
 	htmlText += `<input type="hidden" value="${post.betweenDate}">`;
-	htmlText += `<input type="text" id="fileList${post.postId}" value="${post.fileSize}">`;
+	htmlText += `<input type="text" id="fileList${post.postId}" value="${post.file_length}">`;
 	htmlText += `<div class="card recent-sales">`
 	htmlText += `<div class="card-body">`
 	htmlText += `<div class="filter" style="margin-top: 15px;">`

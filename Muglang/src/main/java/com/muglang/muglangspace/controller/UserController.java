@@ -129,35 +129,18 @@ public class UserController {
 		
 	}
 	
-	
-	// 내 게시물으로 이동
-	//내가 쓴 게시글들만 필터링하여 ajax처리후 게시글을 다 불러오게됨.
+	//내게시글의 페이지로 다시 이동
+	//게시글의 처리는 post컨트롤러로 이관함.
 	@GetMapping("/myBoard")
-	public ResponseEntity<?> myBoard(@PageableDefault(page = 0, size = 5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
-		MglgResponseDTO<Map<String, Object>> response = new MglgResponseDTO<>();
-		try {
-			//내 게시글 불러오기
-			Page<CamelHashMap> myPostList = mglgPostService.getPagePersonalPostList(pageable, loginUser.getMglgUser().getUserId());
-			//내 프로필 이미지
-			MglgUserProfile myProfile = mglgUserProfileService.getUserImg(loginUser.getMglgUser().getUserId());
-			
-			MglgUserProfileDTO myProfileDTO = Load.toHtml(myProfile);
+	public ModelAndView myBoardList(@AuthenticationPrincipal CustomUserDetails loginUser) {
+			ModelAndView mv = new ModelAndView();
 			MglgUserDTO loginUserDTO = Load.toHtml(loginUser.getMglgUser());
-			
-			Map<String, Object> postItem = new HashMap<String, Object>();
-			postItem.put("postList", myPostList);
-			postItem.put("loginUser", loginUserDTO);
-			postItem.put("profile", myProfileDTO);
-			
-			response.setItem(postItem);
-			System.out.println("!@#$!%!#필요한 정보들을 성공적으로 처리하였습니다.%$#^");
-			return ResponseEntity.ok().body(response);
-		} catch(Exception e) {
-			response.setErrorMessage(e.getMessage());
-			return ResponseEntity.ok().body(response);
-		}
+			mv.addObject("loginUser", loginUserDTO);
+			mv.setViewName("/user/myBoard.html");
+			System.out.println("게시글 처리 정보 이관중--------------!!!!!!!!!!!!!!");
+			return mv;
 	}
-
+	
 	// 팔로워로 이동
 	// 유저 목록 불러오기 + 페이징
 	@GetMapping("/follower")

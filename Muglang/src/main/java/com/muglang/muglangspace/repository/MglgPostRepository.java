@@ -93,7 +93,7 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			+ "                     FROM T_MGLG_POST_LIKES F\r\n"
 			+ "                     WHERE F.USER_ID = :userId\r\n"
 			+ "                ) E\r\n"
-			+ "    ON D.POST_ID = E.POST_ID\r\n AND D.USER_ID = :userId "
+			+ "    ON D.POST_ID = E.POST_ID\r\n WHERE D.USER_ID = :userId "
 			+ "     ORDER BY D.POST_ID DESC",
 			countQuery = " SELECT COUNT(*) FROM (SELECT * FROM T_MGLG_POST) D", nativeQuery = true)
 	Page<CamelHashMap> getPagePersonalPostList(Pageable pageable, @Param("userId") int userId);
