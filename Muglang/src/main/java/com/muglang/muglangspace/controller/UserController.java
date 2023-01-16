@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,17 +31,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.common.FileUtils;
-import com.muglang.muglangspace.common.Load;
-import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
-import com.muglang.muglangspace.dto.MglgRestaurantDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.MglgUserProfileDTO;
-import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
-import com.muglang.muglangspace.entity.MglgPost;
-import com.muglang.muglangspace.entity.MglgPostFile;
-import com.muglang.muglangspace.entity.MglgRestaurant;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
@@ -67,14 +58,19 @@ public class UserController {
 	@GetMapping("/profile")
 	public ModelAndView profileView(@AuthenticationPrincipal CustomUserDetails customUser,@PageableDefault(page = 0, size = 5) Pageable pageable) {
 		int userId = customUser.getMglgUser().getUserId();
-		Page<MglgUser> requestFollowList = userRelationService.requestFollowList(userId,pageable);
-		Page<MglgUserDTO> requestFollowDTOList = requestFollowList.map(followList -> 
-																					MglgUserDTO.builder()
-																					 .userName(followList.getUserName())
-																					 .userId(followList.getUserId())
-																					 .build()
-		);
-		long followCnt = requestFollowDTOList.getTotalElements();
+		Page<CamelHashMap> requestFollowList = userRelationService.requestFollowList(userId,pageable);
+		int i =0;
+		for(CamelHashMap a : requestFollowList) {
+			int getUserId = (int) requestFollowList.getContent().get(i).get("userId");
+			MglgUserProfile profileImg = mglgUserProfileService.getUserImg(getUserId);
+			requestFollowList.getContent().get(i).put("profileImg", profileImg);
+			if(i==5) {
+				i=0;
+			}else {
+				i++;
+			}
+		}
+		long followCnt = requestFollowList.getTotalElements();
 		
 
 		ModelAndView mv = new ModelAndView();
@@ -95,7 +91,7 @@ public class UserController {
 		
 
 		mv.addObject("followCnt", followCnt);
-		mv.addObject("requestList", requestFollowDTOList);
+		mv.addObject("requestList", requestFollowList);
 		mv.addObject("user", user);
 		mv.setViewName("profile.html");
 		return mv;
@@ -104,16 +100,24 @@ public class UserController {
 	@GetMapping("/profileAjax")
 	public ResponseEntity<?> profileAjax(@AuthenticationPrincipal CustomUserDetails customUser,@PageableDefault(page = 0, size = 5)Pageable pageable) {
 		int userId = customUser.getMglgUser().getUserId();
-		MglgResponseDTO<MglgUserDTO> response = new MglgResponseDTO<>();
+		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 		try {
-			Page<MglgUser> requestFollowList = userRelationService.requestFollowList(userId,pageable);
-			Page<MglgUserDTO> requestFollowDTOList = requestFollowList.map(followList -> 
-																				MglgUserDTO.builder()
-																				 .userName(followList.getUserName())
-																				 .userId(followList.getUserId())
-																				 .build()
-			);
-			response.setPageItems(requestFollowDTOList);
+			int i =0;
+			Page<CamelHashMap> requestFollowList = userRelationService.requestFollowList(userId,pageable);
+			for(CamelHashMap a : requestFollowList) {
+				int getUserId = (int) requestFollowList.getContent().get(i).get("userId");
+				MglgUserProfile profileImg = mglgUserProfileService.getUserImg(getUserId);
+				requestFollowList.getContent().get(i).put("profileImg", profileImg);
+				if(i==5) {
+					i=0;
+				}else {
+					i++;
+				}
+			}
+			
+			
+			
+			response.setPageItems(requestFollowList);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
 			response.setErrorMessage(e.getMessage());
@@ -131,34 +135,31 @@ public class UserController {
 		return mv;
 	}
 
-	// 팔로잉으로 이동
+	// 팔로워로 이동
 	// 유저 목록 불러오기 + 페이징
 	@GetMapping("/follower")
 	public ModelAndView followList(@AuthenticationPrincipal CustomUserDetails loginUser) {
 			int userId = loginUser.getMglgUser().getUserId();
 			ModelAndView mv = new ModelAndView();
 
-					
-					mv.setViewName("/user/follower.html");
-					mv.addObject("userIds", userId);
-				
-					return mv;
+			mv.addObject("userIds", userId);
+			mv.setViewName("/user/follower.html");
+			
+			return mv;
 	}
 
-	// 팔로워로 이동
+	// 팔로잉으로 이동
 	@GetMapping("/following")
 	public ModelAndView followingList(@AuthenticationPrincipal CustomUserDetails loginUser) {
 		int userId = loginUser.getMglgUser().getUserId();
 		ModelAndView mv = new ModelAndView();
 
-				
-				mv.setViewName("/user/follower.html");
-				mv.addObject("userId", userId);
-					
-					mv.setViewName("/user/following.html");
-					
-					
-					return mv;
+		//mv.setViewName("/user/follower.html");
+		mv.addObject("userId", userId);
+		mv.setViewName("/user/following.html");
+			
+			
+		return mv;
 	}
 
 

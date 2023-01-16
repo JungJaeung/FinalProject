@@ -63,7 +63,7 @@ public class UserRelationServiceImpl implements UserRelationService {
 
 	}
 	@Override
-	public Page<MglgUser> requestFollowList(int userId, Pageable pageable) {
+	public Page<CamelHashMap> requestFollowList(int userId, Pageable pageable) {
 		return mglgUserRelationRepository.requestFollowList(userId,pageable);
 	}
 	@Override
