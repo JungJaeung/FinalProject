@@ -359,7 +359,7 @@
 										text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
 										text_scroll += `</ul></div>`
 										text_scroll += `<div class="card-title">`;
-										text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
+										text_scroll += `<img class="img-fluid rounded-circle" src="/upload/${post.profile.userProfileNm}"
 														style="width: 40px;">
 														<a href="#" class="card-title">${post.userNick}</a>`;
 										text_scroll += `</div>`;
@@ -692,7 +692,7 @@
 									</div>
 									<!-- 이름부분 후에 스크립트로 for문 예정 -->
 									<div class="card-title">
-										<img class="img-fluid rounded-circle" src="../assets/img/messages-1.jpg"
+										<img class="img-fluid rounded-circle" th:src="'/upload/' + ${post.profile.userProfileNm}"
 											style="width: 40px;">
 										<a href="#" class="card-title" th:text="${post.userNick}"></a>
 									</div>
@@ -994,7 +994,7 @@
 
 								$.map_button();
 
-							})
+							});
 
 						</script>
 					</div>

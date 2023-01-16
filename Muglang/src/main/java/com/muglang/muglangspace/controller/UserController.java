@@ -154,11 +154,10 @@ public class UserController {
 				
 				mv.setViewName("/user/follower.html");
 				mv.addObject("userId", userId);
+				mv.setViewName("/user/following.html");
 					
-					mv.setViewName("/user/following.html");
 					
-					
-					return mv;
+				return mv;
 	}
 
 

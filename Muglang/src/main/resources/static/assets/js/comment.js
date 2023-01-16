@@ -4,7 +4,9 @@ $.comment_button = function() {
 	text_comment = "";
 	$(".msg_icon").click(function(e) {
 		//여기도 댓글 아이콘 아이디를 포스트 id로 잡았음
-		postId = e.target.id;
+		
+		postId = Number(e.target.id);
+		console.log("대상 댓글 포스트 번호: " + postId);
 		$.comment_list();
 	});
 
@@ -12,7 +14,6 @@ $.comment_button = function() {
 
 //댓글 리스트 불러오는 함수
 $.comment_list = function() {
-
 	$.ajax({
 		url: '/comment/commentList',
 		type: 'get',
