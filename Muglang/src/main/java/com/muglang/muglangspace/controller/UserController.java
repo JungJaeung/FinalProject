@@ -211,7 +211,7 @@ public class UserController {
 		}//getUserList끝
 	
 	
-	//로그인 겟 맵핑 - 김동현
+	//로그인 겟 맵핑
 	@GetMapping("/login")
 	public ModelAndView loginView() {
 		ModelAndView mv = new ModelAndView();

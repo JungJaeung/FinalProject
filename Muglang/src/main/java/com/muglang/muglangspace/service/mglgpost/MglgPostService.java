@@ -44,13 +44,13 @@ public interface MglgPostService {
 	public String reportPost(int postId,int userId);
 	
 	// 포스트 내용을 기준으로 검색
-	public Page<CamelHashMap> searchByPost(String searchKeyword, Pageable pageable);
-	
-	// 닉네임을 기준으로 검색
-	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable);
+	public Page<CamelHashMap> searchByPost(String searchKeyword, Pageable pageable, int userId);
 	
 	// 해시태그를 기준으로 검색
-	public Page<CamelHashMap> searchByHashtag(String searchKeyword, Pageable pageable);
+	public Page<CamelHashMap> searchByHashtag(String searchKeyword, Pageable pageable, int userId);
+	
+	// 닉네임을 기준으로 검색
+	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable, int userId);
 	
 	// 검색어 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
 	public void insertKeyword(String searchKeyword);

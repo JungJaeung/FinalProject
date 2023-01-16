@@ -23,7 +23,6 @@ import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 public class MglgPostServiceImpl implements MglgPostService {
 	@Autowired
@@ -144,21 +143,23 @@ public class MglgPostServiceImpl implements MglgPostService {
 	
 	// 포스트 내용을 기준으로 검색
 	@Override
-	public Page<CamelHashMap> searchByPost(String searchKeyword, Pageable pageable) {
-		return mglgPostRepository.searchByPost(searchKeyword, pageable);
+	public Page<CamelHashMap> searchByPost(String searchKeyword, Pageable pageable, int userId) {
+		return mglgPostRepository.searchByPost(searchKeyword, userId, pageable);
+	}
+	
+	// 해시태그를 기준으로 검색
+	@Override
+	public Page<CamelHashMap> searchByHashtag(String searchKeyword, Pageable pageable, int userId) {
+		return mglgPostRepository.searchByHashtag(searchKeyword, userId, pageable);
 	}
 	
 	// 닉네임을 기준으로 검색
 	@Override
-	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable) {
-		return mglgPostRepository.searchByNick(searchKeyword, pageable);
+	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable, int userId) {
+		return mglgPostRepository.searchByNick(searchKeyword, userId, pageable);
 	}
 	  
-	// 해시태그를 기준으로 검색
-	@Override
-	public Page<CamelHashMap> searchByHashtag(String searchKeyword, Pageable pageable) {
-		return mglgPostRepository.searchByHashtag(searchKeyword, pageable);
-	}
+
 	
 	// 검색어를 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
 	@Override
