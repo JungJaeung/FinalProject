@@ -6,6 +6,7 @@
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
 		
+		
 			$(function () {
 				let postId;
 				let commentId;
@@ -15,8 +16,9 @@
 				var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 				var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 					return new bootstrap.Tooltip(tooltipTriggerEl)
-				})
+				});
 				
+				/*
 				//좋아요 버튼 함수(innerHtml에도 먹이기 위해서 함수로 만듬)
 				$.like_button = function () {
 					$(".post_like").click(function (e) {
@@ -67,7 +69,7 @@
 						}
 					});
 				}
-
+					*/
 				//좋아요 이벤트 리스너 함수 호출
 				$.like_button();
 
@@ -202,8 +204,10 @@
 						for(let i = 0; i < obj.content.length; i++) {
 							$.followingEvent(elements + i, obj.content[i].postId);
 						}
-						console.log("html 화면단 세팅 완료!@#");
-						$.like_button(loginUserId);
+						console.log("좋아요 이벤트, 댓글 기능 활성화 작업 시작.");
+						console.log($("input[id='loginUserId']").val());
+						let myId = Number($("input[id='loginUserId']").val());
+						$.like_button(myId);
 						$.comment_button();
 						console.log("팔로워의 게시글 모두 게시 완료!!@#$%^^");
 					},
