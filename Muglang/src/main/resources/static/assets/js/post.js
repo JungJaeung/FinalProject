@@ -1,11 +1,4 @@
 
-$.content_input_change = function(){
-	$("#abc").click(function(e){
-		console.log($(".ql-editor").html());
-	});
-};
-
-
 $(function() {
 	$('.fileBtns').hide();
 
