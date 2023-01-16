@@ -409,6 +409,18 @@ public class UserController {
 		response.sendRedirect("/user/profile");
 
 	}
+	
+	
+	@GetMapping("/changeDefaultImg")
+	public void changeDefaultImg(HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails customUser) throws IOException {
+		int userId = customUser.getMglgUser().getUserId();
+		mglgUserProfileService.changeDefaultImg(userId);
+		
+		response.sendRedirect("/user/profile");
+
+	}
+	
+	
 	//사이들바 프로필 파일 불러오는 로직
 	@GetMapping("getUserImg")
 	public ResponseEntity<?> orderWindow(@AuthenticationPrincipal CustomUserDetails loginUser) {

@@ -856,20 +856,10 @@
 								style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
 								먹거리 <span>| Today</span></h5>
 							<div class="activity">
-								<div id="today_eat">
-									<ol>
-										<li><a href="#"><b>#치킨</b></a></li>
-										<li><a href="#"><b>#보쌈</b></a></li>
-										<li><a href="#"><b>#연어초밥</b></a></li>
-										<li><a href="#"><b>#우육면</b></a></li>
-										<li><a href="#"><b>#마라탕</b></a></li>
-										<li><a href="#"><b>#짜장면</b></a></li>
-										<li><a href="#"><b>#라멘</b></a></li>
-										<li><a href="#"><b>#갈비</b></a></li>
-										<li><a href="#"><b>#곱창</b></a></li>
-										<li><a href="#"><b>#막창</b></a></li>
-
-									</ol>
+								<div id="today_eat" th:each="showHotKeyword : ${showHotKeywords}">
+									<ul style="list-style:none;">
+										<li><a th:href="@{/search/searchByPost(searchKeyword=${showHotKeyword.showHotKeyword})}" th:text="|${showHotKeyword.keywordOrder}.  #${showHotKeyword.showHotKeyword}|"></a></li>
+									</ul>
 								</div>
 							</div>
 						</div>

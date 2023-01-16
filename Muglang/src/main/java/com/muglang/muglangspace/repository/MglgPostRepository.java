@@ -1,5 +1,7 @@
 package com.muglang.muglangspace.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -11,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgPost;
+import com.muglang.muglangspace.entity.MglgShowHotKeywords;
 
 @Transactional
 public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
@@ -67,16 +70,16 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
    			+ "POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
             + "FROM T_MGLG_POST P\r\n"
             + "   INNER JOIN T_MGLG_USER U\r\n"
-            + "   ON P.USER_ID = U.USER_ID \r\n"
+            + "   ON P.USER_ID = U.USER_ID\r\n"
             + "WHERE P.POST_CONTENT LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
             + "ORDER BY P.POST_DATE DESC",
 		   countQuery = " SELECT COUNT(*)"
 		   		+ "			FROM ("
-		   		+ "					SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\\r\\n"
+		   		+ "					SELECT POST_ID, HASH_TAG1, HASH_TAG2, HASH_TAG3, HASH_TAG4, HASH_TAG5,\r\n"
 		   		+ "						   POST_CONTENT, POST_DATE, POST_RATING, REST_NM, REST_RATING, P.USER_ID AS PUID, U.USER_ID AS UUID, U.USER_NICK\r\n"
 		   		+ "						FROM T_MGLG_POST P\r\n"
 		   		+ "   					INNER JOIN T_MGLG_USER U\r\n"
-	            + "   						ON P.USER_ID = U.USER_ID \r\n"
+	            + "   						ON P.USER_ID = U.USER_ID\r\n"
 	            + "						WHERE P.POST_CONTENT LIKE CONCAT('%', :#{#searchKeyword}, '%')\r\n"
 	            + "						ORDER BY P.POST_DATE DESC\r\n"
 	            + "				) A",
@@ -137,22 +140,6 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
  	@Query(value="SELECT COUNT(*) AS postCount FROM T_MGLG_POST WHERE USER_ID = :userId", nativeQuery=true)
 	int postCnt(@Param("userId") int userId);
 
-	//모두 검색
-
-	Page<MglgPost> findByPostContentOrRestNmOrHashTag1OrHashTag2OrHashTag3OrHashTag4OrHashTag5OrSearchKeywordContainingOrderByPostDateDesc(
-			@Param("searchKeyword") String searchKeyword1,
-			@Param("searchKeyword") String searchKeyword2,
-			@Param("searchKeyword") String searchKeyword3,
-			@Param("searchKeyword") String searchKeyword4,
-			@Param("searchKeyword") String searchKeyword5,
-			@Param("searchKeyword") String searchKeyword6,
-			@Param("searchKeyword") String searchKeyword7,
-			@Param("searchKeyword") String searchKeyword8,
-			Pageable pageable
-			);
-	
-
-	//
 	///개인 작성글 조회
  	 @Query(value="SELECT * FROM T_MGLG_POST WHERE USER_ID = :userId", nativeQuery=true)
 	 Page<MglgPost> findByUserId(@Param("userId") int userId, Pageable pageable);
@@ -297,7 +284,5 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 					+ "FROM T_MGLG_HOT_KEYWORDS k\r\n"
 					+ "GROUP BY k.inserted_keyword\r\n"
 					+ "ORDER BY word_cnt DESC) a", nativeQuery = true)
-	public Page<CamelHashMap> getHotKeywords(Pageable pageable);	
-	
-	
+	public Page<CamelHashMap> getHotKeywords(Pageable pageable);
 }

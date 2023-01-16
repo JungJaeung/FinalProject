@@ -1,5 +1,6 @@
 package com.muglang.muglangspace.dto;
 
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,10 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MglgChatroomDTO {
-	private int chatroomId;
-	private int part1;
-	private int part2;
-	private String roomDatetime;
-	private String useYn;
+public class MglgHotKeywordsDTO {
+	private String insertedKeyword;
+	private LocalDateTime searchedTime;
 }

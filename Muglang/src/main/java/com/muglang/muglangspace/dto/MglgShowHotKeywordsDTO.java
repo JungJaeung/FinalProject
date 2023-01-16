@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MglgHotKeywords {
-	private String insertedKeyword;
-	private LocalDateTime searchedTime;
+public class MglgShowHotKeywordsDTO {
+	private String showHotKeyword;
+	private int keywordOrder;
 }

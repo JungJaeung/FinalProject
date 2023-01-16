@@ -13,6 +13,8 @@ public interface MglgUserProfileService {
 	public MglgUserProfile followerProfile(int eachUserId); 
 
 	public MglgUserProfile followingProfile(int eachUserId); 
+	
+	public void changeDefaultImg(int userId);
 
 }
 
