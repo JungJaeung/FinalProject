@@ -39,8 +39,10 @@
 						for(let i = 0; i < obj.pageItems.content.length; i++) {
 							$.followingEvent(elements + i, obj.pageItems.content[i].postId);
 						}
-						console.log("html 화면단 세팅 완료!@#");
-						$.like_button(loginUserId);
+						console.log("좋아요 이벤트, 댓글 기능 활성화 작업 시작.");
+						console.log($("input[id='loginUserId']").val());
+						let myId = Number($("input[id='loginUserId']").val());
+						$.like_button(myId);
 						$.comment_button();
 						//$.map_button();
 						page_num++;
@@ -90,6 +92,7 @@
 						console.log(e);
 					}
 				});
+				
 				$("#btn_next").click(function () {
 					console.log("누르기전page_num===" + page_num)
 					if (page_num == totalPages - 1) {
@@ -135,7 +138,8 @@
 						}
 					});
 
-				})
+				});
+				
 				$("#btn_prev").click(function () {
 					console.log("누르기전page_num===" + page_num);
 					if (page_num < 1) {
@@ -236,7 +240,8 @@
 <!-- head 영역 끝 -->
 
 <body>
-	<main layout:fragment="main" id="main" class="main">
+	<main layout:fragment="main" id="main" class="main">\
+	<input type="hidden" th:value="${userId}" id="loginUserId">
 		<div class="pagetitle">
 			<h1>Following</h1>
 			<nav>

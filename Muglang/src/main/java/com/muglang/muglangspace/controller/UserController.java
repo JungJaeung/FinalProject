@@ -135,33 +135,31 @@ public class UserController {
 		return mv;
 	}
 
-	// 팔로잉으로 이동
+	// 팔로워로 이동
 	// 유저 목록 불러오기 + 페이징
 	@GetMapping("/follower")
 	public ModelAndView followList(@AuthenticationPrincipal CustomUserDetails loginUser) {
 			int userId = loginUser.getMglgUser().getUserId();
 			ModelAndView mv = new ModelAndView();
 
-					
-					mv.setViewName("/user/follower.html");
-					mv.addObject("userIds", userId);
-				
-					return mv;
+			mv.addObject("userIds", userId);
+			mv.setViewName("/user/follower.html");
+			
+			return mv;
 	}
 
-	// 팔로워로 이동
+	// 팔로잉으로 이동
 	@GetMapping("/following")
 	public ModelAndView followingList(@AuthenticationPrincipal CustomUserDetails loginUser) {
 		int userId = loginUser.getMglgUser().getUserId();
 		ModelAndView mv = new ModelAndView();
 
-				
-				mv.setViewName("/user/follower.html");
-				mv.addObject("userId", userId);
-				mv.setViewName("/user/following.html");
-					
-					
-				return mv;
+		//mv.setViewName("/user/follower.html");
+		mv.addObject("userId", userId);
+		mv.setViewName("/user/following.html");
+			
+			
+		return mv;
 	}
 
 
