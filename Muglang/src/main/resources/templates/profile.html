@@ -36,7 +36,8 @@
 											<div class="card-body">
 												<div class="follow_request mb-5">
 													<span style="float: left;">
-													<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg" style="width: 90px;">
+													<img class="img-fluid rounded-circle" 
+													src="/upload/${obj.pageItems.content[i].profileimg.userProfileNm}" style="width: 90px;height:90px;">
 													</span>
 													<span style="word-break: keep-all;">
 														<b>${obj.pageItems.content[i].userName}</b>님이 당신을 팔로우
@@ -84,7 +85,8 @@
 											<div class="card-body">
 												<div class="follow_request mb-5">
 													<span style="float: left;">
-													<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg" style="width: 90px;">
+													<img class="img-fluid rounded-circle"
+													 src="/upload/${obj.pageItems.content[i].profileimg.userProfileNm}" style="width: 90px;height:90px;">
 													</span>
 													<span style="word-break: keep-all;">
 														<b>${obj.pageItems.content[i].userName}</b>님이 당신을 팔로우
@@ -128,7 +130,8 @@
 											<div class="card-body">
 												<div class="follow_request mb-5">
 													<span style="float: left;">
-													<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg" style="width: 90px;">
+													<img class="img-fluid rounded-circle" 
+													src="/upload/${obj.pageItems.content[i].profileimg.userProfileNm}" style="width: 90px;height:90px;">
 													</span>
 													<span style="word-break: keep-all;">
 														<b>${obj.pageItems.content[i].userName}</b>님이 당신을 팔로우
@@ -156,26 +159,6 @@
 					});
 
 				})
-				///리무브 버튼 알려주기
-				$("#resetImgYn").click(function () {
-					if (confirm("이미지를 초기화 하시겠습니까?")) {
-						$.ajax({
-							url: '/user/profileAjax',
-							type: 'get',
-							success: function (obj) {
-								console.log(obj)
-							},
-							error: function (e) {
-								console.log(e);
-							}
-						});
-
-
-						alert("확인 버튼을 누르셨습니다.");
-					} else {
-					}
-				})
-
 
 			});
 		</script>
@@ -386,7 +369,7 @@
 							<!--팔로잉 요청1-->
 							<div class="follow_request mb-5">
 								<span style="float: left;"><img class="img-fluid rounded-circle"
-										th:src="@{/assets/img/messages-1.jpg}" style="width: 90px;"></span>
+										th:src="'/upload/'+${request.profileimg.userProfileNm}" style="width: 90px;"></span>
 								<span style="word-break: keep-all;"><b th:text="${request.userName}"></b>님이 당신을
 									하셨어요!!</span>
 								<div>

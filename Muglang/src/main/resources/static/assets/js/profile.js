@@ -19,18 +19,19 @@ $(function() {
 
 	$("#defaultProfileImg").click(function(e) {
 		e.preventDefault();
-		if (confirm("확인 혹은 취소 버튼을 누르세요")) {
+		if (confirm("프로필 이미지를 초기화하시겠습니까?")) {
 			$.ajax({
 				url: '/user/changeDefaultImg',
 				type: 'get',
 				success: function(obj) {
-					console.log(obj)
+					console.log(obj);
+					location.reload();
 				},
 				error: function(e) {
 					console.log(e);
 				}
 			});
-			alert("확인 버튼을 누르셨습니다.");
+			alert("기본이미지로 변경했습니다.");
 		} else {  // 취소 버튼을 눌렀을 때
 			alert("취소 버튼을 누르셨습니다.");
 		}

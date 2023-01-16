@@ -15,7 +15,7 @@ public interface UserRelationService {
 
 	Page<CamelHashMap> followList(MglgUser user,Pageable pageable);
 	Page<CamelHashMap> followingList(MglgUser user,Pageable pageable);
-	Page<MglgUser> requestFollowList(int userId,Pageable pageable);
+	Page<CamelHashMap> requestFollowList(int userId,Pageable pageable);
 	void followUser(int followId, int userId);
 	void unFollowUser(int userId,int loginUser);
 	int followingOrNot(int userId, int loginUserId);
