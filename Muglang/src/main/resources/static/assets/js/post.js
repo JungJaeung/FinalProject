@@ -300,7 +300,10 @@ function followerPostlisu(item) {
 	
 }
 
-function followPost(post) {
+
+//포스팅 html단에 표시하기 위한 html단을 만드는 문자열 String을 반환하는 함수
+//해당 문자열들은 (선택자).html()함수를 통해 태그로 바뀌게 됨. 이벤트는 따로 함수로 빼놓고  다시 호출해야함.
+function callPost(post) {
 	console.log("팔로워 게시글!@#$^^7 : ");
 	console.log(post);
 	let htmlText = "";
@@ -333,7 +336,7 @@ function followPost(post) {
 	htmlText += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
 	htmlText += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
 	htmlText += `</ul></div>`
-	htmlText += `<div class="card-title">`;
+	htmlText += `<div class="card-title" id="otherUser${post.userId}" value="${post.userId}">`;
 	htmlText += `<img class="img-fluid rounded-circle" src="/upload/${post.profile.userProfileNm}"
 					style="width: 40px;">
 					<a href="#" class="card-title">${post.userNick}</a>`;
@@ -480,6 +483,9 @@ function followPost(post) {
 	return htmlText;
 }
 
+
+
+//작성글을 등록할 때 사용하는 게시글 1개를 호출하는 post 태그
 //포스팅 html단에 표시하는 함수. 문자열 값을 반환
 function post(item, insertIndex) {
 	console.log("게시글 작성자 Id : " + item.loginUser.userId);

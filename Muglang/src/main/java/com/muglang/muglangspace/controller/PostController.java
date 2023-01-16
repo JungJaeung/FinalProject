@@ -454,7 +454,8 @@ public class PostController {
 
 		//프로필의 정보를 가져오는 부분(가져온 정보는 표시만을 하기위해 사용)
 		for(CamelHashMap post: pagePostList) {
-			int writerId = (int)post.get("userId");
+			int writerId = (Integer)post.get("userId");
+			System.out.println("----!!!!!!! 유저  아이디 : " + writerId);
 			MglgUserProfile profile = mglgUserProfileService.getUserImg(writerId);
 			
 			MglgUserProfileDTO profileDTO = MglgUserProfileDTO.builder()

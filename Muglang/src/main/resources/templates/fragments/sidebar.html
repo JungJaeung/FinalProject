@@ -5,7 +5,15 @@
 	<head>
 	<th:block layout:fragment="script">
 		<script th:inline="javascript">
-
+			$(function() {
+				$("#cntPost").preventDefault();
+				
+				$("#cntPost").click(function(e) {
+					console.log("내 게시글 이동하기");
+					$("#myPost").submit();
+				});
+				$("#cntPostInfo").val();
+			});
 		</script>
 	</th:block>
 	</head>
@@ -23,7 +31,9 @@
 	      <div id="user_content">
 	        <div class="user_content">
 	          <p class="user_content_name">게시물</p>
-	          <p class="user_content_info"><a th:href="@{/user/myBoard}" style="color:black;" id="cntPost"></a></p>
+	          <p class="user_content_info">
+		          <a th:href="@{/user/myBoard}" style="color:black;" id="cntPost"></a>
+	          </p>
 	        </div>
 	        <div class="user_content">
 	          <p class="user_content_name">팔로워</p></a>

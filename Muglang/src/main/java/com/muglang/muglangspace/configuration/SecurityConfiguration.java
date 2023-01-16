@@ -25,7 +25,8 @@ public class SecurityConfiguration {
 	@Bean //외부객체를 끌어올 때는 Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		//권한에 따른 요청주소 매핑
-		http.authorizeRequests().antMatchers("/**").permitAll() 			//들어오는 모든 사용자 허용
+		http.authorizeRequests()
+								.antMatchers("/**").permitAll() 			//들어오는 모든 사용자 허용
 								.antMatchers("/user/**").permitAll()	//"/user"(시작 페이지)으로 시작하는 요청 리소스, 모든 사용자 허용
 								//정적 리소스 권한처리 추후 수정(22/12/19)
 								.antMatchers("/css/**").permitAll()		//css

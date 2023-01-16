@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.common.FileUtils;
+import com.muglang.muglangspace.common.Load;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.MglgUserProfileDTO;
@@ -128,11 +131,31 @@ public class UserController {
 	
 	
 	// 내 게시물으로 이동
+	//내가 쓴 게시글들만 필터링하여 ajax처리후 게시글을 다 불러오게됨.
 	@GetMapping("/myBoard")
-	public ModelAndView myBoard() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("user/myBoard.html");
-		return mv;
+	public ResponseEntity<?> myBoard(@PageableDefault(page = 0, size = 5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
+		MglgResponseDTO<Map<String, Object>> response = new MglgResponseDTO<>();
+		try {
+			//내 게시글 불러오기
+			Page<CamelHashMap> myPostList = mglgPostService.getPagePersonalPostList(pageable, loginUser.getMglgUser().getUserId());
+			//내 프로필 이미지
+			MglgUserProfile myProfile = mglgUserProfileService.getUserImg(loginUser.getMglgUser().getUserId());
+			
+			MglgUserProfileDTO myProfileDTO = Load.toHtml(myProfile);
+			MglgUserDTO loginUserDTO = Load.toHtml(loginUser.getMglgUser());
+			
+			Map<String, Object> postItem = new HashMap<String, Object>();
+			postItem.put("postList", myPostList);
+			postItem.put("loginUser", loginUserDTO);
+			postItem.put("profile", myProfileDTO);
+			
+			response.setItem(postItem);
+			System.out.println("!@#$!%!#필요한 정보들을 성공적으로 처리하였습니다.%$#^");
+			return ResponseEntity.ok().body(response);
+		} catch(Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.ok().body(response);
+		}
 	}
 
 	// 팔로워로 이동
