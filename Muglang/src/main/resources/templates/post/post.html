@@ -25,10 +25,12 @@
 			//새 게시글에서 추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
 			let uploadFiles = [];
 			//이미 게시된 게시글의 파일들을 담을 게시글 구분 새로운 임시 배열
+			////
 			let uploadPostFileList = [];
 			//기존 첨부파일 배열
 			let originFiles = [];
 			//각 게시글들의 첨부파일들을 모은 것을 따로 담을 것임..
+			/////
 			let originFileList = [];
 			//변경된 첨부파일 배열
 			let changedFiles = [];
@@ -802,11 +804,11 @@
 									<!-- 해시태그 -->
 									<div class="activity">
 										<br>
-										<a href="#" style="color: blue;" th:if="${post.hashTag1}!=''">&emsp;#<span th:text="${post.hashTag1}"></span></a>
-										<a href="#" style="color: blue;" th:if="${post.hashTag2}!=''">&emsp;#<span th:text="${post.hashTag2}"></span></a>
-										<a href="#" style="color: blue;" th:if="${post.hashTag3}!=''">&emsp;#<span th:text="${post.hashTag3}"></span></a>
-										<a href="#" style="color: blue;" th:if="${post.hashTag4}!=''">&emsp;#<span th:text="${post.hashTag4}"></span></a>
-										<a href="#" style="color: blue;" th:if="${post.hashTag5}!=''">&emsp;#<span th:text="${post.hashTag5}"></span></a>
+										<a th:href="@{/search/searchByPost(searchKeyword=${post.hashTag1})}" style="color: blue;" th:if="${post.hashTag1}!=''">&emsp;#<span th:text="${post.hashTag1}"></span></a>
+										<a th:href="@{/search/searchByPost(searchKeyword=${post.hashTag2})}" style="color: blue;" th:if="${post.hashTag2}!=''">&emsp;#<span th:text="${post.hashTag2}"></span></a>
+										<a th:href="@{/search/searchByPost(searchKeyword=${post.hashTag3})}" style="color: blue;" th:if="${post.hashTag3}!=''">&emsp;#<span th:text="${post.hashTag3}"></span></a>
+										<a th:href="@{/search/searchByPost(searchKeyword=${post.hashTag4})}" style="color: blue;" th:if="${post.hashTag4}!=''">&emsp;#<span th:text="${post.hashTag4}"></span></a>
+										<a th:href="@{/search/searchByPost(searchKeyword=${post.hashTag5})}" style="color: blue;" th:if="${post.hashTag5}!=''">&emsp;#<span th:text="${post.hashTag5}"></span></a>
 									</div>
 
 									<!--좋아요 댓글 지도-->
