@@ -44,6 +44,7 @@ import com.muglang.muglangspace.dto.MglgRestaurantDTO;
 
 import com.muglang.muglangspace.dto.MglgUserProfileDTO;
 
+
 import com.muglang.muglangspace.dto.MglgShowHotKeywordsDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
@@ -468,19 +469,13 @@ public class PostController {
 			post.put("profile", profileDTO);
 			
 		}
-    
-		// 인기 검색어 받아오기
-		List<MglgShowHotKeywordsDTO> mglgShowHotKeywordsList = mglgPostService.getShowHotKeywords();
 
-		
 		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostList);
 		// 세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
 		mv.addObject("loginUser", Load.toHtml(loginUser.getMglgUser()));
-		// 인기 검색어 화면단으로 표시
-		mv.addObject("showHotKeywords", mglgShowHotKeywordsList);
 		
 		return mv;
 	}
