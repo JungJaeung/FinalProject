@@ -255,13 +255,13 @@ function updateBtnEvent(i, size, postId) {
 			$("#modify_content" + postId).show();
 			$("#contentIn" + postId).show();
 			$("#fileRequest" + postId).show();
-			$(this).text("편집 모드 비활성화");
+			$("button[value='" + postId + "']").text("편집 모드 비활성화");
 		} else {
 			$("#postContent" + postId).show();
 			$("#modify_content" + postId).hide();
 			$("#contentIn" + postId).hide();
 			$("#fileRequest" + postId).hide();
-			$(this).text("게시글 수정");
+			$("button[value='" + postId + "']").text("게시글 수정");
 		}
 		console.log("버튼 이벤트 html단 활성화");
 		flagList[i] = !flagList[i];
