@@ -15,30 +15,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.common.Load;
 import com.muglang.muglangspace.dto.MglgPostFileDTO;
-import com.muglang.muglangspace.dto.MglgShowHotKeywordsDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPostFile;
-import com.muglang.muglangspace.entity.MglgShowHotKeywords;
+import com.muglang.muglangspace.service.mglghotkeywords.MglgHotKeywordsService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglgpostfile.MglgPostFileService;
 import com.muglang.muglangspace.service.mglgrestaurant.MglgRestaurantService;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @RestController
 @RequestMapping("/search")
 public class SearchController {
@@ -46,6 +38,7 @@ public class SearchController {
 	@Autowired MglgPostService mglgPostService; 
 	@Autowired MglgRestaurantService mglgRestaurantService;
 	@Autowired MglgPostFileService mglgPostFileService;
+	@Autowired MglgHotKeywordsService mglgHotKeywordsService;
 	
 	// 포스트 닉 해쉬태그를 기준으로 검색
 	@GetMapping("/search")
@@ -57,11 +50,12 @@ public class SearchController {
 		// 로그인한 유저의 아이디
 		int userId = loginUser.getMglgUser().getUserId();
 		
-		// 검색어를 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
-		mglgPostService.insertKeyword(searchKeyword);
-		
 		// **포스트 내용을 기준으로 받아오는 정보들
 		Page<CamelHashMap> postsContentList = mglgPostService.searchByPost(searchKeyword, pageable, userId);
+		
+		System.out.println("************************************");
+		postsContentList.get().forEach(a -> System.out.println(a));
+		System.out.println("************************************");
 		
 		for(int i=0; i<postsContentList.getContent().size(); i++) {
 			postsContentList.getContent().get(i).put(
@@ -207,7 +201,8 @@ public class SearchController {
 			//camel형으로 키값을 자동으로 바꿈.
 		} // 포스트 닉네임을 기준으로 받아오는 정보들**
 
-
+		// 키워드 검색 시 DB에 키워드가 없을 경우에는 INSERT 있을 경우에는 UPDATE 쿼리를 보냄
+		mglgHotKeywordsService.insrtOrUpdte(searchKeyword);
 		
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("/search/search.html");
@@ -220,42 +215,4 @@ public class SearchController {
 		return mv;
 		
 	}
-	
-	// HotKeywords 리스트 보는 화면
-	@GetMapping("/hotKeywords")
-	public ModelAndView hotKeywords(@PageableDefault(page = 0, size = 10) Pageable pageable) {
-		
-		Page<CamelHashMap> mglgHotKeywords = mglgPostService.getHotKeywords(pageable);
-		
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("/search/hotKeywords.html");
-		mv.addObject("mglgHotKeywords", mglgHotKeywords);
-		
-		return mv;
-	}
-	
-	@ResponseBody
-	@PostMapping("/insrtSHKs")
-	public void insertShowHotKeywords(@RequestBody List<MglgShowHotKeywordsDTO> showHotKeywordsListDTO) {
-		
-		List<MglgShowHotKeywords> mglgHotShowHotKeywords = new ArrayList();
-		
-		for(int i=0; i<showHotKeywordsListDTO.size(); i++) {
-			MglgShowHotKeywords returnHotKeywords = MglgShowHotKeywords.builder()
-																	   .keywordOrder(showHotKeywordsListDTO.get(i).getKeywordOrder())
-																	   .showHotKeyword(showHotKeywordsListDTO.get(i).getShowHotKeyword())
-																	   .showTime(LocalDateTime.now())
-																	   .build();
-			mglgHotShowHotKeywords.add(returnHotKeywords);
-		}
-		
-		mglgPostService.insertShowHotKeywords(mglgHotShowHotKeywords);
-	}
-	
-	// 인기 검색어 전체 삭제
-	@DeleteMapping("/delSHKs")
-	public void deleteShowHotKeywords () {
-		mglgPostService.deleteShowHotKeyword();
-	}
-	
 }

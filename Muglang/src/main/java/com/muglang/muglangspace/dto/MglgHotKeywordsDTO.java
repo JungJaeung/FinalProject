@@ -1,7 +1,5 @@
 package com.muglang.muglangspace.dto;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MglgHotKeywordsDTO {
-	private String insertedKeyword;
-	private LocalDateTime searchedTime;
+	private String hotKeyword;
+	private String confirmYn;
+	private int numOfTime;
 }

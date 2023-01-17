@@ -15,10 +15,6 @@
 		  	<div class="tit">
 				<h4 class="box-title">DB에 저장된 검색어 순위</h4>
 			</div>
-			<div class="d-flex justify-content-end">
-				<button type="button" class="btn btn-outline-primary" id="addBtn">추가</button>&emsp;
-				<button type="button" class="btn btn-outline-success">수정</button>&emsp;
-			</div><br>
 			<table class="table" id="topList">
 			  <colgroup>
 				<col style="width: 60px;">
@@ -43,6 +39,10 @@
 			      <td style="text-align: center;" th:text="${hot.insertedKeyword}"></td>
 			    </tr>
 			  </tbody>
+				<div class="d-flex justify-content-end">
+					<button type="button" class="btn btn-outline-primary" id="addBtn">Confirm</button>&emsp;
+					<button type="button" class="btn btn-outline-danger">Delete</button>&emsp;
+				</div>
 			</table>
 			<nav aria-label="Page navigation" class="d-flex justify-content-center">
 			  <ul class="pagination" th:if="${mglgHotKeywords.totalElements > 0}"
@@ -67,40 +67,9 @@
 			    </li>
 			  </ul>
 			</nav>
-		</div>
-			
-			<!-- 사용자 화면에 보여줄 HotKeywords -->
-			<div class="col-sm-12" style="width: 40%; float: right;">
-				<div class="tit">
-					<h4 class="box-title">사용자 화면 검색 순위</h4>
-				</div>
-				<div class="d-flex justify-content-end">
-					<button type="button" class="btn btn-outline-danger" id="delBtn">삭제</button>
-				</div><br>
-				<form id="userTableForm" enctype="multipart/form-data">
-					<table class="table table-bordered">
-						<colgroup>
-							<col style="width: 55px;">
-							<col style="width: 70px;">
-							<col style="width: auto;">
-						</colgroup>
-						<thead>
-							<tr>
-								<th scope="col" style="text-align: center;">순위</th>
-								<th scope="col" style="text-align: center;">사용자화면</th>
-							</tr>
-						</thead>
-						<tbody id="userTable">
-
-						</tbody>
-					</table>
-					<div class="d-flex justify-content-end">
-						<button type="button" class="btn btn-outline-info" id="saveBtn">저장</button>
-					</div>
-				</form>
 			</div>
 		</div>
-		</main>
+	</main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <th:block layout:fragment="script">
 		<script th:inline="javascript">

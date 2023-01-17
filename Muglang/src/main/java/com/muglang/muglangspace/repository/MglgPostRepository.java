@@ -1,7 +1,5 @@
 package com.muglang.muglangspace.repository;
 
-import java.util.List;
-
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -13,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgPost;
-import com.muglang.muglangspace.entity.MglgShowHotKeywords;
 
 @Transactional
 public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
@@ -318,22 +315,4 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			+ "SELECT COUNT(*) FROM T_MGLG_POST WHERE POST_ID =:postId AND USER_ID=:userId"
 			+ "", nativeQuery = true)
 	int reportPostSelfCheck(@Param("postId") int postId,@Param("userId") int userId);
-	
-	// 검색어를 T_MGLG_HOT_KEYWORDS 테이블에 INSERT
-	@Modifying
-	@Query(value="INSERT INTO T_MGLG_HOT_KEYWORDS "
-			+ 		"VALUES((SELECT IFNULL(MAX(A.KEYWORD_ID), 0) + 1 FROM T_MGLG_HOT_KEYWORDS A), :searchKeyword, NOW())", nativeQuery = true)
-	public void insertKeyword(@Param("searchKeyword") String searchKeyword);
-	
-	// // 인기 검색어를 SELECT
-	@Query(value="SELECT count(k.inserted_keyword) AS word_cnt, k.inserted_keyword\r\n"
-			+ "	  FROM T_MGLG_HOT_KEYWORDS k\r\n"
-			+ "   GROUP BY  k.inserted_keyword\r\n"
-			+ "   ORDER BY word_cnt DESC", 
-			countQuery="SELECT COUNT(*) "
-					+ "FROM (SELECT COUNT(k.inserted_keyword) AS word_cnt, k.inserted_keyword\r\n"
-					+ "FROM T_MGLG_HOT_KEYWORDS k\r\n"
-					+ "GROUP BY k.inserted_keyword\r\n"
-					+ "ORDER BY word_cnt DESC) a", nativeQuery = true)
-	public Page<CamelHashMap> getHotKeywords(Pageable pageable);
 }
