@@ -8,9 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.muglang.muglangspace.entity.MglgRestaurant;
+import com.muglang.muglangspace.entity.MglgRestaurantId;
 
 @Transactional
-public interface MglgRestaurantRepository extends JpaRepository<MglgRestaurant, Integer>{
+public interface MglgRestaurantRepository extends JpaRepository<MglgRestaurant, MglgRestaurantId>{
 	
 	@Query(value="SELECT * FROM T_MGLG_RESTAURANT WHERE POST_ID = :postId", nativeQuery=true)
 	public MglgRestaurant selectRes(@Param("postId") int postId);

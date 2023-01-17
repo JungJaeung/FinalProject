@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -23,9 +23,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @DynamicInsert
 @Data
+@IdClass(MglgRestaurantId.class)
 public class MglgRestaurant {
 	@Id
-	private int postId;				
+	@OneToOne
+	@JoinColumn(name="POST_ID")
+	private MglgPost mglgPost;	
+	@Id
 	private String resName;		
 	private String resAddress;			
 	private String resRoadAddress;
