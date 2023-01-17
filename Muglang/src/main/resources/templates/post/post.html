@@ -25,10 +25,12 @@
 			//새 게시글에서 추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
 			let uploadFiles = [];
 			//이미 게시된 게시글의 파일들을 담을 게시글 구분 새로운 임시 배열
+			////
 			let uploadPostFileList = [];
 			//기존 첨부파일 배열
 			let originFiles = [];
 			//각 게시글들의 첨부파일들을 모은 것을 따로 담을 것임..
+			/////
 			let originFileList = [];
 			//변경된 첨부파일 배열
 			let changedFiles = [];
@@ -144,7 +146,6 @@
 							["direction", {
 								align: []
 							}],
-							["image"],
 							["clean"]
 						]
 					},
@@ -335,7 +336,7 @@
 										//elements++;
 										text_scroll += `<div class="col-12 post">`;
 										text_scroll += `<input type="hidden" value="${post.betweenDate}">`;
-										text_scroll += `<input type="text" id="fileList${post.postId}" value="${post.fileLength}">`;
+										text_scroll += `<input type="hidden" id="fileList${post.postId}" value="${post.fileLength}">`;
 										text_scroll += `<div class="card recent-sales">`
 										text_scroll += `<div class="card-body">`
 										text_scroll += `<div class="filter" style="margin-top: 15px;">`
@@ -356,7 +357,16 @@
 										}
 										text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
 										text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
-										text_scroll += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
+										if(loginUserId == post.profile.userId){
+											text_scroll += `<button type="button" class="updateBtn dropdown-item" id="updateButton" value="${post.postId}" style="text-align:center">게시글 수정</button>`
+											text_scroll += `<button type="button" class="dropdown-item post_deleteButton" id="deleteButton" value="${post.postId}" style="text-align:center">글 삭제</button>`
+										}
+										else{
+											text_scroll += `<form action="/user/reportUser?userId=${post.userId}" method="post">`
+											text_scroll += `<input type="submit" class="dropdown-item" value="유저 신고하기" style="text-align:center"></form>`
+											text_scroll += `<form action="/post/reportPost?postId=${post.postId}" method="post">`
+											text_scroll += `<input type="submit" class="dropdown-item" value="포스트 신고하기" style="text-align:center"></form>`
+										}
 										text_scroll += `</ul></div>`
 										text_scroll += `<div class="card-title">`;
 										text_scroll += `<img class="img-fluid rounded-circle" src="/upload/${post.profile.userProfileNm}"
@@ -448,26 +458,29 @@
 										text_scroll	+= `<input type="hidden" name="originFiles" id="originFiles${post.postId}">`;	
 										text_scroll	+= `<input type="hidden" id="userId" name="userId" value="${post.userId}">`;	
 										text_scroll	+= `<input type="hidden" id="postContentIn${post.postId}" name="postContent" value="${post.postContent}">`;	
-										text_scroll	+= `<input type="hidden" name="postDate" value="${post.postDate}">`;	
-										text_scroll	+= `<input type="hidden" name="restNm" value="${post.restNm}"></form>`;	
+										text_scroll	+= `<input type="hidden" name="postDate" value="${post.postDate}"></form>`;	
 
-										if(loginUserId == post.userId) {
-											text_scroll += `<div class="buttons fileBtns" id="buttonBox${post.postId}" value="${post.postId}">
-															<button type="button" id="fileRequest${post.postId}"
-															value="${post.postId}">파일 관리창 열기</button></div>`;
-
-										}
-										
-										text_scroll += `<div class="activity" style="margin-bottom: 10px;">`
-										//text_scroll += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`
-										
-										text_scroll += `</div><div class="activity">`
+										text_scroll += `<div class="activity">`
 										text_scroll += `<div id="postContent${post.postId}">${post.postContent}</div>`
-										text_scroll += `<div id="upTitle${post.postId}">수정할 게시글 내용</div>`;
-										text_scroll += `<textarea id="contentIn${post.postId}" name="contentIn"
-														row="40" style="display: none; resize: none; width: 85%;">${post.postContent}</textarea>`;
-										//여기에 텍스트 에어리어 투명한거 들어가는자리(일단 빼놨음)
-										text_scroll += `<br>`
+										if(loginUserId == post.userId) {
+											text_scroll += `<div id="modify_content${post.postId}">
+																<textarea id="contentIn${post.postId}" class="form-control" style="width: 100%; resize: none;"
+																	spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)"
+																>${post.postContent}</textarea>
+																<button type="button" id="fileRequest${post.postId}" value="${post.postId}"
+																	style="background:none; border:none;">
+																	<i class="ri-image-2-fill" style="font-size: 20px; color:#000069;"></i>
+																</button>
+															</div>`;
+											text_scroll += `<form id="delete_form${post.postId}" action="/post/deletePost" th:method="post">
+																<input type="hidden" id="postId" name="postId" value="${post.postId}">
+																<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">
+																<input type="hidden" id="postDate" name="postDate"
+																	value="${post.postDate}">
+																<input type="hidden" name="fileSize" id="fileSize"
+																	value="${post.fileLength}">
+															</form>`
+										}
 										text_scroll += `</div>`
 										text_scroll += `<div class="activity">`
 										//<!--좋아요 댓글 지도-->	
@@ -481,8 +494,7 @@
 											text_scroll += `<i class="ri-map-pin-2-line map_icon" id="${post.postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
 										text_scroll += `<br>`
 										text_scroll += `<a>좋아요 <span id="likeCnt${post.postId}">${post.likeCnt}</span>개</a>`;			
-
-										text_scroll += `<hr></div>`
+										text_scroll += `</div>`
 										//내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. 
 										text_scroll += `<form class="data" action="/post/deletePost" method="post">`
 										text_scroll += `<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">`
@@ -494,22 +506,16 @@
 										//<!-- 친구 식사 했는지 확인 필드 -->
 										if(post.resCnt != 0) {
 											text_scroll += `<div class="activity" style="text-align: center;"><hr>
-												<a href="#"><span th:text="${item.loginUser.userName}"></span>님의 친구 <span>${post.resCnt}</span>명이
+												<a href="#"><span th:text="${post.userNick}"></span>님의 친구 <span>${post.resCnt}</span>명이
 													<span>${post.resName}</span> 에서 식사하셨어요!</a></div>`;		
-										}
-										if(loginUserId == post.userId)
-										text_scroll += `<button type="button" class="updateBtn" id="updateButton"
-														value="${post.postId}">게시글 수정</button>`;									
+										}							
 										text_scroll += `</div></div></div></div></div>`;
-										
 									}
 
 									$("#post_scroll_div").html(text_scroll);
 									$(".uploadFileSpace").hide();
 									$(".changedFileSpace").hide();
 									//이벤트 리스너 함수 호출
-									console.log();
-									console.log(elements +  ", " + obj.numberOfElements);
 									for(let i = 0; i < obj.numberOfElements; i++) {
 										for(let j = 0; j < obj.content[i].fileLength; j++) {
 											postFileIdList.push(obj.content[i].fileList[j].postFileId);
@@ -583,30 +589,30 @@
 							<!-- 작성 하는 부분 -->
 							<div class="card recent-sales overflow-auto">
 								<div class="card-body">
-									<button class="btn" id="res_select_btn" onclick="new_window()">식당 하는 지도 선택
-										버튼</button>
 									<form id="insert_form" name="insertForm" enctype="multipart/form-data"
 										action="/post/insertPost" method="post">
 										<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
 
-										<input type="text" id="inputRestNm" name="inputRestNm" value="기본레스토랑"><br>
 										<input type="hidden" id="userName" name="userName"
 											th:value="${loginUser.userName}">
-										<div class="box" id="imagePreview">
-											<!-- 이미지를 따로 미리 임시 저장하는 공간 -->
-											<div id="image_preview">
-												<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple">
-												<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>
-											</div>
-										</div>
-										<div class="buttons" id="postFileButton">
-											<button id="postFileRequest">파일 관리창 열기</button>&emsp;
-											<button id="postFileUpdate">파일 업로드 하기</button>
-										</div>
+										
 										<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
 										<div class="quill-editor-default">
 											<h2>write your daily life</h2>
 											<p> </p>
+										</div>
+										<button type="button" id="postFileUpdate" style="background: none; border:none;">
+												<i class="ri-image-2-fill" style="font-size: 20px; color:#000069;"></i>
+											</button>
+										<button type="button" id="res_select_btn" onclick="new_window()" style="background: none; border:none;">
+											<i class="ri-map-pin-2-fill" style="font-size: 20px; color:#000069;"></i>
+										</button>
+										<div class="box" id="imagePreview">
+											<!-- 이미지를 따로 미리 임시 저장하는 공간 -->
+											<div id="image_preview" style="margin:10px 0;">
+												<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple" style="display: none;">
+												<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요." style="display: none;"></div>
+											</div>
 										</div>
 										<!-- End Quill Editor Default -->
 										<!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임.
@@ -638,11 +644,11 @@
 
 										</div>
 										<!--식당정보 후에 필요 없는것은 hidden예정-->
-										<input type="text" id="res_place_name" name="resName">
-										<input type="text" id="res_address_name" name="resAddress">
-										<input type="text" id="res_road_address_name" name="resRoadAddress">
-										<input type="text" id="res_phone" name="resPhone">
-										<input type="text" id="res_category_name" name="resCategory">
+										<input type="hidden" id="res_place_name" name="resName">
+										<input type="hidden" id="res_address_name" name="resAddress">
+										<input type="hidden" id="res_road_address_name" name="resRoadAddress">
+										<input type="hidden" id="res_phone" name="resPhone">
+										<input type="hidden" id="res_category_name" name="resCategory">
 
 										<input type="button" class="btn" id="insert_board" value="작성"
 											style="background-color: #4154f1; color: white; float: right;">
@@ -653,7 +659,7 @@
 						<div th:each="post : ${postList}" class="col-12 post">
 							<input type="hidden" th:value="${post.betweenDate}">
 							<!-- 파일의 개수가 몇개 오는지 테스트 하는 임시 자료 추후에 숨김 처리 할 예정 -->
-							<input type="text" th:id="'fileListSize' + ${post.postId}" th:value="${post.fileLength}">
+							<input type="hidden" th:id="'fileListSize' + ${post.postId}" th:value="${post.fileLength}">
 
 							<div class="card recent-sales">
 								<div class="card-body">
@@ -678,23 +684,31 @@
 										<a class="icon" href="#" data-bs-toggle="dropdown"><i
 												class="bi bi-three-dots"></i></a>
 										<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-											<form th:action="@{/user/reportUser(userId=${post.userId})}" method="post">
-												<li>
+											<li th:if="${loginUser.userId} != ${post.userId}">
+												<form th:action="@{/user/reportUser(userId=${post.userId})}" method="post">
 													<input type="submit" class="dropdown-item" value="유저 신고하기">
-												</li>
-											</form>
-											<form th:action="@{/post/reportPost(postId=${post.postId})}" method="post">
-												<li>
+												</form>
+											</li>
+											<li th:if="${loginUser.userId} != ${post.userId}">
+												<form th:action="@{/post/reportPost(postId=${post.postId})}" method="post">
 													<input type="submit" class="dropdown-item" value="포스트 신고하기">
-												</li>
-											</form>
+												</form>
+											</li>
+											<li th:if="${loginUser.userId} == ${post.userId}">
+												<button type="button" class="updateBtn dropdown-item" id="updateButton" 
+												th:value="${post.postId}">게시글수정</button>
+											</li>
+											<li th:if="${loginUser.userId} == ${post.userId}">
+												<button type="button" class="dropdown-item post_deleteButton" id="deleteButton" 
+												th:value="${post.postId}">글 삭제</button>
+											</li>
 										</ul>
 									</div>
 									<!-- 이름부분 후에 스크립트로 for문 예정 -->
 									<div class="card-title">
 										<img class="img-fluid rounded-circle" th:src="'/upload/' + ${post.profile.userProfileNm}"
 											style="width: 40px;">
-										<a href="#" class="card-title" th:text="${post.userNick}"></a>
+										<a th:href="@{/social/otherUser?userId=}+${post.userId}" class="card-title" th:text="${post.userNick}"></a>
 									</div>
 
 									<form th:id="'updateForm' + ${post.postId}" enctype="multipart/form-data">
@@ -774,22 +788,23 @@
 										<input type="hidden" name="postDate" th:value="${post.postDate}">
 										<input type="hidden" name="restNm" th:value="${post.restNm}">
 									</form>
-									<div class="buttons fileBtns" th:id="'buttonBox' + ${post.postId}"
-										th:if="${post.userId} eq ${loginUser.userId}" th:value="${post.postId}">
-										<button type="button" th:id="'fileRequest' + ${post.postId}"
-											th:value="${post.postId}">파일 관리창 열기</button>&emsp;
-										<!--<button type="button" th:id="'fileRemove' + ${post.postId}">파일 전부 삭제</button>-->
-									</div>
+									
 									<div class="activity">
 										<!-- 게시글 내용부분-->
 										
 										<div th:id="'postContent' + ${post.postId}" th:text="${post.postContent}"></div>
-										<div th:id="'upTitle' + ${post.postId}" th:text="'수정할 게시글 내용'"></div>
-										<textarea th:id="'contentIn' + ${post.postId}" th:text="${post.postContent}" style="width: 85%;">
-										</textarea>
+										<div th:id="modify_content + ${post.postId}" th:if="${loginUser.userId} == ${post.userId}">
+											<textarea th:id="'contentIn' + ${post.postId}" th:text="${post.postContent}" class="form-control" 
+												style="width: 100%; resize: none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)">
+											</textarea>
+											<button type="button" th:id="'fileRequest' + ${post.postId}"th:value="${post.postId}"
+												style="background:none; border:none;">
+												<i class="ri-image-2-fill" style="font-size: 20px; color:#000069;"></i>
+											</button>
+										</div>
 
 										<!-- 내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. -->
-										<form class="data" action="/post/deletePost" th:method="post">
+										<form th:id="delete_form + ${post.postId}" action="/post/deletePost" th:method="post">
 											<input type="hidden" id="postId" name="postId" th:value="${post.postId}">
 											<input type="hidden" id="restNmIn" name="restNm" th:value="${post.restNm}">
 											<input type="hidden" id="postDate" name="postDate"
@@ -802,11 +817,11 @@
 									<!-- 해시태그 -->
 									<div class="activity">
 										<br>
-										<a href="#" style="color: blue;" th:if="${post.hashTag1}!=''">&emsp;#<span th:text="${post.hashTag1}"></span></a>
-										<a href="#" style="color: blue;" th:if="${post.hashTag2}!=''">&emsp;#<span th:text="${post.hashTag2}"></span></a>
-										<a href="#" style="color: blue;" th:if="${post.hashTag3}!=''">&emsp;#<span th:text="${post.hashTag3}"></span></a>
-										<a href="#" style="color: blue;" th:if="${post.hashTag4}!=''">&emsp;#<span th:text="${post.hashTag4}"></span></a>
-										<a href="#" style="color: blue;" th:if="${post.hashTag5}!=''">&emsp;#<span th:text="${post.hashTag5}"></span></a>
+										<a th:href="@{/search/searchByPost(searchKeyword=${post.hashTag1})}" style="color: blue;" th:if="${post.hashTag1}!=''">&emsp;#<span th:text="${post.hashTag1}"></span></a>
+										<a th:href="@{/search/searchByPost(searchKeyword=${post.hashTag2})}" style="color: blue;" th:if="${post.hashTag2}!=''">&emsp;#<span th:text="${post.hashTag2}"></span></a>
+										<a th:href="@{/search/searchByPost(searchKeyword=${post.hashTag3})}" style="color: blue;" th:if="${post.hashTag3}!=''">&emsp;#<span th:text="${post.hashTag3}"></span></a>
+										<a th:href="@{/search/searchByPost(searchKeyword=${post.hashTag4})}" style="color: blue;" th:if="${post.hashTag4}!=''">&emsp;#<span th:text="${post.hashTag4}"></span></a>
+										<a th:href="@{/search/searchByPost(searchKeyword=${post.hashTag5})}" style="color: blue;" th:if="${post.hashTag5}!=''">&emsp;#<span th:text="${post.hashTag5}"></span></a>
 									</div>
 
 									<!--좋아요 댓글 지도-->
@@ -827,8 +842,6 @@
 										<a>좋아요 <span th:id="'likeCnt' + ${post.postId}"
 												th:text="${post.likeCnt}"></span>개</a>
 									</div>
-									<!--식당 이름 임시 디버깅-->
-									<span th:text="${post.resName}"></span>
 									<!-- 친구 식사 했는지 확인 필드 -->
 									<div class="activity" style="text-align: center;" th:if="${post.resCnt} != '0'">
 										<hr>
@@ -836,9 +849,6 @@
 												th:text="${post.resCnt}"></span>명이
 											<span th:text="${post.resName}"></span> 에서 식사하셨어요!</a>
 									</div>
-									<button type="button" class="updateBtn" id="updateButton"
-									th:value="${post.postId}" th:if="${post.userId} eq ${loginUser.userId}">게시글
-									수정</button>
 								</div>
 							</div>
 						</div>

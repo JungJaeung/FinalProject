@@ -190,7 +190,7 @@
 						contentType: 'application/json',
 						success: function() {
 							alert("데이터가 전송되었습니다.");
-							window.location.href="/post/mainPost";
+							window.location.reload();
 						},
 						error: function(e) {
 							console.log("ERROR: " + e);
