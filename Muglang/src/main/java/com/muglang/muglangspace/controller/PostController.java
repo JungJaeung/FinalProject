@@ -162,7 +162,7 @@ public class PostController {
 			
 			//returnDTO의 postId를 이용해서 restaurant 테이블에 내용 insert
 			MglgRestaurant mglgRes = MglgRestaurant.builder()
-					.postId(returnDTO.getPostId())
+					.mglgPost(mglgPost)
 					.resName(mglgRestaurantDTO.getResName())
 					.resAddress(mglgRestaurantDTO.getResAddress())
 					.resRoadAddress(mglgRestaurantDTO.getResRoadAddress())
@@ -175,7 +175,7 @@ public class PostController {
 			
 			//식당 정보를 DTO로 바꿔서 맵으로 출력함.
 			MglgRestaurantDTO mglgResDTO = MglgRestaurantDTO.builder()
-															.postId(mglgRes.getPostId())
+															.postId(mglgRes.getMglgPost().getPostId())
 															.resName(mglgRes.getResName())
 															.resAddress(mglgRes.getResAddress())
 															.resRoadAddress(mglgRes.getResRoadAddress())
