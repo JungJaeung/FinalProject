@@ -63,6 +63,13 @@ public class MglgPostServiceImpl implements MglgPostService {
 		return mglgPostRepository.getPagePostList(pageable, userId);
 	}
 
+	//특정 유저의 게시글들을 모두 불러오는 Map으로 반환함.
+	@Override
+	public Page<CamelHashMap> getPagePersonalPostList(Pageable pageable, int userId) {
+		// TODO Auto-generated method stub
+		return mglgPostRepository.getPagePersonalPostList(pageable, userId);
+	}
+	
 	@Override
 	public MglgPost getPost(MglgPost post) {
 
@@ -145,6 +152,7 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable, int userId) {
 		return mglgPostRepository.searchByNick(searchKeyword, userId, pageable);
 	}
+
 
 
 }
