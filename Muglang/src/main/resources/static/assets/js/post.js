@@ -64,13 +64,19 @@ $(function() {
 			});
 		});
 	}
-
+	
+	$(".uploadFileSpace").each(function(i, e) {
+		$(this).hide();
+	});
+	$("div[class='changedFileSpace']").each(function(i, e) {
+		$(this).hide();
+	});
 
 	//게시글 수정과 삭제를 활성화하는 버튼을 생성함. 게시글이 자기꺼인 것만 표시함.
 	$(".updateBtn").each(function(i, e) {
 		console.log("게시글의 수정버튼 이벤트 생성");
-		$($('.uploadFileSpace')[i]).hide();
-		$($('.changedFileSpace')[i]).hide();
+		//$($('.uploadFileSpace')[i]).hide();
+		//$($("div[class='changedFileSpace']")[i]).hide();
 		$("#upTitle" + $(this).val()).hide();
 		$("#contentIn" + $(this).val()).hide();
 		$("#fileRequest" + $(this).val()).hide();
@@ -154,7 +160,7 @@ $(function() {
 	//스크롤 확장시 다시 이벤트를 발생시킬 스크립트를 다시 로드함.
 	$.updateBtn = function(startIndex, size) {
 		for (let i = startIndex; i < startIndex + size; i++) {
-			console.log("this확인" + $(this).val());
+			console.log("this확인- 업데이트 관련 이벤트 적용중");
 			flagList[i] = false;
 			$($('.uploadFileSpace')[i]).hide();
 			$($('.changedFileSpace')[i]).hide();
@@ -289,8 +295,11 @@ function followerPostlisu(item) {
 
 }
 
-function followPost(post) {
-	console.log("팔로워 게시글!@#$^^7 : ");
+
+//포스팅 html단에 표시하기 위한 html단을 만드는 문자열 String을 반환하는 함수
+//해당 문자열들은 (선택자).html()함수를 통해 태그로 바뀌게 됨. 이벤트는 따로 함수로 빼놓고  다시 호출해야함.
+function callPost(post) {
+	console.log(" 게시글 표시 시작!@#$^^7 : ");
 	console.log(post);
 	let htmlText = "";
 	let now = new Date();
@@ -299,7 +308,7 @@ function followPost(post) {
 
 	htmlText += `<div class="col-12 post">`;
 	htmlText += `<input type="hidden" value="${post.betweenDate}">`;
-	htmlText += `<input type="text" id="fileList${post.postId}" value="${post.fileSize}">`;
+	htmlText += `<input type="text" id="fileList${post.postId}" value="${post.file_length}">`;
 	htmlText += `<div class="card recent-sales">`
 	htmlText += `<div class="card-body">`
 	htmlText += `<div class="filter" style="margin-top: 15px;">`
@@ -322,7 +331,7 @@ function followPost(post) {
 	htmlText += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
 	htmlText += `<li><a class="dropdown-item" href="#"><iclass="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>`
 	htmlText += `</ul></div>`
-	htmlText += `<div class="card-title">`;
+	htmlText += `<div class="card-title" id="otherUser${post.userId}" value="${post.userId}">`;
 	htmlText += `<img class="img-fluid rounded-circle" src="/upload/${post.profile.userProfileNm}"
 					style="width: 40px;">
 					<a href="#" class="card-title">${post.userNick}</a>`;
@@ -469,6 +478,9 @@ function followPost(post) {
 	return htmlText;
 }
 
+
+
+//작성글을 등록할 때 사용하는 게시글 1개를 호출하는 post 태그
 //포스팅 html단에 표시하는 함수. 문자열 값을 반환
 function post(item, insertIndex) {
 	console.log("게시글 작성자 Id : " + item.loginUser.userId);

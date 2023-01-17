@@ -89,7 +89,7 @@
 						htmlStr = "";
 						//조건에 해당하는 게시글을 불러옴.
 						for (let i = 0; i < obj.content.length; i++) {
-							htmlStr += followPost(obj.content[i]);
+							htmlStr += callPost(obj.content[i]);
 							/*
 							const postId = obj.content[i].postId;
 							const userId = obj.content[i].userId;
@@ -212,7 +212,7 @@
 						console.log("팔로워의 게시글 모두 게시 완료!!@#$%^^");
 					},
 					error: function (e) {
-						console.log("실패")
+						console.log("실패");
 
 						console.log(e);
 					}
