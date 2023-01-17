@@ -47,7 +47,8 @@
 			//댓글 페이지수
 			let comment_page_num = 0;
 
-			
+			//무한스크롤
+			let page_num = 1;
 
 			//현재시간
 			let now = new Date();
@@ -311,15 +312,15 @@
 				$("#inputRestNm").keyup(function (e) {
 					$("#restNm").val($(this).val());
 				});
-
-				//무한스크롤
-				let page_num = 1;
+				
+				//무한 스크롤할 페이지 번호는 맨위의 헤더부분에서 정의 한 것을 따라 값을 변화시킬 것임.
 				let text_scroll = "";
 				$(window).scroll(function () {
 					//console.log($(window).scrollTop());
 					//console.log($(document).height());
 					//console.log($(window).height());
 					if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+						console.log("들어오는 페이지 번호 : " + page_num);
 						if (page_num < [[${postList.totalPages}]]) {
 							$.ajax({
 								url: '/post/mainPost',
@@ -361,8 +362,8 @@
 										text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`
 										text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`
 										if(loginUserId == post.profile.userId){
-											text_scroll += `<button type="button" class="updateBtn dropdown-item" id="updateButton" value="${post.postId}" style="text-align:center">게시글 수정</button>`
-											text_scroll += `<button type="button" class="dropdown-item post_deleteButton" id="deleteButton" value="${post.postId}" style="text-align:center">글 삭제</button>`
+											text_scroll += `<button type="button" class="updateBtn dropdown-item" id="updateButtonToggle${post.postId}" value="${post.postId}" style="text-align:center">게시글 수정</button>`
+											text_scroll += `<button type="button" class="dropdown-item post_deleteButton" id="deleteButton${post.postId}" value="${post.postId}" style="text-align:center">글 삭제</button>`
 										}
 										else{
 											text_scroll += `<form action="/user/reportUser?userId=${post.userId}" method="post">`
@@ -538,13 +539,14 @@
 									}
 									for(let i = elements; i < elements + obj.numberOfElements; i++) {
 										updateBtnEvent(i, obj.numberOfElements, obj.content[i - elements].postId);
+										$($(".uploadFileSpace")[i]).hide();
+										$($(".changedFileSpace")[i]).hide();
 									}
 									$.like_button(loginUserId);
 									$.comment_button();
 									$.map_button();
-									$(".uploadFileSpace").hide();
-									$(".changedFileSpace").hide();
-									page_num++;
+
+									page_num += 1;
 								},
 								error: function (e) {
 									console.log(e);
@@ -703,11 +705,11 @@
 												</form>
 											</li>
 											<li th:if="${loginUser.userId} == ${post.userId}">
-												<button type="button" class="updateBtn dropdown-item" id="updateButton" 
+												<button type="button" class="updateBtn dropdown-item" th:id="'updateButtonToggle' + ${post.postId}" 
 												th:value="${post.postId}">게시글수정</button>
 											</li>
 											<li th:if="${loginUser.userId} == ${post.userId}">
-												<button type="button" class="dropdown-item post_deleteButton" id="deleteButton" 
+												<button type="button" class="dropdown-item post_deleteButton" id="'deleteButton' + ${post.postId}" 
 												th:value="${post.postId}">글 삭제</button>
 											</li>
 										</ul>

@@ -233,10 +233,11 @@ $(function() {
 
 //스크롤 확장시 한 게시글마다 각각 이벤트를 적용시킬 함수 생성
 function updateBtnEvent(i, size, postId) {
+
 	console.log(postId + "게시글 확인- 업데이트 관련 이벤트 적용중" + i + ", 몇개 당 적용 : " + size);
 	console.log("this확인- 업데이트 관련 이벤트 적용중" + i);
-	$($(".fileBtns")[i]).hide();
-	$("button[value='" + postId + "']").on('click', function(e) {
+	//$($(".fileBtns")[i]).hide();
+	$("#updateButtonToggle" + postId).on('click', function(e) {
 		const value = e.target.value;
 		console.log("초기 화면 수정 버튼 활성화." + value);
 		if (!flagList[i]) {
@@ -248,20 +249,21 @@ function updateBtnEvent(i, size, postId) {
 			console.log("수정 버튼 내용 비활성화");
 			$("div[id='updateButton" + postId + "']").remove();
 		}
-		$("#postContent" + postId).text();
+		
+		//$("#postContent" + postId).text();
 
 		if (!flagList[i]) {
 			$("#postContent" + postId).hide();
 			$("#modify_content" + postId).show();
 			$("#contentIn" + postId).show();
 			$("#fileRequest" + postId).show();
-			$("button[value='" + postId + "']").text("편집 모드 비활성화");
+			$("#updateButtonToggle" + postId).text("편집 모드 비활성화");
 		} else {
 			$("#postContent" + postId).show();
 			$("#modify_content" + postId).hide();
 			$("#contentIn" + postId).hide();
 			$("#fileRequest" + postId).hide();
-			$("button[value='" + postId + "']").text("게시글 수정");
+			$("#updateButtonToggle" + postId).text("게시글 수정");
 		}
 		console.log("버튼 이벤트 html단 활성화");
 		flagList[i] = !flagList[i];
@@ -484,13 +486,15 @@ function callPost(post) {
 	htmlText += `<input type="hidden" id="postContentIn${post.postId}" name="postContent" value="${post.postContent}">`;
 	htmlText += `<input type="hidden" name="postDate" value="${post.postDate}">`;
 	htmlText += `<input type="hidden" name="restNm" value="${post.restNm}"></form>`;
-
+	
+	/*
 	if (loginUserId == post.userId) {
 		htmlText += `<div class="buttons fileBtns" id="buttonBox${post.postId}" value="${post.postId}">
 						<button type="button" id="fileRequest${post.postId}"
 						value="${post.postId}">파일 관리창 열기</button></div>`;
 
 	}
+	*/
 
 	htmlText += `<div class="activity" style="margin-bottom: 10px;">`
 	//htmlText += `<img src="../assets/img/news-1.jpg" style="width: 100%;">`
