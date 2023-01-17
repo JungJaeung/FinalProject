@@ -316,9 +316,9 @@
 				let page_num = 1;
 				let text_scroll = "";
 				$(window).scroll(function () {
-					console.log($(window).scrollTop());
-					console.log($(document).height());
-					console.log($(window).height());
+					//console.log($(window).scrollTop());
+					//console.log($(document).height());
+					//console.log($(window).height());
 					if ($(window).scrollTop() == $(document).height() - $(window).height()) {
 						if (page_num < [[${postList.totalPages}]]) {
 							$.ajax({
