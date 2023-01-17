@@ -528,10 +528,15 @@
 											};
 											originFiles.push(originFileObj);
 										}
-										$.updateBtnAtt(obj.content[i].postId);									
+										flagList.push(false);//게시글의 확장으로 처리할 정보 증가.
+										$.updateBtnAtt(obj.content[i].postId);
+										//$.updateBtn(elements, obj.numberOfElements, obj.content[i].postId);
+										$("#modify_content" + obj.content[i].postId).hide();									
+									}
+									for(let i = elements; i < elements + obj.numberOfElements; i++) {
+										updateBtnEvent(i, obj.numberOfElements, obj.content[i - elements].postId);
 									}
 									$.like_button(loginUserId);
-									$.updateBtn(elements, obj.numberOfElements);
 									$.comment_button();
 									$.map_button();
 									$(".uploadFileSpace").hide();
