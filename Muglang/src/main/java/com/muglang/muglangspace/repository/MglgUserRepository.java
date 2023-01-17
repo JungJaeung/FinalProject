@@ -1,5 +1,7 @@
 package com.muglang.muglangspace.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -133,4 +135,12 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer> {
 			+ "WHERE SOURCE_USER_ID= :userId AND TARGET_USER_ID = :postUserId", nativeQuery = true)
 	int reportUserCheck(@Param("postUserId") int postUserId,@Param("userId") int userId);	
 	
+	
+	@Query(value = "SELECT A.* FROM t_mglg_user A "
+			+ "     WHERE A.USER_ID IN "
+			+ "     (SELECT B.USER_ID FROM T_MGLG_POST B "
+			+ "     WHERE B.POST_ID IN "
+			+ "     (SELECT C.POST_ID FROM t_mglg_restaurant C WHERE C.RES_NAME='문화양곱창'))", nativeQuery = true)
+	List<CamelHashMap> getEatUser(@Param("resName") String resName);
+
 }
