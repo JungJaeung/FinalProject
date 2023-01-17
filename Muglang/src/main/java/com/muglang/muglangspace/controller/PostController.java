@@ -676,7 +676,7 @@ public class PostController {
 	//내가 쓴 게시글들만 필터링하여 ajax처리후 확장된 게시글을 더 불러오게됨.
 	@PostMapping("/myBoard")
 	public ResponseEntity<?> myExtendBoard(Pageable pageable, @RequestParam("page_num") int page_num,
-			HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails loginUser) {
+			HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		System.out.println("!@#$(!@#$@!#$ 페이지 번호 : " + page_num);
 		pageable = PageRequest.of(page_num, 5);
 		try {

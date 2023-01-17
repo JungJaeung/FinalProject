@@ -304,7 +304,7 @@ function followerPostlisu(item) {
 //포스팅 html단에 표시하기 위한 html단을 만드는 문자열 String을 반환하는 함수
 //해당 문자열들은 (선택자).html()함수를 통해 태그로 바뀌게 됨. 이벤트는 따로 함수로 빼놓고  다시 호출해야함.
 function callPost(post) {
-	console.log("팔로워 게시글!@#$^^7 : ");
+	console.log(" 게시글 표시 시작!@#$^^7 : ");
 	console.log(post);
 	let htmlText = "";
 	let now = new Date();
