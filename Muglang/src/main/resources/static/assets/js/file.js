@@ -17,37 +17,15 @@ let changedFiles = [];
 		//파일 추가 입력단 생성.
 		let fileFlagList = false;
 		
-		//게시글 작성 부분의 파일 입력 관리 이벤트.
-		$("#postFileRequest").click(function(e) {
-			e.preventDefault();
-			//숨어있던 파일 조작 메뉴 등장.
-			//이벤트 새로 생성.
-			if(!flagList) {
-				$.btnAtt();
-				$("#imagePreview").show();
-				$(this).text("파일 업로드 닫기");
-				$("#postFileUpdate").show();
-				flagList = !flagList;
-			} else {
-				$(this).text("파일 업로드 열기");
-				$("#imagePreview").hide();
-				$("#postFileUpdate").hide();
-				flagList = !flagList;
-			}
-		});
-		
-		$("#imagePreview").hide();
-		$("#postFileUpdate").hide();
+		//$("#imagePreview").hide();
 		//$("#btnAttForm").hide();
 		//파일 리스트 변경 버튼 이벤트 대신 처리.
 		$("#postFileUpdate").click(function(e) {
-			e.preventDefault();
+			$.btnAtt();
+			flagList = !flagList;
 			$("#btnAtt").click();
+			$("#attZone").css("display", "inline-block");
 		});
-
-		
-		
-		//이미 등록된 게시글의 수정 과정에서 사용하는 이벤트 처리 버튼.
 		
 		
 		//게시글 수정에서 파일을 수정하는 버튼의 파일관리 이벤트 처리 함수.
@@ -417,6 +395,7 @@ let changedFiles = [];
 				$("#contentIn" + postId).hide();
 				$("#deleteButton" + postId).remove();
 				$("#updateButton" + postId).remove();
+				$("#fileRequest" + postId).hide();
 				flagList[index] = false;
 				$($(".updateBtn")[index]).text("게시글 수정");
 			},

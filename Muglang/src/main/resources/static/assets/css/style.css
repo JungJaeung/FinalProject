@@ -23,7 +23,7 @@
 }
 
 #attZone {
-	width: 660px;
+	width: 100%;
 	min-height: 150px;
 	padding: 10px;
 	border: 1px dotted #00f;

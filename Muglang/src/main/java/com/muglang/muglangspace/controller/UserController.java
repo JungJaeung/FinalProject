@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.common.FileUtils;
+import com.muglang.muglangspace.common.Load;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.MglgUserProfileDTO;
@@ -126,15 +129,18 @@ public class UserController {
 		
 	}
 	
-	
-	// 내 게시물으로 이동
+	//내게시글의 페이지로 다시 이동
+	//게시글의 처리는 post컨트롤러로 이관함.
 	@GetMapping("/myBoard")
-	public ModelAndView myBoard() {
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("user/myBoard.html");
-		return mv;
+	public ModelAndView myBoardList(@AuthenticationPrincipal CustomUserDetails loginUser) {
+			ModelAndView mv = new ModelAndView();
+			MglgUserDTO loginUserDTO = Load.toHtml(loginUser.getMglgUser());
+			mv.addObject("loginUser", loginUserDTO);
+			mv.setViewName("/user/myBoard.html");
+			System.out.println("게시글 처리 정보 이관중--------------!!!!!!!!!!!!!!");
+			return mv;
 	}
-
+	
 	// 팔로워로 이동
 	// 유저 목록 불러오기 + 페이징
 	@GetMapping("/follower")

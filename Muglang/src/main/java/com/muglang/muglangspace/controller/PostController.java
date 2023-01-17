@@ -44,6 +44,9 @@ import com.muglang.muglangspace.dto.MglgRestaurantDTO;
 
 import com.muglang.muglangspace.dto.MglgUserProfileDTO;
 
+
+import com.muglang.muglangspace.dto.MglgShowHotKeywordsDTO;
+import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
@@ -452,7 +455,8 @@ public class PostController {
 
 		//프로필의 정보를 가져오는 부분(가져온 정보는 표시만을 하기위해 사용)
 		for(CamelHashMap post: pagePostList) {
-			int writerId = (int)post.get("userId");
+			int writerId = (Integer)post.get("userId");
+			System.out.println("----!!!!!!! 유저  아이디 : " + writerId);
 			MglgUserProfile profile = mglgUserProfileService.getUserImg(writerId);
 			
 			MglgUserProfileDTO profileDTO = MglgUserProfileDTO.builder()
@@ -578,9 +582,181 @@ public class PostController {
 		}
 	}
 
+	// 내 게시물으로 이동
+	//내가 쓴 게시글들만 필터링하여 ajax처리후 게시글을 다 불러오게됨.
+	@GetMapping("/myBoard")
+	public ResponseEntity<?> myBoard(@PageableDefault(page = 0, size = 5) Pageable pageable,
+			HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails loginUser) {
+		try {
+			//로그인한 유저의 게시글만 표시함.
+			int userId = loginUser.getMglgUser().getUserId();
+
+			Page<CamelHashMap> pagePostList = mglgPostService.getPagePersonalPostList(pageable, userId);
+
+			for (int i = 0; i < pagePostList.getContent().size(); i++) {
+				pagePostList.getContent().get(i).put(
+					"between_date", Duration.between(
+							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
+							LocalDateTime.now()).getSeconds()
+				);
+				
+				pagePostList.getContent().get(i).put(
+						"post_date",
+						String.valueOf(
+								((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
+						)
+				);
+				
+				//해당 글에 등록된 식당이 팔로우 하고있는 유저의 포스트에 몇개 등록되어 있는지
+				pagePostList.getContent().get(i).put(
+						"res_cnt",
+						mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
+				);
+				// 이미 쿼리 카멜 해쉬에서 가져와서 쓸필요 없음.
+				//pagePostList.getContent().get(i).put("res_name", mglgRestaurantService.selectRes((Integer)pagePostList.getContent().get(i).get("postId")).getResName());
+				pagePostList.getContent().get(i).put("index", i);
+			}
+			//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열처럼 사용됨.
+			//반복문을 통해 한 게시글의 전체 정보를 담을 맵을 반복자로 잡아서 반복문을 돌림.
+			for(CamelHashMap file : pagePostList) {
+				//파일 정보를 화면단에 출력하기위해서 DTO를 담을 때 엔티티에서는 있지만, DTO에서는 이것을 따로 담아서 사용한다.
+				//해당 포스팅 게시글에 해당하는 파일들을 모두 검색하기 위해 포스트 ID를 따로 가져와서 쿼리로 검색한다.
+//				System.out.println("변경된 맵 : " + file);
+				int findId = (int)file.get("postId");
+				//한 게시글의 모든 파일들을 로드함.
+				//파일을 등록하지 않은 경우 파일 없이 수행. if문의 조건에 만족하지 못하면 file 데이터는 없는것.
+				//fileList 객체의 결과가 없으면 if문을 들어가지 않고 바로 빠져나와 파일의 개수가 0이고, 내용은 비어있음.
+				List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
+				//System.out.println("파일의 개수 : " + fileList.size());
+				List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
+				if(!fileList.isEmpty()) {
+					for(int j = 0; j < fileList.size(); j++) {
+						//리스트에 먼저 추가를하고 키 값을 그후에 넣어야함. 없는 객체에 뭘 넣는건 불가능함.
+						fileListDTO.add(Load.toHtml(fileList.get(j)));	//DTO로 바꾸는 메소드 수행.
+						fileListDTO.get(j).setPostId(findId);	//바로 직전 메소드에서 postID는 넣지 않음. 따로 넣는 과정.
+						System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
+					}
+				}
+				file.put("file_length", fileList.size());	//방금 작업 완료한 게시글의 파일 개수 저장.
+				file.put("file_list", fileListDTO);	//키값은 스네이크형으로 적고 오버라이딩된 camelHashMap클래스의 메소드를 따라감. 
+				//camel형으로 키값을 자동으로 바꿈.
+			}
+
+			//프로필의 정보를 가져오는 부분(가져온 정보는 표시만을 하기위해 사용)
+			for(CamelHashMap post: pagePostList) {
+				int writerId = (Integer)post.get("userId");
+				System.out.println("----!!!!!!! 유저  아이디 : " + writerId);
+				MglgUserProfile profile = mglgUserProfileService.getUserImg(writerId);
+				
+				MglgUserProfileDTO profileDTO = MglgUserProfileDTO.builder()
+																.userId(writerId)
+																.userProfileNm(profile.getUserProfileNm())
+																.userProfileOriginNm(profile.getUserProfileOriginNm())
+																.userProfilePath(profile.getUserProfilePath())
+																.userProfileCate(profile.getUserProfileCate())
+																.build();
+				post.put("profile", profileDTO);
+				
+			}
+	    
+			// 인기 검색어 받아오기
+			//List<MglgShowHotKeywordsDTO> mglgShowHotKeywordsList = mglgPostService.getShowHotKeywords();
+			return ResponseEntity.ok().body(pagePostList);
+		} catch(Exception e) {
+			return ResponseEntity.ok().body(response);
+		}
+	}
+	
+	// 내 게시물으로 이동
+	//내가 쓴 게시글들만 필터링하여 ajax처리후 확장된 게시글을 더 불러오게됨.
+	@PostMapping("/myBoard")
+	public ResponseEntity<?> myExtendBoard(Pageable pageable, @RequestParam("page_num") int page_num,
+			HttpServletResponse response, @AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		System.out.println("!@#$(!@#$@!#$ 페이지 번호 : " + page_num);
+		pageable = PageRequest.of(page_num, 5);
+		try {
+			//로그인한 유저의 게시글만 표시함.
+			int userId = loginUser.getMglgUser().getUserId();
+
+			Page<CamelHashMap> pagePostList = mglgPostService.getPagePersonalPostList(pageable, userId);
+
+			for (int i = 0; i < pagePostList.getContent().size(); i++) {
+				pagePostList.getContent().get(i).put(
+					"between_date", Duration.between(
+							((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime(),
+							LocalDateTime.now()).getSeconds()
+				);
+				
+				pagePostList.getContent().get(i).put(
+						"post_date",
+						String.valueOf(
+								((Timestamp) pagePostList.getContent().get(i).get("postDate")).toLocalDateTime()
+						)
+				);
+				
+				//해당 글에 등록된 식당이 팔로우 하고있는 유저의 포스트에 몇개 등록되어 있는지
+				pagePostList.getContent().get(i).put(
+						"res_cnt",
+						mglgRestaurantService.countRes(userId, (String)pagePostList.getContent().get(i).get("resName"))
+				);
+				// 이미 쿼리 카멜 해쉬에서 가져와서 쓸필요 없음.
+				//pagePostList.getContent().get(i).put("res_name", mglgRestaurantService.selectRes((Integer)pagePostList.getContent().get(i).get("postId")).getResName());
+				pagePostList.getContent().get(i).put("index", i);
+			}
+			//파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열처럼 사용됨.
+			//반복문을 통해 한 게시글의 전체 정보를 담을 맵을 반복자로 잡아서 반복문을 돌림.
+			for(CamelHashMap file : pagePostList) {
+				//파일 정보를 화면단에 출력하기위해서 DTO를 담을 때 엔티티에서는 있지만, DTO에서는 이것을 따로 담아서 사용한다.
+				//해당 포스팅 게시글에 해당하는 파일들을 모두 검색하기 위해 포스트 ID를 따로 가져와서 쿼리로 검색한다.
+//				System.out.println("변경된 맵 : " + file);
+				int findId = (int)file.get("postId");
+				//한 게시글의 모든 파일들을 로드함.
+				//파일을 등록하지 않은 경우 파일 없이 수행. if문의 조건에 만족하지 못하면 file 데이터는 없는것.
+				//fileList 객체의 결과가 없으면 if문을 들어가지 않고 바로 빠져나와 파일의 개수가 0이고, 내용은 비어있음.
+				List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
+				//System.out.println("파일의 개수 : " + fileList.size());
+				List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
+				if(!fileList.isEmpty()) {
+					for(int j = 0; j < fileList.size(); j++) {
+						//리스트에 먼저 추가를하고 키 값을 그후에 넣어야함. 없는 객체에 뭘 넣는건 불가능함.
+						fileListDTO.add(Load.toHtml(fileList.get(j)));	//DTO로 바꾸는 메소드 수행.
+						fileListDTO.get(j).setPostId(findId);	//바로 직전 메소드에서 postID는 넣지 않음. 따로 넣는 과정.
+						System.out.println(findId + "의 파일 목록 : " + fileListDTO.get(j));
+					}
+				}
+				file.put("file_length", fileList.size());	//방금 작업 완료한 게시글의 파일 개수 저장.
+				file.put("file_list", fileListDTO);	//키값은 스네이크형으로 적고 오버라이딩된 camelHashMap클래스의 메소드를 따라감. 
+				//camel형으로 키값을 자동으로 바꿈.
+			}
+
+			//프로필의 정보를 가져오는 부분(가져온 정보는 표시만을 하기위해 사용)
+			for(CamelHashMap post: pagePostList) {
+				int writerId = (Integer)post.get("userId");
+				System.out.println("----!!!!!!! 유저  아이디 : " + writerId);
+				MglgUserProfile profile = mglgUserProfileService.getUserImg(writerId);
+				
+				MglgUserProfileDTO profileDTO = MglgUserProfileDTO.builder()
+																.userId(writerId)
+																.userProfileNm(profile.getUserProfileNm())
+																.userProfileOriginNm(profile.getUserProfileOriginNm())
+																.userProfilePath(profile.getUserProfilePath())
+																.userProfileCate(profile.getUserProfileCate())
+																.build();
+				post.put("profile", profileDTO);
+				
+			}
+	    
+			// 인기 검색어 받아오기
+			//List<MglgShowHotKeywordsDTO> mglgShowHotKeywordsList = mglgPostService.getShowHotKeywords();
+			return ResponseEntity.ok().body(pagePostList);
+		} catch(Exception e) {
+			return ResponseEntity.ok().body(response);
+		}
+	}
+	
 	//팔로우 하고 있는사람 포스트만 불러오는 로직
 	@GetMapping("/getFollowerPost")
-	public ResponseEntity<?> getFollowerPost(@PageableDefault(page=0,size=5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
+	public ResponseEntity<?> getFollowerPost(@PageableDefault(page=0, size=5) Pageable pageable, @AuthenticationPrincipal CustomUserDetails loginUser) {
 		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
 		int userId = loginUser.getMglgUser().getUserId();
 		try {		
