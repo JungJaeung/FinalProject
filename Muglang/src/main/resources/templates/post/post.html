@@ -35,6 +35,10 @@
 			let originFileList = [];
 			//변경된 첨부파일 배열
 			let changedFiles = [];
+			
+			////////// 파일의 입력 부분을 담당할 입력 배열들을 따로 정의하여 분리해서 다룰 것임.
+			let inputUploadFiles = [];
+			let inputOriginFiles = [];
 
 			//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
 			//포스팅 글들의 id를 관리하는데 사용함.
@@ -206,7 +210,10 @@
 
 				//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
 				//작성 버튼 - 따로 다른 페이지로 이동하지 않고 현재 페이지에서 바로 입력 처리를 시작함.
-
+				
+				//파일 처리 버튼 관련 이벤트는 로드시 한번만 호출하면됨.
+				$.btnAtt();
+				
 				$("#insert_board").on("click", function (e) {
 					e.preventDefault();
 					let insert_post = "";
@@ -215,14 +222,14 @@
 
 					//$("#postContent").val($(".ql-editor").html());
 					//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
-					dt = new DataTransfer();
+					dt3 = new DataTransfer();
 
-					for (f in uploadFiles) {
-						const file = uploadFiles[f];
-						dt.items.add(file);
+					for (f in inputUploadFiles) {
+						const file = inputUploadFiles[f];
+						dt3.items.add(file);
 					}
 					console.log("파일 입력 내용을 입력 중입니다." + $("input[name='postContent']").val());
-					$("#btnAtt")[0].files = dt.files;
+					$("#btnAtt")[0].files = dt3.files;
 					//$("#insert_form").submit();
 					//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
 					//배열 형태로 전송 시 백단(Java)에서 처리불가
@@ -663,6 +670,8 @@
 											style="background: none; border:none;">
 											<i class="ri-map-pin-2-fill" style="font-size: 20px; color:#000069;"></i>
 										</button>
+										<!-- form을 위로 올리면 파일 개수를 0개인데 1개로 받아서 파일 처리를 못함. 그냥 여기로 냅두는게 좋을 듯. -->
+									<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">
 										<div class="box" id="imagePreview">
 											<!-- 이미지를 따로 미리 임시 저장하는 공간 -->
 											<div id="image_preview" style="margin:10px 0;">
@@ -673,8 +682,6 @@
 											</div>
 										</div>
 										<!-- End Quill Editor Default -->
-										<!-- form을 위로 올리면 파일 개수를 0개인데 1개로 받아서 파일 처리를 못함. 그냥 여기로 냅두는게 좋을 듯. -->
-										<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">
 										<input type="hidden" id="restNm" name="restNm" value="">
 										<input type="hidden" id="postContent" name="postContent" value="">
 										<div style="margin-bottom: 5px;">

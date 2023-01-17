@@ -13,18 +13,20 @@ let changedFiles = [];
 //스크립트에서 설정한 파일은 스크립트에서 다시 사용하는 것이 불가능하며, 따로 만들어서 초기화 해줘야함.
 	$(function() {
 		let formData;
-		let flagList = false;
+		//let flagList = false;
+		let insertFlag = false;
 		//파일 추가 입력단 생성.
 		let fileFlagList = false;
 		
 		//$("#imagePreview").hide();
 		//$("#btnAttForm").hide();
 		//파일 리스트 변경 버튼 이벤트 대신 처리.
+		//버튼을 누르면 파일을 누르는 버튼의 이벤트를 발생시킴.
 		$("#postFileUpdate").click(function(e) {
-			$.btnAtt();
-			flagList = !flagList;
+			e.preventDefault();
+			//$.btnAtt();
+			insertFlag = !insertFlag;
 			$("#btnAtt").click();
-			$("#attZone").css("display", "inline-block");
 		});
 		
 		
@@ -41,6 +43,7 @@ let changedFiles = [];
 			for(f of fileArr) {
 				postImageLoader(f, postId);
 			}
+
 		});
 		
 		$.updateBtnAtt = function(targetPostId) {
@@ -64,14 +67,16 @@ let changedFiles = [];
 		$.btnAtt = function() {
 			$("#btnAtt").on("change", function(e) {
 				//input type=file에 추가된 파일들을 변수로 받아옴
-				const files = e.target.files;
+				const files = e.currentTarget.files;
 				//변수로 받아온 파일들을 배열 형태로 변환
 				const fileArr = Array.prototype.slice.call(files);
-				
+
 				//배열에 있는 파일들을 하나씩 꺼내서 처리
 				for(f of fileArr) {
+					console.log(f);
 					imageLoader(f);
 				}
+				$("#attZone").css("display", "inline-block");
 			});
 		}
 		/*
@@ -115,7 +120,9 @@ let changedFiles = [];
 	//미리보기 영역에 들어갈 img태그 생성 및 선택된 파일을 Base64 인코딩된 문자열 형태로 변환하여
 	//미리보기가 가능하게 해줌
 	function imageLoader(file) {
-		uploadFiles.push(file);
+		console.log("file 미리 보기 로드 사용중.");
+		inputUploadFiles.push(file);
+		
 		let reader = new FileReader();
 		
 		reader.onload = function(e) {
@@ -126,7 +133,7 @@ let changedFiles = [];
 			//이미지 파일인지 아닌지 체크
 			if(file.name.toLowerCase().match(/(.*?)\.(jpg|jpeg|png|gif|svg|bmp)$/)) {
 				//이미지 파일 미리보기 처리
-				img.src = e.target.result;
+				img.src = e.currentTarget.result;
 			} else {
 				//일반 파일 미리보기 처리
 				img.src = "../img/defaultFileImg.png";
@@ -258,29 +265,23 @@ let changedFiles = [];
 				originFiles[i].newFileNm = fileArr[0].name;
 			}
 		}
-		/*for (let i = 0; i < originFileList.length; i++) {
-			for (let j = 0; j < originFileList[i].length; j++) {
-				if (postFileId == originFileList[i][j].postFileId) {
-					originFileList[i][j].postFileStatus = "U";
-					originFileList[i][j].newFileNm = fileArr[0].name;
-				}
-			}
-		}*/
 
 	}
 	
-	
+	//게시된 파일들에 해당함.
 	//x버튼 클릭시 동작하는 메소드
 	function fnImgDel(e) {
 		//클릭된 태그 가져오기
-		let ele = e.srcElement;
+		let ele = e.currentTarget;
 		//delFile속성 값 가져오기(boardFileNo)
 		let delFile = ele.getAttribute("data-del-file");	
 		console.log("게시글 삭제할 이미지 파일 번호 : " + delFile);
 		
-		for(let i = 0; i < originFiles.length; i++) {
-			if(delFile == originFiles[i].postFileId) {
-				originFiles[i].postFileStatus = "D";
+		for(let i = 0; i < inputOriginFiles.length; i++) {
+			if(delFile == inputOriginFiles[i].postFileId) {
+				inputOriginFiles[i].postFileStatus = "D";
+				console.log("삭제할 이미지 파일 번호 : " + delFile);
+				console.log(inputOriginFiles[i]);
 			}
 		}
 		
@@ -434,11 +435,11 @@ let changedFiles = [];
 			//delFile(파일이름) 속성 꺼내오기: 삭제될 파일명
 			const delFile = ele.getAttribute("data-del-file");
 			
-			for(let i = 0; i < uploadFiles.length; i++) {
+			for(let i = 0; i < inputUploadFiles.length; i++) {
 				//배열에 담아놓은 파일들중에 해당 파일 삭제
-				if(delFile == uploadFiles[i].name) {
+				if(delFile == inputUploadFiles[i].name) {
 					//배열에서 i번째 한개만 제거
-					uploadFiles.splice(i, 1);
+					inputUploadFiles.splice(i, 1);
 				}
 			}
 			
@@ -447,14 +448,14 @@ let changedFiles = [];
 			//fileList에 일반적인 File객체를 넣을 수 없고
 			//DataTransfer라는 클래스를 이용하여 완전한 fileList 형태로 만들어서
 			//input.files에 넣어줘야 된다.
-			dt = new DataTransfer();
+			dt3 = new DataTransfer();
 			
-			for(f in uploadFiles) {
-				const file = uploadFiles[f];
-				dt.items.add(file);
+			for(f in inputUploadFiles) {
+				const file = inputUploadFiles[f];
+				dt3.items.add(file);
 			}
 			
-			$("#attZone")[0].files = dt.files;
+			$("#btnAtt")[0].files = dt3.files;
 			
 			//해당 img를 담고있는 부모태그인 div 삭제
 			const parentDiv = ele.parentNode;
