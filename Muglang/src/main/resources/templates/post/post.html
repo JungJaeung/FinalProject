@@ -621,8 +621,7 @@
 											</div>
 										</div>
 										<!-- End Quill Editor Default -->
-										<!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임.
-										 버튼을 두개로 따로 처리하기보단 위에서 한번에 바로처리 하기위해 폼을 올림. -->
+										<!-- form을 위로 올리면 파일 개수를 0개인데 1개로 받아서 파일 처리를 못함. 그냥 여기로 냅두는게 좋을 듯. -->
 										<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">
 										<input type="hidden" id="restNm" name="restNm" value="">
 										<input type="hidden" id="postContent" name="postContent" value="">
