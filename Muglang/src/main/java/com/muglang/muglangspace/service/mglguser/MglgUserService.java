@@ -31,5 +31,7 @@ public interface MglgUserService {
 	MglgUser updateUser(MglgUser user);
 	
 	String reportUser(int postUserId,int userId);
+	
+	List<CamelHashMap> getEatUser(String resName);
 
 }

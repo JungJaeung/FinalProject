@@ -455,6 +455,33 @@ public class UserController {
 			
 			
 	}
+	//에이작스 누가 먹었는지
+	@GetMapping("eatFriend")
+	public ResponseEntity<?> eatFriend(String resName){
+		MglgResponseDTO<CamelHashMap> response = new MglgResponseDTO<>();
+		
+		try {
+			List<CamelHashMap> getUser = mglgUserService.getEatUser(resName);
+			int i =0;
+			for(CamelHashMap a : getUser) {
+				int getUserId = (int) getUser.get(i).get("userId");
+				MglgUserProfile profileImg = mglgUserProfileService.getUserImg(getUserId);
+				getUser.get(i).put("profileImg", profileImg);
+				if(i==5) {
+					i=0;
+				}else {
+					i++;
+				}
+			}
+			
+
+			response.setItems(getUser);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+	}
 
 	
 	
