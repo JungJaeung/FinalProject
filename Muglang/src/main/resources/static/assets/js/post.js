@@ -104,13 +104,13 @@ $(function() {
 				$("#postContent" + $(this).val()).show();
 				$("#contentIn" + $(this).val()).hide();
 				$("#fileRequest" + $(this).val()).hide();
-				$("#upTitle" + $(this).val()).hide();
+				$(this).text("게시글 수정");
 
 			} else {
 				$("#postContent" + $(this).val()).hide();
 				$("#contentIn" + $(this).val()).show();
 				$("#fileRequest" + $(this).val()).show();
-				$("#upTitle" + $(this).val()).show();
+				$(this).text("편집 모드 비활성화");
 			}
 			console.log("버튼 이벤트 html단 활성화");
 
@@ -157,14 +157,14 @@ $(function() {
 		$("#fileRequest" + postId).hide();
 	}
 
+
 	//스크롤 확장시 다시 이벤트를 발생시킬 스크립트를 다시 로드함.
 	$.updateBtn = function(startIndex, size) {
 		for (let i = startIndex; i < startIndex + size; i++) {
-			console.log("this확인- 업데이트 관련 이벤트 적용중");
+			console.log("this확인- 업데이트 관련 이벤트 적용중" + i);
 			flagList[i] = false;
-			$($('.uploadFileSpace')[i]).hide();
-			$($('.changedFileSpace')[i]).hide();
-			$("#upTitle" + $(this).val()).hide();
+			$($(".uploadFileSpace")[i]).hide();
+			$($(".changedFileSpace")[i]).hide();
 			$("#contentIn" + $(this).val()).hide();
 			$("#fileRequest" + $(this).val()).hide();
 			$($(".fileBtns")[i]).hide();
@@ -184,13 +184,12 @@ $(function() {
 					$("#postContent" + $(this).val()).show();
 					$("#contentIn" + $(this).val()).hide();
 					$("#fileRequest" + $(this).val()).hide();
-					$("#upTitle" + $(this).val()).hide();
-
+					$(this).text("게시글 수정");
 				} else {
 					$("#postContent" + $(this).val()).hide();
 					$("#contentIn" + $(this).val()).show();
 					$("#fileRequest" + $(this).val()).show();
-					$("#upTitle" + $(this).val()).show();
+					$(this).text("편집 모드 비활성화");
 				}
 				console.log("버튼 이벤트 html단 활성화");
 
@@ -231,6 +230,68 @@ $(function() {
 	}
 
 });
+
+//스크롤 확장시 한 게시글마다 각각 이벤트를 적용시킬 함수 생성
+function updateBtnEvent(i, size, postId) {
+	console.log(postId + "게시글 확인- 업데이트 관련 이벤트 적용중" + i + ", 몇개 당 적용 : " + size);
+	console.log("this확인- 업데이트 관련 이벤트 적용중" + i);
+	$($(".fileBtns")[i]).hide();
+	$("button[value='" + postId + "']").on('click', function(e) {
+		const value = e.target.value;
+		console.log("초기 화면 수정 버튼 활성화." + value);
+		if (!flagList[i]) {
+			console.log("수정 버튼 내용 활성화");
+			$("<button type='button' id='updateButton" + postId + "' class='btn' style='float:right;'>").appendTo($("div[id='modify_content" + postId + "']"));
+			$("#updateButton" + postId).text("완료");
+			
+		} else {
+			console.log("수정 버튼 내용 비활성화");
+			$("div[id='updateButton" + postId + "']").remove();
+		}
+		$("#postContent" + postId).text();
+
+		if (!flagList[i]) {
+			$("#postContent" + postId).hide();
+			$("#modify_content" + postId).show();
+			$("#contentIn" + postId).show();
+			$("#fileRequest" + postId).show();
+			$(this).text("편집 모드 비활성화");
+		} else {
+			$("#postContent" + postId).show();
+			$("#modify_content" + postId).hide();
+			$("#contentIn" + postId).hide();
+			$("#fileRequest" + postId).hide();
+			$(this).text("게시글 수정");
+		}
+		console.log("버튼 이벤트 html단 활성화");
+		flagList[i] = !flagList[i];
+		console.log(flagList);
+		//$.updateBtnAtt(postIdList[i], i);
+		//내 게시글 파일 관리 버튼
+		$("#fileRequest" + postId).click(function(e) {
+			console.log("파일 요청 조작 활성화" + postId);
+			$("#updateBtnAtt" + postId).click();
+		});
+
+		$("#fileRemove" + postId).click(function(e) {
+			console.log("파일 삭제 요청 활성화");
+		});
+
+		//내 게시물 수정, 삭제, 돌아가기 결정 버튼
+		$("#updateButton" + postId).click(function(e) {
+			//console.log("update될 내용 : " + $("#contentIn" + postIdList[i]).val());\
+			fnUpdatePost(postId, i);
+		});
+
+		//글 내용 수정하는 키입력을 받음.
+		$("#contentIn" + postId).keyup(function(e) {
+			$("#postContent" + postId).text(postId);
+			console.log(postId);
+			fnChangeContent(this, postId);
+		});
+
+	});
+}
 
 function inputTitle(title) {
 	$('#inputRestNm').val(title)
