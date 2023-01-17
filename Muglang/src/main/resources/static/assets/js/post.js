@@ -160,7 +160,7 @@ $(function() {
 	//스크롤 확장시 다시 이벤트를 발생시킬 스크립트를 다시 로드함.
 	$.updateBtn = function(startIndex, size) {
 		for (let i = startIndex; i < startIndex + size; i++) {
-			console.log("this확인" + $(this).val());
+			console.log("this확인- 업데이트 관련 이벤트 적용중");
 			flagList[i] = false;
 			$($('.uploadFileSpace')[i]).hide();
 			$($('.changedFileSpace')[i]).hide();

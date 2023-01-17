@@ -513,8 +513,7 @@
 									}
 
 									$("#post_scroll_div").html(text_scroll);
-									$(".uploadFileSpace").hide();
-									$(".changedFileSpace").hide();
+
 									//이벤트 리스너 함수 호출
 									for(let i = 0; i < obj.numberOfElements; i++) {
 										for(let j = 0; j < obj.content[i].fileLength; j++) {
@@ -535,6 +534,8 @@
 									$.updateBtn(elements, obj.numberOfElements);
 									$.comment_button();
 									$.map_button();
+									$(".uploadFileSpace").hide();
+									$(".changedFileSpace").hide();
 									page_num++;
 								},
 								error: function (e) {
