@@ -26,7 +26,7 @@ public class MglgHotKeywords {
 	private String hotKeyword;
 	
 	@Column
-	@ColumnDefault("N")
+	@ColumnDefault("'N'")
 	private String confirmYn;
 	private int numOfTime;
 }

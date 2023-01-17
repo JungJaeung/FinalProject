@@ -92,37 +92,47 @@ public class PostController {
 			,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		System.out.println(mglgPostDTO);
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
-		
+		int inputFileSize;
 //		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles,
 //													new TypeReference<List<MglgPostFileDTO>>() {});
-		
+		//MultipartFile[]의 length는 final이라 처리를 하려면 따로 처리해야함.
 		System.out.println("가져온 내용 : " + mglgPostDTO);
 		System.out.println("가져온 파일의 정보 : " + uploadFiles);
+		if(uploadFiles == null) {
+			inputFileSize = 0;
+		} else {
+			inputFileSize = uploadFiles.length;
+		}
+		System.out.println("식당정보 : " + mglgRestaurantDTO);
+		
+		System.out.println("게시글 등록 시작.");
+		MglgPost mglgPost = MglgPost.builder()
+				.postId(mglgPostDTO.getPostId())
+				.mglgUser(loginUser.getMglgUser())
+				.postContent(mglgPostDTO.getPostContent())
+				.restNm(mglgPostDTO.getRestNm())
+				.postDate(LocalDateTime.now())
+				.postRating(mglgPostDTO.getPostRating())
+				.restRating(mglgPostDTO.getRestRating())
+				.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
+				.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
+				.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
+				.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
+				.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
+				.build();
 
+		mglgPost = mglgPostService.insertPost(mglgPost);
+		System.out.println("파일과 식당을 제외한 게시글 내용만 확인 :" + mglgPost);
+		
 		try {
-			System.out.println("게시글 등록 시작.");
-			MglgPost mglgPost = MglgPost.builder()
-					.postId(mglgPostDTO.getPostId())
-					.mglgUser(loginUser.getMglgUser())
-					.postContent(mglgPostDTO.getPostContent())
-					.restNm(mglgPostDTO.getRestNm())
-					.postDate(LocalDateTime.now())
-					.postRating(mglgPostDTO.getPostRating())
-					.restRating(mglgPostDTO.getRestRating())
-					.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
-					.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
-					.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
-					.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
-					.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
-					.build();
-
-			mglgPost = mglgPostService.insertPost(mglgPost);
 			
+			System.out.println("파일의 개수를 확인하고 있습니다. " + inputFileSize);
 			System.out.println("파일 정보를 확인하고 있습니다." + uploadFiles);
 			
 			//파일 리스트를 생성하여 해당 게시글의 파일들을 등록하기 위한 사전작업을 함.
-			List<MglgPostFile> uploadFileList = new ArrayList<MglgPostFile>();		
-			if(uploadFiles.length > 0) {
+			List<MglgPostFile> uploadFileList = new ArrayList<MglgPostFile>();	
+			//파일의 개수가 0개일 경우 파일 입출력은 생략하고  다음 작업으로 이동한다.
+			if(inputFileSize > 0) {
 				String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
 				
 				System.out.println("attachPath====================!====" + attachPath);
@@ -145,9 +155,12 @@ public class PostController {
 					}
 					
 				}
+
 			}
 			//입력 작업 수행후 출력할 파일들의 정보를 가져오는 리스트 생성
-			List<MglgPostFile> completeFile = mglgPostFileService.getPostFileList(mglgPost.getPostId());
+			List<MglgPostFile> completeFile = mglgPostFileService.getPostFileList(mglgPost.getPostId()); //기본 배열 미리 생성후 가져온 배열 값을 가공함.
+			System.out.println("파일 조회 완료#%$^&파일 개수 : " + completeFile.size());
+
 			//DTO로 변경하여 ResponseDTO로 옮김.
 			List<MglgPostFileDTO> completeFileDTO = new ArrayList<MglgPostFileDTO>(); 
 			for(int i = 0; i < completeFile.size(); i++) {
@@ -155,7 +168,9 @@ public class PostController {
 				completeFileDTO.get(i).setPostId(mglgPost.getPostId());
 			}
 			
-			System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFileDTO.get(0).getPostFileId());
+			if(completeFileDTO.size() > 0) {
+				System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFileDTO.get(0).getPostFileId());
+			}
 			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
 			System.out.println("게시글 정보 확인 : " + returnDTO);
@@ -170,9 +185,11 @@ public class PostController {
 					.resCategory(mglgRestaurantDTO.getResCategory())
 					.build();
 			
-			//쿼리문 실행
+			//쿼리문 실행 - 식당 정보를 입력하는 과정을 수행.
 			mglgRestaurantService.insertRestaurant(mglgRes);
 			
+			//식당정보 표출을 위한 dto를 가공하여 화면단으로 뿌릴 맵을 하나 생성함.
+			mglgRes = mglgRestaurantService.selectRes(returnDTO.getPostId());
 			//식당 정보를 DTO로 바꿔서 맵으로 출력함.
 			MglgRestaurantDTO mglgResDTO = MglgRestaurantDTO.builder()
 															.postId(mglgRes.getMglgPost().getPostId())
@@ -183,6 +200,7 @@ public class PostController {
 															.resCategory(mglgRes.getResCategory())
 															.build();
 			
+			System.out.println("식당 정보를 확인차 표시합니다." + mglgResDTO);
 			
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);

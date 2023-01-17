@@ -257,7 +257,7 @@
 							//$("#posts").html(insert_post);
 							//html단 뿌리기
 							console.log(insert_post);
-							$("#posts:nth-child(2)").prev($(insert_post));
+							$("div[id='posts']:nth-child(2)").prev($(insert_post));
 							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
 							flagList.unshift(false);
 
@@ -636,8 +636,8 @@
 							<!-- 작성 하는 부분 -->
 							<div class="card recent-sales overflow-auto">
 								<div class="card-body">
-									<form id="insert_form" name="insertForm" enctype="multipart/form-data"
-										action="/post/insertPost" method="post">
+									<!--<form id="insert_form" name="insertForm" enctype="multipart/form-data"
+										action="/post/insertPost" method="post">-->
 										<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
 
 										<input type="hidden" id="userName" name="userName"
@@ -666,9 +666,8 @@
 											</div>
 										</div>
 										<!-- End Quill Editor Default -->
-										<!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임.
-										 버튼을 두개로 따로 처리하기보단 위에서 한번에 바로처리 하기위해 폼을 올림. -->
-										<!--<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">-->
+										<!-- form을 위로 올리면 파일 개수를 0개인데 1개로 받아서 파일 처리를 못함. 그냥 여기로 냅두는게 좋을 듯. -->
+										<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">
 										<input type="hidden" id="restNm" name="restNm" value="">
 										<input type="hidden" id="postContent" name="postContent" value="">
 										<div style="margin-bottom: 5px;">
@@ -695,7 +694,7 @@
 
 										</div>
 										<!--식당정보 후에 필요 없는것은 hidden예정-->
-										<input type="hidden" id="res_place_name" name="resName">
+										<input type="hidden" id="res_place_name" name="resName" value="기본식당">
 										<input type="hidden" id="res_address_name" name="resAddress">
 										<input type="hidden" id="res_road_address_name" name="resRoadAddress">
 										<input type="hidden" id="res_phone" name="resPhone">
