@@ -118,4 +118,11 @@ public class MglgUserServiceImpl implements MglgUserService{
 		return mglgUserRepository.findAll(pageable);
 	}
 
+
+	@Override
+	public List<CamelHashMap> getEatUser(String resName) {
+
+		return mglgUserRepository.getEatUser(resName);
+	}
+
 }
