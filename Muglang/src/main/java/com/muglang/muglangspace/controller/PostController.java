@@ -93,16 +93,17 @@ public class PostController {
 		System.out.println(mglgPostDTO);
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
 		int inputFileSize;
+		if(uploadFiles == null) {
+			inputFileSize = 0;
+		} else  {
+			inputFileSize = uploadFiles.length;
+		}
 //		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles,
 //													new TypeReference<List<MglgPostFileDTO>>() {});
 		//MultipartFile[]의 length는 final이라 처리를 하려면 따로 처리해야함.
 		System.out.println("가져온 내용 : " + mglgPostDTO);
 		System.out.println("가져온 파일의 정보 : " + uploadFiles);
-		if(uploadFiles == null) {
-			inputFileSize = 0;
-		} else {
-			inputFileSize = uploadFiles.length;
-		}
+
 		System.out.println("식당정보 : " + mglgRestaurantDTO);
 		
 		System.out.println("게시글 등록 시작.");
@@ -224,9 +225,18 @@ public class PostController {
 			MultipartFile[] uploadFiles, MultipartFile[] changedFiles, 
 			HttpServletRequest request, @RequestParam("originFiles") String originFiles,
 			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		int inputFileSize;
+		//파일 개수에 대한 예외 처리
+		if(uploadFiles == null) {
+			inputFileSize = 0;
+		} else {
+			inputFileSize = uploadFiles.length;
+		}
+		
 		//파일의 내용은 하나의 게시글을 가져오므로 1차원 배열을 가져오게됨.
 		//JSON string으로 파일의 원래 있던 파일을 가져오는 형식임.
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
+		
 		
 		System.out.println("수정 작업 할 맵 DTO 생성 완료" + uploadFiles);
 		System.out.println("가져온 게시글의 정보 : " + mglgPostDTO);
@@ -237,10 +247,6 @@ public class PostController {
 		System.out.println("수정 작업을 실행합니다. 원래 파일의 목록을 불러옵니다." + originFileList);
 		
 		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
-//		
-//		System.out.println("게시글 수정 작업 attachPath : " + attachPath);
-//		
-//		System.out.println("변경된 파일들을 불러옵니다. " + changedFiles);
 		
 		File directory = new File(attachPath);
 		
@@ -317,8 +323,8 @@ public class PostController {
 			}
 			//수정, 삭제 처리를 완료하고 더 추가된 파일을 적용한 뒤 마지막으로 다시 파일들을 업로드한다.
 			//파일의 개수 만큼 하나씩 파일을 DB에 저장함.
-			if(uploadFiles.length > 0) {
-				for(int i = 0; i < uploadFiles.length; i++) {
+			if(inputFileSize > 0) {
+				for(int i = 0; i < inputFileSize; i++) {
 					MultipartFile file = uploadFiles[i];
 					
 					if(file.getOriginalFilename() != null && !file.getOriginalFilename().equals("")) {
@@ -382,17 +388,20 @@ public class PostController {
 			@RequestParam("fileSize") int fileSize
 			) throws IOException {
 		
-		//System.out.println("삭제 작업 실행 : " + mglgPostDTO.getPostId());
-		//System.out.println("파일의 크기 : " + fileSize);// 파일의 개수를 미리 받아서 개수만큼 모두 삭제하는 용도로 사용.
 		//외래키로 가지고 있는 파일들을 모두 삭제
+		//식당의 정보도 이다음에 삭제하여 게시글에 해당하는 모든 데이터를 먼저 삭제하는 작업을 수행하면된다.
 		if(fileSize > 0) {
 			mglgPostFileService.deletePostFileList(mglgPostDTO.getPostId());
 			System.out.println("파일들을 삭제 완료 하였습니다..");
 		} else {
 			System.out.println("게시글에 파일이 없었습니다.");
 		}
+		//식당의 정보를 조회하여 null이 아니면 삭제 수행.
+		if(mglgRestaurantService.selectRes(mglgPostDTO.getPostId()) != null) {
+			mglgRestaurantService.deleteRes(mglgPostDTO.getPostId());
+		}
 		//외래키로 지정은 안되어 있어서 삭제가 없어도 된다. 추후에 이것을 사용하지 않을 수도 있음.
-		mglgRestaurantService.deleteRes(mglgPostDTO.getPostId());
+
 		
 		//게시글 삭제 수행.
 		MglgPost mglgPost = MglgPost.builder()
