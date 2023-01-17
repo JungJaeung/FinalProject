@@ -64,13 +64,19 @@ $(function() {
 			});
 		});
 	}
-
+	
+	$(".uploadFileSpace").each(function(i, e) {
+		$(this).hide();
+	});
+	$("div[class='changedFileSpace']").each(function(i, e) {
+		$(this).hide();
+	});
 
 	//게시글 수정과 삭제를 활성화하는 버튼을 생성함. 게시글이 자기꺼인 것만 표시함.
 	$(".updateBtn").each(function(i, e) {
 		console.log("게시글의 수정버튼 이벤트 생성");
-		$($('.uploadFileSpace')[i]).hide();
-		$($('.changedFileSpace')[i]).hide();
+		//$($('.uploadFileSpace')[i]).hide();
+		//$($("div[class='changedFileSpace']")[i]).hide();
 		$("#upTitle" + $(this).val()).hide();
 		$("#contentIn" + $(this).val()).hide();
 		$("#fileRequest" + $(this).val()).hide();
