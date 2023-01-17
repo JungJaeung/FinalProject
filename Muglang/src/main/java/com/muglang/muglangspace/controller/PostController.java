@@ -517,6 +517,8 @@ public class PostController {
 		int userId = loginUser.getMglgUser().getUserId();
 		pageable = PageRequest.of(page_num, 5);
 		
+		System.out.println("현재 페이징된 상태를 확인." + pageable);
+		
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		
 		for (int i = 0; i < pagePostList.getContent().size(); i++) {
