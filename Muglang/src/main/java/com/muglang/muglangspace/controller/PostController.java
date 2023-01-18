@@ -41,18 +41,20 @@ import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgPostFileDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgRestaurantDTO;
-
 import com.muglang.muglangspace.dto.MglgUserProfileDTO;
 
 import com.muglang.muglangspace.dto.MglgUserDTO;
+
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgPostFile;
+import com.muglang.muglangspace.entity.MglgPostLikes;
 import com.muglang.muglangspace.entity.MglgRestaurant;
 import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
+import com.muglang.muglangspace.service.mglghotkeywords.MglgHotKeywordsService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglgpostfile.MglgPostFileService;
 import com.muglang.muglangspace.service.mglgrestaurant.MglgRestaurantService;
@@ -82,6 +84,9 @@ public class PostController {
 
 	@Autowired
 	private MglgUserProfileService mglgUserProfileService;
+	
+	@Autowired
+	private MglgHotKeywordsService mglgHotKeywordsService;
 
 	// 글쓰기 버튼으로 적용되는 글 새로 작성, 새로 작성되는 글에 파일을 같이 넣음.
 	@PostMapping("/insertPost")
@@ -96,6 +101,8 @@ public class PostController {
 		} else {
 			inputFileSize = uploadFiles.length;
 		}
+		//해쉬 맵의 사용.	
+		CamelHashMap inputInfo = new CamelHashMap();
 //		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles,
 //													new TypeReference<List<MglgPostFileDTO>>() {});
 		// MultipartFile[]의 length는 final이라 처리를 하려면 따로 처리해야함.
@@ -108,11 +115,11 @@ public class PostController {
 		MglgPost mglgPost = MglgPost.builder().postId(mglgPostDTO.getPostId()).mglgUser(loginUser.getMglgUser())
 				.postContent(mglgPostDTO.getPostContent()).restNm(mglgPostDTO.getRestNm()).postDate(LocalDateTime.now())
 				.postRating(mglgPostDTO.getPostRating()).restRating(mglgPostDTO.getRestRating())
-				.hashTag1(mglgPostDTO.getHashTag1() == "" ? "0" : mglgPostDTO.getHashTag1())
-				.hashTag2(mglgPostDTO.getHashTag2() == "" ? "0" : mglgPostDTO.getHashTag2())
-				.hashTag3(mglgPostDTO.getHashTag3() == "" ? "0" : mglgPostDTO.getHashTag3())
-				.hashTag4(mglgPostDTO.getHashTag4() == "" ? "0" : mglgPostDTO.getHashTag4())
-				.hashTag5(mglgPostDTO.getHashTag5() == "" ? "0" : mglgPostDTO.getHashTag5()).build();
+				.hashTag1(mglgPostDTO.getHashTag1().equals("") ? "0": mglgPostDTO.getHashTag1())
+				.hashTag2(mglgPostDTO.getHashTag2().equals("") ? "0": mglgPostDTO.getHashTag2())
+				.hashTag3(mglgPostDTO.getHashTag3().equals("") ? "0": mglgPostDTO.getHashTag3())
+				.hashTag4(mglgPostDTO.getHashTag4().equals("") ? "0": mglgPostDTO.getHashTag4())
+				.hashTag5(mglgPostDTO.getHashTag5().equals("") ? "0": mglgPostDTO.getHashTag5()).build();
 
 		mglgPost = mglgPostService.insertPost(mglgPost);
 		System.out.println("파일과 식당을 제외한 게시글 내용만 확인 :" + mglgPost);
@@ -166,16 +173,27 @@ public class PostController {
 			if (completeFileDTO.size() > 0) {
 				System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFileDTO.get(0).getPostFileId());
 			}
-			// 화면단으로 넘길 DTO를 생성
+
+			//파일 정보를 담은 리스트를 맵에 담음.
+			inputInfo.put("post_file_list", completeFileDTO);
+
+			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
 			System.out.println("게시글 정보 확인 : " + returnDTO);
-
-			// returnDTO의 postId를 이용해서 restaurant 테이블에 내용 insert
-			MglgRestaurant mglgRes = MglgRestaurant.builder().mglgPost(mglgPost).resName(mglgRestaurantDTO.getResName())
-					.resAddress(mglgRestaurantDTO.getResAddress()).resRoadAddress(mglgRestaurantDTO.getResRoadAddress())
-					.resPhone(mglgRestaurantDTO.getResPhone()).resCategory(mglgRestaurantDTO.getResCategory()).build();
-
-			// 쿼리문 실행 - 식당 정보를 입력하는 과정을 수행.
+			//해당 게시글의 정보를 hashMap에 저장.
+			inputInfo.put("insert_post", returnDTO);
+			
+			//returnDTO의 postId를 이용해서 restaurant 테이블에 내용 insert
+			MglgRestaurant mglgRes = MglgRestaurant.builder()
+					.mglgPost(mglgPost)
+					.resName(mglgRestaurantDTO.getResName())
+					.resAddress(mglgRestaurantDTO.getResAddress())
+					.resRoadAddress(mglgRestaurantDTO.getResRoadAddress())
+					.resPhone(mglgRestaurantDTO.getResPhone())
+					.resCategory(mglgRestaurantDTO.getResCategory())
+					.build();
+			
+			//쿼리문 실행 - 식당 정보를 입력하는 과정을 수행.
 			mglgRestaurantService.insertRestaurant(mglgRes);
 
 			// 식당정보 표출을 위한 dto를 가공하여 화면단으로 뿌릴 맵을 하나 생성함.
@@ -188,19 +206,51 @@ public class PostController {
 
 			System.out.println("식당 정보를 확인차 표시합니다." + mglgResDTO);
 
+			//식당 정보를 맵에 담는작업.
+			inputInfo.put("restaurant_info", mglgResDTO);
+			
+			//게시자의 정보
+			inputInfo.put("login_user", Load.toHtml(loginUser.getMglgUser()));
+			System.out.println("게시자의 정보를 확인차 표시합니다." + loginUser.getMglgUser());
+			
+			//작성자의 프로필 사진을 가져오기 위한 로딩 작업.
+			MglgUserProfile userProfile = mglgUserProfileService.getUserImg(loginUser.getMglgUser().getUserId());
+			inputInfo.put("profile", Load.toHtml(userProfile));
+
+			
+			//지도를 표시할지 말지의 여부를 확인하는 정보를 추가한다.
+			if(!mglgResDTO.getResName().equals("") || mglgResDTO.getResName() != null) {
+				inputInfo.put("restaurant", "Y");
+			} else {
+				inputInfo.put("restaurant", "N");
+			}
+			
+			//작성글의 좋아요 정보를 가져와 로딩한다. 좋아요는 따로 like를 담는 메소드를 만들지 않고, 해쉬맵에 값을 직접 대입한다.
+			//MglgPostLikes likes = mglgPostService.likePost(mglgPost);
+			//처음 게시글을 작성할 때는 좋아요 포스트의 값을 N으로 초기화하고 사용할 것이다.
+			inputInfo.put("post_like", "N");
+			inputInfo.put("like_cnt", 0);
+			inputInfo.put("res_cnt", 0);
+			//게시판에 보여주는 데이터의 값들을 모두 정의하여 기본 값으로 다시 던져 형식을 맞춘다.
+			/*
+			//가져온 데이터 묶음들을 화면단으로 가져간다.
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
 			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
+			returnMap.put("profile", Load.toHtml(userProfile));
 			returnMap.put("postFileList", completeFileDTO);
 			returnMap.put("restaurant", mglgResDTO);
 
 			System.out.println("파일 리스트 : " + uploadFileList);
 			responseDTO.setItem(returnMap);
+			
 			System.out.println("새로운 글을 추가합니다.");
-			return ResponseEntity.ok().body(responseDTO);
-		} catch (Exception e) {
-			responseDTO.setErrorMessage(e.getMessage());
-			return ResponseEntity.badRequest().body(responseDTO);
+			return ResponseEntity.ok().body(responseDTO); 
+			*/
+			return ResponseEntity.ok().body(inputInfo);
+		} catch(Exception e) {
+			System.out.println("맵핑에서 문제가 발생하였습니다." + inputInfo);
+			return ResponseEntity.badRequest().body(inputInfo);
 		}
 	}
 
@@ -247,11 +297,12 @@ public class PostController {
 					.postContent(mglgPostDTO.getPostContent()).restNm(mglgPostDTO.getRestNm())
 					.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate())).postRating(mglgPostDTO.getPostRating())
 					.restRating(mglgPostDTO.getRestRating())
-					.hashTag1(mglgPostDTO.getHashTag1() == "" ? "0" : mglgPostDTO.getHashTag1())
-					.hashTag2(mglgPostDTO.getHashTag2() == "" ? "0" : mglgPostDTO.getHashTag2())
-					.hashTag3(mglgPostDTO.getHashTag3() == "" ? "0" : mglgPostDTO.getHashTag3())
-					.hashTag4(mglgPostDTO.getHashTag4() == "" ? "0" : mglgPostDTO.getHashTag4())
-					.hashTag5(mglgPostDTO.getHashTag5() == "" ? "0" : mglgPostDTO.getHashTag5()).build();
+					.hashTag1(mglgPostDTO.getHashTag1().equals("") ? "0": mglgPostDTO.getHashTag1())
+					.hashTag2(mglgPostDTO.getHashTag2().equals("") ? "0": mglgPostDTO.getHashTag2())
+					.hashTag3(mglgPostDTO.getHashTag3().equals("") ? "0": mglgPostDTO.getHashTag3())
+					.hashTag4(mglgPostDTO.getHashTag4().equals("") ? "0": mglgPostDTO.getHashTag4())
+					.hashTag5(mglgPostDTO.getHashTag5().equals("") ? "0": mglgPostDTO.getHashTag5())
+					.build();
 			System.out.println("파일이 아닌 게시글의 내용을 수정할 정보를 가져옵니다.");
 			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
 
@@ -400,7 +451,7 @@ public class PostController {
 
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 
-		System.out.println(pagePostList);
+		System.out.println("찾은 데이터의 형태를 확인합니다." + pagePostList.getContent());
 
 		for (int i = 0; i < pagePostList.getContent().size(); i++) {
 			pagePostList.getContent().get(i).put("between_date",
@@ -457,11 +508,15 @@ public class PostController {
 			post.put("profile", profileDTO);
 
 		}
+		
+		// 인기 검색어 불러오기
+		List<CamelHashMap> hotKeywords = mglgHotKeywordsService.getHotKeywords();
 
 		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostList);
+		mv.addObject("hotKeywords", hotKeywords);
 		// 세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
 		mv.addObject("loginUser", Load.toHtml(loginUser.getMglgUser()));
 
@@ -622,6 +677,7 @@ public class PostController {
 			// 인기 검색어 받아오기
 			// List<MglgShowHotKeywordsDTO> mglgShowHotKeywordsList =
 			// mglgPostService.getShowHotKeywords();
+
 			return ResponseEntity.ok().body(pagePostList);
 		} catch (Exception e) {
 			return ResponseEntity.ok().body(response);
@@ -701,6 +757,7 @@ public class PostController {
 			// 인기 검색어 받아오기
 			// List<MglgShowHotKeywordsDTO> mglgShowHotKeywordsList =
 			// mglgPostService.getShowHotKeywords();
+
 			return ResponseEntity.ok().body(pagePostList);
 		} catch (Exception e) {
 			return ResponseEntity.ok().body(response);
