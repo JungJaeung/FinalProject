@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout_chat}">
+
+<head>
+	<th:block layout:fragment="script">
+		<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+		<script th:inline="javascript">
+			const loginUserId = /*[[${#authentication.principal.mglgUser.userId}]]*/;
+			const username = /*[[${#authentication.principal.mglgUser.userName}]]*/;
+			var roomId = 0;
+			var sock;
+			var stomp;
+			let followId = 0;
+			
+			$(function () {
+				let list = /*[[${followBackList}]]*/;
+
+				$(".showBtn").on("click", function () {
+					
+					roomId = $(this).attr("data-chatroom-id");
+					connect();
+					//console.log($(this).attr('data-follow-index'));
+					followId = list[$(this).attr('data-follow-index')].userId;
+					//console.log(followId);
+
+					let htmlstr = `
+					<div style="width: 100%; margin:0 auto">
+						<div id="msgArea" style="overflow-y: auto; 
+               				overflow-x: hidden; 
+               				height: 500px; 
+               				box-shadow: 0 0 4px #c8c8c8;
+               				border-radius: 8px;"></div>
+						<div class="mt-2">
+							<input type="text" id="msg" class="form-control" name="send"
+								style="width:80%; float:left; outline: none;">
+
+							<button class="btn btn-outline-secondary" type="button" id="button-send"
+								style="width:19%; margin-left:1%;">전송</button>
+						</div>
+					</div>
+				`;
+					$("#chatRoomSection").html(htmlstr);
+					/*
+					$.ajax({
+						type: "GET",
+						url: "/dm/checkRoom",
+						data: {userId: followId},
+						success: function (party) {
+
+							if (party.item == null) {
+								console.log(roomId);
+								stomp.send("/app/chat/dMessage", {}, JSON.stringify({type: 'JOIN', chatRoomId: roomId, writer: username, userId: followId, loginUserId: loginUserId, roomType: 'D'}));
+							} else {
+								roomId = party.item.chatroomId;
+								console.log(roomId);
+								stomp.send("/app/chat/dMessage", {}, JSON.stringify({type: 'JOIN', chatRoomId: party.item.chatroomId, writer: username, userId: followId, loginUserId: loginUserId, roomType: 'D'}));
+							}
+						},
+						error: function (e) {
+							console.log(e);
+						}
+
+					});
+					*/
+
+				});
+				
+				$(document).on("click", "#button-send", function (e) {
+					var msg = document.getElementById("msg");
+					if (msg.value == '') {
+						alert('enter text');
+					} else {
+						stomp.send("/app/chat/dMessage", {}, JSON.stringify({type: 'CHAT', chatRoomId: roomId, writer: username, message: msg.value, userId: followId, loginUserId: loginUserId}));
+						msg.value = '';
+					};
+
+				});
+				
+				$(document).on("keydown", "input[name=send]", function (e) {
+					var msg = document.getElementById("msg");
+					if (e.keyCode == 13) {
+						if (msg.value == '') {
+							alert("enter text");
+						} else {
+							stomp.send("/app/chat/dMessage", {}, JSON.stringify({type: 'CHAT', chatRoomId: roomId, writer: username, message: msg.value, userId: followId, loginUserId: loginUserId}));
+							msg.value = '';
+						};
+
+					};
+
+				});
+
+			});
+			
+			/*
+			돌아가기 버튼 만들기
+			
+			스톰프 디스커넥트 시간 찾기
+			
+			맞팔 리스트 스크롤
+			*/
+			
+			function connect() {
+				//console.log("roomId==============" + roomId);
+				sock = new SockJS("/ws/chat");
+				stomp = Stomp.over(sock);
+				stomp.connect({}, function () {
+
+					stomp.subscribe("/topic/chat/dRoom/" + roomId, function (chat) {
+						//console.log(chat);
+						var content = JSON.parse(chat.body);
+						var writer = content.writer;
+						var message = content.message;
+						var type = content.type;
+						var roomType = content.roomType;
+						var str = '';
+						var messageList = content.messageList;
+						var chatTime = content.chatTime;
+
+
+						//console.log(content);
+						if ((message != null && message != '') && message.includes("님이 입장하였습니다.") || type == "CHAT") {
+							if (writer === username) {
+								//str += "<div class='alert alert-secondary'>";
+								if (type == 'JOIN') {
+									str = "<div style='text-align: center;'>";
+									str += "<b>" + message + "</b></span>";
+								}
+								//실시간 채팅 본인
+								else {
+									str = "<div style='text-align: right; margin: 10px 20px 10px 0px;'><div class='my_chat'>";
+									str += "<span style='position:absolute; bottom:-1px; left:-38px; font-size:small; color:black;'>" + chatTime + "</span>";
+									str += "<b>" + message + "</b></div>";
+								}
+								str += "</div>"/*</div>*/;
+								$("#msgArea").append(str);
+								$("#msgArea").scrollTop($("#msgArea").prop('scrollHeight'));
+							}
+							else {
+								//str += "<div class='alert alert-warning'>";
+								if (type == 'JOIN') {
+									str = "<div style='text-align: center;'>";
+									str += "<b>" + message + "</b>";
+								}
+								//실시간 채팅 타인
+								else {
+									str = "<div style='text-align: left; margin: 35px 0px 35px 80px;'> ";
+									str += "<div class='other_chat'>"
+									str += "<img class='img-fluid rounded-circle' src='../assets/img/messages-1.jpg' style='width:40px; height:40px; position:absolute; top:-8px; left:-60px;'>"
+									str += "<span style='position:absolute; top:-18px; left:0px; font-size:small;'><b>" + writer + "</b></span>";
+									str += "<span style='position:absolute; bottom:-1px; right:-38px; font-size:small;'>" + chatTime + "</span>";
+									str += "<b>" + message + "</b></div>";
+								}
+								str += "</div>"/*</div>*/;
+								$("#msgArea").append(str);
+								$("#msgArea").scrollTop($("#msgArea").prop('scrollHeight'));
+							}
+						} else if (messageList != null && messageList != '') {
+							//7. 조회해온 messageList 출력
+							let readYn = 'R';
+							for (var i = 0; i < messageList.length; i++) {
+								if (readYn != messageList[i].readYn) {
+									str += "<p style='text-align: center;'>------------여기까지 읽었습니다.------------</p>";
+								}
+								//불러온 채팅 본인
+								if (messageList[i].writer == username) {
+									str += "<div style='text-align: right; margin: 10px 20px 10px 0px;'><div class='my_chat'>";
+									str += "<span style='position:absolute; bottom:-1px; left:-38px; font-size:small; color:black;'>" + messageList[i].chatTime + "</span>";
+									str += "<b>" + messageList[i].message + "</b>";
+									str += "</div></div>";
+								}
+								//불러온 채팅 타인(확인 못했음 체크후 틀리면 수정 요함)
+								else {
+									str += "<div style='text-align: left; margin: 35px 0px 35px 80px;'> ";
+									str += "<div class='other_chat'>"
+									str += "<img class='img-fluid rounded-circle' src='../assets/img/messages-1.jpg' style='width:40px; height:40px; position:absolute; top:-8px; left:-60px;'>"
+									str += "<span style='position:absolute; top:-18px; left:0px; font-size:small;'><b>" + messageList[i].writer + "</b></span>";
+									str += "<span style='position:absolute; bottom:-1px; right:-38px; font-size:small;'>" + messageList[i].chatTime + "</span>";
+									str += "<b>" + messageList[i].message + "</b>";
+									str += "</div></div>";
+								}
+
+								readYn = messageList[i].readYn;
+
+								if (i == messageList.length - 1 && readYn == 'R') {
+									str += "<p style='text-align: center;'>------------여기까지 읽었습니다.------------</p>";
+								}
+
+							}
+							$("#msgArea").html(str);
+							$("#msgArea").scrollTop($("#msgArea").prop('scrollHeight'));
+						}
+
+
+					});
+					stomp.send("/app/chat/dMessage", {}, JSON.stringify({type: 'JOIN', chatRoomId: roomId, writer: username, userId: followId, loginUserId: loginUserId, roomType: 'D'}));
+				});
+			}
+
+
+
+
+
+		</script>
+	</th:block>
+</head>
+
+<body>
+	<main layout:fragment="main" id="main" class="main">
+		<div class="col-12">
+			<div style="width: 90%; margin: 0 auto;">
+				<h1>DM</h1>
+			</div>
+			<div style="width: 90%; margin: 0 auto;">
+				<div style="width: 25%; height: 600px; border: 1px solid black; float: left;">
+					<div style="width: 100%;">
+						<p>맞팔중인 유저</p>
+						<hr>
+					</div>
+					<div>
+						<ul>
+							<li th:if="${#lists.size(followBackList) == 0}">
+								맞팔중인 사용자가 없습니다.
+							</li>
+							<li th:each="list : ${followBackList}" style="list-style: none;">
+								<img th:src="@{'/upload/'+${list.userProfileNm}}" style="width: 50px; height: 50px;">
+								<input type="button" th:value="${list.userName}" class="showBtn"
+									th:data-follow-index="${listStat.index}" th:data-chatroom-id="${list.chatroomId}">
+
+							</li>
+						</ul>
+					</div>
+				</div>
+
+				<div id="chatRoomSection" style="width: 75%; height: 600px; border: 1px solid black; float: left;">
+
+				</div>
+			</div>
+
+		</div>
+	</main>
+</body>
+
+</html>

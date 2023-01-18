@@ -56,8 +56,9 @@ public interface ChatMembersRepository extends JpaRepository<MglgChatMembers, In
 			+ "      AND B.USER_ID = :userId\n"
 			+ "      AND A.CHAT_TIME >= B.ENTER_DATE\n"
 			+ "      AND A.USER_ID = C.USER_ID\n"
+			+ "		 AND A.ROOM_TYPE = :roomType"
 			+ "	ORDER BY A.CHAT_MSG_ID", nativeQuery = true)
-	List<CamelHashMap> getPastMsg(@Param("chatRoomId") String chatRoomId, @Param("userId") int userId);
+	List<CamelHashMap> getPastMsg(@Param("chatRoomId") String chatRoomId, @Param("userId") int userId, @Param("roomType") String roomType);
 	
 	
 	@Modifying
@@ -68,8 +69,9 @@ public interface ChatMembersRepository extends JpaRepository<MglgChatMembers, In
 			+ " (SELECT IFNULL(MAX(A.CHAT_MSG_ID),0)+1 FROM T_MGLG_CHAT_MSG A WHERE A.CHAT_ROOM_ID = :chatRoomId),"
 			+ " :userId,"
 			+ " :chatContent,"
-			+ " NOW())", nativeQuery = true)
-	void insertMsg(@Param("chatRoomId") String chatRoomId, @Param("userId") int userId, @Param("chatContent") String chatContent);
+			+ " NOW(),"
+			+ " :roomType)", nativeQuery = true)
+	void insertMsg(@Param("chatRoomId") String chatRoomId, @Param("userId") int userId, @Param("chatContent") String chatContent, @Param("roomType") String roomType);
 	
 	
 	@Modifying
@@ -79,4 +81,25 @@ public interface ChatMembersRepository extends JpaRepository<MglgChatMembers, In
 			+ " WHERE CHAT_ROOM_ID = :chatRoomId"
 			+ " AND USER_ID = :userId", nativeQuery = true)
 	void leaveRoom(@Param("chatRoomId") String chatRoomId, @Param("userId") int userId);
+	
+	@Modifying
+	@Query(value=""
+			+ " INSERT INTO T_MGLG_CHATROOM ("
+			+ "	CHATROOM_ID,"
+			+ " PART1,"
+			+ " PART2,"
+			+ " ROOM_DATETIME,"
+			+ " PART1LEAVE_DATE_TIME,"
+			+ " PART2LEAVE_DATE_TIME)"
+			+ " VALUES ( "
+			+ " :chatroomId, "
+			+ " :part1, "
+			+ " :part2, "
+			+ " NOW(),"
+			+ " NOW(),"
+			+ " NOW()) ", nativeQuery = true)
+	void createRoom(@Param("chatroomId") String chatroomId, @Param("part1") int part1, @Param("part2") int part2);
+	
+	@Query(value="SELECT IFNULL(MAX(A.CHATROOM_ID),0)+1 FROM T_MGLG_CHATROOM A", nativeQuery=true)
+	int getNextChatroomId();
 }
