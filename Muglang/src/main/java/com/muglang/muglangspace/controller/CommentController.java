@@ -132,8 +132,13 @@ public class CommentController {
 	@PostMapping("/insertComment")
 	public void insertComment(@RequestParam("userId") int userId, @RequestParam("postId") int postId, @RequestParam("commentContent") String commentContent)
 			throws IOException {
-		System.out.println("댓글 입력 작업");
-		mglgCommentService.insertComment(userId, postId, commentContent);
+		try {
+			System.out.println("댓글 입력 작업");
+			mglgCommentService.insertComment(userId, postId, commentContent);
+		} catch(Exception e) {
+			System.out.println("댓글 입력 처리에서 에러가 발생하였습니다.");
+		}
+
 	}
 
 	// 댓글 삭제
@@ -141,10 +146,13 @@ public class CommentController {
 	public void deleteComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
 			HttpServletResponse response, MglgComment comment)
 			throws IOException {
-		System.out.println("댓글 삭제");
-		mglgCommentService.deleteComment(commentId, postId);
-		adminService.deleteReport(commentId, postId);
-
+		try {
+			System.out.println("댓글 삭제");
+			mglgCommentService.deleteComment(commentId, postId);
+			adminService.deleteReport(commentId, postId);
+		} catch(Exception e) {
+			System.out.println("댓글 삭제 처리에서 에러가 발생하였습니다.");
+		}
 		response.sendRedirect("/post/mainPost");
 	}
 

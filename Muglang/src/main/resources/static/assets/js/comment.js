@@ -58,8 +58,7 @@ $.comment_list = function(postId) {
 					text_comment += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`
 				} else {
 
-					text_comment += `
-													<form action="/comment/reportComment" method="post">
+					text_comment += `				<form action="/comment/reportComment" method="post">
 													<li>
 														<input type="hidden" name="postId" value="${postId}">
 														<input type="hidden" name="postUserId" value="${comment.mglgUser.userId}">
@@ -89,7 +88,7 @@ $.comment_list = function(postId) {
 			//댓글 무한 스크롤 발생 이벤트 시작
 			comment_page_num = 1;
 
-			replyScroll(thisCommentTotalPages, thisCommentTotalElements);
+			replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId);
 
 			$('#msgModal').modal("show");
 			//이벤트 넣기
@@ -117,7 +116,7 @@ $.comment_insert = function() {
 				commentContent: $("#insert_text" + postId).val()
 			},
 			success: function() {
-				$.comment_list();
+				$.comment_list(postId);
 			},
 			error: function(e) {
 				console.log("에러에러");
@@ -140,7 +139,7 @@ $.comment_delete = function() {
 				postId: postId
 			},
 			success: function() {
-				$.comment_list();
+				$.comment_list(postId);
 			},
 			error: function(e) {
 				console.log("에러에러");
@@ -171,7 +170,7 @@ $.comment_update = function() {
 				commentContent: commentContent
 			},
 			success: function() {
-				$.comment_list();
+				$.comment_list(postId);
 			},
 			error: function(e) {
 				console.log("에러에러");
@@ -188,7 +187,7 @@ $.comment_update = function() {
 
 //댓글 부분 무한 스크롤 - 부분
 //아이디comment 태그의 스크롤에 다차서 내려가면, 다시 ajax비동기 처리로 댓글 목록 불러옴.
-function replyScroll(thisCommentTotalPages, thisCommentTotalElements) {
+function replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId) {
 
 	let comment_text_scroll = "";
 	$('.modal-body').scroll(function(e) {
@@ -241,17 +240,25 @@ function replyScroll(thisCommentTotalPages, thisCommentTotalElements) {
 							else {
 								comment_text_scroll += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000 * 60))}분전</a>`;
 							}
-
+							comment_text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`;
 							comment_text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
 							if (loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
-								comment_text_scroll += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`;
-								comment_text_scroll += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`;
+								comment_text_scroll += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`
+								comment_text_scroll += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`
 							} else {
-								comment_text_scroll += `<li><a class="dropdown-item" href="#" href="#"></i>&emsp;신고하기</a></li>`;
+				
+								comment_text_scroll += `				<form action="/comment/reportComment" method="post">
+																<li>
+																	<input type="hidden" name="postId" value="${postId}">
+																	<input type="hidden" name="postUserId" value="${comment.mglgUser.userId}">
+																	<input type="hidden" name="commentId" value="${comment.commentId}">
+																	<input type="submit" class="dropdown-item" value="코멘트 신고하기">
+																</li>
+																</form>`
 							}
 							comment_text_scroll += `</ul>`
 							comment_text_scroll += `</div>`
-							comment_text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-2.jpg" style="width: 40px;">`;
+							comment_text_scroll += `<img class="img-fluid rounded-circle" src="/upload/default.png" style="width: 40px;">`;
 							comment_text_scroll += `<span style="margin-left: 10px;"><a href="#" style="color: black; cursor:pointer;">${comment.mglgUser.userName}</a></span>`;
 							comment_text_scroll += `<div style="word-break: keep-all;">${comment.commentContent}`;
 							comment_text_scroll += `<br><textarea id="update_text${comment.commentId}" style="width:100%; overflow:hidden; resize: none; display:none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)">${comment.commentContent}</textarea>`;
