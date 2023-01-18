@@ -7,13 +7,13 @@ $.comment_button = function() {
 		
 		postId = Number(e.target.id);
 		console.log("대상 댓글 포스트 번호: " + postId);
-		$.comment_list();
+		$.comment_list(postId);
 	});
 
 }
 
 //댓글 리스트 불러오는 함수
-$.comment_list = function() {
+$.comment_list = function(postId) {
 	$.ajax({
 		url: '/comment/commentList',
 		type: 'get',

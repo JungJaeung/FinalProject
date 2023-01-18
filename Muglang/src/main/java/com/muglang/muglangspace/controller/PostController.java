@@ -41,15 +41,12 @@ import com.muglang.muglangspace.dto.MglgPostDTO;
 import com.muglang.muglangspace.dto.MglgPostFileDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
 import com.muglang.muglangspace.dto.MglgRestaurantDTO;
-
 import com.muglang.muglangspace.dto.MglgUserProfileDTO;
-
-
-import com.muglang.muglangspace.dto.MglgUserDTO;
 import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgPostFile;
+import com.muglang.muglangspace.entity.MglgPostLikes;
 import com.muglang.muglangspace.entity.MglgRestaurant;
 import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
@@ -98,6 +95,8 @@ public class PostController {
 		} else  {
 			inputFileSize = uploadFiles.length;
 		}
+			
+		CamelHashMap inputInfo = new CamelHashMap();
 //		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles,
 //													new TypeReference<List<MglgPostFileDTO>>() {});
 		//MultipartFile[]의 length는 final이라 처리를 하려면 따로 처리해야함.
@@ -115,11 +114,11 @@ public class PostController {
 				.postDate(LocalDateTime.now())
 				.postRating(mglgPostDTO.getPostRating())
 				.restRating(mglgPostDTO.getRestRating())
-				.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
-				.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
-				.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
-				.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
-				.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
+				.hashTag1(mglgPostDTO.getHashTag1().equals("") ? "0": mglgPostDTO.getHashTag1())
+				.hashTag2(mglgPostDTO.getHashTag2().equals("") ? "0": mglgPostDTO.getHashTag2())
+				.hashTag3(mglgPostDTO.getHashTag3().equals("") ? "0": mglgPostDTO.getHashTag3())
+				.hashTag4(mglgPostDTO.getHashTag4().equals("") ? "0": mglgPostDTO.getHashTag4())
+				.hashTag5(mglgPostDTO.getHashTag5().equals("") ? "0": mglgPostDTO.getHashTag5())
 				.build();
 
 		mglgPost = mglgPostService.insertPost(mglgPost);
@@ -127,6 +126,7 @@ public class PostController {
 		
 		try {
 			
+
 			System.out.println("파일의 개수를 확인하고 있습니다. " + inputFileSize);
 			System.out.println("파일 정보를 확인하고 있습니다." + uploadFiles);
 			
@@ -172,9 +172,14 @@ public class PostController {
 			if(completeFileDTO.size() > 0) {
 				System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFileDTO.get(0).getPostFileId());
 			}
+			//파일 정보를 담은 리스트를 맵에 담음.
+			inputInfo.put("post_file_list", completeFileDTO);
+
 			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
 			System.out.println("게시글 정보 확인 : " + returnDTO);
+			//해당 게시글의 정보를 hashMap에 저장.
+			inputInfo.put("insert_post", returnDTO);
 			
 			//returnDTO의 postId를 이용해서 restaurant 테이블에 내용 insert
 			MglgRestaurant mglgRes = MglgRestaurant.builder()
@@ -202,20 +207,43 @@ public class PostController {
 															.build();
 			
 			System.out.println("식당 정보를 확인차 표시합니다." + mglgResDTO);
+			//식당 정보를 맵에 담는작업.
+			inputInfo.put("restaurant", mglgResDTO);
 			
+			//게시자의 정보
+			inputInfo.put("login_user", Load.toHtml(loginUser.getMglgUser()));
+			System.out.println("게시자의 정보를 확인차 표시합니다." + loginUser.getMglgUser());
+			
+			//작성자의 프로필 사진을 가져오기 위한 로딩 작업.
+			MglgUserProfile userProfile = mglgUserProfileService.getUserImg(loginUser.getMglgUser().getUserId());
+			inputInfo.put("profile", Load.toHtml(userProfile));
+			
+			//작성글의 좋아요 정보를 가져와 로딩한다. 좋아요는 따로 like를 담는 메소드를 만들지 않고, 해쉬맵에 값을 직접 대입한다.
+			//MglgPostLikes likes = mglgPostService.likePost(mglgPost);
+			//처음 게시글을 작성할 때는 좋아요 포스트의 값을 N으로 초기화하고 사용할 것이다.
+			inputInfo.put("post_like", "N");
+			inputInfo.put("like_cnt", 0);
+			inputInfo.put("res_cnt", 0);
+			//게시판에 보여주는 데이터의 값들을 모두 정의하여 기본 값으로 다시 던져 형식을 맞춘다.
+			/*
+			//가져온 데이터 묶음들을 화면단으로 가져간다.
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
 			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
+			returnMap.put("profile", Load.toHtml(userProfile));
 			returnMap.put("postFileList", completeFileDTO);
 			returnMap.put("restaurant", mglgResDTO);
 			
 			System.out.println("파일 리스트 : " + uploadFileList);
 			responseDTO.setItem(returnMap);
+			
 			System.out.println("새로운 글을 추가합니다.");
 			return ResponseEntity.ok().body(responseDTO); 
+			*/
+			return ResponseEntity.ok().body(inputInfo);
 		} catch(Exception e) {
-			responseDTO.setErrorMessage(e.getMessage());
-			return ResponseEntity.badRequest().body(responseDTO);
+			System.out.println("맵핑에서 문제가 발생하였습니다." + inputInfo);
+			return ResponseEntity.badRequest().body(inputInfo);
 		}
 	}
 	
@@ -267,11 +295,11 @@ public class PostController {
 					.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate()))
 					.postRating(mglgPostDTO.getPostRating())
 					.restRating(mglgPostDTO.getRestRating())
-					.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
-					.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
-					.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
-					.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
-					.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
+					.hashTag1(mglgPostDTO.getHashTag1().equals("") ? "0": mglgPostDTO.getHashTag1())
+					.hashTag2(mglgPostDTO.getHashTag2().equals("") ? "0": mglgPostDTO.getHashTag2())
+					.hashTag3(mglgPostDTO.getHashTag3().equals("") ? "0": mglgPostDTO.getHashTag3())
+					.hashTag4(mglgPostDTO.getHashTag4().equals("") ? "0": mglgPostDTO.getHashTag4())
+					.hashTag5(mglgPostDTO.getHashTag5().equals("") ? "0": mglgPostDTO.getHashTag5())
 					.build();
 			System.out.println("파일이 아닌 게시글의 내용을 수정할 정보를 가져옵니다.");
 			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
@@ -431,7 +459,7 @@ public class PostController {
 
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		
-		System.out.println(pagePostList);
+		System.out.println("찾은 데이터의 형태를 확인합니다." + pagePostList.getContent());
 
 		for (int i = 0; i < pagePostList.getContent().size(); i++) {
 			pagePostList.getContent().get(i).put(
