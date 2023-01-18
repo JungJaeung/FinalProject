@@ -13,4 +13,5 @@ public class MglgHotKeywordsDTO {
 	private String hotKeyword;
 	private String confirmYn;
 	private int numOfTime;
+	private String bfHotKeyword;
 }
