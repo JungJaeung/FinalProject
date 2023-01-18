@@ -395,7 +395,7 @@
 						</div>
 						<img th:src="@{'/upload/'+${userProfile.userProfileNm}}" style="width:150px;height: 150px;"
 							alt="Profile" class="rounded-circle">
-						<h2 style="margin-top: 15px;" th:text="${user.userName}"></h2>
+						<h2 style="margin-top: 15px;" th:text="${user.userNick}"></h2>
 						<h6 style="color: #aaaaaa;" th:text="${user.email}"></h6>
 						<input type="hidden" id="hiddenId" th:value="${user.userId}">
 						<h6 th:text="${user.bio}"></h6>
@@ -436,8 +436,8 @@
 										<!--팔로우 리스트-->
 									</div>
 								</div>
-								<button id="btn_prev1">이전</button>
-								<button id="btn_next1">다음</button>
+								<button id="btn_prev1" class="form-control" style="width: 80px; margin-top:-20px; float:left;">이전</button>
+								<button id="btn_next1" class="form-control" style="width: 80px; margin-top:-20px; float:right;">다음</button>
 							</div>
 							<!--팔로잉-->
 							<div class="tab-pane fade" id="profile-fallowing">
@@ -448,8 +448,8 @@
 
 									</div>
 								</div>
-								<button id="btn_prev2">이전</button>
-								<button id="btn_next2">다음</button>
+								<button id="btn_prev2" class="form-control" style="width: 80px; margin-top:-10px; float:left;">이전</button>
+								<button id="btn_next2" class="form-control" style="width: 80px; margin-top:-10px; float:right;">다음</button>
 							</div>
 						</div>
 					</div>

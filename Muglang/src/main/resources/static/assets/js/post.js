@@ -1116,15 +1116,25 @@ $.eatClick = function(){
 				htmlStr = "";
 				for(let i = 0;i<obj.items.length;i++){
 					htmlStr += `
-						<div class="modal-dialog modal-dialog-centered">
+						<div class="modal-dialog modal-dialog-centered modal-sm">
 							<div class="modal-content" id="modal-content">
-								<div class="modal-body" style="text-align:center">
-									<div style="width:60%">
-										<span style="float: left;">
-										<img class="img-fluid rounded-circle"
-										 src="/upload/${obj.items[i].profileimg.userProfileNm}" style="width: 30px;height:30px;">
-										</span>
-										<span>${obj.items[i].userName}</span>								
+								<div class="modal-body" style="overflow-auto;">
+									<div style="max-height: 30em;">
+										<div style="width: 100%; height: 70px; text-align:center;">
+											<a href="/social/otherUser?userId=${obj.items[i].userId}">
+												<div style="width: 25%; margin-top: 10px; float: left;">
+													<img class="img-fluid rounded-circle"
+												 		src="/upload/${obj.items[i].profileimg.userProfileNm}" 
+												 		style="width: 50px; height:50px;">
+												</div>
+												<div style="width: 65%; margin-top: 13px; float: left; font-weight: bold; color: black;">
+													${obj.items[i].userNick}
+												</div>
+												<div style="width: 65%; color: #aaaaaa; font-size: x-small; float:left;">
+			                                 		${obj.items[i].email}
+			                                	</div>
+											</a>
+										</div>
 									</div>
 								</div>
 							</div>

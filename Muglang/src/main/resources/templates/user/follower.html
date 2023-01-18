@@ -126,26 +126,27 @@
 						let htmlStr = '';
 						console.log("!!!!!!!!!!!!!!!!!!!!!팔로워 수 : " + obj.pageItems.content.length);
 						for (let i = 0; i < obj.pageItems.content.length; i++) {
-							htmlStr += `<div class="" style="width: 100%; height: 70px;">
-                              <!--친구 사진-->
-                              <div style="width: 30%; margin-top: 10px; float: left;"><img
-                                    class="img-fluid rounded-circle" 
-                                    src="/upload/${obj.pageItems.content[i].followerProfile.userProfileNm}"
-                                    style="width: 50px; height:50px"></div>
-                              <!--친구 닉네임, 아이디-->
-                              <div style="width: 60%; margin-top: 13px; float: left;">
-                                 <div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
-                                 style="font-weight: bold; color: black;">${obj.pageItems.content[i].userNick}</a></div>
-                                 <div style="color: #aaaaaa; font-size: x-small;">
-                                 ${obj.pageItems.content[i].email}
-                                 </div>
-                              </div>
-                           </div>
-                     `;
+							htmlStr += `
+							<div class="" style="width: 100%; height: 70px;">
+								<a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}"
+	                              <!--친구 사진-->
+	                              <div style="width: 30%; margin-top: 10px; float: left;"><img
+	                                    class="img-fluid rounded-circle" 
+	                                    src="/upload/${obj.pageItems.content[i].followerProfile.userProfileNm}"
+	                                    style="width: 50px; height:50px"></div>
+	                              <!--친구 닉네임, 아이디-->
+	                              <div style="width: 60%; margin-top: 13px; float: left;">
+	                                 <div style="font-weight: bold; color: black;">${obj.pageItems.content[i].userNick}</div>
+	                                 <div style="color: #aaaaaa; font-size: x-small;">
+	                                 ${obj.pageItems.content[i].email}
+	                                 </div>
+	                              </div>
+								</a>
+							</div>`;
 						}
 
 						$("#div_body").html(htmlStr);
-						follower_totalPages = obj.follower_totalPages;
+						follower_totalPages = obj.pageItems.totalPages;
 					},
 					error: function (e) {
 						console.log(e);
@@ -173,20 +174,23 @@
 							follower_totalPages = obj.pageItems.follower_totalPages;
 							console.log("팔로워 수 : " + obj.pageItems.content.length);
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
-								htmlStr += `<div class="" style="width: 100%; height: 70px;">
-                              <!--친구 사진-->
-                              <div style="width: 30%; margin-top: 10px; float: left;"><img
-                                    class="img-fluid rounded-circle" src="/upload/${obj.pageItems.content[i].followerProfile.userProfileNm}"
-                                    style="width: 50px; height:50px"></div>
-                              <!--친구 닉네임, 아이디-->
-                              <div style="width: 60%; margin-top: 13px; float: left;">
-                                 <div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
-                                 style="font-weight: bold; color: black;">${obj.pageItems.content[i].userNick}</a></div>
-                                 <div style="color: #aaaaaa; font-size: x-small;">
-                                 ${obj.pageItems.content[i].email}
-                                 </div>
-                              </div>
-                           </div>`;
+								htmlStr += `
+							<div class="" style="width: 100%; height: 70px;">
+								<a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}"
+	                              <!--친구 사진-->
+	                              <div style="width: 30%; margin-top: 10px; float: left;"><img
+	                                    class="img-fluid rounded-circle" 
+	                                    src="/upload/${obj.pageItems.content[i].followerProfile.userProfileNm}"
+	                                    style="width: 50px; height:50px"></div>
+	                              <!--친구 닉네임, 아이디-->
+	                              <div style="width: 60%; margin-top: 13px; float: left;">
+	                                 <div style="font-weight: bold; color: black;">${obj.pageItems.content[i].userNick}</div>
+	                                 <div style="color: #aaaaaa; font-size: x-small;">
+	                                 ${obj.pageItems.content[i].email}
+	                                 </div>
+	                              </div>
+								</a>
+							</div>`;
 							}
 							$("#div_body").html(htmlStr)
 
@@ -219,21 +223,22 @@
 							follower_totalPages = obj.pageItems.follower_totalPages;
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-                              <div class="" style="width: 100%; height: 70px;">
-                              <!--친구 사진-->
-                              <div style="width: 30%; margin-top: 10px; float: left;"><img
-                                    class="img-fluid rounded-circle" src="/upload/${obj.pageItems.content[i].followerprofile.userProfileNm}"
-                                    style="width: 50px; height:50px"></div>
-                              <!--친구 닉네임, 아이디-->
-                              <div style="width: 60%; margin-top: 13px; float: left;">
-                                 <div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
-                                 style="font-weight: bold; color: black;">${obj.pageItems.content[i].userNick}</a></div>
-                                 <div style="color: #aaaaaa; font-size: x-small;">
-                                 ${obj.pageItems.content[i].email}
-                                 </div>
-                              </div>
-                           </div>
-                     `
+							<div class="" style="width: 100%; height: 70px;">
+								<a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}"
+	                              <!--친구 사진-->
+	                              <div style="width: 30%; margin-top: 10px; float: left;"><img
+	                                    class="img-fluid rounded-circle" 
+	                                    src="/upload/${obj.pageItems.content[i].followerProfile.userProfileNm}"
+	                                    style="width: 50px; height:50px"></div>
+	                              <!--친구 닉네임, 아이디-->
+	                              <div style="width: 60%; margin-top: 13px; float: left;">
+	                                 <div style="font-weight: bold; color: black;">${obj.pageItems.content[i].userNick}</div>
+	                                 <div style="color: #aaaaaa; font-size: x-small;">
+	                                 ${obj.pageItems.content[i].email}
+	                                 </div>
+	                              </div>
+								</a>
+							</div>`;
 							}
 							$("#div_body").html(htmlStr)
 
@@ -260,21 +265,23 @@
 							follower_totalPages = obj.pageItems.follower_totalPages;
 							for (let i = 0; i < obj.pageItems.content.length; i++) {
 								htmlStr += `
-                              <div class="" style="width: 100%; height: 70px;">
-                              <!--친구 사진-->
-                              <div style="width: 30%; margin-top: 10px; float: left;"><img
-                                    class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
-                                    style="width: 50px;"></div>
-                              <!--친구 닉네임, 아이디-->
-                              <div style="width: 60%; margin-top: 13px; float: left;">
-                                 <div><a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}" 
-                                 style="font-weight: bold; color: black;">${obj.pageItems.content[i].userNick}</a></div>
-                                 <div style="color: #aaaaaa; font-size: x-small;">
-                                 ${obj.pageItems.content[i].email}
-                                 </div>
-                              </div>
-                           </div>
-                     `
+									<div style="max-height: 30em;">
+										<div style="width: 100%; height: 70px; text-align:center;">
+											<a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}">
+												<div style="width: 25%; margin-top: 10px; float: left;">
+													<img class="img-fluid rounded-circle"
+												 		src="#" 
+												 		style="width: 50px; height:50px;">
+												</div>
+												<div style="width: 65%; margin-top: 13px; float: left; font-weight: bold; color: black;">
+													${obj.pageItems.content[i].userNick}
+												</div>
+												<div style="width: 65%; color: #aaaaaa; font-size: x-small; float:left;">
+			                                 		${obj.pageItems.content[i].userId}
+			                                	</div>
+											</a>
+										</div>
+									</div>`
 							}
 							$("#follow_search").html(htmlStr)
 							$('#followModal').modal("show");
@@ -325,10 +332,11 @@
 						<h5 class="card-title" style="font-weight: bold;">Follower</h5>
 						<!--검색-->
 						<div class="card-body">
-							<input type="text" placeholder="팔로워 검색" onfocus="this.placeholder=''"
+							<input type="text" class="form-control" placeholder="팔로워 검색" onfocus="this.placeholder=''"
 								onblur="this.placeholder='이름으로 검색'" id="follower_searchKeyword"
-								style="width:70%; margin-right: 3%;">
-							<input type="button" value="검색" id="btn_search">
+								style="width:75%; margin-right:3%; float:left;">
+							<input type="button" class="form-control" value="검색" id="btn_search"
+								style="width:22%; float:left;">
 						</div>
 						<!--붙여넣는곳-->
 						<div class="card-body" style="position: relative;">
@@ -350,9 +358,9 @@
 		</section>
 		<!--검색 모달-->
 		<div class="modal fade" id="followModal" role="dialog">
-			<div class="modal-dialog modal-dialog-centered modal-lg">
+			<div class="modal-dialog modal-dialog-centered modal-sm">
 				<div class="modal-content" id="modal-content">
-					<div class="modal-body" id="follow_search">
+					<div class="modal-body overflow-auto" id="follow_search">
 					
 					</div>
 				</div>
