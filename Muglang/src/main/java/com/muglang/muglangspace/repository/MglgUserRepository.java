@@ -140,7 +140,7 @@ public interface MglgUserRepository extends JpaRepository<MglgUser, Integer> {
 			+ "     WHERE A.USER_ID IN "
 			+ "     (SELECT B.USER_ID FROM T_MGLG_POST B "
 			+ "     WHERE B.POST_ID IN "
-			+ "     (SELECT C.POST_ID FROM t_mglg_restaurant C WHERE C.RES_NAME='문화양곱창'))", nativeQuery = true)
+			+ "     (SELECT C.POST_ID FROM t_mglg_restaurant C WHERE C.RES_NAME=:resName))", nativeQuery = true)
 	List<CamelHashMap> getEatUser(@Param("resName") String resName);
 
 }

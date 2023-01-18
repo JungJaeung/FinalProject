@@ -103,6 +103,12 @@ public class MglgPostServiceImpl implements MglgPostService {
 	}
 	
 	@Override
+	public Page<CamelHashMap> otherUserPost(int userId, int otherUserId, Pageable pageable) {
+		
+		return mglgPostRepository.otherUserPost(userId, otherUserId, pageable);
+	}
+	
+	@Override
 	public int likeUp(int userId, int postId) {
 		mglgPostRepository.likeUp(userId, postId);
 		
@@ -152,6 +158,8 @@ public class MglgPostServiceImpl implements MglgPostService {
 	public Page<CamelHashMap> searchByNick(String searchKeyword, Pageable pageable, int userId) {
 		return mglgPostRepository.searchByNick(searchKeyword, userId, pageable);
 	}
+
+	
 
 
 

@@ -889,7 +889,7 @@ $.get_post = function(obj){
 		post_text += `<div class="card-title">`;
 		post_text += `<img class="img-fluid rounded-circle" src="/upload/${post.profile.userProfileNm}"
 						style="width: 40px;">
-						<a href="#" class="card-title">${post.userNick}</a>`;
+						<a href="/social/otherUser?userId=${post.userId}" class="card-title">${post.userNick}</a>`;
 		post_text += `</div>`;
 		post_text += `<form id="updateForm${post.postId}" enctype="multipart/form-data">`;
 		//<!-- 게시글 사진 부분 -->
@@ -1087,9 +1087,6 @@ $.get_post = function(obj){
 	
 	page_num += 1;
 	
-	setTimeout(function() {
-	  console.log('페이지 추가');
-	}, 2000);
 }
 
 //포스트 삭제

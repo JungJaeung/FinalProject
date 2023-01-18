@@ -320,6 +320,47 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 					nativeQuery = true)
 		 Page<CamelHashMap> getFollowingPost(@Param("userId") int userId, Pageable pageable);
 	 
+		 
+		//한 유저의 모든 포스트
+			@Query(value = "SELECT D.*\r\n"
+					+ "    , IFNULL(E.POST_LIKE, 'N') AS POST_LIKE\r\n"
+					+ "   FROM (\r\n"
+					+ "         SELECT A.*, IFNULL(C.LIKE_CNT, 0) AS LIKE_CNT \r\n"
+					+ "            FROM (\r\n"
+					+ "               SELECT I.*, L.RES_NAME, IFNULL(L.RESTAURANT, 'N') AS RESTAURANT\r\n"
+					+ "                  FROM (\r\n"
+					+ "                       SELECT G.*\r\n"
+					+ "                           , J.USER_NICK\r\n"
+					+ "                         FROM T_MGLG_POST G\r\n"
+					+ "                           , T_MGLG_USER J\r\n"
+					+ "                         WHERE G.USER_ID = J.USER_ID\r\n"
+					+ "                     ) I\r\n"
+					+ "                  LEFT OUTER JOIN (\r\n"
+					+ "									SELECT K.POST_ID, K.RES_NAME, 'Y' AS RESTAURANT\r\n"
+					+ "                                    FROM T_MGLG_RESTAURANT K\r\n"
+					+ "									WHERE K.RES_NAME != ''\r\n"
+					+ "                                    ) L\r\n"
+					+ "				  ON I.POST_ID = L.POST_ID\r\n"
+					+ "                ) A\r\n"
+					+ "            LEFT OUTER JOIN (\r\n"
+					+ "                           SELECT COUNT(B.POST_ID) AS LIKE_CNT\r\n"
+					+ "                                , B.POST_ID\r\n"
+					+ "                              FROM T_MGLG_POST_LIKES B\r\n"
+					+ "                              GROUP BY B.POST_ID\r\n"
+					+ "                        ) C\r\n"
+					+ "           ON A.POST_ID = C.POST_ID\r\n"
+					+ "        ) D\r\n"
+					+ "    LEFT OUTER JOIN (\r\n"
+					+ "                  SELECT F.POST_ID, 'Y' AS POST_LIKE \r\n"
+					+ "                     FROM T_MGLG_POST_LIKES F\r\n"
+					+ "                     WHERE F.USER_ID = :userId\r\n"
+					+ "                ) E\r\n"
+					+ "    ON D.POST_ID = E.POST_ID\r\n"
+					+ "    WHERE D.USER_ID = :otherUserId\r\n"
+					+ "	ORDER BY D.POST_ID DESC",
+					countQuery = " SELECT COUNT(*) FROM (SELECT * FROM T_MGLG_POST) D", nativeQuery = true)
+			Page<CamelHashMap> otherUserPost(@Param("userId") int userId, @Param("otherUserId") int otherUserId, Pageable pageable);
+			
 	//좋아요 선택
 	@Modifying
 	@Query(value = "INSERT INTO T_MGLG_POST_LIKES VALUES(:postId, :userId, NOW())", nativeQuery = true)

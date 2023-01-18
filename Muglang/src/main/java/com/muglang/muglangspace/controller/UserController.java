@@ -148,7 +148,7 @@ public class UserController {
 			int userId = loginUser.getMglgUser().getUserId();
 			ModelAndView mv = new ModelAndView();
 
-			mv.addObject("userIds", userId);
+			mv.addObject("userId", userId);
 			mv.setViewName("/user/follower.html");
 			
 			return mv;

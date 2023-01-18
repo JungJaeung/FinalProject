@@ -79,7 +79,7 @@ $.comment_list = function(postId) {
 				text_comment += `<button class="btn update_comment" id="update_comment${comment.commentId}" style="float:right; display:none;">수정</button></div></div>`
 			}
 			text_comment += `</div></div>`;
-			$("#modal-content").html(text_comment);
+			$("#comment-content").html(text_comment);
 
 			//댓글 페이징을 위한 페이징 넘버를 최초 댓글 열때 저장.
 			thisCommentTotalPages = Number(obj.totalPages);

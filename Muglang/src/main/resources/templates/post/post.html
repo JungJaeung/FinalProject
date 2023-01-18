@@ -27,6 +27,7 @@
 			let page_num = 0;
 			let post_text = "";
 			let totalPages = 1;
+			let scrollYn = false;
 
 			//현재시간
 			let now = new Date();
@@ -63,7 +64,7 @@
 			//게시글 등록후 해당 인덱스 번호에 대한 파일 이미지 조작할 게시글 위치를 등록할 변수
 			//새로 고침을 하거나 다른 페이지로 가면 이 정보는 0으로 초기화됨.
 			let insertIndex = 0;
-			let scrollYn = false;
+			
 			/*
 			//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
 			//포스팅 글들의 id를 관리하는데 사용함.
@@ -305,33 +306,32 @@
 				
 				//스크롤 로직
 				
-					$(window).scroll(function () {
-						if(!scrollYn) {
-							if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-								scrollYn = true;
-								console.log("들어오는 페이지 번호 : " + page_num);
-								if (page_num < totalPages) {
-									$.ajax({
-										url: '/post/mainPost',
-										type: 'post',
-										data: {page_num: page_num},
-										success: function (obj) {
-										  console.log(obj)
-											$.get_post(obj);
-											setTimeout(function(){
-												scrollYn = false;
-											}, 1000);
-										},
-										error: function (e) {
-											console.log("실패실패");
-										}
-									});
-								}
+				$(window).scroll(function () {
+					if(!scrollYn) {
+						if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+							scrollYn = true;
+							console.log("들어오는 페이지 번호 : " + page_num);
+							if (page_num < totalPages) {
+								$.ajax({
+									url: '/post/mainPost',
+									type: 'post',
+									data: {page_num: page_num},
+									success: function (obj) {
+									  console.log(obj)
+										$.get_post(obj);
+										setTimeout(function(){
+											scrollYn = false;
+										}, 1000);
+									},
+									error: function (e) {
+										console.log("실패실패");
+									}
+								});
 							}
 						}
-					});
-			});
-				//j쿼리 종료
+					}
+				});
+			});//j쿼리 종료
 
 			//지도 윈도우창 띄우기
 			let pop;
@@ -473,7 +473,7 @@
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">
 			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content" id="modal-content">
+				<div class="modal-content" id="comment-content">
 					<div class="modal-header">
 						<!-- 댓글 작성 -->
 						<textarea id="" style="width:70%; height: 30px; overflow:hidden; resize: none;"
