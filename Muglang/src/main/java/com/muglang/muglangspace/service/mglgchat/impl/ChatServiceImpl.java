@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgChatMembers;
 import com.muglang.muglangspace.entity.MglgChatMessage;
+import com.muglang.muglangspace.entity.MglgChatroom;
 import com.muglang.muglangspace.entity.MglgChatrooms;
 import com.muglang.muglangspace.repository.ChatMembersRepository;
 import com.muglang.muglangspace.repository.ChatRoomsRepository;
@@ -54,8 +55,8 @@ public class ChatServiceImpl implements ChatService {
 	}
 	
 	@Override
-	public List<CamelHashMap> getPastMsg(MglgChatMembers member) {
-		return chatMembersRepository.getPastMsg(member.getChatRoomId(), member.getUserId());
+	public List<CamelHashMap> getPastMsg(MglgChatMembers member, String roomType) {
+		return chatMembersRepository.getPastMsg(member.getChatRoomId(), member.getUserId(), roomType);
 	}
 	
 	@Override
@@ -63,7 +64,8 @@ public class ChatServiceImpl implements ChatService {
 		String chatRoomId = message.getChatRoomId();
 		int userId = message.getUserId();
 		String chatContent = message.getChatContent();
-		chatMembersRepository.insertMsg(chatRoomId, userId, chatContent);
+		String roomType = message.getRoomType();
+		chatMembersRepository.insertMsg(chatRoomId, userId, chatContent, roomType);
 	}
 	
 	@Override
@@ -73,5 +75,6 @@ public class ChatServiceImpl implements ChatService {
 		
 		chatMembersRepository.leaveRoom(chatRoomId, userId);
 	}
+	
 	
 }

@@ -29,6 +29,8 @@ public class Load {
 									  .email(user.getEmail())
 									  .address(user.getAddress())
 									  .phone(user.getPhone())
+									  .userNick(user.getUserNick())
+									  .userSnsId(user.getUserSnsId())
 									  .build();
 		return info;
 	}

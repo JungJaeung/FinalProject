@@ -46,6 +46,7 @@ import com.muglang.muglangspace.dto.ResponseDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgPostFile;
+import com.muglang.muglangspace.entity.MglgPostLikes;
 import com.muglang.muglangspace.entity.MglgRestaurant;
 import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
@@ -92,37 +93,51 @@ public class PostController {
 			,@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
 		System.out.println(mglgPostDTO);
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
-		
+		int inputFileSize;
+		if(uploadFiles == null) {
+			inputFileSize = 0;
+		} else  {
+			inputFileSize = uploadFiles.length;
+		}
+			
+		CamelHashMap inputInfo = new CamelHashMap();
 //		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles,
 //													new TypeReference<List<MglgPostFileDTO>>() {});
-		
+		//MultipartFile[]의 length는 final이라 처리를 하려면 따로 처리해야함.
 		System.out.println("가져온 내용 : " + mglgPostDTO);
 		System.out.println("가져온 파일의 정보 : " + uploadFiles);
 
-		try {
-			System.out.println("게시글 등록 시작.");
-			MglgPost mglgPost = MglgPost.builder()
-					.postId(mglgPostDTO.getPostId())
-					.mglgUser(loginUser.getMglgUser())
-					.postContent(mglgPostDTO.getPostContent())
-					.restNm(mglgPostDTO.getRestNm())
-					.postDate(LocalDateTime.now())
-					.postRating(mglgPostDTO.getPostRating())
-					.restRating(mglgPostDTO.getRestRating())
-					.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
-					.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
-					.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
-					.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
-					.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
-					.build();
+		System.out.println("식당정보 : " + mglgRestaurantDTO);
+		
+		System.out.println("게시글 등록 시작.");
+		MglgPost mglgPost = MglgPost.builder()
+				.postId(mglgPostDTO.getPostId())
+				.mglgUser(loginUser.getMglgUser())
+				.postContent(mglgPostDTO.getPostContent())
+				.restNm(mglgPostDTO.getRestNm())
+				.postDate(LocalDateTime.now())
+				.postRating(mglgPostDTO.getPostRating())
+				.restRating(mglgPostDTO.getRestRating())
+				.hashTag1(mglgPostDTO.getHashTag1().equals("") ? "0": mglgPostDTO.getHashTag1())
+				.hashTag2(mglgPostDTO.getHashTag2().equals("") ? "0": mglgPostDTO.getHashTag2())
+				.hashTag3(mglgPostDTO.getHashTag3().equals("") ? "0": mglgPostDTO.getHashTag3())
+				.hashTag4(mglgPostDTO.getHashTag4().equals("") ? "0": mglgPostDTO.getHashTag4())
+				.hashTag5(mglgPostDTO.getHashTag5().equals("") ? "0": mglgPostDTO.getHashTag5())
+				.build();
 
-			mglgPost = mglgPostService.insertPost(mglgPost);
+		mglgPost = mglgPostService.insertPost(mglgPost);
+		System.out.println("파일과 식당을 제외한 게시글 내용만 확인 :" + mglgPost);
+		
+		try {
 			
+
+			System.out.println("파일의 개수를 확인하고 있습니다. " + inputFileSize);
 			System.out.println("파일 정보를 확인하고 있습니다." + uploadFiles);
 			
 			//파일 리스트를 생성하여 해당 게시글의 파일들을 등록하기 위한 사전작업을 함.
-			List<MglgPostFile> uploadFileList = new ArrayList<MglgPostFile>();		
-			if(uploadFiles.length > 0) {
+			List<MglgPostFile> uploadFileList = new ArrayList<MglgPostFile>();	
+			//파일의 개수가 0개일 경우 파일 입출력은 생략하고  다음 작업으로 이동한다.
+			if(inputFileSize > 0) {
 				String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
 				
 				System.out.println("attachPath====================!====" + attachPath);
@@ -145,9 +160,12 @@ public class PostController {
 					}
 					
 				}
+
 			}
 			//입력 작업 수행후 출력할 파일들의 정보를 가져오는 리스트 생성
-			List<MglgPostFile> completeFile = mglgPostFileService.getPostFileList(mglgPost.getPostId());
+			List<MglgPostFile> completeFile = mglgPostFileService.getPostFileList(mglgPost.getPostId()); //기본 배열 미리 생성후 가져온 배열 값을 가공함.
+			System.out.println("파일 조회 완료#%$^&파일 개수 : " + completeFile.size());
+
 			//DTO로 변경하여 ResponseDTO로 옮김.
 			List<MglgPostFileDTO> completeFileDTO = new ArrayList<MglgPostFileDTO>(); 
 			for(int i = 0; i < completeFile.size(); i++) {
@@ -155,14 +173,21 @@ public class PostController {
 				completeFileDTO.get(i).setPostId(mglgPost.getPostId());
 			}
 			
-			System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFileDTO.get(0).getPostFileId());
+			if(completeFileDTO.size() > 0) {
+				System.out.println("파일 자료 입력 완료 1번째 아이디 : " + completeFileDTO.get(0).getPostFileId());
+			}
+			//파일 정보를 담은 리스트를 맵에 담음.
+			inputInfo.put("post_file_list", completeFileDTO);
+
 			//화면단으로 넘길 DTO를 생성
 			MglgPostDTO returnDTO = Load.toHtml(mglgPost, loginUser.getMglgUser());
 			System.out.println("게시글 정보 확인 : " + returnDTO);
+			//해당 게시글의 정보를 hashMap에 저장.
+			inputInfo.put("insert_post", returnDTO);
 			
 			//returnDTO의 postId를 이용해서 restaurant 테이블에 내용 insert
 			MglgRestaurant mglgRes = MglgRestaurant.builder()
-					.postId(returnDTO.getPostId())
+					.mglgPost(mglgPost)
 					.resName(mglgRestaurantDTO.getResName())
 					.resAddress(mglgRestaurantDTO.getResAddress())
 					.resRoadAddress(mglgRestaurantDTO.getResRoadAddress())
@@ -170,12 +195,14 @@ public class PostController {
 					.resCategory(mglgRestaurantDTO.getResCategory())
 					.build();
 			
-			//쿼리문 실행
+			//쿼리문 실행 - 식당 정보를 입력하는 과정을 수행.
 			mglgRestaurantService.insertRestaurant(mglgRes);
 			
+			//식당정보 표출을 위한 dto를 가공하여 화면단으로 뿌릴 맵을 하나 생성함.
+			mglgRes = mglgRestaurantService.selectRes(returnDTO.getPostId());
 			//식당 정보를 DTO로 바꿔서 맵으로 출력함.
 			MglgRestaurantDTO mglgResDTO = MglgRestaurantDTO.builder()
-															.postId(mglgRes.getPostId())
+															.postId(mglgRes.getMglgPost().getPostId())
 															.resName(mglgRes.getResName())
 															.resAddress(mglgRes.getResAddress())
 															.resRoadAddress(mglgRes.getResRoadAddress())
@@ -183,20 +210,44 @@ public class PostController {
 															.resCategory(mglgRes.getResCategory())
 															.build();
 			
+			System.out.println("식당 정보를 확인차 표시합니다." + mglgResDTO);
+			//식당 정보를 맵에 담는작업.
+			inputInfo.put("restaurant", mglgResDTO);
 			
+			//게시자의 정보
+			inputInfo.put("login_user", Load.toHtml(loginUser.getMglgUser()));
+			System.out.println("게시자의 정보를 확인차 표시합니다." + loginUser.getMglgUser());
+			
+			//작성자의 프로필 사진을 가져오기 위한 로딩 작업.
+			MglgUserProfile userProfile = mglgUserProfileService.getUserImg(loginUser.getMglgUser().getUserId());
+			inputInfo.put("profile", Load.toHtml(userProfile));
+			
+			//작성글의 좋아요 정보를 가져와 로딩한다. 좋아요는 따로 like를 담는 메소드를 만들지 않고, 해쉬맵에 값을 직접 대입한다.
+			//MglgPostLikes likes = mglgPostService.likePost(mglgPost);
+			//처음 게시글을 작성할 때는 좋아요 포스트의 값을 N으로 초기화하고 사용할 것이다.
+			inputInfo.put("post_like", "N");
+			inputInfo.put("like_cnt", 0);
+			inputInfo.put("res_cnt", 0);
+			//게시판에 보여주는 데이터의 값들을 모두 정의하여 기본 값으로 다시 던져 형식을 맞춘다.
+			/*
+			//가져온 데이터 묶음들을 화면단으로 가져간다.
 			Map<String, Object> returnMap = new HashMap<String, Object>();
 			returnMap.put("insertPost", returnDTO);
 			returnMap.put("loginUser", Load.toHtml(loginUser.getMglgUser()));
+			returnMap.put("profile", Load.toHtml(userProfile));
 			returnMap.put("postFileList", completeFileDTO);
 			returnMap.put("restaurant", mglgResDTO);
 			
 			System.out.println("파일 리스트 : " + uploadFileList);
 			responseDTO.setItem(returnMap);
+			
 			System.out.println("새로운 글을 추가합니다.");
 			return ResponseEntity.ok().body(responseDTO); 
+			*/
+			return ResponseEntity.ok().body(inputInfo);
 		} catch(Exception e) {
-			responseDTO.setErrorMessage(e.getMessage());
-			return ResponseEntity.badRequest().body(responseDTO);
+			System.out.println("맵핑에서 문제가 발생하였습니다." + inputInfo);
+			return ResponseEntity.badRequest().body(inputInfo);
 		}
 	}
 	
@@ -206,9 +257,18 @@ public class PostController {
 			MultipartFile[] uploadFiles, MultipartFile[] changedFiles, 
 			HttpServletRequest request, @RequestParam("originFiles") String originFiles,
 			@AuthenticationPrincipal CustomUserDetails loginUser) throws IOException {
+		int inputFileSize;
+		//파일 개수에 대한 예외 처리
+		if(uploadFiles == null) {
+			inputFileSize = 0;
+		} else {
+			inputFileSize = uploadFiles.length;
+		}
+		
 		//파일의 내용은 하나의 게시글을 가져오므로 1차원 배열을 가져오게됨.
 		//JSON string으로 파일의 원래 있던 파일을 가져오는 형식임.
 		ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>();
+		
 		
 		System.out.println("수정 작업 할 맵 DTO 생성 완료" + uploadFiles);
 		System.out.println("가져온 게시글의 정보 : " + mglgPostDTO);
@@ -219,10 +279,6 @@ public class PostController {
 		System.out.println("수정 작업을 실행합니다. 원래 파일의 목록을 불러옵니다." + originFileList);
 		
 		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
-//		
-//		System.out.println("게시글 수정 작업 attachPath : " + attachPath);
-//		
-//		System.out.println("변경된 파일들을 불러옵니다. " + changedFiles);
 		
 		File directory = new File(attachPath);
 		
@@ -243,11 +299,11 @@ public class PostController {
 					.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate()))
 					.postRating(mglgPostDTO.getPostRating())
 					.restRating(mglgPostDTO.getRestRating())
-					.hashTag1(mglgPostDTO.getHashTag1() == ""? "0": mglgPostDTO.getHashTag1())
-					.hashTag2(mglgPostDTO.getHashTag2() == ""? "0": mglgPostDTO.getHashTag2())
-					.hashTag3(mglgPostDTO.getHashTag3() == ""? "0": mglgPostDTO.getHashTag3())
-					.hashTag4(mglgPostDTO.getHashTag4() == ""? "0": mglgPostDTO.getHashTag4())
-					.hashTag5(mglgPostDTO.getHashTag5() == ""? "0": mglgPostDTO.getHashTag5())
+					.hashTag1(mglgPostDTO.getHashTag1().equals("") ? "0": mglgPostDTO.getHashTag1())
+					.hashTag2(mglgPostDTO.getHashTag2().equals("") ? "0": mglgPostDTO.getHashTag2())
+					.hashTag3(mglgPostDTO.getHashTag3().equals("") ? "0": mglgPostDTO.getHashTag3())
+					.hashTag4(mglgPostDTO.getHashTag4().equals("") ? "0": mglgPostDTO.getHashTag4())
+					.hashTag5(mglgPostDTO.getHashTag5().equals("") ? "0": mglgPostDTO.getHashTag5())
 					.build();
 			System.out.println("파일이 아닌 게시글의 내용을 수정할 정보를 가져옵니다.");
 			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
@@ -299,8 +355,8 @@ public class PostController {
 			}
 			//수정, 삭제 처리를 완료하고 더 추가된 파일을 적용한 뒤 마지막으로 다시 파일들을 업로드한다.
 			//파일의 개수 만큼 하나씩 파일을 DB에 저장함.
-			if(uploadFiles.length > 0) {
-				for(int i = 0; i < uploadFiles.length; i++) {
+			if(inputFileSize > 0) {
+				for(int i = 0; i < inputFileSize; i++) {
 					MultipartFile file = uploadFiles[i];
 					
 					if(file.getOriginalFilename() != null && !file.getOriginalFilename().equals("")) {
@@ -364,17 +420,23 @@ public class PostController {
 			@RequestParam("fileSize") int fileSize
 			) throws IOException {
 		
-		//System.out.println("삭제 작업 실행 : " + mglgPostDTO.getPostId());
-		//System.out.println("파일의 크기 : " + fileSize);// 파일의 개수를 미리 받아서 개수만큼 모두 삭제하는 용도로 사용.
 		//외래키로 가지고 있는 파일들을 모두 삭제
+		//식당의 정보도 이다음에 삭제하여 게시글에 해당하는 모든 데이터를 먼저 삭제하는 작업을 수행하면된다.
 		if(fileSize > 0) {
 			mglgPostFileService.deletePostFileList(mglgPostDTO.getPostId());
 			System.out.println("파일들을 삭제 완료 하였습니다..");
 		} else {
 			System.out.println("게시글에 파일이 없었습니다.");
 		}
+		/*
+		//식당의 정보를 조회하여 null이 아니면 삭제 수행.
+		MglgRestaurant tempRes = mglgRestaurantService.selectRes(mglgPostDTO.getPostId());
+		System.out.println("삭제할 식당 정보 확인하기 : " + tempRes);
+		if(tempRes != null) {
+			mglgRestaurantService.deleteRes(mglgPostDTO.getPostId());
+		}
 		//외래키로 지정은 안되어 있어서 삭제가 없어도 된다. 추후에 이것을 사용하지 않을 수도 있음.
-		mglgRestaurantService.deleteRes(mglgPostDTO.getPostId());
+		*/
 		
 		//게시글 삭제 수행.
 		MglgPost mglgPost = MglgPost.builder()
@@ -401,7 +463,7 @@ public class PostController {
 
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		
-		System.out.println(pagePostList);
+		System.out.println("찾은 데이터의 형태를 확인합니다." + pagePostList.getContent());
 
 		for (int i = 0; i < pagePostList.getContent().size(); i++) {
 			pagePostList.getContent().get(i).put(
@@ -491,6 +553,8 @@ public class PostController {
 		
 		int userId = loginUser.getMglgUser().getUserId();
 		pageable = PageRequest.of(page_num, 5);
+		
+		System.out.println("현재 페이징된 상태를 확인." + pageable);
 		
 		Page<CamelHashMap> pagePostList = mglgPostService.getPagePostList(pageable, userId);
 		

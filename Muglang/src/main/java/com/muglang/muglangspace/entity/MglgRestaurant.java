@@ -2,13 +2,15 @@ package com.muglang.muglangspace.entity;
 
 
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import lombok.AllArgsConstructor;
@@ -23,10 +25,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @DynamicInsert
 @Data
+@IdClass(MglgRestaurantId.class)
 public class MglgRestaurant {
 	@Id
-	private int postId;				
-	private String resName;		
+	@OneToOne
+	@JoinColumn(name="POST_ID")
+	private MglgPost mglgPost;	
+	@Id
+	@Column
+	@ColumnDefault("'기본식당'")
+	private String resName;
+	
 	private String resAddress;			
 	private String resRoadAddress;
 	private String resPhone;

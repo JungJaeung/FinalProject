@@ -20,5 +20,8 @@ public class ChatMessage {
     private MessageType type;
     private List<CamelHashMap> messageList;
     private int userId;
+    private int loginUserId;
     private String chatTime;
+    private String roomType;
+    
 }

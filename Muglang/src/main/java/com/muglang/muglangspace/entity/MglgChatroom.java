@@ -1,10 +1,11 @@
 package com.muglang.muglangspace.entity;
 
+
+
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -15,20 +16,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="T_MGLG_CHAT_MSG")
-@Data
+@Table(name="T_MGLG_CHATROOM")
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
 @Builder
-@IdClass(MglgChatMessageId.class)
-public class MglgChatMessage {
+@DynamicInsert
+@Data
+public class MglgChatroom {
 	@Id
-	private String chatRoomId;
-	@Id
-	private int chatMsgId;
-	private int userId;
-	private String chatContent;
-	private LocalDateTime chatTime = LocalDateTime.now();
-	private String roomType;
-}
+	private String chatroomId;
+	private int part1;
+	private int part2;
+	private LocalDateTime roomDatetime;
+	private LocalDateTime part1LeaveDateTime;
+	private LocalDateTime part2LeaveDateTime;
+	}

@@ -1,5 +1,7 @@
 package com.muglang.muglangspace.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
@@ -53,4 +55,43 @@ public interface MglgUserRelationRepository extends JpaRepository<MglgUser, Inte
 
 	@Query(value = "SELECT COUNT(*) FROM T_MGLG_USER_RELATION WHERE USER_ID= :userId AND FOLLOWER_ID= :loginUserId", nativeQuery = true)	
 	public int followingOrNot(@Param("userId")int userId,@Param("loginUserId") int loginUserId); 
+	
+	@Query(value = "WITH AA AS (\n"
+			+ "	SELECT A.USER_ID\n"
+			+ "		 , B.USER_NAME\n"
+			+ "		 , C.user_profile_nm\n"
+			+ "		FROM (\n"
+			+ "				SELECT D.USER_ID \n"
+			+ "					FROM T_MGLG_USER_RELATION D\n"
+			+ "					   , (\n"
+			+ "							SELECT E.FOLLOWER_ID \n"
+			+ "								FROM T_MGLG_USER_RELATION E\n"
+			+ "								WHERE E.USER_ID = :userId\n"
+			+ "						 ) F\n"
+			+ "					WHERE D.FOLLOWER_ID = :userId\n"
+			+ "					  AND D.USER_ID = F.FOLLOWER_ID\n"
+			+ "			 ) A\n"
+			+ "		   , T_MGLG_USER B\n"
+			+ "		   LEFT OUTER JOIN t_mglg_user_profile C\n"
+			+ "		   ON B.USER_ID = C.USER_ID\n"
+			+ "		WHERE A.USER_ID = B.USER_ID\n"
+			+ ")\n"
+			+ "SELECT AA.*\n"
+			+ "	 , IFNULL(BB.CHATROOM_ID, 0) AS CHATROOM_ID\n"
+			+ "	FROM AA\n"
+			+ "	LEFT OUTER JOIN (\n"
+			+ "						SELECT H.CHATROOM_ID\n"
+			+ "							 , H.PART1\n"
+			+ "							 , H.PART2\n"
+			+ "							FROM T_MGLG_CHATROOM H\n"
+			+ "							WHERE 1 = 0\n"
+			+ "							   OR H.PART1 = :userId\n"
+			+ "							   OR H.PART2 = :userId\n"
+			+ "					 ) BB\n"
+			+ "	ON CASE\n"
+			+ "			WHEN BB.PART2 = :userId\n"
+			+ "            THEN BB.PART1 = AA.USER_ID\n"
+			+ "			ELSE BB.PART2 = AA.USER_ID\n"
+			+ "		END;", nativeQuery = true)
+	public List<CamelHashMap> getFollowBackList(@Param("userId") int userId);
 }
