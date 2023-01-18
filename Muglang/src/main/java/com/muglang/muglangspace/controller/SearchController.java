@@ -53,9 +53,6 @@ public class SearchController {
 		// **포스트 내용을 기준으로 받아오는 정보들
 		Page<CamelHashMap> postsContentList = mglgPostService.searchByPost(searchKeyword, pageable, userId);
 		
-		System.out.println("************************************");
-		postsContentList.get().forEach(a -> System.out.println(a));
-		System.out.println("************************************");
 		
 		for(int i=0; i<postsContentList.getContent().size(); i++) {
 			postsContentList.getContent().get(i).put(

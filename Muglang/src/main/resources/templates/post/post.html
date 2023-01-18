@@ -27,6 +27,7 @@
 			let page_num = 0;
 			let post_text = "";
 			let totalPages = 1;
+			let scrollYn = false;
 
 			//현재시간
 			let now = new Date();
@@ -308,27 +309,33 @@
 				});
 				
 				//스크롤 로직
+				
 				$(window).scroll(function () {
-					if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-						console.log("들어오는 페이지 번호 : " + page_num);
-						if (page_num < totalPages) {
-							$.ajax({
-								url: '/post/mainPost',
-								type: 'post',
-								data: {page_num: page_num},
-								success: function (obj) {
-								  console.log(obj)
-									$.get_post(obj);
-								},
-								error: function (e) {
-									console.log("실패실패");
-								}
-							});
+					if(!scrollYn) {
+						if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+							scrollYn = true;
+							console.log("들어오는 페이지 번호 : " + page_num);
+							if (page_num < totalPages) {
+								$.ajax({
+									url: '/post/mainPost',
+									type: 'post',
+									data: {page_num: page_num},
+									success: function (obj) {
+									  console.log(obj)
+										$.get_post(obj);
+										setTimeout(function(){
+											scrollYn = false;
+										}, 1000);
+									},
+									error: function (e) {
+										console.log("실패실패");
+									}
+								});
+							}
 						}
 					}
 				});
-
-			});	//j쿼리 종료
+			});//j쿼리 종료
 
 			//지도 윈도우창 띄우기
 			let pop;
@@ -383,11 +390,9 @@
 								style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
 								먹거리 <span>| Today</span></h5>
 							<div class="activity">
-								<div id="today_eat" th:each="showHotKeyword : ${showHotKeywords}">
+								<div id="today_eat" th:each="hotKeyword : ${hotKeywords}">
 									<ul style="list-style:none;">
-										<li><a th:href="@{/search/searchByPost(searchKeyword=${showHotKeyword.showHotKeyword})}"
-												th:text="|${showHotKeyword.keywordOrder}.  #${showHotKeyword.showHotKeyword}|"></a>
-										</li>
+										<li><a th:href="@{/search/search(searchKeyword=${hotKeyword.hotKeyword})}" th:text="|${hotKeywordStat.count}.  #${hotKeyword.hotKeyword}|"></a></li>
 									</ul>
 								</div>
 							</div>
@@ -398,7 +403,7 @@
 		<!-- 댓글 모델 -->
 		<div class="modal fade" id="msgModal" role="dialog">
 			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content" id="modal-content">
+				<div class="modal-content" id="comment-content">
 					<div class="modal-header">
 						<!-- 댓글 작성 -->
 						<textarea id="" style="width:70%; height: 30px; overflow:hidden; resize: none;"

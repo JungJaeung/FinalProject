@@ -106,9 +106,11 @@ public class SocialController {
 
 	// 다른 유저 조회
 	@GetMapping("/otherUser")
-	public ModelAndView otherUserView(@RequestParam("userId") int userId,
+	public ModelAndView otherUserView(@RequestParam("userId") int userId, @AuthenticationPrincipal CustomUserDetails loginUser,
 			@PageableDefault(page = 0, size = 10) Pageable pageable,
 			@AuthenticationPrincipal CustomUserDetails customUser) {
+		
+		int loginUserId = loginUser.getMglgUser().getUserId();
 		// 조회 대상자의 아이디 = userId
 		MglgUser user = mglguserService.findUser(userId);
 		// 조회대상자의 정보 가져오기
@@ -116,15 +118,7 @@ public class SocialController {
 				.bio(user.getBio()).email(user.getEmail()).userId(user.getUserId()).build();
 
 		// 조회 대상유저의 포스트 목록 불러오기
-		Page<MglgPost> postLists = mglgPostService.userPostList(userId, pageable);
-		Page<MglgPostDTO> postList = postLists.map(pageMglgPost -> MglgPostDTO.builder()
-				.userId(pageMglgPost.getMglgUser().getUserId()).postId(pageMglgPost.getPostId())
-				.postContent(pageMglgPost.getPostContent()).postDate(pageMglgPost.getPostDate().toString())
-				.restNm(pageMglgPost.getRestNm()).restRating(pageMglgPost.getRestRating())
-				.postRating(pageMglgPost.getPostRating()).hashTag1(pageMglgPost.getHashTag1())
-				.hashTag2(pageMglgPost.getHashTag2()).hashTag3(pageMglgPost.getHashTag3())
-				.hashTag4(pageMglgPost.getHashTag4()).hashTag5(pageMglgPost.getHashTag5())
-				.betweenDate(Duration.between(pageMglgPost.getPostDate(), LocalDateTime.now()).getSeconds()).build());
+		
 
 		//조회대상 유저의 프로필 사진 가져옴
 		MglgUserProfile userProfile = mglgUserProfileService.getUserImg(userId);
@@ -132,8 +126,8 @@ public class SocialController {
 		ModelAndView mv = new ModelAndView();
 		
 		mv.addObject("userProfile", userProfile);
-		mv.addObject("postList", postList);
 		mv.addObject("user", userDTO);
+		mv.addObject("loginUserId", loginUserId);
 		mv.setViewName("/user/otherUserProfile.html");
 		return mv;
 	}
@@ -166,6 +160,11 @@ public class SocialController {
 				}
 
 			}
+			
+			if(loginUser == userId) {
+				followYn = -1;
+			}
+			
 			pageUserFollow.getContent().get(0).put("followYn", followYn);
 			response.setPageItems(pageUserFollow);
 			return ResponseEntity.ok().body(response);
