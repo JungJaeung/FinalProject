@@ -92,6 +92,7 @@
 			
 			/*<![CDATA[*/
 			$(function () {
+				
 				// 결정 버튼 숨기기
 				$("#udtBtn").hide();
 				
@@ -157,9 +158,14 @@
 					// 사용자 화면에 보여줄 검색어 개수 확인
 					if(yLength > 10) {
 						alert("사용자 화면에 보여줄 검색어는 10개이하만 가능합니다!!!\n현재 Y인 검색어 개수: " + yLength);
+						window.location.reload();
 						return;
 					} else if(yLength < 10) {
-						confirm(yLength + "개의 검색어만 사용자 화면에 보여집니다. 진행하시겠습니까?");
+						let yn = confirm(yLength + "개의 검색어만 사용자 화면에 보여집니다. 진행하시겠습니까?");
+						if(yn == false){
+							alert("취소되었습니다!!!")
+							return;
+						}
 					}
 		
 					
