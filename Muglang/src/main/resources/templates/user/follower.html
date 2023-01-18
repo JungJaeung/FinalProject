@@ -84,125 +84,18 @@
 						console.log(obj.content);
 						console.log("가져온 게시글의 개수!!!! : " + obj.content.length);
 						
-						let elements = page_num * obj.pageable.pageSize;
-						console.log("시작 인덱스 : " + elements + ", 게시글 개수 : " + obj.numberOfElements);
+						//let elements = page_num * obj.pageable.pageSize;
+						//console.log("시작 인덱스 : " + elements + ", 게시글 개수 : " + obj.numberOfElements);
 						htmlStr = "";
 						//조건에 해당하는 게시글을 불러옴.
 						for (let i = 0; i < obj.content.length; i++) {
 							htmlStr += callPost(obj.content[i]);
-							/*
-							const postId = obj.content[i].postId;
-							const userId = obj.content[i].userId;
-							//시간 바꾸기
-							let timeVel;
-							if (obj.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 >= 1) {
-								timeVel = Math.floor(obj.content[i].betweenDate / 60 / 60 / 24 / 30 / 12) + '년 전'
-							} else if (obj.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.content[i].betweenDate / 60 / 60 / 24 / 30 >= 1) {
-								timeVel = Math.floor(obj.content[i].betweenDate / 60 / 60 / 24 / 30) + '달 전'
-							} else if (obj.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.content[i].betweenDate / 60 / 60 / 24 / 30 < 1 && obj.content[i].betweenDate / 60 / 60 / 24 >= 1) {
-								timeVel = Math.floor(obj.content[i].betweenDate / 60 / 60 / 24) + '일 전'
-							} else if (obj.content[i].betweenDate / 60 / 60 / 24 / 30 / 12 < 1 && obj.content[i].betweenDate / 60 / 60 / 24 / 30 < 1 && obj.content[i].betweenDate / 60 / 60 / 24 < 1 && obj.content[i].betweenDate / 60 / 60 >= 1) {
-								timeVel = Math.floor(obj.content[i].betweenDate / 60 / 60) + '시간 전'
-							} else {
-								timeVel = Math.floor(obj.content[i].betweenDate / 60) + '분 전'
-							}
-							//해쉬태그 공백화
-							let hash1 = obj.content[i].hashTag1;
-							let hash2 = obj.content[i].hashTag2;
-							let hash3 = obj.content[i].hashTag3;
-							let hash4 = obj.content[i].hashTag4;
-							let hash5 = obj.content[i].hashTag5;
-							if (obj.content[i].hashTag1 == null) {
-								hash1 = "";
-							}
-							if (obj.content[i].hashTag2 == null) {
-								hash2 = "";
-							}
-							if (obj.content[i].hashTag3 == null) {
-								hash3 = "";
-							}
-							if (obj.content[i].hashTag4 == null) {
-								hash4 = "";
-							}
-							if (obj.content[i].hashTag5 == null) {
-								hash5 = "";
-							}
-
-							htmlStr += `
-							<div class="card recent-sales" >
-								<div class="card-body">
-									<div class="filter" style="margin-top: 15px;">
-										<!--위에 시간-->
-										<a style="margin-right: 20px;">
-											<span>${timeVel}</span>				
-									    </a>
-										<!--신고하기 있는 버튼-->
-										<a class="icon" href="#" data-bs-toggle="dropdown"><i
-												class="bi bi-three-dots"></i></a>
-										<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-											<li><a class="dropdown-item" href="#"><i
-														class="ri-alarm-warning-line"></i>&emsp;신고하기</a></li>
-										</ul>
-									</div>
-									<div class="card-title">
-										<!--프로필 사진-->
-										<img class="img-fluid rounded-circle" src="/assets/img/messages-1.jpg"
-											style="width: 40px;">
-										<!--이름-->
-										<a href="#" class="card-title">${obj.content[i].userNick}</a>
-									</div>
-									<div class="activity" style="margin-bottom: 10px;">`;
-									
-							for(let j = 0; j < obj.content[i].fileSize; j++) {
-								//파일의 길이를 찾아 그 횟수만큼 반복하여 이미지를 로드함.
-								let file = obj.content[i].fileList[j].postFileNm;
-								htmlStr	+= `<img src="/upload/${file}" style="width: 100%;">`;
-							}
-
-							htmlStr +=	`</div>
-									<div class="activity">
-										<div>
-											<b>${obj.content[i].postContent}</b>
-										</div>
-										<br>
-										<!--태그-->
-										<a href="#" style="color: blue;">&emsp;${hash1}</a>
-										<a href="#" style="color: blue;">&emsp;${hash2}</a>
-										<a href="#" style="color: blue;">&emsp;${hash3}</a>
-										<a href="#" style="color: blue;">&emsp;${hash4}</a>
-										<a href="#" style="color: blue;">&emsp;${hash5}</a>
-					
-									</div>
-									<!--아이콘들-->
-									<div class="activity">`
-									
-										if (obj.content[i].postLike == "Y")
-											htmlStr += ` <i class="ri-heart-3-line post_like" id="${obj.content[i].postId}" style="font-size: 30px; margin-right: 5px; color:red; cursor: pointer;"></i>`  
-										else if (obj.content[i].postLike == "N")
-										htmlStr += ` <i class="ri-heart-3-line post_like" id="${obj.content[i].postId}" style="font-size: 30px; margin-right: 5px; color:black; cursor: pointer;"></i>`
-									
-									htmlStr += `	
-										<a href="#" id="msg_btn"><i class="ri-message-3-line"
-												style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
-										<a href="#"><i class="ri-send-plane-2-line"
-												style="font-size: 30px; margin-right: 5px; color:black;"></i></a>
-										<br>
-										<!--좋아요 숫자 넣는곳-->
-										<a>좋아요 <span id="likeCnt${obj.content[i].postId}">${obj.content[i].likeCnt} </span>개</a>
-										<hr>
-									</div>
-									<!--친구, 외 몇명, 위치, 상호명-->
-									<div class="activity" style="text-align: center;">
-										<a href="#"><span>${obj.content[i].userNick}</span>님 외 <span>${obj.content[i].resCnt}</span>명이 
-											<span>${obj.content[i].resName}</span>에서 식사하셨어요!</a>
-									</div>
-								</div>
-							</div>
-					`;*/
 						}
 						$("#divContent").html(htmlStr);
-						for(let i = 0; i < obj.content.length; i++) {
-							$.followingEvent(elements + i, obj.content[i].postId);
+						console.log(htmlStr);
+						
+						for(let i = 0; i < $(".uploadFileSpace").length; i++) {
+							$.followingEvent(i, $($(".uploadFileSpace")[i]).attr("data-post-id"));
 						}
 						console.log("좋아요 이벤트, 댓글 기능 활성화 작업 시작.");
 						console.log($("input[id='loginUserId']").val());

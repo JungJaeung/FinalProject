@@ -50,6 +50,10 @@
 			//변경된 첨부파일 배열
 			let changedFiles = [];
 
+			//파일 게시글 새로 등록한 곳은 따로 배열을 담아 처리할 것임. 분리함.
+			let inputUploadFiles = [];
+			let inputOriginFiles = [];
+
 			//게시글을 이벤트 처리하기위해 정리 해둔 배열들로
 			//포스팅 글들의 id를 관리하는데 사용함.
 			//해당 배열은 파일 처리 이벤트에서 많이 쓰게될 예정.
@@ -258,7 +262,7 @@
 							console.log("로그인한 계정 : " + loginUserId);
 							console.log("먼저 등록한 게시글의 번호 : " + insertIndex);
 							insert_post = post(obj.item, insertIndex);
-
+							
 							//화면에 표시된 게시글 수 갱신
 							let postNumber = Number($("#cntPost").text()) + 1;
 							const inPostId = obj.item.insertPost.postId;
@@ -267,7 +271,8 @@
 							//$("#posts").html(insert_post);
 							//html단 뿌리기
 							console.log(insert_post);
-							$("div[id='posts']:nth-child(2)").prev($(insert_post));
+							
+							$("#post_div").prepend($(insert_post));
 							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
 							flagList.unshift(false);
 

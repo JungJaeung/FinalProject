@@ -150,6 +150,8 @@ $(function() {
 
 	$.followingEvent = function(targetIndex, postId) {
 		console.log("현재 인덱스 : " + targetIndex + ", 현재 게시글의 아이디 : " + postId);
+		$($(".uploadFileSpace")[targetIndex]).hide();
+		$($(".changedFileSpace")[targetIndex]).hide();
 		$("#updateForm" + postId).hide();
 		$("#upTitle" + postId).hide();
 		$("#contentIn" + postId).hide();
@@ -221,10 +223,8 @@ $(function() {
 			});
 
 		}
+
 	}
-	
-	
-	
 	
 });//J쿼리 종료
 
@@ -541,6 +541,81 @@ function callPost(post) {
 
 //새로운 게시글을 등록하는 html 단 태그를 함수화 하여 메인 페이지, 나의 페이지, 이외에 쓸 가능성을 남겨둔 페이지에 추가할 수 있게함.
 function callInsertPost() {
+	let inputText = "";
+	inputText += `<div class="col-12">
+						<!-- 작성 하는 부분 -->
+						<div class="card recent-sales overflow-auto">
+							<div class="card-body">
+								<!--<form id="insert_form" name="insertForm" enctype="multipart/form-data"
+									action="/post/insertPost" method="post">-->
+									<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
+
+									<input type="hidden" id="userName" name="userName"
+										th:value="${loginUser.userName}">
+
+									<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
+									<div class="quill-editor-default">
+										<h2>write your daily life</h2>
+										<p> </p>
+									</div>
+									<button type="button" id="postFileUpdate"
+										style="background: none; border:none;">
+										<i class="ri-image-2-fill" style="font-size: 20px; color:#000069;"></i>
+									</button>
+									<button type="button" id="res_select_btn" onclick="new_window()"
+										style="background: none; border:none;">
+										<i class="ri-map-pin-2-fill" style="font-size: 20px; color:#000069;"></i>
+									</button>
+									<!-- form을 위로 올리면 파일 개수를 0개인데 1개로 받아서 파일 처리를 못함. 그냥 여기로 냅두는게 좋을 듯. -->
+								<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">
+									<div class="box" id="imagePreview">
+										<!-- 이미지를 따로 미리 임시 저장하는 공간 -->
+										<div id="image_preview" style="margin:10px 0;">
+											<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple"
+												style="display: none;">
+											<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."
+												style="display: none;"></div>
+										</div>
+									</div>
+									<!-- End Quill Editor Default -->
+									<input type="hidden" id="restNm" name="restNm" value="">
+									<input type="hidden" id="postContent" name="postContent" value="">
+									<div style="margin-bottom: 5px;">
+										<label id="hashTag_label1">&emsp;# <input type="text" id=hashTag1
+												name="hashTag1" class="hashTag_text" placeholder="태그 입력"
+												onfocus="this.placeholder=''"
+												onblur="this.placeholder='태그 입력'"></label>
+										<label id="hashTag_label2" style="display: none;">&emsp;# <input type="text"
+												id=hashTag2 name="hashTag2" class="hashTag_text" placeholder="태그 입력"
+												onfocus="this.placeholder=''"
+												onblur="this.placeholder='태그 입력'"></label>
+										<label id="hashTag_label3" style="display: none;">&emsp;# <input type="text"
+												id=hashTag3 name="hashTag3" class="hashTag_text" placeholder="태그 입력"
+												onfocus="this.placeholder=''"
+												onblur="this.placeholder='태그 입력'"></label>
+										<label id="hashTag_label4" style="display: none;">&emsp;# <input type="text"
+												id=hashTag4 name="hashTag4" class="hashTag_text" placeholder="태그 입력"
+												onfocus="this.placeholder=''"
+												onblur="this.placeholder='태그 입력'"></label>
+										<label id="hashTag_label5" style="display: none;">&emsp;# <input type="text"
+												id=hashTag5 name="hashTag5" class="hashTag_text" placeholder="태그 입력"
+												onfocus="this.placeholder=''"
+												onblur="this.placeholder='태그 입력'"></label>
+
+									</div>
+									<!--식당정보 후에 필요 없는것은 hidden예정-->
+									<input type="hidden" id="res_place_name" name="resName" value="기본식당">
+									<input type="hidden" id="res_address_name" name="resAddress">
+									<input type="hidden" id="res_road_address_name" name="resRoadAddress">
+									<input type="hidden" id="res_phone" name="resPhone">
+									<input type="hidden" id="res_category_name" name="resCategory">
+
+									<input type="button" class="btn" id="insert_board" value="작성"
+										style="background-color: #4154f1; color: white; float: right;">
+								</form>
+							</div>
+						</div><!-- End Recent Sales -->
+					</div>`;
 	
 }
 
@@ -742,6 +817,11 @@ function post(item, insertIndex) {
 		창혁 작업
 -----------------------------------------------------------------------------------------*/
 
+$.get_post_current = function(post) {
+	console.log(post);
+	
+}
+
 $.get_post = function(obj){
 	console.log(obj);
 	totalPages = obj.totalPages;
@@ -895,7 +975,7 @@ $.get_post = function(obj){
 									<i class="ri-image-2-fill" style="font-size: 20px; color:#000069;"></i>
 								</button>
 							</div>`;
-			post_text += `<form id="delete_form${post.postId}" action="/post/deletePost" th:method="post">
+			post_text += `<form id="delete_form${post.postId}" action="/post/deletePost" method="post">
 								<input type="hidden" id="postId" name="postId" value="${post.postId}">
 								<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">
 								<input type="hidden" id="postDate" name="postDate"
@@ -936,14 +1016,16 @@ $.get_post = function(obj){
 		post_text += `<br>`
 		post_text += `<a>좋아요 <span id="likeCnt${post.postId}">${post.likeCnt}</span>개</a>`;
 		post_text += `</div>`
+		/*
 		//내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. 
-		post_text += `<form class="data" action="/post/deletePost" method="post">`
+		post_text += `<form class="data" action="/post/deletePost" method="post" id="delete_form${post.postId}">`
 		post_text += `<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">`
 		post_text += `<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">`
 		post_text += `<input type="hidden" id="userId" name="userId" value="''+${post.userId}">`
 		post_text += `<input type="hidden" id="postId" name="postId" value="''+${post.postId}">`
 		post_text += `<input type="hidden" id="postDate" name="postDate" value="''+${post.postDate}">`
 		post_text += `</form>`
+		*/
 		//<!-- 친구 식사 했는지 확인 필드 -->
 		if (post.resCnt != 0) {
 			post_text += `<div class="activity" style="text-align: center;"><hr>
@@ -999,7 +1081,8 @@ $.get_post = function(obj){
 $.post_delete = function(){
 	//포스트 삭제
 	$(".post_deleteButton").click(function(e) {
-		console.log("삭제버튼 클릭")
+		const id = e.target.value;
+		console.log("삭제버튼 클릭" + id);
 		$("#delete_form" + e.target.value).submit();
 	});
 }
