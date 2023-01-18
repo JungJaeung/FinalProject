@@ -17,7 +17,12 @@
 			
 			//좋아요, 댓글 이벤트 리스너 함수 호출
 			let page_num = 0;
-
+				
+			//게시글의 html단에서 사용하는 텍스트
+			let post_text = "";
+			//스크롤 딜레이를 조절하는 변수
+			let scrollYn = false;
+			
 			//새 게시글에서 추가된 파일들을 담아줄 배열. File객체로 하나씩 담음
 			let uploadFiles = [];
 			//이미 게시된 게시글의 파일들을 담을 게시글 구분 새로운 임시 배열
@@ -51,10 +56,12 @@
 				obj.style.height = "1px";
 				obj.style.height = (12 + obj.scrollHeight) + "px";
 			}
-
-			
 			
 			$(function () {
+				let editor = callInsertPost();
+				$("#editor_space").append($(editor));
+				$.newPostbutton();
+				
 				let list = $('.post').get();
 				for (let i = 0; i < list.length; i++) {
 					flagList.push(false);
@@ -73,9 +80,11 @@
 				console.log("파일들의 리스트 목록 배열 : " + postFileIdList);
 				console.log(list.length);
 
+				/*	
 				//html단의 처리. html의 val값으로 태그들을 뺀 값을 넣을 수 있다.
 				console.log($("#postContentIn").val());
 				$("#postContent25").html($("#postContentIn").val());
+				*/
 				console.log($(".quill-editor-default").text());
 				$("#postContent").val($(".ql-editor").html());
 				
@@ -136,254 +145,186 @@
 					});
 				}
 				
-			});
-			
-			//게시글 등록에서 사용되는 파일리스트 보관. 새로 로드시 파일리스트를 배열로 저장함.
-			for (let i = 0; i < postFileIdList.length; i++) {
-				const originFileObj = {
-					postId: Number($("#postId" + postFileIdList[i]).val()),
-					postFileId: postFileIdList[i],
-					postFileNm: $("#postFileNm" + postFileIdList[i]).val(),
-					//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
-					//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
-					postFileStatus: "N"
-				};
-				originFiles.push(originFileObj);
-				console.log(originFiles);
-			}
-			
-			$("#insert_board").on("click", function (e) {
-				e.preventDefault();
-				let insert_post = "";
-				//$(".quill-editor-default").text();
-				$("#postContent").val($(".quill-editor-default").text());
-
-				//$("#postContent").val($(".ql-editor").html());
-				//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
-				dt = new DataTransfer();
-
-				for (f in uploadFiles) {
-					const file = uploadFiles[f];
-					dt.items.add(file);
+		
+				
+				//게시글 등록에서 사용되는 파일리스트 보관. 새로 로드시 파일리스트를 배열로 저장함.
+				for (let i = 0; i < postFileIdList.length; i++) {
+					const originFileObj = {
+						postId: Number($("#postId" + postFileIdList[i]).val()),
+						postFileId: postFileIdList[i],
+						postFileNm: $("#postFileNm" + postFileIdList[i]).val(),
+						//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
+						//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
+						postFileStatus: "N"
+					};
+					originFiles.push(originFileObj);
+					console.log(originFiles);
 				}
-				console.log("파일 입력 내용을 입력 중입니다." + $("input[name='postContent']").val());
-				$("#btnAtt")[0].files = dt.files;
-				//$("#insert_form").submit();
-				//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
-				//배열 형태로 전송 시 백단(Java)에서 처리불가
-				//JSON String 형태로 변환하여 전송한다.
-				//$("#originFiles").val(JSON.stringify(originFiles));
-
-				//ajax에서 multipart/form-data형식을 전송하기 위해서는
-				//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
-				//form.serialize()는 multipart/form-data 전송불가
-				let formData = new FormData($("#insert_form")[0]);
-
-				//ajax는 추후에 구현할 예정.
-				//insertPostAndFile();
-				$.ajax({
-					enctype: 'multipart/form-data',
-					url: '/post/insertPost',
-					type: 'post',
-					processData: false,
-					contentType: false,
-					data: formData,
-					success: function (obj) {
-
-						alert("글 등록에 성공하였습니다.");
-						console.log(obj);
-						console.log("로그인한 계정 : " + loginUserId);
-						console.log("먼저 등록한 게시글의 번호 : " + insertIndex);
-						insert_post = post(obj.item, insertIndex);
-
-						//화면에 표시된 게시글 수 갱신
-						let postNumber = Number($("#cntPost").text()) + 1;
-						const inPostId = obj.item.insertPost.postId;
-						const inFileLength = obj.item.postFileList.length;
-						$("#cntPost").text(postNumber);
-						//$("#posts").html(insert_post);
-						//html단 뿌리기
-						console.log(insert_post);
-						$("#posts:nth-child(2)").prev($(insert_post));
-						//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
-						flagList.unshift(false);
-						
-						//postIdList.unshift(Number($($('.updateBtn')[0]).val()));	
-						//postFileIdList.unshift(Number($($('.updateBtn')[0]).val()));
-						postIdList.unshift(inPostId);
-						let inputFile = [];
-						//$.update_post();
-						for(let i = 0; i < inFileLength; i++) {
-							inputFile.push(obj.item.postFileList[i]);
-						}
-						console.log("임시 배열 출력 : ");
-						console.log(inputFile);
-						for(let i = 0; i < inFileLength; i++) {
-							postFileIdList.unshift(inputFile[inFileLength - i - 1].postFileId);
-							const originFileObj = {
-								postId: inPostId,
-								postFileId: inputFile[inFileLength - i - 1].postFileId,
-								postFileNm: inputFile[inFileLength - i - 1].postFileNm,
-								//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
-								//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
-								postFileStatus: "N"
-							};
-							originFiles.unshift(originFileObj);
-						}
-						console.log("파일 정보 입력이 되었는지 확인. : ")
-						console.log(originFiles);
-
-						//이벤트 다시 적용
-						$.update_post();
-						$.like_button(loginUserId);
-						$.comment_button();
-						//$.map_button();
-						insertIndex += 1;
-						return false;
-					}, error: function (e) {
-						console.log(e);
+				
+				//새 게시글 파일 처리 버튼 관련 이벤트는 로드시 한번만 호출하면됨.
+				$.btnAtt();
+				
+				$("#insert_board").on("click", function (e) {
+					e.preventDefault();
+					let insert_post = "";
+					
+					//태그들을 문자로 포맷 변환
+					let content_format = $(".ql-editor").html();
+					content_format = content_format.replaceAll("<", "&lt;");
+					content_format = content_format.replaceAll(">", "&gt;");
+					
+					$("#postContent").val(content_format);
+		
+					//$("#postContent").val($(".ql-editor").html());
+					//마지막으로 btnAtt에 uploadFiles에 있는 파일들을 담아준다.
+					dt3 = new DataTransfer();
+		
+					for (f in inputUploadFiles) {
+						const file = inputUploadFiles[f];
+						dt3.items.add(file);
 					}
-				});
-
-			});
-			$.like_button(loginUserId);
-			$.comment_button();
-			//게시글 작성에서 사진 버튼 누르면 input-file 실행
-			//주석_창혁(quill쓰면 사진 필요 없어져서 일단 삭제)
-			//$("#file_select_btn").click(function (e) {
-			//   $("#file_select").click();
-			//});
-
-			//초기 화면 게시글 표시를 하는 화면단 처리
-
-			let text_scroll = "";
-			let elements = 0;
-			let numberOfElements = 0;
-			if(page_num == 0) {
-				$.ajax({
-					url: '/post/myBoard',
-					type: 'get',
-					success: function (obj) {
-						//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
-						console.log(obj);
-						console.log("----!!!!!!게시글 처리 페이지의 번호-------" + page_num);
-						elements = page_num * obj.pageable.pageSize;
-						numberOfElements = obj.numberOfElements;
-						console.log("시작 인덱스 표시 : " + elements + ", " + numberOfElements);
-						for (let post of obj.content) {
-							let post_date = new Date(post.postDate);
-							//날짜 데이터 밀리초
-							post_date = now - post_date;
-							//인덱스번호를 받기위해 총 배열의 개수를 받아서 자동증가
-							//elements++;
-							text_scroll += callPost(post);
-						}
-	
-						$("div[id='posts']").append($(text_scroll));
-						$(".uploadFileSpace").hide();
-						$(".changedFileSpace").hide();
-						//이벤트 리스너 함수 호출
-						console.log();
-						console.log(elements +  ", " + obj.numberOfElements);
-						console.log(typeof(elements) + "," + typeof(obj.numberOfElements));
-						for(let i = 0; i < obj.numberOfElements; i++) {
-							for(let j = 0; j < obj.content[i].fileLength; j++) {
-								postFileIdList.push(obj.content[i].fileList[j].postFileId);
+					console.log("파일 입력 내용을 입력 중입니다." + $("input[name='postContent']").val());
+					
+					
+					$("#btnAtt")[0].files = dt3.files;
+					
+					console.log(dt3.files);
+					//$("#insert_form").submit();
+					//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
+					//배열 형태로 전송 시 백단(Java)에서 처리불가
+					//JSON String 형태로 변환하여 전송한다.
+					//$("#originFiles").val(JSON.stringify(originFiles));
+		
+					//ajax에서 multipart/form-data형식을 전송하기 위해서는
+					//new FormData()를 사용하여 직접 폼데이터 객체를 만들어준다.
+					//form.serialize()는 multipart/form-data 전송불가
+					let formData = new FormData($("#insert_form")[0]);
+		
+					//ajax는 추후에 구현할 예정.
+					//insertPostAndFile();
+					$.ajax({
+						enctype: 'multipart/form-data',
+						url: '/post/insertPost',
+						type: 'post',
+						processData: false,
+						contentType: false,
+						data: formData,
+						success: function (obj) {
+		
+							alert("글 등록에 성공하였습니다.");
+							console.log(obj);
+							console.log("로그인한 계정 : " + loginUserId);
+							console.log("먼저 등록한 게시글의 번호 : " + insertIndex);
+							insert_post = get_post_current(obj);
+							
+							//화면에 표시된 게시글 수 갱신
+							let postNumber = Number($("#cntPost").text()) + 1;
+							const inPostId = obj.insertPost.postId;
+							const inFileLength = obj.postFileList.length;
+							$("#cntPost").text(postNumber);
+							//$("#posts").html(insert_post);
+							//html단 뿌리기
+							console.log(insert_post);
+							
+							$("#post_div").prepend($(insert_post));
+							//뿌려서 갱신된 정보를 최신순인 앞에서부터 입력함.
+							flagList.unshift(false);
+		
+							//postIdList.unshift(Number($($('.updateBtn')[0]).val()));	
+							//postFileIdList.unshift(Number($($('.updateBtn')[0]).val()));
+							postIdList.unshift(inPostId);
+							let inputFile = [];
+							//$.update_post();
+							for (let i = 0; i < inFileLength; i++) {
+								inputFile.push(obj.postFileList[i]);
+							}
+							console.log("임시 배열 출력 : ");
+							console.log(inputFile);
+							for (let i = 0; i < inFileLength; i++) {
+								postFileIdList.unshift(inputFile[inFileLength - i - 1].postFileId);
 								const originFileObj = {
-									postId: obj.content[i].postId,
-									postFileId: obj.content[i].fileList[j].postFileId,
-									postFileNm: $("#postFileNm" + obj.content[i].fileList[j].postFileId).val(),
+									postId: inPostId,
+									postFileId: inputFile[inFileLength - i - 1].postFileId,
+									postFileNm: inputFile[inFileLength - i - 1].postFileNm,
 									//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
 									//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
 									postFileStatus: "N"
 								};
-								originFiles.push(originFileObj);
+								originFiles.unshift(originFileObj);
 							}
-							postList.push(obj.content[i]);
-							//$.updateBtnAtt(obj.content[i].postId);								
+							console.log("파일 정보 입력이 되었는지 확인. : ")
+							console.log(originFiles);
+							//이벤트 다시 적용
+							$.update_post(obj.insertPost.postId);
+							$.like_button(obj.loginUser.userId);
+							$.comment_button();
+							$.map_button();
+							insertIndex += 1;
+							return false;
+						}, error: function (e) {
+							console.log(e);
 						}
-						$.like_button(loginUserId);
-						
-						$.comment_button();
-						//$.map_button();
-						page_num += 1;
-						//가져온 맵의 정보를 사용하여 게시글의 정보를 추가스크롤
-						totalPages = obj.totalPages;
-						console.log("내 게시글의 페이지 개수 : ++++++" + totalPages);
+					});
+				});
+				//초기 화면 게시글 표시를 하는 화면단 처리
+				//처음 포스트 불러오는 로직
+				$.ajax({
+					url: '/post/myBoard',
+					type: 'post',
+					data: {page_num: page_num},
+					success: function (obj) {
+						$.get_post(obj);
 					},
 					error: function (e) {
-						console.log(e);
+						console.log("실패실패!@#4");
 					}
 				});
-				/*
-				for(let i = 0; i < numberOfElements; i++) {
-					console.log("게시글의 아이디를 불러오는지 확인~~~~~~~~" + postList.postId);
-					$.updateBtnAtt(postList.postId);	
-				}
-				$.updateBtn(elements, numberOfElements);
-				*/
-			}
-
-			//무한스크롤 게시글
-			//page 정보를 담은 정보를 토대로 무한 스크롤의 조건문을 만족하는지 여부를 검사.
-			$(window).scroll(function () {
-				if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-					console.log("페이지 번호@#$ : " + page_num);
-					if (page_num < totalPages) {
-						$.ajax({
-							url: '/post/myBoard',
-							type: 'post',
-							data: {page_num: page_num},
-							success: function (obj) {
-								//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
-								console.log(obj);
-								console.log("-------확장 게시글 처리 페이지의 번호-------" + page_num);
-								let elements = page_num * obj.pageable.pageSize;
-								console.log("시작 인덱스 표시 : " + elements);
-								for (let post of obj.content) {
-									let post_date = new Date(post.postDate);
-									//날짜 데이터 밀리초
-									post_date = now - post_date;
-									//인덱스번호를 받기위해 총 배열의 개수를 받아서 자동증가
-									//elements++;
-									text_scroll += callPost(post);
-								}
-
-								$("div[id='posts']").append($(text_scroll));
-								$(".uploadFileSpace").hide();
-								$(".changedFileSpace").hide();
-								//이벤트 리스너 함수 호출
-								console.log();
-								console.log(elements +  ", " + obj.numberOfElements);
-								for(let i = 0; i < obj.numberOfElements; i++) {
-									for(let j = 0; j < obj.content[i].fileLength; j++) {
-										postFileIdList.push(obj.content[i].fileList[j].postFileId);
-										const originFileObj = {
-											postId: obj.content[i].postId,
-											postFileId: obj.content[i].fileList[j].postFileId,
-											postFileNm: $("#postFileNm" + obj.content[i].fileList[j].postFileId).val(),
-											//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
-											//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
-											postFileStatus: "N"
-										};
-										originFiles.push(originFileObj);
+		
+				//스크롤 로직
+				
+				$(window).scroll(function () {
+					if(!scrollYn) {
+						if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+							scrollYn = true;
+							console.log("들어오는 페이지 번호 : " + page_num);
+							if (page_num < totalPages) {
+								$.ajax({
+									url: '/post/myBoard',
+									type: 'post',
+									data: {page_num: page_num},
+									success: function (obj) {
+									  console.log(obj)
+										$.get_post(obj);
+										setTimeout(function(){
+											scrollYn = false;
+										}, 1000);
+									},
+									error: function (e) {
+										console.log("실패실패##$5");
 									}
-									console.log("게시글의 아이디를 불러오는지 확인~~~!!!!!!!!!!!~~~" + obj.content[i].postId);
-									$.updateBtnAtt(obj.content[i].postId);									
-								}
-								$.like_button(loginUserId);
-								//$.updateBtn(elements, obj.numberOfElements);
-								$.comment_button();
-								//$.map_button();
-								page_num += 1;
-							},
-							error: function (e) {
-								console.log(e);
+								});
 							}
-						});
+						}
 					}
-				}
-			});
+				});
+				
+			});//JQuery 종료
+
+			
+			//지도 윈도우창 띄우기
+			let pop;
+			function new_window() {
+				pop = window.open(
+					"/post/map",
+					"kakaoMap",
+					"width=800, height=500, top=50, left=50, toolbar=no, location=no, status=no, memubar=no, scrollbars=no, resizable=no"
+				);
+			}
+			//지도 윈도우창 종료
+			function closeCallback() {
+
+				pop.close();
+			}
 		</script>
 	</th:block>
 
@@ -408,79 +349,10 @@
 				<!-- Left side columns -->
 				<div class="col-lg-8">
 					<div class="row" id="posts">
-						<!-- Recent Sales -->
-						<div class="col-12">
-							<!-- 작성 하는 부분 -->
-							<div class="card recent-sales overflow-auto">
-								<div class="card-body">
-									<button class="btn" id="res_select_btn" onclick="new_window()">식당 하는 지도 선택
-										버튼</button>
-									<form id="insert_form" name="insertForm" enctype="multipart/form-data"
-										action="/post/insertPost" method="post">
-										<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
-
-										<input type="text" id="inputRestNm" name="inputRestNm" value="기본레스토랑"><br>
-										<input type="hidden" id="userName" name="userName"
-											th:value="${loginUser.userName}">
-										<div class="box" id="imagePreview">
-											<!-- 이미지를 따로 미리 임시 저장하는 공간 -->
-											<div id="image_preview">
-												<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple">
-												<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."></div>
-											</div>
-										</div>
-										<div class="buttons" id="postFileButton">
-											<button id="postFileRequest">파일 관리창 열기</button>&emsp;
-											<button id="postFileUpdate">파일 업로드 하기</button>
-										</div>
-										<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
-										<div class="quill-editor-default">
-											<h2>write your daily life</h2>
-											<p> </p>
-										</div>
-										<!-- End Quill Editor Default -->
-										<!-- 게시글 작성을 form 으로 넘길예정 hidden으로 텍스트 에어리어 값을 받아올것임.
-										 버튼을 두개로 따로 처리하기보단 위에서 한번에 바로처리 하기위해 폼을 올림. -->
-										<!--<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">-->
-										<input type="hidden" id="restNm" name="restNm" value="">
-										<input type="hidden" id="postContent" name="postContent" value="">
-										<div style="margin-bottom: 5px;">
-											<label id="hashTag_label1">&emsp;# <input type="text" id=hashTag1
-													name="hashTag1" class="hashTag_text" placeholder="태그 입력"
-													onfocus="this.placeholder=''"
-													onblur="this.placeholder='태그 입력'"></label>
-											<label id="hashTag_label2" style="display: none;">&emsp;# <input type="text"
-													id=hashTag2 name="hashTag2" class="hashTag_text" placeholder="태그 입력"
-													onfocus="this.placeholder=''"
-													onblur="this.placeholder='태그 입력'"></label>
-											<label id="hashTag_label3" style="display: none;">&emsp;# <input type="text"
-													id=hashTag3 name="hashTag3" class="hashTag_text" placeholder="태그 입력"
-													onfocus="this.placeholder=''"
-													onblur="this.placeholder='태그 입력'"></label>
-											<label id="hashTag_label4" style="display: none;">&emsp;# <input type="text"
-													id=hashTag4 name="hashTag4" class="hashTag_text" placeholder="태그 입력"
-													onfocus="this.placeholder=''"
-													onblur="this.placeholder='태그 입력'"></label>
-											<label id="hashTag_label5" style="display: none;">&emsp;# <input type="text"
-													id=hashTag5 name="hashTag5" class="hashTag_text" placeholder="태그 입력"
-													onfocus="this.placeholder=''"
-													onblur="this.placeholder='태그 입력'"></label>
-
-										</div>
-										<!--식당정보 후에 필요 없는것은 hidden예정-->
-										<input type="text" id="res_place_name" name="resName">
-										<input type="text" id="res_address_name" name="resAddress">
-										<input type="text" id="res_road_address_name" name="resRoadAddress">
-										<input type="text" id="res_phone" name="resPhone">
-										<input type="text" id="res_category_name" name="resCategory">
-
-										<input type="button" class="btn" id="insert_board" value="작성"
-											style="background-color: #4154f1; color: white; float: right;">
-									</form>
-								</div>
-							</div><!-- End Recent Sales -->
-						</div>
+						<!-- 새글 작성 공간-->
+						<div id="editor_space" class="col-12"></div>
 						<div id="post_div" class="col-12"></div>
+					</div>
 				</div>
 
 				<!-- Right side columns -->
