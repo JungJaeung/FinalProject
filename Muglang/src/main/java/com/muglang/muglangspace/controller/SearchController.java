@@ -201,6 +201,9 @@ public class SearchController {
 		// 키워드 검색 시 DB에 키워드가 없을 경우에는 INSERT 있을 경우에는 UPDATE 쿼리를 보냄
 		mglgHotKeywordsService.insrtOrUpdte(searchKeyword);
 		
+		// 인기 검색어 불러오기
+		List<CamelHashMap> hotKeywords = mglgHotKeywordsService.getHotKeywords();
+		
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("/search/search.html");
 		mv.addObject("postsContent", postsContentList);
@@ -208,6 +211,7 @@ public class SearchController {
 		mv.addObject("postsNick", postsNickList);
 		mv.addObject("loginUser", Load.toHtml(loginUser.getMglgUser()));
 		mv.addObject("searchKeyword", searchKeyword);
+		mv.addObject("hotKeywords", hotKeywords);
 		
 		return mv;
 		
