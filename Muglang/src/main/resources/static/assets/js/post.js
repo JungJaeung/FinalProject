@@ -539,7 +539,10 @@ function callPost(post) {
 	return htmlText;
 }
 
-
+//새로운 게시글을 등록하는 html 단 태그를 함수화 하여 메인 페이지, 나의 페이지, 이외에 쓸 가능성을 남겨둔 페이지에 추가할 수 있게함.
+function callInsertPost() {
+	
+}
 
 //작성글을 등록할 때 사용하는 게시글 1개를 호출하는 post 태그
 //포스팅 html단에 표시하는 함수. 문자열 값을 반환
