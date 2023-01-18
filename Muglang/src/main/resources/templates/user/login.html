@@ -7,23 +7,25 @@
 	<script th:src="@{/js/jquery-3.6.1.min.js}"></script>
 
 
-	<style>
-		html,
+	<head>
+		<title>Welcome to MUGLANG</title>
+        <script th:src="@{/js/jquery-3.6.1.min.js}"></script>
+      
+		<style>
+       html,
 		body {
 			margin: 0;
 			padding: 0;
 			height: 100%;
 			background-color: rgba(0, 0, 0, 0.01);
 		}
-
 		#container {
 			width: 100%;
 			height: 100%;
 			text-align: center;
 			position: relative;
 		}
-
-		#login_menu {
+        #login_menu {
 			width: 700px;
 			height: 400px;
 			position: absolute;
@@ -36,102 +38,135 @@
 			box-shadow: 0 5px 18px -7px #464646;
 			z-index: 90;
 		}
-
-		.menu_title {
+        .menu_title {
 			width: 100%;
 			height: 40%;
 		}
-
-		.mglg_logo {
+        .mglg_logo {
 			width: 380px;
 			margin-top: 50px;
 		}
+        .form-control{
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            appearance: none;
+            border-radius: 0.375rem;
+            outline-color: #00BFFF;
+        }
+        .input_div{
+            position: relative;
+            width: 100%;
+            height: 50px;
+        }
+        .input_title{
+            width: 150px;
+            left: 23.5%;
+            top: 8px;
+            text-align: left;
+            position: absolute;
+        }
+        .input_text{
+            left: calc(23.5% + 150px);
+            position: absolute;
+        }
+        
+        </style>
 
-		.login_group {
-			width: 100%;
-			height: 60%;
-		}
+        <script>
+        $(function(){
+            $(".form-control").mouseover(function(e){
+                $(e.target).css("border", "2px solid #00BFFF");
+            });
 
-		.login_img {
-			width: 250px;
-			margin-top: 8px;
-		}
+            $(".form-control").mouseout(function(e){
+                $(e.target).css("border", "1px solid #ced4da");
+            });
 
-		#sub_menu {
-			width: 500px;
-			height: 15px;
-			position: absolute;
-			top: calc(45% + 200px);
-			left: 50%;
-			transform: translate(-50%, 0);
-			background-color: rgba(0, 0, 0, 0.1);
-			border-bottom-left-radius: 50px;
-			border-bottom-right-radius: 50px;
-			cursor: pointer;
-		}
+            $("input[name = lastName]").keydown(function(e){
+                if($(e.target).val().length > 12){
+                    alert("12자 이내로 입력해주세요.");
+                    $(e.target).val("");
+                }
+            })
 
-		#move_admin {
-			margin-top: 10px;
-			opacity: 0;
-			display: none;
-			text-decoration: none;
-		}
-	</style>
+            $("input[name = firstName]").keydown(function(e){
+                if($(e.target).val().length > 12){
+                    alert("12자 이내로 입력해주세요.");
+                    $(e.target).val("");
+                }
+            })
 
-	<script>
-		$(function () {
-			$("#sub_menu").click(function () {
-				if ($("#sub_menu").css("height") == "15px") {
-					$("#move_admin").css("display", "inline-block");
-					$("#move_admin").animate({
-						opacity: "1"
-					})
-					$("#sub_menu").animate({
-						height: "50px"
-					})
-				}
-				else {
-					$("#sub_menu").animate({
-						height: "15px"
-					})
+            $("input[name = userNick]").keydown(function(e){
+                if($(e.target).val().length > 12){
+                    alert("12자 이내로 입력해주세요.");
+                    $(e.target).val("");
+                }
+            })
 
-					$("#move_admin").css("display", "none");
-				}
-			})
-			$("#move_admin").click(function (e) {
-				e.stopPropagation();
+            $("#submit_btn").click(function(){
+                if($("input[name = lastName]").val() != ""){
+                    if($("input[name = fastName]").val() != ""){
+                        if($("input[name = userNick]").val() != ""){
+                            $("#loginForm").submit();
+                        }
+                        else
+                            alert("입력칸을 채워주세요")
+                    } 
+                    else
+                        alert("입력칸을 채워주세요")
+                }
+                else
+                    alert("입력칸을 채워주세요")
+            })
+        })
+        </script>
 
-			})
+		
+	</head>
+	<body>
+	    <div id="container">
+            <div id="login_menu">
+                <!--로고-->
+                <div class="menu_title">
+                    <!--<img class="mglg_logo" th:src="@{/assets/img/mglg_logo_white.png}">-->
+                    <img class="mglg_logo" src="mglg_logo_white.png">
+                </div>
+                <div>
+                    <form id="loginForm" action="/user/socialNewLogin" method="post">
+                        <h3 style="margin-top: -10px;">MUGLANG에 처음 로그인 하시네요.</h3>
+                        <div class="input_div">
+                            <label>
+                                <span class="input_title">성(Last Name)</span>
+                                <input type="text" id="lastName" class="form-control input_text" name="lastName" value="">
+                            </label>
+                        </div>
+                        <div class="input_div">
+                            <label>
+                                <span class="input_title">이름(First Name)</span>
+                                <input type="text" id="firstName" class="form-control input_text" name="firstName" value="">
+                            </label>
+                        </div>
+                        <div class="input_div">
+                            <label>
+                                <span class="input_title">닉네임</span>
+                                <input type="text" id="userNick" class="form-control input_text" name="userNick" value="">
+                            </label>
+                        </div>
+        
+                        <!-- 로그인 버튼 (SNS로그인으로 대체 되므로 추후에 지우면 됨.) -->
+                        <input type="button" id="submit_btn" class="form-control" value="시작하기">
+                    </form>
 
-		});
-	</script>
-</head>
-
-<body>
-	<div id="container">
-		<div id="login_menu">
-			<!--로고-->
-			<div class="menu_title">
-				<img class="mglg_logo" th:src="@{/assets/img/mglg_logo_white.png}" alt="">
-			</div>
-			<!--로그인 아이콘-->
-			<div class="login_group">
-				<a href="/oauth2/authorization/kakao">
-					<img class="login_img" th:src="@{/images/login_with_kakao/kakao_login_large_narrow.png}">
-				</a><br>
-				<a href="/oauth2/authorization/google">
-					<img class="login_img"
-						th:src="@{/images/login_with_google/btn_google_signin_light_normal_web@2x.png}">
-				</a><br>
-				<a href="/oauth2/authorization/naver">
-					<img class="login_img" th:src="@{/images/login_with_naver/btnW_official.png}">
-				</a>
-			</div>
-		</div>
-		<div id="sub_menu">
-			<a th:href="@{/user/getAdminUserList}" id="move_admin">Admin Page</a>
-		</div>
-	</div>
-</body>
-
+                </div>
+            </div>
+        </div>
+	    </div>		
+	</body>
 </html>
+
