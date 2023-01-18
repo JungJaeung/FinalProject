@@ -817,6 +817,11 @@ function post(item, insertIndex) {
 		창혁 작업
 -----------------------------------------------------------------------------------------*/
 
+$.get_post_current = function(post) {
+	console.log(post);
+	
+}
+
 $.get_post = function(obj){
 	console.log(obj);
 	totalPages = obj.totalPages;
@@ -970,7 +975,7 @@ $.get_post = function(obj){
 									<i class="ri-image-2-fill" style="font-size: 20px; color:#000069;"></i>
 								</button>
 							</div>`;
-			post_text += `<form id="delete_form${post.postId}" action="/post/deletePost" th:method="post">
+			post_text += `<form id="delete_form${post.postId}" action="/post/deletePost" method="post">
 								<input type="hidden" id="postId" name="postId" value="${post.postId}">
 								<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">
 								<input type="hidden" id="postDate" name="postDate"
@@ -1011,14 +1016,16 @@ $.get_post = function(obj){
 		post_text += `<br>`
 		post_text += `<a>좋아요 <span id="likeCnt${post.postId}">${post.likeCnt}</span>개</a>`;
 		post_text += `</div>`
+		/*
 		//내부 서버로 옮기는 데이터를 모음. 추후에 이미지도 다룸. 
-		post_text += `<form class="data" action="/post/deletePost" method="post">`
+		post_text += `<form class="data" action="/post/deletePost" method="post" id="delete_form${post.postId}">`
 		post_text += `<input type="hidden" id="restNmIn" name="restNm" value="${post.restNm}">`
 		post_text += `<input type="hidden" id="postContentIn" name="postContent" value="${post.postContent}">`
 		post_text += `<input type="hidden" id="userId" name="userId" value="''+${post.userId}">`
 		post_text += `<input type="hidden" id="postId" name="postId" value="''+${post.postId}">`
 		post_text += `<input type="hidden" id="postDate" name="postDate" value="''+${post.postDate}">`
 		post_text += `</form>`
+		*/
 		//<!-- 친구 식사 했는지 확인 필드 -->
 		if (post.resCnt != 0) {
 			post_text += `<div class="activity" style="text-align: center;"><hr>
@@ -1074,7 +1081,8 @@ $.get_post = function(obj){
 $.post_delete = function(){
 	//포스트 삭제
 	$(".post_deleteButton").click(function(e) {
-		console.log("삭제버튼 클릭")
+		const id = e.target.value;
+		console.log("삭제버튼 클릭" + id);
 		$("#delete_form" + e.target.value).submit();
 	});
 }
