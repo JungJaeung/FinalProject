@@ -95,7 +95,7 @@ public class PostController {
 		} else  {
 			inputFileSize = uploadFiles.length;
 		}
-			
+		//해쉬 맵의 사용.	
 		CamelHashMap inputInfo = new CamelHashMap();
 //		List<MglgPostFileDTO> originFileList = new ObjectMapper().readValue(originFiles,
 //													new TypeReference<List<MglgPostFileDTO>>() {});
@@ -208,7 +208,7 @@ public class PostController {
 			
 			System.out.println("식당 정보를 확인차 표시합니다." + mglgResDTO);
 			//식당 정보를 맵에 담는작업.
-			inputInfo.put("restaurant", mglgResDTO);
+			inputInfo.put("restaurant_info", mglgResDTO);
 			
 			//게시자의 정보
 			inputInfo.put("login_user", Load.toHtml(loginUser.getMglgUser()));
@@ -217,6 +217,14 @@ public class PostController {
 			//작성자의 프로필 사진을 가져오기 위한 로딩 작업.
 			MglgUserProfile userProfile = mglgUserProfileService.getUserImg(loginUser.getMglgUser().getUserId());
 			inputInfo.put("profile", Load.toHtml(userProfile));
+
+			
+			//지도를 표시할지 말지의 여부를 확인하는 정보를 추가한다.
+			if(!mglgResDTO.getResName().equals("") || mglgResDTO.getResName() != null) {
+				inputInfo.put("restaurant", "Y");
+			} else {
+				inputInfo.put("restaurant", "N");
+			}
 			
 			//작성글의 좋아요 정보를 가져와 로딩한다. 좋아요는 따로 like를 담는 메소드를 만들지 않고, 해쉬맵에 값을 직접 대입한다.
 			//MglgPostLikes likes = mglgPostService.likePost(mglgPost);
