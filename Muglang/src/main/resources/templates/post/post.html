@@ -379,7 +379,7 @@
 									//한번 더 스크롤나오면 다음페이지를 데이터로 넘기도록 하는 녀석
 									console.log(obj);
 
-									let elements = page_num * obj.pageable.pageSize;
+									//let elements = page_num * obj.pageable.pageSize;
 									console.log("시작 인덱스 표시 : " + elements);
 									for (let post of obj.content) {
 										let post_date = new Date(post.postDate);
@@ -497,7 +497,7 @@
 										}
 										text_scroll += `</div>`;
 										text_scroll += `</div>`;
-										text_scroll += `<div class="uploadFileSpace">
+										text_scroll += `<div class="uploadFileSpace" data-post-id="${post.postId}">
 														<input type="file" id="updateBtnAtt${post.postId}"
 															class="updateBtnAtt" data-post-id="${post.postId}" name="uploadFiles"
 															multiple="multiple">
@@ -567,6 +567,7 @@
 									}
 
 									$("#post_scroll_div").html(text_scroll);
+									console.log(text_scroll);
 
 									//이벤트 리스너 함수 호출
 									for (let i = 0; i < obj.numberOfElements; i++) {
@@ -585,12 +586,15 @@
 										flagList.push(false);//게시글의 확장으로 처리할 정보 증가.
 										$.updateBtnAtt(obj.content[i].postId);
 										//$.updateBtn(elements, obj.numberOfElements, obj.content[i].postId);
-										$("#modify_content" + obj.content[i].postId).hide();
+										//$("#modify_content" + obj.content[i].postId).hide();
 									}
-									for (let i = elements; i < elements + obj.numberOfElements; i++) {
-										updateBtnEvent(i, obj.numberOfElements, obj.content[i - elements].postId);
+									//이벤트를 줄때 모든 태그에 똑같이 이벤트를 다같이 줘야함. ajax로 태그를 새로 씌워서 이벤트가 없어지므로
+									//선택자를 잡아 모든 태그에 이벤트를 따로 주도록 바꿈.
+									for (let i = 0; i < $(".uploadFileSpace").length; i++) {
+										updateBtnEvent(i, $(".uploadFileSpace").length, $($(".uploadFileSpace")[i]).attr("data-post-id"));
 										$($(".uploadFileSpace")[i]).hide();
 										$($(".changedFileSpace")[i]).hide();
+										$("#modify_content" + $($(".uploadFileSpace")[i]).attr("data-post-id")).hide();
 									}
 									$.like_button(loginUserId);
 									$.comment_button();
@@ -835,12 +839,12 @@
 												</div>
 											</div>
 										</div>
-										<div class="uploadFileSpace">
+										<div class="uploadFileSpace" th:data-post-id="${post.postId}">
 											<input type="file" th:id="'updateBtnAtt' + ${post.postId}"
 												class="updateBtnAtt" th:data-post-id="${post.postId}" name="uploadFiles"
 												multiple="multiple">
 										</div>
-										<div class="changedFileSpace">
+										<div class="changedFileSpace" th:data-post-id="${post.postId}">
 											<input type="file" th:id="'changedFiles' + ${post.postId}"
 												name="changedFiles" value="" multiple="multiple">
 										</div>

@@ -233,7 +233,6 @@ $(function() {
 
 //스크롤 확장시 한 게시글마다 각각 이벤트를 적용시킬 함수 생성
 function updateBtnEvent(i, size, postId) {
-
 	console.log(postId + "게시글 확인- 업데이트 관련 이벤트 적용중" + i + ", 몇개 당 적용 : " + size);
 	console.log("this확인- 업데이트 관련 이벤트 적용중" + i);
 	//$($(".fileBtns")[i]).hide();
