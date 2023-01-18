@@ -16,7 +16,7 @@
 
 			<li class="nav-item">
 				<a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-					<i class="ri-alarm-warning-line"></i><span>신고 관리</span><i class="bi bi-chevron-down ms-auto"></i>
+					<i class="ri-alarm-warning-line"></i><span>신고관리</span><i class="bi bi-chevron-down ms-auto"></i>
 				</a>
 				<ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
 					<li>
@@ -34,13 +34,15 @@
 							<i class="bi bi-circle"></i><span>신고 댓글 관리</span>
 						</a>
 					</li>
-					<li>
-						<a th:href="@{/search/hotKeywords}">
-							<i class="bi bi-circle"></i><span>검색어 순위 관리</span>
-						</a>
-					</li>
 				</ul>
 			</li><!-- End Icons Nav -->
+			
+			<li class="nav-item">
+				<a class="nav-link collapsed" th:href="@{/hotKeywords/getKeywords}">
+					<i class="bi bi-card-list"></i>
+					<span>검색관리</span>
+				</a>
+			</li>
 
 			<li class="nav-item">
 				<a class="nav-link collapsed" th:href="@{/board/adminFAQ}">

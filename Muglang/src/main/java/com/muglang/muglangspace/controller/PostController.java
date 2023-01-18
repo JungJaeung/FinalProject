@@ -51,6 +51,7 @@ import com.muglang.muglangspace.entity.MglgRestaurant;
 import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
+import com.muglang.muglangspace.service.mglghotkeywords.MglgHotKeywordsService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglgpostfile.MglgPostFileService;
 import com.muglang.muglangspace.service.mglgrestaurant.MglgRestaurantService;
@@ -80,6 +81,9 @@ public class PostController {
 	
 	@Autowired
 	private MglgUserProfileService mglgUserProfileService;
+	
+	@Autowired
+	private MglgHotKeywordsService mglgHotKeywordsService;
 
 	
 	//글쓰기 버튼으로 적용되는 글 새로 작성, 새로 작성되는 글에 파일을 같이 넣음.
@@ -534,11 +538,15 @@ public class PostController {
 			post.put("profile", profileDTO);
 			
 		}
+		
+		// 인기 검색어 불러오기
+		List<CamelHashMap> hotKeywords = mglgHotKeywordsService.getHotKeywords();
 
 		// 화면단에 뿌려줄 정보를 반환하는 객체 생성. 로그인한 유저의 정보와 게시글의 정보를 담고있다.
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("post/post.html");
 		mv.addObject("postList", pagePostList);
+		mv.addObject("hotKeywords", hotKeywords);
 		// 세션 대신 유저 인증 유저 토큰의 정보 추출하여 화면단으로 표시
 		mv.addObject("loginUser", Load.toHtml(loginUser.getMglgUser()));
 		
@@ -726,8 +734,6 @@ public class PostController {
 				
 			}
 	    
-			// 인기 검색어 받아오기
-			//List<MglgShowHotKeywordsDTO> mglgShowHotKeywordsList = mglgPostService.getShowHotKeywords();
 			return ResponseEntity.ok().body(pagePostList);
 		} catch(Exception e) {
 			return ResponseEntity.ok().body(response);
@@ -813,8 +819,6 @@ public class PostController {
 				
 			}
 	    
-			// 인기 검색어 받아오기
-			//List<MglgShowHotKeywordsDTO> mglgShowHotKeywordsList = mglgPostService.getShowHotKeywords();
 			return ResponseEntity.ok().body(pagePostList);
 		} catch(Exception e) {
 			return ResponseEntity.ok().body(response);

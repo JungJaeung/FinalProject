@@ -9,14 +9,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.muglang.muglangspace.oauth.Oauth2UserService;
 
-//세큐리티 환경설정 작업중 - 221219 김동현
-//작업완료 - 221221 김동현
-//36번 줄 아래만 코드가 완성되고 풀면 됌.
 @Configuration //세큐리티 환경설정 표시 - 필터 체인 구현 - 사용자 역할(관리자, 사용자)에 따른 접근 권한 설정
 @EnableWebSecurity //웹 세큐리티 실행가능 표시 (WebSecurityConfiguration, SpringWebMvcImportSelector, OAuth2ImportSelector 클래스 사용가능 하게 해줌)
 public class SecurityConfiguration {
 	
-	//서비스 객체 당겨오기
 	@Autowired
 	private Oauth2UserService oauth2UserService;
 	
