@@ -231,6 +231,12 @@ public class PostController {
 			inputInfo.put("post_like", "N");
 			inputInfo.put("like_cnt", 0);
 			inputInfo.put("res_cnt", 0);
+			
+			/*
+			MglgPost inputPost = (MglgPost)inputInfo.get("insertPost");
+			inputInfo.put("post_date",
+					String.valueOf(inputPost.getPostDate()));
+			*/
 			//게시판에 보여주는 데이터의 값들을 모두 정의하여 기본 값으로 다시 던져 형식을 맞춘다.
 			/*
 			//가져온 데이터 묶음들을 화면단으로 가져간다.
