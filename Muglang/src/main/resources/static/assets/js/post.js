@@ -150,6 +150,8 @@ $(function() {
 
 	$.followingEvent = function(targetIndex, postId) {
 		console.log("현재 인덱스 : " + targetIndex + ", 현재 게시글의 아이디 : " + postId);
+		$($(".uploadFileSpace")[targetIndex]).hide();
+		$($(".changedFileSpace")[targetIndex]).hide();
 		$("#updateForm" + postId).hide();
 		$("#upTitle" + postId).hide();
 		$("#contentIn" + postId).hide();
