@@ -12,8 +12,10 @@ import com.muglang.muglangspace.dto.ChatMessage;
 import com.muglang.muglangspace.dto.MessageType;
 import com.muglang.muglangspace.entity.MglgChatMembers;
 import com.muglang.muglangspace.entity.MglgChatMessage;
+import com.muglang.muglangspace.entity.MglgChatroom;
 import com.muglang.muglangspace.repository.ChatMembersRepository;
 import com.muglang.muglangspace.service.mglgchat.ChatService;
+import com.muglang.muglangspace.service.mglgdm.DMService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,9 @@ public class ChatMessageController {
 
 	@Autowired
 	private ChatService chatService;
+	
+	@Autowired
+	private DMService dmService;
 
 	// private final SimpMessagingTemplate template;
 
@@ -67,19 +72,19 @@ public class ChatMessageController {
 			if(joinYn == 0) {
 				message.setMessage(message.getWriter() + "님이 입장하였습니다.");
 			} else {
-				message.setMessageList(chatService.getPastMsg(members));
+				message.setMessageList(chatService.getPastMsg(members, "O"));
 			}
 		} else {
 			MglgChatMessage messageParam = MglgChatMessage.builder()
 					 								 .chatRoomId(message.getChatRoomId())
 					 								 .userId(message.getUserId())
 					 								 .chatContent(message.getMessage())
+					 								 .roomType("O")
 					 								 .build();
-			
 			LocalTime currentTime = LocalTime.now();
-            DateTimeFormatter df = DateTimeFormatter.ofPattern("HH:mm");
-            String chatTime = currentTime.format(df);
-            message.setChatTime(chatTime);
+			DateTimeFormatter df = DateTimeFormatter.ofPattern("HH:mm");
+			String chatTime = currentTime.format(df);
+			message.setChatTime(chatTime);
 			
 			chatService.insertMsg(messageParam);
 		}
@@ -88,5 +93,36 @@ public class ChatMessageController {
 		//System.out.println(message.getMessage());
 		// template.convertAndSend("/subscribe/chat/room/" + message.getChatRoomId(),
 		// message);
+	}
+	
+	@MessageMapping("/chat/dMessage")
+	public void dMessage(ChatMessage message) {
+		String chatroomId = message.getChatRoomId();
+		
+		if (MessageType.JOIN.equals(message.getType())) {
+			//message.setMessage(message.getWriter() + "님이 입장하였습니다.");
+			MglgChatMembers members = MglgChatMembers.builder()
+					 								 .chatRoomId(chatroomId)
+					 								 .userId(message.getLoginUserId())
+					 								 .build();
+			
+			message.setMessageList(chatService.getPastMsg(members, "D"));
+		} else {
+			System.out.println("chatroomI============================ "  + Integer.parseInt(chatroomId));
+			MglgChatMessage messageParam = MglgChatMessage.builder()
+					 								 .chatRoomId(message.getChatRoomId())
+					 								 .userId(message.getLoginUserId())
+					 								 .chatContent(message.getMessage())
+					 								 .roomType("D")
+					 								 .build();
+			LocalTime currentTime = LocalTime.now();
+			DateTimeFormatter df = DateTimeFormatter.ofPattern("HH:mm");
+			String chatTime = currentTime.format(df);
+			message.setChatTime(chatTime);
+			
+			chatService.insertMsg(messageParam);
+		}
+		
+		sendingOperations.convertAndSend("/topic/chat/dRoom/" + chatroomId, message);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgChatMembers;
 import com.muglang.muglangspace.entity.MglgChatMessage;
+import com.muglang.muglangspace.entity.MglgChatroom;
 import com.muglang.muglangspace.entity.MglgChatrooms;
 
 public interface ChatService {
@@ -17,10 +18,12 @@ public interface ChatService {
 	
 	int getMember(String chatRoomId, int userId);
 	
-	List<CamelHashMap> getPastMsg(MglgChatMembers member);
+	List<CamelHashMap> getPastMsg(MglgChatMembers member, String roomType);
 	
 	void insertMsg(MglgChatMessage message);
 	
 	void leaveRoom(MglgChatMembers member);
+	
+	
 	
 }
