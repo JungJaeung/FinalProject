@@ -93,9 +93,9 @@ $.comment_list = function(postId) {
 
 			$('#msgModal').modal("show");
 			//이벤트 넣기
-			$.comment_insert(postId);
-			$.comment_update(postId);
-			$.comment_delete(postId);
+			$.comment_insert();
+			$.comment_update();
+			$.comment_delete();
 		},
 		error: function(e) {
 			console.log("에러에러");
@@ -104,7 +104,7 @@ $.comment_list = function(postId) {
 }
 
 //댓글 작성 함수
-$.comment_insert = function(postId) {
+$.comment_insert = function() {
 	let text_comment = "";
 	$("#insert_btn" + postId).click(function(e) {
 		console.log($("#insert_text" + postId).val())
@@ -127,7 +127,7 @@ $.comment_insert = function(postId) {
 }
 
 //댓글 삭제 함수
-$.comment_delete = function(postId) {
+$.comment_delete = function() {
 	$(".comment_delete").click(function(e) {
 		let commentId = e.target.id;
 		let text_comment = "";
@@ -150,7 +150,7 @@ $.comment_delete = function(postId) {
 }
 
 //댓글 수정 함수
-$.comment_update = function(postId) {
+$.comment_update = function() {
 	text_comment = "";
 	$(".comment_update").click(function(e) {
 		commentId = e.target.id;
@@ -273,9 +273,9 @@ function replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId) {
 						//$('#msgModal').modal("show");
 						//이벤트 리스너 함수 호출
 						//이벤트 넣기
-						$.comment_insert(postId);
-						$.comment_update(postId);
-						$.comment_delete(postId);
+						$.comment_insert();
+						$.comment_update();
+						$.comment_delete();
 					},
 					error: function(e) {
 						console.log("댓글 무한 로딩 에러");
