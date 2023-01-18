@@ -1090,9 +1090,9 @@
 								style="text-align: center; font-size: larger; font-weight: bold; margin-top:10px;">지금 뜨는
 								먹거리 <span>| Today</span></h5>
 							<div class="activity">
-								<div id="today_eat" th:each="showHotKeyword : ${showHotKeywords}">
-									<ul style="list-style:none;">
-										<li><a th:href="@{/search/searchByPost(searchKeyword=${showHotKeyword.showHotKeyword})}" th:text="|${showHotKeyword.keywordOrder}.  #${showHotKeyword.showHotKeyword}|"></a></li>
+								<div id="today_eat" th:each="hotKeyword : ${hotKeywords}">
+									<ul style="list-style:none; position:relative; right: 15px;">
+										<li><a th:href="@{/search/search(searchKeyword=${hotKeyword.hotKeyword})}" th:text="|${hotKeywordStat.count}.  #${hotKeyword.hotKeyword}|"></a></li>
 									</ul>
 								</div>
 							</div>

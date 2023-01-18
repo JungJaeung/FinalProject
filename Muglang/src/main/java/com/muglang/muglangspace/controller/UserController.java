@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +38,7 @@ import com.muglang.muglangspace.dto.MglgUserProfileDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgUser;
 import com.muglang.muglangspace.entity.MglgUserProfile;
+import com.muglang.muglangspace.service.mglghotkeywords.MglgHotKeywordsService;
 import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglgsocial.UserRelationService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
@@ -57,6 +56,9 @@ public class UserController {
 	//계정 관련 컨트롤
 	@Autowired
 	private MglgPostService mglgPostService;
+	
+	@Autowired
+	private MglgHotKeywordsService mglgHotKeywordsService;
 
 	@GetMapping("/profile")
 	public ModelAndView profileView(@AuthenticationPrincipal CustomUserDetails customUser,@PageableDefault(page = 0, size = 5) Pageable pageable) {
@@ -135,6 +137,10 @@ public class UserController {
 	public ModelAndView myBoardList(@AuthenticationPrincipal CustomUserDetails loginUser) {
 			ModelAndView mv = new ModelAndView();
 			MglgUserDTO loginUserDTO = Load.toHtml(loginUser.getMglgUser());
+			
+			// 인기 검색어 불러오기
+			List<CamelHashMap> hotKeywords = mglgHotKeywordsService.getHotKeywords();
+			mv.addObject("hotKeywords", hotKeywords);
 			mv.addObject("loginUser", loginUserDTO);
 			mv.setViewName("/user/myBoard.html");
 			System.out.println("게시글 처리 정보 이관중--------------!!!!!!!!!!!!!!");
