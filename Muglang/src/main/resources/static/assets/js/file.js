@@ -22,14 +22,15 @@ let changedFiles = [];
 		//$("#btnAttForm").hide();
 		//파일 리스트 변경 버튼 이벤트 대신 처리.
 		//버튼을 누르면 파일을 누르는 버튼의 이벤트를 발생시킴.
-		$("#postFileUpdate").click(function(e) {
-			e.preventDefault();
-			//$.btnAtt();
-			insertFlag = !insertFlag;
-			$("#btnAtt").click();
-		});
-		
-		
+		$.newPostbutton = function() {
+			$("#postFileUpdate").click(function(e) {
+				e.preventDefault();
+				//$.btnAtt();
+				insertFlag = !insertFlag;
+				$("#btnAtt").click();
+			});
+		}
+
 		//게시글 수정에서 파일을 수정하는 버튼의 파일관리 이벤트 처리 함수.
 		$(".updateBtnAtt").on("change", function(e) {
 			//input type=file에 추가된 파일들을 변수로 받아옴
@@ -460,6 +461,10 @@ let changedFiles = [];
 			//해당 img를 담고있는 부모태그인 div 삭제
 			const parentDiv = ele.parentNode;
 			$(parentDiv).remove();
+			
+			if(inputUploadFiles.length ==  0) {
+				$("#attZone").hide();
+			}
 		}
 		
 		//파일명 표출할 p태그 생성

@@ -74,6 +74,10 @@
 			let postFileIdList = [];
 			*/
 			$(function () {
+				let editor = callInsertPost();
+				$("#editor_space").append($(editor));
+				$.newPostbutton();
+				
 				const userId = /*[[${#authentication.principal.username}]]*/;
 
 
@@ -370,82 +374,8 @@
 				<!-- Left side columns -->
 				<div class="col-lg-8">
 					<div class="row" id="posts">
-						<!-- Recent Sales -->
-						<div class="col-12">
-							<!-- 작성 하는 부분 -->
-							<div class="card recent-sales overflow-auto">
-								<div class="card-body">
-									<!--<form id="insert_form" name="insertForm" enctype="multipart/form-data"
-										action="/post/insertPost" method="post">-->
-										<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
-
-										<input type="hidden" id="userName" name="userName"
-											th:value="${loginUser.userName}">
-
-										<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
-										<div class="quill-editor-default">
-											<h2>write your daily life</h2>
-											<p> </p>
-										</div>
-										<button type="button" id="postFileUpdate"
-											style="background: none; border:none;">
-											<i class="ri-image-2-fill" style="font-size: 20px; color:#000069;"></i>
-										</button>
-										<button type="button" id="res_select_btn" onclick="new_window()"
-											style="background: none; border:none;">
-											<i class="ri-map-pin-2-fill" style="font-size: 20px; color:#000069;"></i>
-										</button>
-
-										<!-- End Quill Editor Default -->
-										<!-- form을 위로 올리면 파일 개수를 0개인데 1개로 받아서 파일 처리를 못함. 그냥 여기로 냅두는게 좋을 듯. -->
-										<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">
-											<div class="box" id="imagePreview">
-												<!-- 이미지를 따로 미리 임시 저장하는 공간 -->
-												<div id="image_preview" style="margin:10px 0;">
-													<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple"
-														style="display: none;">
-													<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."
-														style="display: none;"></div>
-												</div>
-											</div>
-											<input type="hidden" id="restNm" name="restNm" value="dummy">
-											<input type="hidden" id="postContent" name="postContent" value="">
-											<div style="margin-bottom: 5px;">
-												<label id="hashTag_label1">&emsp;# <input type="text" id=hashTag1
-														name="hashTag1" class="hashTag_text" placeholder="태그 입력"
-														onfocus="this.placeholder=''"
-														onblur="this.placeholder='태그 입력'"></label>
-												<label id="hashTag_label2" style="display: none;">&emsp;# <input type="text"
-														id=hashTag2 name="hashTag2" class="hashTag_text" placeholder="태그 입력"
-														onfocus="this.placeholder=''"
-														onblur="this.placeholder='태그 입력'"></label>
-												<label id="hashTag_label3" style="display: none;">&emsp;# <input type="text"
-														id=hashTag3 name="hashTag3" class="hashTag_text" placeholder="태그 입력"
-														onfocus="this.placeholder=''"
-														onblur="this.placeholder='태그 입력'"></label>
-												<label id="hashTag_label4" style="display: none;">&emsp;# <input type="text"
-														id=hashTag4 name="hashTag4" class="hashTag_text" placeholder="태그 입력"
-														onfocus="this.placeholder=''"
-														onblur="this.placeholder='태그 입력'"></label>
-												<label id="hashTag_label5" style="display: none;">&emsp;# <input type="text"
-														id=hashTag5 name="hashTag5" class="hashTag_text" placeholder="태그 입력"
-														onfocus="this.placeholder=''"
-													onblur="this.placeholder='태그 입력'"></label>
-
-											</div>
-											<!--식당정보 후에 필요 없는것은 hidden예정-->
-											<input type="hidden" id="res_place_name" name="resName" value="">
-											<input type="hidden" id="res_address_name" name="resAddress">
-											<input type="hidden" id="res_road_address_name" name="resRoadAddress">
-											<input type="hidden" id="res_phone" name="resPhone">
-											<input type="hidden" id="res_category_name" name="resCategory">
-	
-											<input type="button" class="btn" id="insert_board" value="작성"
-												style="background-color: #4154f1; color: white; float: right;">
-										</form>
-									</div>
-								</div><!-- End Recent Sales -->
-							</div>
+						<!-- 새글 작성 공간-->
+						<div id="editor_space" class="col-12"></div>
 						<!--포스트 작성 장소-->
 						<div id="post_div" class="col-12"></div>
 					</div>

@@ -540,23 +540,17 @@ function callPost(post) {
 }
 
 //새로운 게시글을 등록하는 html 단 태그를 함수화 하여 메인 페이지, 나의 페이지, 이외에 쓸 가능성을 남겨둔 페이지에 추가할 수 있게함.
-function callInsertPost() {
+function callInsertPost(loginUser) {
 	let inputText = "";
 	inputText += `<div class="col-12">
 						<!-- 작성 하는 부분 -->
 						<div class="card recent-sales overflow-auto">
 							<div class="card-body">
-								<!--<form id="insert_form" name="insertForm" enctype="multipart/form-data"
-									action="/post/insertPost" method="post">-->
 									<h5 class="card-title" style="margin-bottom: -10px;">What's happening?</h5>
-
-									<input type="hidden" id="userName" name="userName"
-										th:value="${loginUser.userName}">
-
 									<!-- Quill Editor Default(퀼 에디터 텍스트 에어리어) -->
 									<div class="quill-editor-default">
 										<h2>write your daily life</h2>
-										<p> </p>
+										<p></p>
 									</div>
 									<button type="button" id="postFileUpdate"
 										style="background: none; border:none;">
