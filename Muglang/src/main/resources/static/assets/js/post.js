@@ -780,19 +780,19 @@ function get_post_current(post) {
 	//<!--해시태그-->	
 	post_text += `<div class="activity">`
 		if(post.hashTag1 != ""){
-			post_text += `<br><a href="/search/searchByPost?searchKeyword=${post.insertPost.hashTag1}" style="color: blue;">&emsp;#<span>${post.hashTag1}</span></a>`
+			post_text += `<br><a href="/search/search?searchKeyword=${post.insertPost.hashTag1}" style="color: blue;">&emsp;#<span>${post.hashTag1}</span></a>`
 		}
 		if(post.hashTag2 != ""){
-			post_text += `<a href="/search/searchByPost?searchKeyword=${post.insertPost.hashTag2}" style="color: blue;">&emsp;#<span>${post.hashTag2}</span></a>`
+			post_text += `<a href="/search/search?searchKeyword=${post.insertPost.hashTag2}" style="color: blue;">&emsp;#<span>${post.hashTag2}</span></a>`
 		}
 		if(post.hashTag3 != ""){
-			post_text += `<a href="/search/searchByPost?searchKeyword=${post.insertPost.hashTag3}" style="color: blue;">&emsp;#<span>${post.hashTag3}</span></a>`
+			post_text += `<a href="/search/search?searchKeyword=${post.insertPost.hashTag3}" style="color: blue;">&emsp;#<span>${post.hashTag3}</span></a>`
 		}
 		if(post.hashTag4 != ""){
-			post_text += `<a href="/search/searchByPost?searchKeyword=${post.insertPost.hashTag4}" style="color: blue;">&emsp;#<span>${post.hashTag4}</span></a>`
+			post_text += `<a href="/search/search?searchKeyword=${post.insertPost.hashTag4}" style="color: blue;">&emsp;#<span>${post.hashTag4}</span></a>`
 		}
 		if(post.hashTag5 != ""){
-			post_text += `<a href="/search/searchByPost?searchKeyword=${post.insertPost.hashTag5}" style="color: blue;">&emsp;#<span>${post.hashTag5}</span></a>`
+			post_text += `<a href="/search/search?searchKeyword=${post.insertPost.hashTag5}" style="color: blue;">&emsp;#<span>${post.hashTag5}</span></a>`
 		}
 	post_text += `</div>`
 	//<!--좋아요 댓글 지도-->	
@@ -997,19 +997,19 @@ $.get_post = function(obj){
 		//<!--해시태그-->	
 		post_text += `<div class="activity">`
 			if(post.hashTag1 != ""){
-				post_text += `<br><a href="/search/searchByPost?searchKeyword=${post.hashTag1}" style="color: blue;">&emsp;#<span>${post.hashTag1}</span></a>`
+				post_text += `<br><a href="/search/search?searchKeyword=${post.hashTag1}" style="color: blue;">&emsp;#<span>${post.hashTag1}</span></a>`
 			}
 			if(post.hashTag2 != ""){
-				post_text += `<a href="/search/searchByPost?searchKeyword=${post.hashTag2}" style="color: blue;">&emsp;#<span>${post.hashTag2}</span></a>`
+				post_text += `<a href="/search/search?searchKeyword=${post.hashTag2}" style="color: blue;">&emsp;#<span>${post.hashTag2}</span></a>`
 			}
 			if(post.hashTag3 != ""){
-				post_text += `<a href="/search/searchByPost?searchKeyword=${post.hashTag3}" style="color: blue;">&emsp;#<span>${post.hashTag3}</span></a>`
+				post_text += `<a href="/search/search?searchKeyword=${post.hashTag3}" style="color: blue;">&emsp;#<span>${post.hashTag3}</span></a>`
 			}
 			if(post.hashTag4 != ""){
-				post_text += `<a href="/search/searchByPost?searchKeyword=${post.hashTag4}" style="color: blue;">&emsp;#<span>${post.hashTag4}</span></a>`
+				post_text += `<a href="/search/search?searchKeyword=${post.hashTag4}" style="color: blue;">&emsp;#<span>${post.hashTag4}</span></a>`
 			}
 			if(post.hashTag5 != ""){
-				post_text += `<a href="/search/searchByPost?searchKeyword=${post.hashTag5}" style="color: blue;">&emsp;#<span>${post.hashTag5}</span></a>`
+				post_text += `<a href="/search/search?searchKeyword=${post.hashTag5}" style="color: blue;">&emsp;#<span>${post.hashTag5}</span></a>`
 			}
 		post_text += `</div>`
 		//<!--좋아요 댓글 지도-->	
