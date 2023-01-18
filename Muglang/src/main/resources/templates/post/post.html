@@ -83,19 +83,6 @@
 				//!!!!!!!!!!!!!!!!!!!!!!postFileId가 postId별로 존재하는 게 아니기 때문에 2차원배열 사용할 이유없음
 				for (let i = 0; i < list.length; i++) {
 					flagList.push(false);
-					/*
-					uploadPostFileList[i] = [];
-					changedFiles[i] = [];
-					originFileList[i] = [];
-					postIdList.push($($('.updateBtn')[i]).val());
-					postFileIdList.push(new Array());
-					console.log(postIdList[i] + " 게시글의 파일의 길이 : " + $("#fileListSize" + postIdList[i]).val());
-					for (let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
-						let id = $($('.postFileId' + postIdList[i])[j]).val();
-						console.log(id);
-						postFileIdList[i].push(id);
-					}
-					console.log("파일들의 리스트 목록 배열 : " + postFileIdList[i]);*/
 				}
 				//초기 화면에 도착시 파일의 목록 아이디를 저장해둠.
 				$("input[name='postFileId']").each(function () {
@@ -186,27 +173,6 @@
 				//게시글 조회에서 사용함. 해당 게시글의 업로드된 파일을 확인.
 				//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
 				//수업 때 했던 게시글은 1개이고, 지금 이건 여러개를 뿌려야하기 때문에 게시된 데이터를 다 가지고 와야함.
-				//68번째라인 참조
-				/*for (let i = 0; i < postIdList.length; i++) {
-					console.log("파일 정보 입력 시작하기 : " + $("#fileListSize" + postIdList[i]).val());
-					for (let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
-						const originFileObj = {
-							postId: postIdList[i],
-							postFileId: postFileIdList[i][j],
-							postFileNm: $($(".postFileNm")[i]).val(),
-							//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
-							//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
-							postFileStatus: "N"
-						};
-						console.log("파일의 아이디번호 : " + originFileObj.postFileId);
-						console.log("파일의 이름 : " + originFileObj.postFileNm);
-						originFileList[i].push(originFileObj);	//각 게시물들의 최신 파일 정보는 따로 리스트로 분리하여 처리.
-					}
-					//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
-					//originFileList.push(originFiles);
-					console.log(postIdList[i] + "번 게시글");
-					console.log(originFileList[i]);
-				}*/
 
 				//작성 버튼의 파일 처리도 나중에 진행 할 예정임.
 				//작성 버튼 - 따로 다른 페이지로 이동하지 않고 현재 페이지에서 바로 입력 처리를 시작함.
@@ -468,7 +434,7 @@
 
 											</div>
 											<!--식당정보 후에 필요 없는것은 hidden예정-->
-											<input type="hidden" id="res_place_name" name="resName" value="기본식당">
+											<input type="hidden" id="res_place_name" name="resName" value="">
 											<input type="hidden" id="res_address_name" name="resAddress">
 											<input type="hidden" id="res_road_address_name" name="resRoadAddress">
 											<input type="hidden" id="res_phone" name="resPhone">

@@ -33,7 +33,7 @@ public class MglgRestaurant {
 	private MglgPost mglgPost;	
 	@Id
 	@Column
-	@ColumnDefault("'기본식당'")
+	@ColumnDefault("''")
 	private String resName;
 	
 	private String resAddress;			
