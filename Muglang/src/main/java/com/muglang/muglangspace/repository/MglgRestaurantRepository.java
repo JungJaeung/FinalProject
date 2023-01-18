@@ -16,14 +16,13 @@ public interface MglgRestaurantRepository extends JpaRepository<MglgRestaurant, 
 	@Query(value="SELECT * FROM T_MGLG_RESTAURANT WHERE POST_ID = :postId", nativeQuery=true)
 	public MglgRestaurant selectRes(@Param("postId") int postId);
 	
-	@Query(value="select count(*)\r\n"
-			+ "from t_mglg_restaurant \r\n"
-			+ "where post_id\r\n"
-			+ "		IN \r\n"
-			+ "		(SELECT POST_ID FROM t_mglg_post WHERE USER_ID\r\n"
-			+ "				IN \r\n"
-			+ "				(SELECT USER_ID FROM T_MGLG_USER_RELATION WHERE FOLLOWER_ID = :userId) ) \r\n"
-			+ "AND RES_NAME = :resName group by res_address",
+	@Query(value="      SELECT COUNT(*) FROM t_mglg_user_relation\r\n"
+			+ "      WHERE follower_id = :userId\r\n"
+			+ "      AND USER_ID IN\r\n"
+			+ "      (SELECT USER_ID FROM T_MGLG_POST\r\n"
+			+ "        WHERE POST_ID IN\r\n"
+			+ "        (SELECT POST_ID \r\n"
+			+ "      FROM t_mglg_restaurant WHERE RES_NAME=:resName) GROUP BY USER_ID)",
 			nativeQuery=true)
 	public String countRes(@Param("userId") int userId, @Param("resName") String resName);
 	

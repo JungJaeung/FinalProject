@@ -31,6 +31,7 @@ public interface MglgPostService {
 
 	public Page<CamelHashMap> getFollowingPost(int userId, Pageable pageable);
 
+	public Page<CamelHashMap> otherUserPost(int userId, int otherUserId, Pageable pageable);
 	
 	public int likeUp(int userId, int postId);
 
