@@ -143,8 +143,9 @@ public class CommentController {
 			throws IOException {
 		System.out.println("댓글 삭제");
 		mglgCommentService.deleteComment(commentId, postId);
+		System.out.println("댓글 삭제 작업을 완료 하엿습니다.");
 		adminService.deleteReport(commentId, postId);
-
+		System.out.println("신고된 댓글 리스트 도 ");
 		response.sendRedirect("/post/mainPost");
 	}
 
