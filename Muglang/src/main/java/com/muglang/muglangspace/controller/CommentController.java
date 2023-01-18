@@ -75,16 +75,6 @@ public class CommentController {
 		}
 	}
 
-
-	// 댓글 리스트 불러오기
-//	@GetMapping("/commentList")
-//	public ResponseEntity<?> getCommentList(MglgComment comment, @PageableDefault(page = 0, size = 8) Pageable pageable,
-//			@RequestParam("postId") int postId) {
-//		Page<MglgComment> commentList = mglgCommentService.getCommentList(comment, pageable, postId);
-//		
-//		System.out.println("댓글 조회 ㄱㄱ");
-//		return ResponseEntity.ok().body(commentList);
-//	}
 	
 	//댓글 리스트 불러오기 - 불러온 댓글들을 다시 화면단으로 전송
 	@GetMapping("/commentList")
@@ -97,8 +87,6 @@ public class CommentController {
 			System.out.println(comment1);
 		}
 		try {
-//			returnMap.put("commentList", pageCommentList);
-//			returnMap.put("", pageCommentList.getPageable().getPageNumber());
 			return ResponseEntity.ok().body(pageCommentList);
 		} catch(Exception e) {
 			return ResponseEntity.badRequest().body(pageCommentList);
@@ -115,15 +103,7 @@ public class CommentController {
 		pageable = PageRequest.of(page_num, 8);
 		
 		Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable, postId);
-//		Page<MglgCommentDTO> pageCommentListDTO = pageCommentList.map(pageMglgComment->MglgCommentDTO.builder()
-//																			.userId(pageMglgComment.getMglgUser().getUserId())
-//																			.commentId(pageMglgComment.getCommentId())
-//																			.commentContent(pageMglgComment.getCommentContent())
-//																			.commentDate(pageMglgComment.getCommentDate().toString())
-//																			.build()
-//															);
-//		
-//	
+
 		return ResponseEntity.ok().body(pageCommentList);
 	}
 	
@@ -134,6 +114,7 @@ public class CommentController {
 			throws IOException {
 		System.out.println("댓글 입력 작업");
 		mglgCommentService.insertComment(userId, postId, commentContent);
+
 	}
 
 	// 댓글 삭제
@@ -141,6 +122,7 @@ public class CommentController {
 	public void deleteComment(@RequestParam("commentId") int commentId, @RequestParam("postId") int postId,
 			HttpServletResponse response, MglgComment comment)
 			throws IOException {
+		
 		System.out.println("댓글 삭제");
 		mglgCommentService.deleteComment(commentId, postId);
 		System.out.println("댓글 삭제 작업을 완료 하엿습니다.");

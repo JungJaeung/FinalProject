@@ -59,8 +59,7 @@ $.comment_list = function(postId) {
 					text_comment += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`
 				} else {
 
-					text_comment += `
-													<form action="/comment/reportComment" method="post">
+					text_comment += `				<form action="/comment/reportComment" method="post">
 													<li>
 														<input type="hidden" name="postId" value="${postId}">
 														<input type="hidden" name="postUserId" value="${comment.mglgUser.userId}">
@@ -94,9 +93,9 @@ $.comment_list = function(postId) {
 
 			$('#msgModal').modal("show");
 			//이벤트 넣기
-			$.comment_insert(postId);
-			$.comment_update(postId);
-			$.comment_delete(postId);
+			$.comment_insert();
+			$.comment_update();
+			$.comment_delete();
 		},
 		error: function(e) {
 			console.log("에러에러");
@@ -105,7 +104,7 @@ $.comment_list = function(postId) {
 }
 
 //댓글 작성 함수
-$.comment_insert = function(postId) {
+$.comment_insert = function() {
 	let text_comment = "";
 	$("#insert_btn" + postId).click(function(e) {
 		console.log($("#insert_text" + postId).val())
@@ -118,7 +117,7 @@ $.comment_insert = function(postId) {
 				commentContent: $("#insert_text" + postId).val()
 			},
 			success: function() {
-				$.comment_list();
+				$.comment_list(postId);
 			},
 			error: function(e) {
 				console.log("에러에러");
@@ -128,7 +127,7 @@ $.comment_insert = function(postId) {
 }
 
 //댓글 삭제 함수
-$.comment_delete = function(postId) {
+$.comment_delete = function() {
 	$(".comment_delete").click(function(e) {
 		let commentId = e.target.id;
 		let text_comment = "";
@@ -141,7 +140,7 @@ $.comment_delete = function(postId) {
 				postId: postId
 			},
 			success: function() {
-				$.comment_list();
+				$.comment_list(postId);
 			},
 			error: function(e) {
 				console.log("에러에러");
@@ -151,7 +150,7 @@ $.comment_delete = function(postId) {
 }
 
 //댓글 수정 함수
-$.comment_update = function(postId) {
+$.comment_update = function() {
 	text_comment = "";
 	$(".comment_update").click(function(e) {
 		commentId = e.target.id;
@@ -172,7 +171,7 @@ $.comment_update = function(postId) {
 				commentContent: commentContent
 			},
 			success: function() {
-				$.comment_list();
+				$.comment_list(postId);
 			},
 			error: function(e) {
 				console.log("에러에러");
@@ -242,17 +241,25 @@ function replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId) {
 							else {
 								comment_text_scroll += `<a style="margin-right: 20px;">${parseInt(comment_date / (1000 * 60))}분전</a>`;
 							}
-
+							comment_text_scroll += `<a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>`;
 							comment_text_scroll += `<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">`;
 							if (loginUserId == comment.mglgUser.userId) {	//현재 로그인했던 유저와 해당 댓글의 id를 비교
-								comment_text_scroll += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`;
-								comment_text_scroll += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`;
+								comment_text_scroll += `<li><a class="dropdown-item comment_update" id="${comment.commentId}"></i>&emsp;수정</a></li>`
+								comment_text_scroll += `<li><a class="dropdown-item comment_delete" id="${comment.commentId}" href="#"></i>&emsp;삭제</a></li>`
 							} else {
-								comment_text_scroll += `<li><a class="dropdown-item" href="#" href="#"></i>&emsp;신고하기</a></li>`;
+				
+								comment_text_scroll += `				<form action="/comment/reportComment" method="post">
+																<li>
+																	<input type="hidden" name="postId" value="${postId}">
+																	<input type="hidden" name="postUserId" value="${comment.mglgUser.userId}">
+																	<input type="hidden" name="commentId" value="${comment.commentId}">
+																	<input type="submit" class="dropdown-item" value="코멘트 신고하기">
+																</li>
+																</form>`
 							}
 							comment_text_scroll += `</ul>`
 							comment_text_scroll += `</div>`
-							comment_text_scroll += `<img class="img-fluid rounded-circle" src="../assets/img/messages-2.jpg" style="width: 40px;">`;
+							comment_text_scroll += `<img class="img-fluid rounded-circle" src="/upload/default.png" style="width: 40px;">`;
 							comment_text_scroll += `<span style="margin-left: 10px;"><a href="#" style="color: black; cursor:pointer;">${comment.mglgUser.userName}</a></span>`;
 							comment_text_scroll += `<div style="word-break: keep-all;">${comment.commentContent}`;
 							comment_text_scroll += `<br><textarea id="update_text${comment.commentId}" style="width:100%; overflow:hidden; resize: none; display:none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)">${comment.commentContent}</textarea>`;
@@ -266,9 +273,9 @@ function replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId) {
 						//$('#msgModal').modal("show");
 						//이벤트 리스너 함수 호출
 						//이벤트 넣기
-						$.comment_insert(postId);
-						$.comment_update(postId);
-						$.comment_delete(postId);
+						$.comment_insert();
+						$.comment_update();
+						$.comment_delete();
 					},
 					error: function(e) {
 						console.log("댓글 무한 로딩 에러");
