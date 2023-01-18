@@ -22,6 +22,7 @@ $.comment_list = function(postId) {
 		},
 		success: function(obj) {
 			console.log(obj);
+			console.log("게시글의 아이디를 불러오는 것이 숫자가 맞나?" + typeof(postId));
 			text_comment += `<div class="modal-header">`
 			text_comment += `<textarea id="insert_text${postId}" style="width:80%; height: 30px; border:none; outline: none; overflow:hidden; resize: none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)" placeholder="댓글을 작성해주세요"]></textarea>`
 			text_comment += `<button class="btn" id="insert_btn${postId}">작성</button></div>`
@@ -89,13 +90,13 @@ $.comment_list = function(postId) {
 			//댓글 무한 스크롤 발생 이벤트 시작
 			comment_page_num = 1;
 
-			replyScroll(thisCommentTotalPages, thisCommentTotalElements);
+			replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId);
 
 			$('#msgModal').modal("show");
 			//이벤트 넣기
-			$.comment_insert();
-			$.comment_update();
-			$.comment_delete();
+			$.comment_insert(postId);
+			$.comment_update(postId);
+			$.comment_delete(postId);
 		},
 		error: function(e) {
 			console.log("에러에러");
@@ -104,7 +105,7 @@ $.comment_list = function(postId) {
 }
 
 //댓글 작성 함수
-$.comment_insert = function() {
+$.comment_insert = function(postId) {
 	let text_comment = "";
 	$("#insert_btn" + postId).click(function(e) {
 		console.log($("#insert_text" + postId).val())
@@ -127,7 +128,7 @@ $.comment_insert = function() {
 }
 
 //댓글 삭제 함수
-$.comment_delete = function() {
+$.comment_delete = function(postId) {
 	$(".comment_delete").click(function(e) {
 		let commentId = e.target.id;
 		let text_comment = "";
@@ -150,7 +151,7 @@ $.comment_delete = function() {
 }
 
 //댓글 수정 함수
-$.comment_update = function() {
+$.comment_update = function(postId) {
 	text_comment = "";
 	$(".comment_update").click(function(e) {
 		commentId = e.target.id;
@@ -188,7 +189,7 @@ $.comment_update = function() {
 
 //댓글 부분 무한 스크롤 - 부분
 //아이디comment 태그의 스크롤에 다차서 내려가면, 다시 ajax비동기 처리로 댓글 목록 불러옴.
-function replyScroll(thisCommentTotalPages, thisCommentTotalElements) {
+function replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId) {
 
 	let comment_text_scroll = "";
 	$('.modal-body').scroll(function(e) {
@@ -265,9 +266,9 @@ function replyScroll(thisCommentTotalPages, thisCommentTotalElements) {
 						//$('#msgModal').modal("show");
 						//이벤트 리스너 함수 호출
 						//이벤트 넣기
-						$.comment_insert();
-						$.comment_update();
-						$.comment_delete();
+						$.comment_insert(postId);
+						$.comment_update(postId);
+						$.comment_delete(postId);
 					},
 					error: function(e) {
 						console.log("댓글 무한 로딩 에러");
