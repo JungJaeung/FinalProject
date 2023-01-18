@@ -234,7 +234,11 @@
 						dt3.items.add(file);
 					}
 					console.log("파일 입력 내용을 입력 중입니다." + $("input[name='postContent']").val());
+					
+					
 					$("#btnAtt")[0].files = dt3.files;
+					
+					console.log(dt3.files);
 					//$("#insert_form").submit();
 					//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
 					//배열 형태로 전송 시 백단(Java)에서 처리불가
@@ -261,12 +265,12 @@
 							console.log(obj);
 							console.log("로그인한 계정 : " + loginUserId);
 							console.log("먼저 등록한 게시글의 번호 : " + insertIndex);
-							insert_post = post(obj.item, insertIndex);
+							insert_post = get_post_current(obj);
 							
 							//화면에 표시된 게시글 수 갱신
 							let postNumber = Number($("#cntPost").text()) + 1;
-							const inPostId = obj.item.insertPost.postId;
-							const inFileLength = obj.item.postFileList.length;
+							const inPostId = obj.insertPost.postId;
+							const inFileLength = obj.postFileList.length;
 							$("#cntPost").text(postNumber);
 							//$("#posts").html(insert_post);
 							//html단 뿌리기
@@ -282,7 +286,7 @@
 							let inputFile = [];
 							//$.update_post();
 							for (let i = 0; i < inFileLength; i++) {
-								inputFile.push(obj.item.postFileList[i]);
+								inputFile.push(obj.postFileList[i]);
 							}
 							console.log("임시 배열 출력 : ");
 							console.log(inputFile);
@@ -300,10 +304,9 @@
 							}
 							console.log("파일 정보 입력이 되었는지 확인. : ")
 							console.log(originFiles);
-
 							//이벤트 다시 적용
-							$.update_post();
-							$.like_button(loginUserId);
+							$.update_post(obj.insertPost.postId);
+							$.like_button(obj.loginUser.userId);
 							$.comment_button();
 							$.map_button();
 							insertIndex += 1;
@@ -419,56 +422,57 @@
 											style="background: none; border:none;">
 											<i class="ri-map-pin-2-fill" style="font-size: 20px; color:#000069;"></i>
 										</button>
-										<div class="box" id="imagePreview">
-											<!-- 이미지를 따로 미리 임시 저장하는 공간 -->
-											<div id="image_preview" style="margin:10px 0;">
-												<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple"
-													style="display: none;">
-												<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."
-													style="display: none;"></div>
-											</div>
-										</div>
+
 										<!-- End Quill Editor Default -->
 										<!-- form을 위로 올리면 파일 개수를 0개인데 1개로 받아서 파일 처리를 못함. 그냥 여기로 냅두는게 좋을 듯. -->
 										<form id="insert_form" enctype="multipart/form-data" action="/post/insertPost" method="post">
-										<input type="hidden" id="restNm" name="restNm" value="dummy">
-										<input type="hidden" id="postContent" name="postContent" value="">
-										<div style="margin-bottom: 5px;">
-											<label id="hashTag_label1">&emsp;# <input type="text" id=hashTag1
-													name="hashTag1" class="hashTag_text" placeholder="태그 입력"
-													onfocus="this.placeholder=''"
-													onblur="this.placeholder='태그 입력'"></label>
-											<label id="hashTag_label2" style="display: none;">&emsp;# <input type="text"
-													id=hashTag2 name="hashTag2" class="hashTag_text" placeholder="태그 입력"
-													onfocus="this.placeholder=''"
-													onblur="this.placeholder='태그 입력'"></label>
-											<label id="hashTag_label3" style="display: none;">&emsp;# <input type="text"
-													id=hashTag3 name="hashTag3" class="hashTag_text" placeholder="태그 입력"
-													onfocus="this.placeholder=''"
-													onblur="this.placeholder='태그 입력'"></label>
-											<label id="hashTag_label4" style="display: none;">&emsp;# <input type="text"
-													id=hashTag4 name="hashTag4" class="hashTag_text" placeholder="태그 입력"
-													onfocus="this.placeholder=''"
-													onblur="this.placeholder='태그 입력'"></label>
-											<label id="hashTag_label5" style="display: none;">&emsp;# <input type="text"
-													id=hashTag5 name="hashTag5" class="hashTag_text" placeholder="태그 입력"
-													onfocus="this.placeholder=''"
+											<div class="box" id="imagePreview">
+												<!-- 이미지를 따로 미리 임시 저장하는 공간 -->
+												<div id="image_preview" style="margin:10px 0;">
+													<input type="file" id="btnAtt" name="uploadFiles" multiple="multiple"
+														style="display: none;">
+													<div id="attZone" data-placeholder="파일을 첨부하려면 파일선택 버튼을 누르세요."
+														style="display: none;"></div>
+												</div>
+											</div>
+											<input type="hidden" id="restNm" name="restNm" value="dummy">
+											<input type="hidden" id="postContent" name="postContent" value="">
+											<div style="margin-bottom: 5px;">
+												<label id="hashTag_label1">&emsp;# <input type="text" id=hashTag1
+														name="hashTag1" class="hashTag_text" placeholder="태그 입력"
+														onfocus="this.placeholder=''"
+														onblur="this.placeholder='태그 입력'"></label>
+												<label id="hashTag_label2" style="display: none;">&emsp;# <input type="text"
+														id=hashTag2 name="hashTag2" class="hashTag_text" placeholder="태그 입력"
+														onfocus="this.placeholder=''"
+														onblur="this.placeholder='태그 입력'"></label>
+												<label id="hashTag_label3" style="display: none;">&emsp;# <input type="text"
+														id=hashTag3 name="hashTag3" class="hashTag_text" placeholder="태그 입력"
+														onfocus="this.placeholder=''"
+														onblur="this.placeholder='태그 입력'"></label>
+												<label id="hashTag_label4" style="display: none;">&emsp;# <input type="text"
+														id=hashTag4 name="hashTag4" class="hashTag_text" placeholder="태그 입력"
+														onfocus="this.placeholder=''"
+														onblur="this.placeholder='태그 입력'"></label>
+												<label id="hashTag_label5" style="display: none;">&emsp;# <input type="text"
+														id=hashTag5 name="hashTag5" class="hashTag_text" placeholder="태그 입력"
+														onfocus="this.placeholder=''"
 													onblur="this.placeholder='태그 입력'"></label>
 
-										</div>
-										<!--식당정보 후에 필요 없는것은 hidden예정-->
-										<input type="hidden" id="res_place_name" name="resName" value="기본식당">
-										<input type="hidden" id="res_address_name" name="resAddress">
-										<input type="hidden" id="res_road_address_name" name="resRoadAddress">
-										<input type="hidden" id="res_phone" name="resPhone">
-										<input type="hidden" id="res_category_name" name="resCategory">
-
-										<input type="button" class="btn" id="insert_board" value="작성"
-											style="background-color: #4154f1; color: white; float: right;">
-									</form>
-								</div>
-							</div><!-- End Recent Sales -->
-						</div>
+											</div>
+											<!--식당정보 후에 필요 없는것은 hidden예정-->
+											<input type="hidden" id="res_place_name" name="resName" value="기본식당">
+											<input type="hidden" id="res_address_name" name="resAddress">
+											<input type="hidden" id="res_road_address_name" name="resRoadAddress">
+											<input type="hidden" id="res_phone" name="resPhone">
+											<input type="hidden" id="res_category_name" name="resCategory">
+	
+											<input type="button" class="btn" id="insert_board" value="작성"
+												style="background-color: #4154f1; color: white; float: right;">
+										</form>
+									</div>
+								</div><!-- End Recent Sales -->
+							</div>
 						<!--포스트 작성 장소-->
 						<div id="post_div" class="col-12"></div>
 					</div>
