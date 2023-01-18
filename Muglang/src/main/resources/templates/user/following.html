@@ -86,11 +86,12 @@
 					if (!scrollYn) {
 						if ($(window).scrollTop() == $(document).height() - $(window).height()) {
 							scrollYn = true;
+							console.log("들어오는 페이지 번호 : " + page_num);
 							if (page_num < totalPages) {
 								$.ajax({
 									url: '/post/getFollowingPost',
 									type: 'get',
-									data: {page: following_page_num},
+									data: {page: page_num},
 									success: function (obj) {
 										$.get_post(obj);
 										setTimeout(function () {

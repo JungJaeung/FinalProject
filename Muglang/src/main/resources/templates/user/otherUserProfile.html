@@ -143,6 +143,7 @@
 					},
 					success: function (obj) {
 						$.get_post(obj);
+						$(".filter").css("float", "right").css("margin", "25px")
 					},
 					error: function (e) {
 						console.log("실패실패");
@@ -168,6 +169,7 @@
 									success: function (obj) {
 										console.log(obj)
 										$.get_post(obj);
+										$(".filter").css("float", "right").css("margin", "25px")
 										setTimeout(function () {
 											scrollYn = false;
 										}, 1000);
