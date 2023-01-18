@@ -380,7 +380,7 @@
 									console.log(obj);
 
 									//let elements = page_num * obj.pageable.pageSize;
-									console.log("시작 인덱스 표시 : " + elements);
+									//console.log("시작 인덱스 표시 : " + elements);
 									for (let post of obj.content) {
 										let post_date = new Date(post.postDate);
 										//날짜 데이터 밀리초
@@ -567,7 +567,7 @@
 									}
 
 									$("#post_scroll_div").html(text_scroll);
-									console.log(text_scroll);
+									//console.log(text_scroll);
 
 									//이벤트 리스너 함수 호출
 									for (let i = 0; i < obj.numberOfElements; i++) {
@@ -589,7 +589,8 @@
 										//$("#modify_content" + obj.content[i].postId).hide();
 									}
 									//이벤트를 줄때 모든 태그에 똑같이 이벤트를 다같이 줘야함. ajax로 태그를 새로 씌워서 이벤트가 없어지므로
-									//선택자를 잡아 모든 태그에 이벤트를 따로 주도록 바꿈.
+									//선택자를 잡아 해당 하는 모든 태그 의 클래스에 이벤트를 따로 주도록 바꿈.
+									//data-post-id 값을 따로 주어 attr 속성을 선택자로 잡아 편집부분 태그를 숨김.
 									for (let i = 0; i < $(".uploadFileSpace").length; i++) {
 										updateBtnEvent(i, $(".uploadFileSpace").length, $($(".uploadFileSpace")[i]).attr("data-post-id"));
 										$($(".uploadFileSpace")[i]).hide();
