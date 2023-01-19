@@ -3,7 +3,7 @@
 
 <head>
 	<title>Welcome to MUGLANG</title>
-
+	<!-- 로그인 페이지의 메인 페이지를 담당하는 페이지로 css 처리 할 때 주의 요망-->
 	<script th:src="@{/js/jquery-3.6.1.min.js}"></script>
 
 
@@ -108,29 +108,7 @@
 </head>
 
 <body>
-	<div id="container">
-		<div id="login_menu">
-			<!--로고-->
-			<div class="menu_title">
-				<img class="mglg_logo" th:src="@{/assets/img/mglg_logo_white.png}" alt="">
-			</div>
-			<!--로그인 아이콘-->
-			<div class="login_group">
-				<a href="/oauth2/authorization/kakao">
-					<img class="login_img" th:src="@{/images/login_with_kakao/kakao_login_large_narrow.png}">
-				</a><br>
-				<a href="/oauth2/authorization/google">
-					<img class="login_img"
-						th:src="@{/images/login_with_google/btn_google_signin_light_normal_web@2x.png}">
-				</a><br>
-				<a href="/oauth2/authorization/naver">
-					<img class="login_img" th:src="@{/images/login_with_naver/btnW_official.png}">
-				</a>
-			</div>
-		</div>
-		<div id="sub_menu">
-			<a th:href="@{/user/getAdminUserList}" id="move_admin">Admin Page</a>
-		</div>
+
 	</div>
 </body>
 
