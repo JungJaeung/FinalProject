@@ -101,12 +101,30 @@ $.comment_list = function(postId) {
 			$.comment_delete();
 			
 			comment_page_num = 1;
-			
-			setTimeout(function(){
-				replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId);
-				commentScrollYn = false;
-			}, 1000);
-			
+			//스크롤을 하는 조건의 높이
+			/*$('.modal-body').height() - */
+			//comHeight = 0;
+			comHeight = 224//$('.modal-body').innerHeight() - ($('.comment_info').height() * 4);	//200씩 뜸
+			console.log(comHeight);
+			$('.modal-body').scroll(function(e) {
+				if(!commentScrollYn) {
+					//modal-body = 480, comment_info = 256
+					//스크롤 발생 필요한 높이 224
+					//댓글 창을 끝까지 내릴 때쯤 이벤트가 발생.
+					console.log($('.modal-body').scrollTop());
+					if ($('.modal-body').scrollTop() > comHeight) {
+						commentScrollYn = true;
+						comHeight += $('.modal-body').height() + ($('.comment_info').height() * 4);
+						console.log("모달 확장 스크롤 안쪽 게시글 내용 크기 : " + comHeight);
+						replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId);
+						console.log("모달 확장 스크롤 더 내리기 : " + comment_page_num);
+						setTimeout(function(){
+							commentScrollYn = false;
+						}, 500);
+					}
+
+				}
+			});
 		},
 		error: function(e) {
 			console.log("에러에러");
@@ -203,17 +221,16 @@ $.comment_update = function() {
 //아이디comment 태그의 스크롤에 다차서 내려가면, 다시 ajax비동기 처리로 댓글 목록 불러옴.
 function replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId) {
 	let comment_text_scroll = "";
+	/*
 	$('.modal-body').scroll(function(e) {
 		if(!commentScrollYn) {
 			//let comHeight = $('.modal-body').height() - $('.comment_info').height() * 4;
 			//console.log("안쪽 게시글 내용 크기 : " + comHeight);
 			//댓글 창을 끝까지 내릴 때쯤 이벤트가 발생.
 			if ($('.modal-body').scrollTop() > $('.modal-body').height() - $('.comment_info').height() * 4) {
-				commentScrollYn = true;
+				commentScrollYn = true;*/
 				//해당 댓글의 댓글 페이지수를 확인. 내용이 남아있을경우 추가 스크롤 활성화
-				console.log("페이징 댓글 시작" + comment_page_num);
 				if (comment_page_num < thisCommentTotalPages) {
-					console.log("페이징 댓글 시작");
 					$.ajax({
 						url: '/comment/commentList',
 						type: 'post',
@@ -225,15 +242,15 @@ function replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId) {
 							//숨김처리후 다시 재출력
 							//$('#msgModal').modal("hide");
 							//한번 더 스크롤나오면 다음페이지를 데이터로 넘기고, 다시 스크롤을 늘려 다음 댓글을 갱신하여 표시.
-							comment_page_num++;
+							//comment_page_num++;
 	
 							for (let comment of obj.content) {
 								let comment_date = new Date(comment.commentDate);
-								console.log(comment);
+								//console.log(comment);
 								//날짜 데이터 밀리초
 								comment_date = now - comment_date;
 	
-								console.log(comment_date);
+								//console.log(comment_date);
 	
 								comment_text_scroll += `<div class="comment_info" style="margin-bottom: 30px; position:relative;">`;
 	
@@ -289,9 +306,10 @@ function replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId) {
 							$.comment_insert();
 							$.comment_update();
 							$.comment_delete();
-							setTimeout(function(){
-								commentScrollYn = false;
-							}, 1000);
+
+							comment_page_num += 1;
+							
+							commentScrollYn = false;
 						},
 						error: function(e) {
 							console.log("댓글 무한 로딩 에러");
@@ -299,8 +317,8 @@ function replyScroll(thisCommentTotalPages, thisCommentTotalElements, postId) {
 						}
 					});
 				}
-			}
+			//}
 						
-		}
-	});
+	//}
+	//});
 }
