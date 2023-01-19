@@ -14,7 +14,7 @@
 				var roomId = /*[[${room.id}]]*/;
 				var username = /*[[${#authentication.principal.mglgUser.userName}]]*/;
 				var userId = /*[[${#authentication.principal.mglgUser.userId}]]*/;
-				
+
 
 				//console.log(roomName + ", " + roomId + ", " + username);
 
@@ -41,7 +41,7 @@
 								if (type == 'JOIN') {
 									str = "<div style='text-align: center;'>";
 									str += "<b>" + message + "</b></span>";
-								} 
+								}
 								//실시간 채팅 본인
 								else {
 									str = "<div style='text-align: right; margin: 10px 20px 10px 0px;'><div class='my_chat'>";
@@ -57,7 +57,7 @@
 								if (type == 'JOIN') {
 									str = "<div style='text-align: center;'>";
 									str += "<b>" + message + "</b>";
-								} 
+								}
 								//실시간 채팅 타인
 								else {
 									str = "<div style='text-align: left; margin: 35px 0px 35px 80px;'> ";
@@ -84,7 +84,7 @@
 									str += "<span style='position:absolute; bottom:-1px; left:-38px; font-size:small; color:black;'>" + messageList[i].chatTime + "</span>";
 									str += "<b>" + messageList[i].message + "</b>";
 									str += "</div></div>";
-								} 
+								}
 								//불러온 채팅 타인(확인 못했음 체크후 틀리면 수정 요함)
 								else {
 									str += "<div style='text-align: left; margin: 35px 0px 35px 80px;'> ";
@@ -150,23 +150,26 @@
 
 <body>
 	<main layout:fragment="main" id="main" class="main">
-		<div>
-			<!--	<input type="button" value="목록으로 돌아가기" onclick="goBack();">	-->
-			<a th:href="@{/chat/leave/{id} (id=${room.id})}">목록으로 돌아가기</a>
-			<a th:href="@{/chat/exit/{id} (id=${room.id})}">방 나가기</a>
-		</div>
 		<div class="row">
 			<div class="col-12">
 				<div style="width: 50%; margin:0 auto">
 					<h1 th:text="${room.name}"></h1>
 				</div>
 				<div style="width: 50%; margin:0 auto">
-					<div id="msgArea" style="overflow-y: auto; 
-					overflow-x: hidden; 
-					height: 500px; 
-					box-shadow: 0 0 4px #c8c8c8;
-					border-radius: 8px;"></div>
-					<div class="mt-2">
+					<div style=" height: 600px; box-shadow: 0 0 4px #c8c8c8; border-radius: 8px;">
+						<div style="height:40px; background-color:#c8c8c8; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+							<!--	<input type="button" value="목록으로 돌아가기" onclick="goBack();">	-->
+							<a th:href="@{/chat/leave/{id} (id=${room.id})}" style="float:left;">
+								<i class="ri-arrow-left-line" style="font-size: 25px; color:black; margin-left:10px;"></i>
+							</a>
+							<a th:href="@{/chat/exit/{id} (id=${room.id})}" style="float:right;">
+								<i class="ri-door-open-fill" style="font-size: 25px; color:black; margin-right:10px;"></i>
+							</a>
+						</div>
+						<div id="msgArea" style="height:560px; overflow-y: auto; overflow-x: hidden;"></div>
+						
+					</div>
+						<div class="mt-2">
 						<input type="text" id="msg" class="form-control" name="send"
 							style="width:80%; float:left; outline: none;">
 
