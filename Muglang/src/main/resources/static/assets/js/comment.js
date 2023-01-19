@@ -27,10 +27,8 @@ $.comment_list = function(postId) {
 			postId: postId,
 		},
 		success: function(obj) {
-			console.log(obj);
-			console.log("게시글의 아이디를 불러오는 것이 숫자가 맞나?" + typeof(postId));
 			text_comment += `<div class="modal-header">`
-			text_comment += `<textarea id="insert_text${postId}" style="width:80%; height: 30px; border:none; outline: none; overflow:hidden; resize: none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)" placeholder="댓글을 작성해주세요"]></textarea>`
+			text_comment += `<textarea id="insert_text${postId}" style="width:80%; height: 30px; border:none; outline: none; overflow:hidden; resize: none;" spellcheck="false" onkeydown="resize(this)" onkeyup="resize(this)" placeholder="댓글을 작성해주세요"></textarea>`
 			text_comment += `<button class="btn" id="insert_btn${postId}">작성</button></div>`
 			text_comment += `<div class="modal-body overflow-auto" id="modal-body">`
 			text_comment += `<div id="comment${postId}" class="comments" style="max-height: 30em;">`
