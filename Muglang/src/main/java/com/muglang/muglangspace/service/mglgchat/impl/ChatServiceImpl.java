@@ -76,5 +76,13 @@ public class ChatServiceImpl implements ChatService {
 		chatMembersRepository.leaveRoom(chatRoomId, userId);
 	}
 	
+	@Override
+	public List<CamelHashMap> getPastDM(MglgChatMembers member, String roomType) {
+		// TODO Auto-generated method stub
+		return chatMembersRepository.getPastDM(member.getChatRoomId(), roomType);
+	}
 	
+	public String getUserProfile(int userId) {
+		return chatMembersRepository.getUserProfile(userId);
+	}
 }
