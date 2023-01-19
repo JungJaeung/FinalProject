@@ -48,15 +48,18 @@ public interface ChatMembersRepository extends JpaRepository<MglgChatMembers, In
 			+ "        THEN 'R'\n"
 			+ "        ELSE 'N'\n"
 			+ "	   END AS READ_YN"
+			+ "		, D.USER_PROFILE_NM "
 			+ "	FROM T_MGLG_CHAT_MSG A\n"
 			+ "	   , T_MGLG_CHAT_MEMBERS B\n"
 			+ "       , T_MGLG_USER C\n"
+			+ "		, T_MGLG_USER_PROFILE D\n"
 			+ "    WHERE A.CHAT_ROOM_ID = :chatRoomId\n"
 			+ "      AND A.CHAT_ROOM_ID = B.CHAT_ROOM_ID\n"
 			+ "      AND B.USER_ID = :userId\n"
 			+ "      AND A.CHAT_TIME >= B.ENTER_DATE\n"
 			+ "      AND A.USER_ID = C.USER_ID\n"
 			+ "		 AND A.ROOM_TYPE = :roomType"
+			+ "		 AND B.USER_ID = D.USER_ID"
 			+ "	ORDER BY A.CHAT_MSG_ID", nativeQuery = true)
 	List<CamelHashMap> getPastMsg(@Param("chatRoomId") String chatRoomId, @Param("userId") int userId, @Param("roomType") String roomType);
 	
@@ -102,4 +105,21 @@ public interface ChatMembersRepository extends JpaRepository<MglgChatMembers, In
 	
 	@Query(value="SELECT IFNULL(MAX(A.CHATROOM_ID),0)+1 FROM T_MGLG_CHATROOM A", nativeQuery=true)
 	int getNextChatroomId();
+	
+	@Query(value=""
+			+ " SELECT A.CHAT_CONTENT AS MESSAGE\n"
+			+ "	 , B.USER_NAME AS WRITER\n"
+			+ "  , DATE_FORMAT(A.CHAT_TIME, '%H:%i') AS CHAT_TIME\n"
+			+ "	FROM T_MGLG_CHAT_MSG A\n"
+			+ "	   , T_MGLG_USER B\n"
+			+ "	WHERE A.CHAT_ROOM_ID = :chatRoomId\n"
+			+ "      AND A.USER_ID = B.USER_ID\n"
+			+ "      AND A.ROOM_TYPE = :roomType", nativeQuery = true)
+	List<CamelHashMap> getPastDM(@Param("chatRoomId") String chatRoomId, @Param("roomType") String roomType);
+	
+	@Query(value=""
+			+ " SELECT USER_PROFILE_NM"
+			+ " FROM T_MGLG_USER_PROFILE"
+			+ " WHERE USER_ID = :userId", nativeQuery = true)
+	String getUserProfile(@Param("userId") int userId);
 }

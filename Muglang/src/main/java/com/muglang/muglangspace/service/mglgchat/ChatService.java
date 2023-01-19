@@ -24,6 +24,11 @@ public interface ChatService {
 	
 	void leaveRoom(MglgChatMembers member);
 	
+
+	List<CamelHashMap> getPastDM(MglgChatMembers member, String roomType);
+	
+	String getUserProfile(int userId);
+	
 	
 	
 }

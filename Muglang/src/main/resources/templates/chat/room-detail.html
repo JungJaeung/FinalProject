@@ -14,6 +14,7 @@
 				var roomId = /*[[${room.id}]]*/;
 				var username = /*[[${#authentication.principal.mglgUser.userName}]]*/;
 				var userId = /*[[${#authentication.principal.mglgUser.userId}]]*/;
+				
 
 				//console.log(roomName + ", " + roomId + ", " + username);
 
@@ -32,8 +33,8 @@
 						var str = '';
 						var messageList = content.messageList;
 						var chatTime = content.chatTime;
+						var profile = content.profile;
 
-						console.log(content);
 						if ((message != null && message != '') && message.includes("님이 입장하였습니다.") || type == "CHAT") {
 							if (writer === username) {
 								//str += "<div class='alert alert-secondary'>";
@@ -61,7 +62,7 @@
 								else {
 									str = "<div style='text-align: left; margin: 35px 0px 35px 80px;'> ";
 									str += "<div class='other_chat'>"
-									str += "<img class='img-fluid rounded-circle' src='../assets/img/messages-1.jpg' style='width:40px; height:40px; position:absolute; top:-8px; left:-60px;'>"
+									str += `<img class='img-fluid rounded-circle' src='/upload/${profile}' style='width:40px; height:40px; position:absolute; top:-8px; left:-60px;'>`
 									str += "<span style='position:absolute; top:-18px; left:0px; font-size:small;'><b>" + writer + "</b></span>";
 									str += "<span style='position:absolute; bottom:-1px; right:-38px; font-size:small;'>" + chatTime + "</span>";
 									str += "<b>" + message + "</b></div>";
@@ -75,7 +76,7 @@
 							let readYn = 'R';
 							for (var i = 0; i < messageList.length; i++) {
 								if (readYn != messageList[i].readYn) {
-									str += "<p style='text-align: center;'>------------여기까지 읽었습니다.------------</p>";
+									str += "<p style='text-align: center;'>여기까지 읽었습니다.</p>";
 								}
 								//불러온 채팅 본인
 								if (messageList[i].writer == username) {
@@ -88,7 +89,7 @@
 								else {
 									str += "<div style='text-align: left; margin: 35px 0px 35px 80px;'> ";
 									str += "<div class='other_chat'>"
-									str += "<img class='img-fluid rounded-circle' src='../assets/img/messages-1.jpg' style='width:40px; height:40px; position:absolute; top:-8px; left:-60px;'>"
+									str += `<img class='img-fluid rounded-circle' src='/upload/${messageList[i].userProfileNm}' style='width:40px; height:40px; position:absolute; top:-8px; left:-60px;'>`
 									str += "<span style='position:absolute; top:-18px; left:0px; font-size:small;'><b>" + messageList[i].writer + "</b></span>";
 									str += "<span style='position:absolute; bottom:-1px; right:-38px; font-size:small;'>" + messageList[i].chatTime + "</span>";
 									str += "<b>" + messageList[i].message + "</b>";
@@ -98,7 +99,7 @@
 								readYn = messageList[i].readYn;
 
 								if (i == messageList.length - 1 && readYn == 'R') {
-									str += "<p style='text-align: center;'>------------여기까지 읽었습니다.------------</p>";
+									str += "<p style='text-align: center;'>여기까지 읽었습니다.</p>";
 								}
 
 							}

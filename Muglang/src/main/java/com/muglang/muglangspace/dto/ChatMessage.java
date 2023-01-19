@@ -23,5 +23,6 @@ public class ChatMessage {
     private int loginUserId;
     private String chatTime;
     private String roomType;
+    private String profile;
     
 }

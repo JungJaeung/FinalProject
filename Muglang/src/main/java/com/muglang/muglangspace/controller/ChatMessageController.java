@@ -28,34 +28,18 @@ public class ChatMessageController {
 	
 	@Autowired
 	private DMService dmService;
-
-	// private final SimpMessagingTemplate template;
-
-//    @Autowired
-//    public ChatMessageController(SimpMessagingTemplate template) {
-//        this.template = template;
-//    }
 	
 	@Autowired
 	public ChatMembersRepository chatMembersRespository;
 
 	private final SimpMessageSendingOperations sendingOperations;
-
-//    @MessageMapping(value = "/chat/join")
-//    public void join(ChatMessage message) {
-//    	System.out.println("join======================" + message.getChatRoomId());
-//        message.setMessage(message.getWriter() + "님이 입장하셨습니다.");
-//        //template.convertAndSend("/subscribe/chat/room/" + message.getChatRoomId(), message);
-//        sendingOperations.convertAndSend("/topic/chat/room/"+message.getChatRoomId(),message);
-//    }
-//    
+ 
 	@MessageMapping("/chat/message")
 	public void message(ChatMessage message) {
 		String chatRoomId = message.getChatRoomId();
 		
 		
 		int userId = message.getUserId();
-		//3. 해당 사용자 방 참여여부 조회(select)
 		int joinYn = chatService.getMember(chatRoomId, userId);
 		
 		MglgChatMembers members = MglgChatMembers.builder()
@@ -66,9 +50,6 @@ public class ChatMessageController {
 		System.out.println(joinYn);
 		
 		if (MessageType.JOIN.equals(message.getType())) {
-			//4. 방 참여여부 데이터가 있으면 join 메시지 안띄우게 
-			//5. enterdate보다 최근에 올라온 메시지들 조회
-			//6. messageList에 담기
 			if(joinYn == 0) {
 				message.setMessage(message.getWriter() + "님이 입장하였습니다.");
 			} else {
@@ -86,13 +67,12 @@ public class ChatMessageController {
 			String chatTime = currentTime.format(df);
 			message.setChatTime(chatTime);
 			
+			message.setProfile(chatService.getUserProfile(message.getUserId()));
+			
 			chatService.insertMsg(messageParam);
 		}
 		sendingOperations.convertAndSend("/topic/chat/room/" + message.getChatRoomId(), message);
 
-		//System.out.println(message.getMessage());
-		// template.convertAndSend("/subscribe/chat/room/" + message.getChatRoomId(),
-		// message);
 	}
 	
 	@MessageMapping("/chat/dMessage")
@@ -100,13 +80,12 @@ public class ChatMessageController {
 		String chatroomId = message.getChatRoomId();
 		
 		if (MessageType.JOIN.equals(message.getType())) {
-			//message.setMessage(message.getWriter() + "님이 입장하였습니다.");
 			MglgChatMembers members = MglgChatMembers.builder()
 					 								 .chatRoomId(chatroomId)
 					 								 .userId(message.getLoginUserId())
 					 								 .build();
 			
-			message.setMessageList(chatService.getPastMsg(members, "D"));
+			message.setMessageList(chatService.getPastDM(members, "D"));
 		} else {
 			System.out.println("chatroomI============================ "  + Integer.parseInt(chatroomId));
 			MglgChatMessage messageParam = MglgChatMessage.builder()
