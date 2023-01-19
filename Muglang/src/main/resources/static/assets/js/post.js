@@ -31,12 +31,14 @@ $(function() {
 				$("#contentIn" + postId).show();
 				$("#fileRequest" + postId).show();
 				$("#updateButtonToggle" + postId).text("편집 모드 비활성화");
+				$("#btnFileDel" + postId).show();
 			} else {
 				$("#postContent" + postId).show();
 				$("#modify_content" + postId).hide();
 				$("#contentIn" + postId).hide();
 				$("#fileRequest" + postId).hide();
 				$("#updateButtonToggle" + postId).text("게시글 수정");
+				$("#btnFileDel" + postId).hide();
 			}
 
 			flagList[0] = !flagList[0];
@@ -190,6 +192,7 @@ $(function() {
 					$("#contentIn" + $(this).val()).hide();
 					$("#fileRequest" + $(this).val()).hide();
 					$(this).text("게시글 수정");
+
 				} else {
 					$("#postContent" + $(this).val()).hide();
 					$("#contentIn" + $(this).val()).show();
@@ -257,12 +260,14 @@ function updateBtnEvent(i, size, postId) {
 			$("#contentIn" + postId).show();
 			$("#fileRequest" + postId).show();
 			$("#updateButtonToggle" + postId).text("편집 모드 비활성화");
+			$("#btnFileDel" + postId).show();
 		} else {
 			$("#postContent" + postId).show();
 			$("#modify_content" + postId).hide();
 			$("#contentIn" + postId).hide();
 			$("#fileRequest" + postId).hide();
 			$("#updateButtonToggle" + postId).text("게시글 수정");
+			$("#btnFileDel" + postId).hide();
 		}
 		console.log("버튼 이벤트 html단 활성화");
 		flagList[i] = !flagList[i];
@@ -482,13 +487,27 @@ function get_post_current(post) {
 	post_text += `<div class="activity" style="margin-bottom: 10px;"
 					id="restImgBox${post.insertPost.postId}">`;
 	post_text += `<div id="imgArea${post.insertPost.postId}">`;
-	if (post.loginUser.userId == post.insertPost.userId) {
-		for (let i = 0; i < post.postFileList.length; i++) {
-			post_text += `<div class="fileList${post.insertPost.postId}" value="${post.postFileList[i].postFileId}">`;
-			//<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
-			//<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-
-			post_text += `<div style="position: relative;">`;
+	post_text += `<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">`;
+	post_text += `<div class="carousel-indicators">`;
+	for(let i = 0; i < post.postFileList.length; i++) {
+		if(i < 1) {
+			post_text +=  `<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${i}" class="active" aria-current="true" aria-label="Slide ${i+1}"></button>`;
+		} else {
+			post_text +=  `<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${i}" aria-label="Slide ${i+1}"></button>`;
+		}
+	}
+	post_text += `</div>`; 
+	post_text += `<div class="carousel-inner">`; 
+	if (loginUserId == post.insertPost.userId) {
+		for (let i = 0; i <post.postFileList.length; i++) {
+			if(i < 1) {
+				post_text += `<div class="fileList${post.insertPost.postId} carousel-item active" value="${post.postFileList[i].postFileId}">`;
+			} else {
+				post_text += `<div class="fileList${post.insertPost.postId} carousel-item" value="${post.postFileList[i].postFileId}">`;
+			}
+			//<!--<input type="text" th:id="'postFileNm' + ${post.insertPost.postId}" value="">
+			//<input type="text" th:id="'postFileId' + ${post.insertPost.postId}" value="">-->
+			//post_text += `<div style="position: relative;">`;
 			post_text += `<input type="hidden" id="postFileId${post.postFileList[i].postFileId}"
 							class="postFileId${post.postFileList[i].postId}" name="postFileId"
 							value="${post.postFileList[i].postFileId}">`;
@@ -498,37 +517,42 @@ function get_post_current(post) {
 			post_text += `<input type="hidden" id="postId${post.postFileList[i].postFileId}"
 							class="postId${post.postFileList[i].postId}" name="postId"
 							value="${post.postFileList[i].postId}">`;
-			post_text += `<input type="file" id="changedFile${post.postFileList[i].postFileId}"
+			if (post.postFileList[i].postFileCate == "img") {
+				post_text += `<input type="file" id="changedFile${post.postFileList[i].postFileId}"
 							name="changedFile${post.postFileList[i].postFileId}"
 							style="display: none;"
 							onchange="fnGetChangedFileInfo(${post.postFileList[i].postFileId}, ${i}, event)">`;
-			if (post.postFileList[i].postFileCate == "img") {
 				post_text += `<img id="img${post.postFileList[i].postFileId}"
 								src="/upload/${post.postFileList[i].postFileNm}"
 								style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
-								class="fileImg"
+								class="fileImg d-block w-100"
 								onclick="fnImgChange(${post.postFileList[i].postFileId})">`;
+				post_text += `<input type="button" class="btnDel" id="btnFileDel${post.insertPost.postId}" value="x"
+							data-del-file="${post.postFileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+							z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00; display: none; 
+							onclick="fnPostImgDel(event)">`;
 
 			} else {
 				post_text += `<img id="img${post.postFileList[i].postFileId}"
-								src="/assets/img/defaultFileImg.png"
+								src="/upload/${post.postFileList[i].postFileNm}"
 								style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
-								class="fileImg"
+								class="fileImg d-block w-100"
 								onclick="fnImgChange(${post.postFileList[i].postFileId})">`;
 			}
-
-			post_text += `<input type="button" class="btnDel" value="x"
-							data-del-file="${post.postFileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-							z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;" 
-							onclick="fnPostImgDel(event)">`;
 			post_text += `<p id="fileNm${post.postFileList[i].postFileId}"
 							style="display: none; font-size: 8px; cursor: pointer;"
 							onclick="fnFileDown(${post.postFileList[i].postId}, ${post.postFileList[i].postFileId})">
 							${post.postFileList[i].postFileOriginNm}</p>`;
-			post_text += `</div></div>`;
+			//post_text += `</div>`;
+			post_text += `</div>`;
 		}
 	} else {
-		for (let i = 0; i < post.postFileList.length; i++) {
+		for (let i = 0; i < post.fileLength; i++) {
+			if(i < 1) {
+				post_text += `<div class="carousel-item active">`;
+			} else {
+				post_text += `<div class="carousel-item">`;
+			}
 			if (post.postFileList[i].postFileCate == "img") {
 				post_text += `<img id="img${post.postFileList[i].postFileId}" 
 					 src="/upload/${post.postFileList[i].postFileNm}"
@@ -542,8 +566,18 @@ function get_post_current(post) {
 					 class="fileImg" 
 					 onclick="fnImgChange(${post.postFileList[i].postFileId})">`;
 			}
+			post_text += `</div>`;
 		}
 	}
+	post_text += `<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+				    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				    <span class="visually-hidden">Previous</span>
+					</button>`;
+	post_text += `<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+					  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+					  <span class="visually-hidden">Next</span>
+				  </button>`;
+	post_text += `</div>`;
 	post_text += `</div>`;
 	post_text += `</div>`;
 	post_text += `<div class="uploadFileSpace" data-post-id="${post.insertPost.postId}">
@@ -696,16 +730,29 @@ $.get_post = function(obj){
 		post_text += `<form id="updateForm${post.postId}" enctype="multipart/form-data">`;
 		//<!-- 게시글 사진 부분 -->
 		//<!-- imgArea는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
-		post_text += `<div class="activity" style="margin-bottom: 10px;"
-						id="restImgBox${post.postId}">`;
+		post_text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox${post.postId}">`;
 		post_text += `<div id="imgArea${post.postId}">`;
+		post_text += `<div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">`;
+		post_text += `<div class="carousel-indicators">`;
+		for(let i = 0; i < post.fileLength; i++) {
+			if(i < 1) {
+				post_text +=  `<button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="${i}" class="active" aria-current="true" aria-label="Slide ${i+1}"></button>`;
+			} else {
+				post_text +=  `<button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="${i}" aria-label="Slide ${i+1}"></button>`;
+			}
+		}
+		post_text += `</div>`; 
+		post_text += `<div class="carousel-inner">`; 
 		if (loginUserId == post.userId) {
 			for (let i = 0; i < post.fileLength; i++) {
-				post_text += `<div class="fileList${post.postId}" value="${post.fileList[i].postFileId}">`;
+				if(i < 1) {
+					post_text += `<div class="carousel-item active" data-bs-interval="4000" value="${post.fileList[i].postFileId}">`;
+				} else {
+					post_text += `<div class="carousel-item" data-bs-interval="4000" value="${post.fileList[i].postFileId}">`;
+				}
 				//<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
 				//<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-	
-				post_text += `<div style="position: relative;">`;
+				post_text += `<div class="fileList${post.postId}" style="position: relative;">`;
 				post_text += `<input type="hidden" id="postFileId${post.fileList[i].postFileId}"
 								class="postFileId${post.fileList[i].postId}" name="postFileId"
 								value="${post.fileList[i].postFileId}">`;
@@ -715,54 +762,71 @@ $.get_post = function(obj){
 				post_text += `<input type="hidden" id="postId${post.fileList[i].postFileId}"
 								class="postId${post.fileList[i].postId}" name="postId"
 								value="${post.fileList[i].postId}">`;
-				post_text += `<input type="file" id="changedFile${post.fileList[i].postFileId}"
+				if (post.fileList[i].postFileCate == "img") {
+					post_text += `<input type="file" id="changedFile${post.fileList[i].postFileId}"
 								name="changedFile${post.fileList[i].postFileId}"
 								style="display: none;"
 								onchange="fnGetChangedFileInfo(${post.fileList[i].postFileId}, ${i}, event)">`;
-				if (post.fileList[i].postFileCate == "img") {
 					post_text += `<img id="img${post.fileList[i].postFileId}"
 									src="/upload/${post.fileList[i].postFileNm}"
 									style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
-									class="fileImg"
+									class="fileImg d-block w-100"
 									onclick="fnImgChange(${post.fileList[i].postFileId})">`;
+					post_text += `<input type="button" class="btnDel" id="btnFileDel${post.postId}" value="x"
+								data-del-file="${post.fileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+								z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00; display: none; 
+								onclick="fnPostImgDel(event)">`;
 	
 				} else {
 					post_text += `<img id="img${post.fileList[i].postFileId}"
-									src="/assets/img/defaultFileImg.png"
+									src="/upload/${post.fileList[i].postFileNm}"
 									style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
-									class="fileImg"
+									class="fileImg d-block w-100"
 									onclick="fnImgChange(${post.fileList[i].postFileId})">`;
 				}
-	
-				post_text += `<input type="button" class="btnDel" value="x"
-								data-del-file="${post.fileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-								z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;" 
-								onclick="fnPostImgDel(event)">`;
 				post_text += `<p id="fileNm${post.fileList[i].postFileId}"
 								style="display: none; font-size: 8px; cursor: pointer;"
 								onclick="fnFileDown(${post.fileList[i].postId}, ${post.fileList[i].postFileId})">
 								${post.fileList[i].postFileOriginNm}</p>`;
-				post_text += `</div></div>`;
+				post_text += `</div>`;
+				post_text += `</div>`;
 			}
 		} else {
 			for (let i = 0; i < post.fileLength; i++) {
+				if(i < 1) {
+					post_text += `<div class="carousel-item active">`;
+				} else {
+					post_text += `<div class="carousel-item">`;
+				}
 				if (post.fileList[i].postFileCate == "img") {
 					post_text += `<img id="img${post.fileList[i].postFileId}" 
 						 src="/upload/${post.fileList[i].postFileNm}"
 					 	 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-						 class="fileImg" 
+						 class="fileImg d-block w-100" 
 						 onclick="fnImgChange(${post.fileList[i].postFileId})">`;
 				} else {
 					post_text += `<img id="img${post.fileList[i].postFileId}"
 						 src="/assets/img/defaultFileImg.png"
 						 style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-						 class="fileImg" 
+						 class="fileImg d-block w-100" 
 						 onclick="fnImgChange(${post.fileList[i].postFileId})">`;
 				}
+				post_text += `</div>`;
 			}
 		}
 		post_text += `</div>`;
+		post_text += `<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+					    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Previous</span>
+						</button>`;
+		post_text += `<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+						  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+						  <span class="visually-hidden">Next</span>
+					  </button>`;
 		post_text += `</div>`;
+		post_text += `</div>`;
+		post_text += `</div>`;
+
 		post_text += `<div class="uploadFileSpace" data-post-id="${post.postId}">
 						<input type="file" id="updateBtnAtt${post.postId}"
 							class="updateBtnAtt" data-post-id="${post.postId}" name="uploadFiles"
@@ -890,7 +954,34 @@ $.get_post = function(obj){
 	page_num += 1;
 	
 }
-
+/*
+<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="..." class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="..." class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="..." class="d-block w-100" alt="...">
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+ */
 //포스트 삭제
 $.post_delete = function(){
 	//포스트 삭제
