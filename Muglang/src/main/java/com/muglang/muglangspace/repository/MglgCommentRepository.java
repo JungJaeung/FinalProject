@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgCommentId;
 
@@ -18,11 +19,16 @@ public interface MglgCommentRepository extends JpaRepository<MglgComment, MglgCo
 //	Optional<MglgComment> findById(MglgCommentId commentIds);
 //	
 //	Optional<MglgComment> findAllByCommentId(MglgPost mglgPost);
-
+	//카멜 해쉬맵이 아닌 엔티티 단위 그대로 불러오기
 	//해당 게시글의 댓글 리스트 불러오기
 	@Query(value = "SELECT * FROM T_MGLG_COMMENT WHERE POST_ID = :postId ORDER BY COMMENT_DATE DESC", nativeQuery = true)
 	Page<MglgComment> getCommentList(Pageable pageable, @Param("postId") int postId);
 
+	//카멜 해쉬맵으로 반환 받고, 추가적인 정보를 받을 수 있게 처리하는 쿼리
+	//해당 게시글의 댓글 리스트를 키, 값으로 받아 모음.
+	@Query(value = "SELECT * FROM T_MGLG_COMMENT WHERE POST_ID = :postId ORDER BY COMMENT_DATE DESC", nativeQuery = true)
+	Page<CamelHashMap> getCommentCamelList(Pageable pageable, @Param("postId") int postId);
+	
 	// 댓글 리스트 불러오기 2. 조인 쿼리로 해당 댓글의 유저 정보까지 같이 가져옴. MglgComment형만 가져오므로 사용 안됨.
 //	@Query(value = "SELECT * FROM T_MGLG_COMMENT A, T_MGLG_USER B"
 //			+ " WHERE A.USER_ID = B.USER_ID AND "
