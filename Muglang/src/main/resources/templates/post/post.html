@@ -28,7 +28,7 @@
 			let post_text = "";
 			let totalPages = 1;
 			let scrollYn = false;
-
+			let commentScrollYn = false;
 			//현재시간
 			let now = new Date();
 
@@ -335,6 +335,35 @@
 						}
 					}
 				});
+				/*
+				$(modal-body).scroll(function() {
+					console.log($(modal-body).scrollTop());
+					console.log($(document).height());
+					console.log($(modal-body).height());
+					if(!commentScrollYn) {
+						if ($(modal-body).scrollTop() == $(document).height() - $(modal-body).height()) {
+							commentScrollYn = true;
+							console.log("들어오는 페이지 번호 : " + page_num);
+							if (page_num < totalPages) {
+								$.ajax({
+									url: '/post/mainPost',
+									type: 'post',
+									data: {page_num: page_num},
+									success: function (obj) {
+									  console.log(obj)
+										$.get_post(obj);
+										setTimeout(function(){
+											commentScrollYn = false;
+										}, 1000);
+									},
+									error: function (e) {
+										console.log("실패실패");
+									}
+								});
+							}
+						}
+					}
+				});*/
 			});//j쿼리 종료
 
 			//지도 윈도우창 띄우기
