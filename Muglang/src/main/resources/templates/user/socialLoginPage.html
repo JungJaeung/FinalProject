@@ -72,7 +72,54 @@
             position: absolute;
         }
         </style>
+		<script>
+        $(function(){
+            $(".form-control").mouseover(function(e){
+                $(e.target).css("border", "2px solid #00BFFF");
+            });
 
+            $(".form-control").mouseout(function(e){
+                $(e.target).css("border", "1px solid #ced4da");
+            });
+
+            $("input[name = lastName]").keydown(function(e){
+                if($(e.target).val().length > 12){
+                    alert("12자 이내로 입력해주세요.");
+                    $(e.target).val("");
+                }
+            })
+
+            $("input[name = firstName]").keydown(function(e){
+                if($(e.target).val().length > 12){
+                    alert("12자 이내로 입력해주세요.");
+                    $(e.target).val("");
+                }
+            })
+
+            $("input[name = userNick]").keydown(function(e){
+                if($(e.target).val().length > 12){
+                    alert("12자 이내로 입력해주세요.");
+                    $(e.target).val("");
+                }
+            })
+
+            $("#submit_btn").click(function(){
+                if($("input[name = lastName]").val() != ""){
+                    if($("input[name = fastName]").val() != ""){
+                        if($("input[name = userNick]").val() != ""){
+                            $("#loginForm").submit();
+                        }
+                        else
+                            alert("입력칸을 채워주세요")
+                    } 
+                    else
+                        alert("입력칸을 채워주세요")
+                }
+                else
+                    alert("입력칸을 채워주세요")
+            })
+        })
+        </script>
 		
 	</head>
 	<body>
