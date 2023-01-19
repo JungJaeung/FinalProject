@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 
 //index.html에서 login과정을 자동으로 진행한뒤 이곳을 매핑하여 계정확인을 다시 수행함.
+//로그인 하려하는 메인 페이지 이동.
 @RestController
 @RequestMapping("/home")
 public class HomeController {
