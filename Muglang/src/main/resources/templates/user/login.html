@@ -5,13 +5,7 @@
 	<title>Welcome to MUGLANG</title>
 	<!-- 로그인 페이지의 메인 페이지를 담당하는 페이지로 css 처리 할 때 주의 요망-->
 	<script th:src="@{/js/jquery-3.6.1.min.js}"></script>
-
-
-	<head>
-		<title>Welcome to MUGLANG</title>
-        <script th:src="@{/js/jquery-3.6.1.min.js}"></script>
-      
-		<style>
+	<style>
        html,
 		body {
 			margin: 0;
@@ -75,98 +69,35 @@
             left: calc(23.5% + 150px);
             position: absolute;
         }
-        
         </style>
-
-        <script>
-        $(function(){
-            $(".form-control").mouseover(function(e){
-                $(e.target).css("border", "2px solid #00BFFF");
-            });
-
-            $(".form-control").mouseout(function(e){
-                $(e.target).css("border", "1px solid #ced4da");
-            });
-
-            $("input[name = lastName]").keydown(function(e){
-                if($(e.target).val().length > 12){
-                    alert("12자 이내로 입력해주세요.");
-                    $(e.target).val("");
-                }
-            })
-
-            $("input[name = firstName]").keydown(function(e){
-                if($(e.target).val().length > 12){
-                    alert("12자 이내로 입력해주세요.");
-                    $(e.target).val("");
-                }
-            })
-
-            $("input[name = userNick]").keydown(function(e){
-                if($(e.target).val().length > 12){
-                    alert("12자 이내로 입력해주세요.");
-                    $(e.target).val("");
-                }
-            })
-
-            $("#submit_btn").click(function(){
-                if($("input[name = lastName]").val() != ""){
-                    if($("input[name = fastName]").val() != ""){
-                        if($("input[name = userNick]").val() != ""){
-                            $("#loginForm").submit();
-                        }
-                        else
-                            alert("입력칸을 채워주세요")
-                    } 
-                    else
-                        alert("입력칸을 채워주세요")
-                }
-                else
-                    alert("입력칸을 채워주세요")
-            })
-        })
-        </script>
-
-		
+        
 	</head>
 	<body>
-	    <div id="container">
-            <div id="login_menu">
-                <!--로고-->
-                <div class="menu_title">
-                    <!--<img class="mglg_logo" th:src="@{/assets/img/mglg_logo_white.png}">-->
-                    <img class="mglg_logo" src="mglg_logo_white.png">
-                </div>
-                <div>
-                    <form id="loginForm" action="/user/socialNewLogin" method="post">
-                        <h3 style="margin-top: -10px;">MUGLANG에 처음 로그인 하시네요.</h3>
-                        <div class="input_div">
-                            <label>
-                                <span class="input_title">성(Last Name)</span>
-                                <input type="text" id="lastName" class="form-control input_text" name="lastName" value="">
-                            </label>
-                        </div>
-                        <div class="input_div">
-                            <label>
-                                <span class="input_title">이름(First Name)</span>
-                                <input type="text" id="firstName" class="form-control input_text" name="firstName" value="">
-                            </label>
-                        </div>
-                        <div class="input_div">
-                            <label>
-                                <span class="input_title">닉네임</span>
-                                <input type="text" id="userNick" class="form-control input_text" name="userNick" value="">
-                            </label>
-                        </div>
-        
-                        <!-- 로그인 버튼 (SNS로그인으로 대체 되므로 추후에 지우면 됨.) -->
-                        <input type="button" id="submit_btn" class="form-control" value="시작하기">
-                    </form>
+		<div id="container">
+			<div id="login_menu">
+				<!--로고-->
+				<div class="menu_title">
+					<img class="mglg_logo" th:src="@{/assets/img/mglg_logo_white.png}" alt="">
+				</div>
+				<!--로그인 아이콘-->
+				<div class="login_group">
+					<a href="/oauth2/authorization/kakao">
+						<img class="login_img" th:src="@{/images/login_with_kakao/kakao_login_large_narrow.png}">
+					</a><br>
+					<a href="/oauth2/authorization/google">
+						<img class="login_img"
+							th:src="@{/images/login_with_google/btn_google_signin_light_normal_web@2x.png}">
+					</a><br>
+					<a href="/oauth2/authorization/naver">
+						<img class="login_img" th:src="@{/images/login_with_naver/btnW_official.png}">
+					</a>
+				</div>
+				<div id="sub_menu">
+					<a th:href="@{/user/getAdminUserList}" id="move_admin">Admin Page</a>
+				</div>
+			</div>
 
-                </div>
-            </div>
-        </div>
-	    </div>		
+		</div>
 	</body>
 </html>
 
