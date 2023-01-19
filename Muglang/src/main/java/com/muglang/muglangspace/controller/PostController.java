@@ -598,7 +598,7 @@ public class PostController {
 		try {
 			MglgPost post = MglgPost.builder().postId(postId).build();
 
-			post = mglgPostService.getPost(post);
+			post = mglgPostService.getPost(postId);
 			MglgPostDTO returnPostDTO = MglgPostDTO.builder().postId(post.getPostId())
 					.postContent(post.getPostContent()).postDate(post.getPostDate().toString())
 					// 아래줄 원래 .postId(post.getMglgUser().getUserId()) 2022/12/21 19:09

@@ -2,6 +2,7 @@ package com.muglang.muglangspace.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,15 +26,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.muglang.muglangspace.common.CamelHashMap;
+import com.muglang.muglangspace.common.Load;
 import com.muglang.muglangspace.dto.MglgCommentDTO;
 import com.muglang.muglangspace.dto.MglgResponseDTO;
+import com.muglang.muglangspace.dto.MglgUserDTO;
+import com.muglang.muglangspace.dto.MglgUserProfileDTO;
 import com.muglang.muglangspace.entity.CustomUserDetails;
 import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgPost;
 import com.muglang.muglangspace.entity.MglgUser;
+import com.muglang.muglangspace.entity.MglgUserProfile;
 import com.muglang.muglangspace.service.mglgadmin.AdminService;
 import com.muglang.muglangspace.service.mglgcomment.MglgCommentService;
+import com.muglang.muglangspace.service.mglgpost.MglgPostService;
 import com.muglang.muglangspace.service.mglguser.MglgUserService;
+import com.muglang.muglangspace.service.mglguserprofile.MglgUserProfileService;
 
 @RestController
 @RequestMapping("/comment")
@@ -43,7 +52,10 @@ public class CommentController {
 	private MglgUserService mglgUserService;
 	@Autowired
 	private AdminService adminService;
-	
+	@Autowired
+	private MglgUserProfileService mglgUserProfileService;
+	@Autowired
+	private MglgPostService mglgPostService;
 	
 	//커멘트 조회
 	@GetMapping("/comment")
@@ -80,16 +92,32 @@ public class CommentController {
 	@GetMapping("/commentList")
 	public ResponseEntity<?> getCommentList(HttpSession session ,MglgComment comment, @PageableDefault(page = 0, size = 8) Pageable pageable,
 			@RequestParam("postId") int postId) {
-		//이 객체에는 댓글이 현재 가지고 있는 유저 정보와 포스팅의 정보도 같이 가지고 있다.
-		Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable, postId);
+		//이 객체에는 댓글이 현재 가지고 있는 유저 정보와 포스팅의 정보도 같이 가지고 있다. 새로운 유저의 정보를 담음.
+		//Page<CamelHashMap> commentInfoMap = new PageImpl<CamelHashMap>(commentInfo);
+		//System.out.println("commentInfo를 페이징으로 만들었습니다." + commentInfoMap.getContent());
+		//MglgComment 대신 프로필도 들어가게 하는 CamelHashMap 사용.
+		//Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable, postId);
+		
+		Page<CamelHashMap> pageCommentExtend = mglgCommentService.getPageCommentCamelList(pageable, postId);
 		//댓글 목록 테스트용
-		for(MglgComment comment1 :  pageCommentList) {
-			System.out.println(comment1);
+		for(CamelHashMap comment1 :  pageCommentExtend) {
+			System.out.println("댓글 로드 해보기 : " + comment1);
 		}
 		try {
-			return ResponseEntity.ok().body(pageCommentList);
+			//해당 댓글의 작성자들의 프로필을 적용하기 위한 정보 로드.
+			for(CamelHashMap target :  pageCommentExtend) {
+				MglgUser user = mglgUserService.findUser((int)target.get("userId"));
+				MglgUserDTO userDTO = Load.toHtml(user);
+				MglgUserProfile targetProfile = mglgUserProfileService.getUserImg((int)target.get("userId"));
+				MglgUserProfileDTO targetProfileDTO = Load.toHtml(targetProfile);
+				target.put("mglg_user", userDTO);
+				target.put("profile", targetProfileDTO);
+				System.out.println("댓글의 최종 정보 : " + target);
+			}
+			
+			return ResponseEntity.ok().body(pageCommentExtend);
 		} catch(Exception e) {
-			return ResponseEntity.badRequest().body(pageCommentList);
+			return ResponseEntity.badRequest().body(pageCommentExtend);
 		}
 
 	}
@@ -102,9 +130,20 @@ public class CommentController {
 			@RequestParam("postId") int postId) {
 		pageable = PageRequest.of(page_num, 8);
 		
-		Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable, postId);
-
-		return ResponseEntity.ok().body(pageCommentList);
+		//Page<MglgComment> pageCommentList = mglgCommentService.getPageCommentList(pageable, postId);
+		//댓글에 있는 유저, 프로필 정보를 다시 가져옴.
+		Page<CamelHashMap> pageCommentExtend = mglgCommentService.getPageCommentCamelList(pageable, postId);
+		for(CamelHashMap target :  pageCommentExtend) {
+			MglgUser user = mglgUserService.findUser((int)target.get("userId"));
+			MglgUserDTO userDTO = Load.toHtml(user);
+			MglgUserProfile targetProfile = mglgUserProfileService.getUserImg((int)target.get("userId"));
+			MglgUserProfileDTO targetProfileDTO = Load.toHtml(targetProfile);
+			target.put("mglg_user", userDTO);
+			target.put("profile", targetProfileDTO);
+			System.out.println("댓글의 최종 정보 : " + target);
+		}
+		//return ResponseEntity.ok().body(pageCommentList);
+		return ResponseEntity.ok().body(pageCommentExtend);
 	}
 	
 
@@ -113,8 +152,15 @@ public class CommentController {
 	public void insertComment(@RequestParam("userId") int userId, @RequestParam("postId") int postId, @RequestParam("commentContent") String commentContent)
 			throws IOException {
 		System.out.println("댓글 입력 작업");
-		mglgCommentService.insertComment(userId, postId, commentContent);
-
+		MglgComment comment = MglgComment.builder()
+										 .mglgPost(mglgPostService.getPost(postId))
+										 .mglgUser(mglgUserService.findUser(userId))
+										 .commentContent(commentContent)
+										 .commentDate(LocalDateTime.now())
+										 .build();
+		
+		mglgCommentService.insertComment(comment);
+		//mglgCommentService.insertComment(userId, postId, commentContent);
 	}
 
 	// 댓글 삭제

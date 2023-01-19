@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.muglang.muglangspace.common.CamelHashMap;
 import com.muglang.muglangspace.entity.MglgComment;
 import com.muglang.muglangspace.entity.MglgCommentId;
 import com.muglang.muglangspace.repository.MglgCommentRepository;
@@ -30,11 +31,12 @@ public class MglgCommentServiceImpl implements MglgCommentService{
 			// TODO Auto-generated method stub
 			return mglgCommentRepository.getCommentList(pageable, postId);
 		}
-//		@Override
-//		public Optional<MglgComment> getCommentList(MglgPost mglgPost) {
-//			// TODO Auto-generated method stub
-//			return mglgCommentRepository.findAllByCommentId(mglgPost);
-//		}
+		
+		@Override
+		public Page<CamelHashMap> getPageCommentCamelList(Pageable pageable, int postId) {
+			// TODO Auto-generated method stub
+			return mglgCommentRepository.getCommentCamelList(pageable, postId);
+		}
 		
 		@Override
 		public void deleteComment(int commentId,int postId) {
@@ -69,6 +71,15 @@ public class MglgCommentServiceImpl implements MglgCommentService{
 			return "success";
 
 		}
+
+		@Override
+		public void insertComment(MglgComment comment) {
+			// TODO Auto-generated method stub
+			mglgCommentRepository.save(comment);
+			
+			mglgCommentRepository.flush();
+		}
+
 
 //		@Override
 //		public void insertComment(MglgComment comment) {

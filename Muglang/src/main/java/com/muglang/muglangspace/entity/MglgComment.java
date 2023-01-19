@@ -4,10 +4,13 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
@@ -21,6 +24,12 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="T_MGLG_COMMENT")
+@SequenceGenerator(
+		name="MglgCommentSequenceGenerator",
+		sequenceName="T_MGLG_COMMENT_SEQ",
+		initialValue=1,
+		allocationSize=1
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -30,6 +39,10 @@ import lombok.NoArgsConstructor;
 public class MglgComment {
 	
 	@Id
+	@GeneratedValue(
+			strategy=GenerationType.SEQUENCE,
+			generator="MglgCommentSequenceGenerator"
+	)
 	private int commentId;
 	@Id
 	@ManyToOne

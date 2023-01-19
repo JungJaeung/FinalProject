@@ -71,9 +71,9 @@ public class MglgPostServiceImpl implements MglgPostService {
 	}
 	
 	@Override
-	public MglgPost getPost(MglgPost post) {
+	public MglgPost getPost(int postId) {
 
-		return mglgPostRepository.findByPostId(post.getPostId());
+		return mglgPostRepository.findByPostId(postId);
 	}
 
 	// 포스트 갯수 조회
