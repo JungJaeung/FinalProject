@@ -270,13 +270,14 @@
 											<a href="/social/otherUser?userId=${obj.pageItems.content[i].userId}">
 												<div style="width: 25%; margin-top: 10px; float: left;">
 													<img class="img-fluid rounded-circle"
-												 src="/upload/${obj.pageItems.content[i].followerprofile.userProfileNm}" style="width: 50px; height:50px">
+												 		src="/upload/${obj.pageItems.content[i].followingProfile.userProfileNm}" 
+												 		style="width: 50px; height:50px;">
 												</div>
 												<div style="width: 65%; margin-top: 13px; float: left; font-weight: bold; color: black;">
 													${obj.pageItems.content[i].userNick}
 												</div>
 												<div style="width: 65%; color: #aaaaaa; font-size: x-small; float:left;">
-			                                 		${obj.pageItems.content[i].userId}
+			                                 		${obj.pageItems.content[i].email}
 			                                	</div>
 											</a>
 										</div>
