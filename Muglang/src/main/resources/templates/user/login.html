@@ -5,13 +5,7 @@
 	<title>Welcome to MUGLANG</title>
 	<!-- 로그인 페이지의 메인 페이지를 담당하는 페이지로 css 처리 할 때 주의 요망-->
 	<script th:src="@{/js/jquery-3.6.1.min.js}"></script>
-
-
-	<head>
-		<title>Welcome to MUGLANG</title>
-        <script th:src="@{/js/jquery-3.6.1.min.js}"></script>
-      
-		<style>
+	<style>
        html,
 		body {
 			margin: 0;
@@ -75,10 +69,9 @@
             left: calc(23.5% + 150px);
             position: absolute;
         }
-        
         </style>
-
-        <script>
+        
+		<script>
         $(function(){
             $(".form-control").mouseover(function(e){
                 $(e.target).css("border", "2px solid #00BFFF");
@@ -126,7 +119,6 @@
             })
         })
         </script>
-
 		
 	</head>
 	<body>
