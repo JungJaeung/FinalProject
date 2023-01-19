@@ -249,7 +249,6 @@ public class SocialController {
 				int eachUserId = (int)pageFollowList.getContent().get(i).get("userId");
 				MglgUserProfile followerProfile = mglgUserProfileService.followerProfile(eachUserId);
 				pageFollowList.getContent().get(i).put("follower_profile", followerProfile);
-				System.out.println(i+"번째"+pageFollowList.getContent().get(i)+"끝");
 				if(i==5) {
 					i=0;
 				}else {
@@ -278,9 +277,17 @@ public class SocialController {
 										  .userId(customUser.getMglgUser().getUserId())
 									      .build();
 
-		Page<CamelHashMap> pagefollowList = userRelationService.followList(user, pageable);
+		int i =0;
+		Page<CamelHashMap> pageFollowList = userRelationService.followList(user, pageable);
+		for(CamelHashMap a : pageFollowList) {
+			int eachUserId = (int)pageFollowList.getContent().get(i).get("userId");
+			MglgUserProfile followerProfile = mglgUserProfileService.followerProfile(eachUserId);
+			pageFollowList.getContent().get(i).put("follower_profile", followerProfile);
 
-			response.setPageItems(pagefollowList);
+
+		}
+
+			response.setPageItems(pageFollowList);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
 
@@ -336,10 +343,20 @@ public class SocialController {
 										  .userId(customUser.getMglgUser().getUserId())
 									      .build();
 
-		Page<CamelHashMap> pagefollowList = userRelationService.followingList(user, pageable);
-		System.out.println("pagefollowList ====" + pagefollowList.getContent());
+		int i =0;
+		Page<CamelHashMap> pagefollowingList = userRelationService.followingList(user, pageable);
+		for(CamelHashMap a : pagefollowingList) {
+			System.out.println(i+"번째"+pagefollowingList.getContent().get(i));
+			
+			int eachUserId = (int)pagefollowingList.getContent().get(i).get("userId");
+			MglgUserProfile followingProfile = mglgUserProfileService.followingProfile(eachUserId);
+			pagefollowingList.getContent().get(i).put("following_profile", followingProfile);
+		
 
-			response.setPageItems(pagefollowList);
+		}
+		
+
+			response.setPageItems(pagefollowingList);
 			return ResponseEntity.ok().body(response);
 		} catch (Exception e) {
 
