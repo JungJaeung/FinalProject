@@ -32,6 +32,7 @@ $(function() {
 				$("#fileRequest" + postId).show();
 				$("#updateButtonToggle" + postId).text("편집 모드 비활성화");
 				$("#btnFileDel" + postId).show();
+				
 			} else {
 				$("#postContent" + postId).show();
 				$("#modify_content" + postId).hide();
@@ -151,6 +152,12 @@ $(function() {
 		console.log("삭제버튼 클릭")
 		$("#delete_form" + e.target.value).submit();
 	});
+	//추가되는 게시글의 삭제 작업 이벤트를 부여.
+	$.deleteButtonSet = function(postId) {
+		$("#deleteButton" + postId).click(function(e) {
+			$("#delete_form" + e.target.value).submit();
+		});
+	}
 
 	//내 게시물 외의 모든 게시글의 
 	$.followingEvent = function(targetIndex, postId) {
@@ -163,7 +170,7 @@ $(function() {
 		$("#fileRequest" + $(this).val()).hide();
 		$("#fileRequest" + postId).hide();
 	}
-
+	
 
 	//스크롤 확장시 다시 이벤트를 발생시킬 스크립트를 다시 로드함.
 	$.updateBtn = function(startIndex, size) {
@@ -314,40 +321,68 @@ function fnChangeContent(input, postId) {
 //수정작업을 진행한후 이미지 갱신을 위한 태그 생성. 수정작업때만 사용되는 html단 텍스트 이므로 로그인 여부를 사용하지 않아도됨.
 function imageTag(item, fileLength) {
 	let tag = "";
+	console.log("fileLength : " + fileLength);
+	tag += `<div id="carouselExampleIndicators${item.getPost.postId}" class="carousel carousel-dark slide" data-bs-ride="carousel">`;
+	tag += `<div class="carousel-indicators">`;
+	for(let i = 0; i < fileLength; i++) {
+		if(i < 1) {
+			tag +=  `<button type="button" data-bs-target="#carouselExampleIndicators${item.getPost.postId}" data-bs-slide-to="${i}" class="active" aria-current="true" aria-label="Slide ${i+1}"></button>`;
+		} else {
+			tag +=  `<button type="button" data-bs-target="#carouselExampleIndicators${item.getPost.postId}" data-bs-slide-to="${i}" aria-label="Slide ${i+1}"></button>`;
+		}
+	}
+	tag += `</div>`; 
+	tag += `<div class="carousel-inner">`; 
 	for (let i = 0; i < fileLength; i++) {
-		tag += `<div class="fileList${item.getPost.postId}" value="${item.updateFileList[i].postFileId}">`;
-		tag += `<div style="position: relative;">`;
+		console.log(item);
+		if(i < 1) {
+			tag += `<div class="carousel-item active" data-bs-interval="4000" value="${item.updateFileList[i].postFileId}">`;
+		} else {
+			tag += `<div class="carousel-item" data-bs-interval="4000" value="${item.updateFileList[i].postFileId}">`;
+		}
+		//tag += `<div class="fileList${item.getPost.postId}" value="${item.updateFileList[i].postFileId}">`;
+		//tag += `<div style="position: relative;">`;
 		tag += `<input type="hidden" id="postFileId${item.updateFileList[i].postFileId}" 
 					class="postFileId${item.updateFileList[i].postId}" name="postFileId" value="${item.updateFileList[i].postFileId}">`;
 		tag += `<input type="hidden" id="postFileNm${item.updateFileList[i].postFileId}" 
 					class="postFileNm" name="postFileNm" value="${item.updateFileList[i].postFileNm}">`;
 		tag += `<input type="hidden" id="postId${item.updateFileList[i].postFileId}" 
 					class="postId${item.getPost.postId}" name="postId" value="${item.updateFileList[i].postId}">`;
-		tag += `<input type="file" id="changedFile${item.updateFileList[i].postFileId}" name="changedFile${item.updateFileList[i].postFileId}" style="display: none;" 
-					onchange="fnGetChangedFileInfo(${item.updateFileList[i].postFileId}, ${i}, event)">`;
 		if (item.updateFileList[i].postFileCate == 'img') {
+			tag += `<input type="file" id="changedFile${item.updateFileList[i].postFileId}" name="changedFile${item.updateFileList[i].postFileId}" style="display: none;" 
+					onchange="fnGetChangedFileInfo(${item.updateFileList[i].postFileId}, ${i}, event)">`;
 			tag += `<img id="img${item.updateFileList[i].postFileId}" 
 				src="/upload/${item.updateFileList[i].postFileNm}" 
 		 		style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-				class="fileImg" 
+				class="fileImg d-block w-100" 
 				onclick="fnImgChange(${item.updateFileList[i].postFileId})">`;
+			tag += `<input type="button" class="btnDel" value="x" data-del-file="${item.updateFileList[i].postFileId}"
+				   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+				   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+				   onclick="fnPostImgDel(event)">`;
 		} else {
 			tag += `<img id="img${item.updateFileList[i].postFileId}" 
 				src="/assets/img/defaultFileImg.png" 
 				style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
-				class="fileImg" 
+				class="fileImg d-block w-100" 
 			 	onclick="fnImgChange(${item.updateFileList[i].postFileId})">`;
 		}
-		tag += `<input type="button" class="btnDel" value="x" data-del-file="${item.updateFileList[i].postFileId}"
-				   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-				   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-				   onclick="fnPostImgDel(event)">`;
+
 		tag += `<p id="fileNm${item.updateFileList[i].postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
 					onclick="fnFileDown(${item.updateFileList[i].postId}, ${item.updateFileList[i].postFileId})"
 					>${item.updateFileList[i].postFileOriginNm}</div>`;
 		tag += `</div>`;
 	}
-
+	tag += `</div>`;
+	tag += `<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators${item.getPost.postId}" data-bs-slide="prev">
+				    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				    <span class="visually-hidden">Previous</span>
+					</button>`;
+	tag += `<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators${item.getPost.postId}" data-bs-slide="next">
+					  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+					  <span class="visually-hidden">Next</span>
+					  </button>`;
+	tag += `</div>`;
 	return tag;
 }
 
@@ -487,13 +522,13 @@ function get_post_current(post) {
 	post_text += `<div class="activity" style="margin-bottom: 10px;"
 					id="restImgBox${post.insertPost.postId}">`;
 	post_text += `<div id="imgArea${post.insertPost.postId}">`;
-	post_text += `<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">`;
+	post_text += `<div id="carouselExampleIndicators${post.postId}" class="carousel slide" data-bs-ride="carousel">`;
 	post_text += `<div class="carousel-indicators">`;
 	for(let i = 0; i < post.postFileList.length; i++) {
 		if(i < 1) {
-			post_text +=  `<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${i}" class="active" aria-current="true" aria-label="Slide ${i+1}"></button>`;
+			post_text +=  `<button type="button" data-bs-target="#carouselExampleIndicators${post.postId}" data-bs-slide-to="${i}" class="active" aria-current="true" aria-label="Slide ${i+1}"></button>`;
 		} else {
-			post_text +=  `<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${i}" aria-label="Slide ${i+1}"></button>`;
+			post_text +=  `<button type="button" data-bs-target="#carouselExampleIndicators${post.postId}" data-bs-slide-to="${i}" aria-label="Slide ${i+1}"></button>`;
 		}
 	}
 	post_text += `</div>`; 
@@ -569,11 +604,11 @@ function get_post_current(post) {
 			post_text += `</div>`;
 		}
 	}
-	post_text += `<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+	post_text += `<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators${post.postId}" data-bs-slide="prev">
 				    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
 				    <span class="visually-hidden">Previous</span>
 					</button>`;
-	post_text += `<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+	post_text += `<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators${post.postId}" data-bs-slide="next">
 					  <span class="carousel-control-next-icon" aria-hidden="true"></span>
 					  <span class="visually-hidden">Next</span>
 				  </button>`;

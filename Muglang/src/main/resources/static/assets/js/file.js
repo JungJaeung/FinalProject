@@ -366,6 +366,7 @@ let changedFiles = [];
 			success: function (obj) {
 				alert("수정작업을 성공하였습니다.");
 				console.log(obj);
+				
 				$("#imgArea" + postId).html(imageTag(obj.item, obj.item.fileSize));
 				$("#postId").val('' + obj.item.getPost.postId);
 				$("#userId").val('' + obj.item.getPost.userId);
