@@ -268,6 +268,7 @@ function updateBtnEvent(i, size, postId) {
 			$("#fileRequest" + postId).show();
 			$("#updateButtonToggle" + postId).text("편집 모드 비활성화");
 			$("#btnFileDel" + postId).show();
+			$(".btnDel" + postId).show();
 		} else {
 			$("#postContent" + postId).show();
 			$("#modify_content" + postId).hide();
@@ -275,6 +276,7 @@ function updateBtnEvent(i, size, postId) {
 			$("#fileRequest" + postId).hide();
 			$("#updateButtonToggle" + postId).text("게시글 수정");
 			$("#btnFileDel" + postId).hide();
+			$(".btnDel" + postId).hide();
 		}
 		console.log("버튼 이벤트 html단 활성화");
 		flagList[i] = !flagList[i];
@@ -358,10 +360,6 @@ function imageTag(item, fileLength) {
 			 		style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
 					class="fileImg d-block w-100" 
 					onclick="fnImgChange(${item.updateFileList[i].postFileId})">`;
-				tag += `<input type="button" class="btnDel" value="x" data-del-file="${item.updateFileList[i].postFileId}"
-					   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-					   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-					   onclick="fnPostImgDel(event)">`;
 			} else {
 				tag += `<img id="img${item.updateFileList[i].postFileId}" 
 					src="/assets/img/defaultFileImg.png" 
@@ -369,7 +367,10 @@ function imageTag(item, fileLength) {
 					class="fileImg d-block w-100" 
 				 	onclick="fnImgChange(${item.updateFileList[i].postFileId})">`;
 			}
-	
+			tag += `<input type="button" class="btnDel${item.getPost.postId}" value="x" data-del-file="${item.updateFileList[i].postFileId}"
+			   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+			   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+			   onclick="fnPostImgDel(event)">`;
 			tag += `<p id="fileNm${item.updateFileList[i].postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
 						onclick="fnFileDown(${item.updateFileList[i].postId}, ${item.updateFileList[i].postFileId})"
 						>${item.updateFileList[i].postFileOriginNm}</p>`;
@@ -548,6 +549,7 @@ function get_post_current(post) {
 				//<!--<input type="text" th:id="'postFileNm' + ${post.insertPost.postId}" value="">
 				//<input type="text" th:id="'postFileId' + ${post.insertPost.postId}" value="">-->
 				//post_text += `<div style="position: relative;">`;
+				post_text += `<div class="fileList${post.postId}" style="position: relative;">`;
 				post_text += `<input type="hidden" id="postFileId${post.postFileList[i].postFileId}"
 								class="postFileId${post.postFileList[i].postId}" name="postFileId"
 								value="${post.postFileList[i].postFileId}">`;
@@ -567,11 +569,6 @@ function get_post_current(post) {
 									style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
 									class="fileImg d-block w-100"
 									onclick="fnImgChange(${post.postFileList[i].postFileId})">`;
-					post_text += `<input type="button" class="btnDel" id="btnFileDel${post.insertPost.postId}" value="x"
-								data-del-file="${post.postFileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-								z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00; display: none; 
-								onclick="fnPostImgDel(event)">`;
-	
 				} else {
 					post_text += `<img id="img${post.postFileList[i].postFileId}"
 									src="/upload/${post.postFileList[i].postFileNm}"
@@ -579,11 +576,15 @@ function get_post_current(post) {
 									class="fileImg d-block w-100"
 									onclick="fnImgChange(${post.postFileList[i].postFileId})">`;
 				}
+				post_text += `<input type="button" class="btnDel${post.insertPost.postId}" id="btnFileDel${post.postFileList[i].postFileId}" value="x"
+								data-del-file="${post.postFileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+								z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00; display: none;"
+								onclick="fnPostImgDel(event)">`;
 				post_text += `<p id="fileNm${post.postFileList[i].postFileId}"
 								style="display: none; font-size: 8px; cursor: pointer;"
 								onclick="fnFileDown(${post.postFileList[i].postId}, ${post.postFileList[i].postFileId})">
 								${post.postFileList[i].postFileOriginNm}</p>`;
-				//post_text += `</div>`;
+				post_text += `</div>`;
 				post_text += `</div>`;
 			}
 		} else {
@@ -819,7 +820,7 @@ $.get_post = function(obj){
 					}
 					//<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
 					//<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-					//post_text += `<div class="fileList${post.postId}" style="position: relative;">`;
+					post_text += `<div class="fileList${post.postId}" style="position: relative;">`;
 					post_text += `<input type="hidden" id="postFileId${post.fileList[i].postFileId}"
 									class="postFileId${post.fileList[i].postId}" name="postFileId"
 									value="${post.fileList[i].postFileId}">`;
@@ -839,11 +840,7 @@ $.get_post = function(obj){
 										style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
 										class="d-block w-100"
 										onclick="fnImgChange(${post.fileList[i].postFileId})">`;
-						post_text += `<input type="button" class="btnDel" id="btnFileDel${post.postId}" value="x"
-									data-del-file="${post.fileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-									z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00; display: none;" 
-									onclick="fnPostImgDel(event)">`;
-		
+
 					} else {
 						post_text += `<img id="img${post.fileList[i].postFileId}"
 										src="/upload/${post.fileList[i].postFileNm}"
@@ -851,11 +848,16 @@ $.get_post = function(obj){
 										class="d-block w-100"
 										onclick="fnImgChange(${post.fileList[i].postFileId})">`;
 					}
+					post_text += `<input type="button" class="btnDel${post.postId}" id="btnFileDel${post.fileList[i].postFileId}" value="x"
+									data-del-file="${post.fileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+									z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00; display: none;" 
+									onclick="fnPostImgDel(event)">`;
+
 					post_text += `<p id="fileNm${post.fileList[i].postFileId}"
 									style="display: none; font-size: 8px; cursor: pointer;"
 									onclick="fnFileDown(${post.fileList[i].postId}, ${post.fileList[i].postFileId})">
 									${post.fileList[i].postFileOriginNm}</p>`;
-					//post_text += `</div>`;
+					post_text += `</div>`;
 					post_text += `</div>`;
 				}
 			} else {

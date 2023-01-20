@@ -388,6 +388,7 @@ let changedFiles = [];
 				//$("#deleteButton" + postId).remove();
 				$("#updateButton" + postId).remove();
 				$("#fileRequest" + postId).hide();
+				$(".btnDel" + postId).hide();
 				flagList[index] = false;
 				$($(".updateBtn")[index]).text("게시글 수정");
 			},
