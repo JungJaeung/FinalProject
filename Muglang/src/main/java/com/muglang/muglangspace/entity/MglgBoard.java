@@ -32,7 +32,6 @@ public class MglgBoard {
    private String boardTitle;
    private String boardContent;
    private int boardCount;
-	@Column
-	@ColumnDefault("LocalDateTime.now()")
+   @Column
    private LocalDateTime boardDate;
 }

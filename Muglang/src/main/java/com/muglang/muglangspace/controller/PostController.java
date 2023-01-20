@@ -115,11 +115,11 @@ public class PostController {
 		MglgPost mglgPost = MglgPost.builder().postId(mglgPostDTO.getPostId()).mglgUser(loginUser.getMglgUser())
 				.postContent(mglgPostDTO.getPostContent()).restNm(mglgPostDTO.getRestNm()).postDate(LocalDateTime.now())
 				.postRating(mglgPostDTO.getPostRating()).restRating(mglgPostDTO.getRestRating())
-		        .hashTag1(mglgPostDTO.getHashTag1() == null || mglgPostDTO.getHashTag1().equals("")  ? "0": mglgPostDTO.getHashTag1())
-				.hashTag2(mglgPostDTO.getHashTag2() == null || mglgPostDTO.getHashTag2().equals("")  ? "0": mglgPostDTO.getHashTag2())
-				.hashTag3(mglgPostDTO.getHashTag3() == null || mglgPostDTO.getHashTag3().equals("")  ? "0": mglgPostDTO.getHashTag3())
-				.hashTag4(mglgPostDTO.getHashTag4() == null || mglgPostDTO.getHashTag4().equals("")  ? "0": mglgPostDTO.getHashTag4())
-				.hashTag5(mglgPostDTO.getHashTag5() == null || mglgPostDTO.getHashTag5().equals("")  ? "0": mglgPostDTO.getHashTag5())
+		        .hashTag1(mglgPostDTO.getHashTag1() == null || mglgPostDTO.getHashTag1().equals("")  ? "": mglgPostDTO.getHashTag1())
+				.hashTag2(mglgPostDTO.getHashTag2() == null || mglgPostDTO.getHashTag2().equals("")  ? "": mglgPostDTO.getHashTag2())
+				.hashTag3(mglgPostDTO.getHashTag3() == null || mglgPostDTO.getHashTag3().equals("")  ? "": mglgPostDTO.getHashTag3())
+				.hashTag4(mglgPostDTO.getHashTag4() == null || mglgPostDTO.getHashTag4().equals("")  ? "": mglgPostDTO.getHashTag4())
+				.hashTag5(mglgPostDTO.getHashTag5() == null || mglgPostDTO.getHashTag5().equals("")  ? "": mglgPostDTO.getHashTag5())
 				.build();
 
 		mglgPost = mglgPostService.insertPost(mglgPost);
@@ -304,11 +304,11 @@ public class PostController {
 					.postContent(mglgPostDTO.getPostContent()).restNm(mglgPostDTO.getRestNm())
 					.postDate(LocalDateTime.parse(mglgPostDTO.getPostDate())).postRating(mglgPostDTO.getPostRating())
 					.restRating(mglgPostDTO.getRestRating())
-					.hashTag1(mglgPostDTO.getHashTag1() == null || mglgPostDTO.getHashTag1().equals("")  ? "0": mglgPostDTO.getHashTag1())
-					.hashTag2(mglgPostDTO.getHashTag2() == null || mglgPostDTO.getHashTag2().equals("")  ? "0": mglgPostDTO.getHashTag2())
-					.hashTag3(mglgPostDTO.getHashTag3() == null || mglgPostDTO.getHashTag3().equals("")  ? "0": mglgPostDTO.getHashTag3())
-					.hashTag4(mglgPostDTO.getHashTag4() == null || mglgPostDTO.getHashTag4().equals("")  ? "0": mglgPostDTO.getHashTag4())
-					.hashTag5(mglgPostDTO.getHashTag5() == null || mglgPostDTO.getHashTag5().equals("")  ? "0": mglgPostDTO.getHashTag5())
+					.hashTag1(mglgPostDTO.getHashTag1() == null || mglgPostDTO.getHashTag1().equals("")  ? "": mglgPostDTO.getHashTag1())
+					.hashTag2(mglgPostDTO.getHashTag2() == null || mglgPostDTO.getHashTag2().equals("")  ? "": mglgPostDTO.getHashTag2())
+					.hashTag3(mglgPostDTO.getHashTag3() == null || mglgPostDTO.getHashTag3().equals("")  ? "": mglgPostDTO.getHashTag3())
+					.hashTag4(mglgPostDTO.getHashTag4() == null || mglgPostDTO.getHashTag4().equals("")  ? "": mglgPostDTO.getHashTag4())
+					.hashTag5(mglgPostDTO.getHashTag5() == null || mglgPostDTO.getHashTag5().equals("")  ? "": mglgPostDTO.getHashTag5())
 					.build();
 			System.out.println("파일이 아닌 게시글의 내용을 수정할 정보를 가져옵니다.");
 			MglgPost updateMglgPost = mglgPostService.updatePost(mglgPost);
