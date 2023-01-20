@@ -82,7 +82,7 @@ let changedFiles = [];
 		}
 
 		$.changeFilesBtn = function(postFileId) {
-			$("#");
+			$("#changedFile" + postId);
 			fnImgChange(postFileId)
 		}
 	});
@@ -385,7 +385,7 @@ let changedFiles = [];
 				$("#buttonBox" + postId).hide();
 				$("#postContent" + postId).show();
 				$("#contentIn" + postId).hide();
-				$("#deleteButton" + postId).remove();
+				//$("#deleteButton" + postId).remove();
 				$("#updateButton" + postId).remove();
 				$("#fileRequest" + postId).hide();
 				flagList[index] = false;
