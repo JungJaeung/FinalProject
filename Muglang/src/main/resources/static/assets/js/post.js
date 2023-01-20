@@ -322,6 +322,7 @@ function fnChangeContent(input, postId) {
 function imageTag(item, fileLength) {
 	let tag = "";
 	console.log("fileLength : " + fileLength);
+	console.log(item.updateFileList);
 	tag += `<div id="carouselExampleIndicators${item.getPost.postId}" class="carousel carousel-dark slide" data-bs-ride="carousel">`;
 	tag += `<div class="carousel-indicators">`;
 	for(let i = 0; i < fileLength; i++) {
@@ -370,7 +371,7 @@ function imageTag(item, fileLength) {
 
 		tag += `<p id="fileNm${item.updateFileList[i].postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
 					onclick="fnFileDown(${item.updateFileList[i].postId}, ${item.updateFileList[i].postFileId})"
-					>${item.updateFileList[i].postFileOriginNm}</div>`;
+					>${item.updateFileList[i].postFileOriginNm}</p>`;
 		tag += `</div>`;
 	}
 	tag += `</div>`;
@@ -613,6 +614,7 @@ function get_post_current(post) {
 					  <span class="visually-hidden">Next</span>
 				  </button>`;
 	post_text += `</div>`;
+	
 	post_text += `</div>`;
 	post_text += `</div>`;
 	post_text += `<div class="uploadFileSpace" data-post-id="${post.insertPost.postId}">

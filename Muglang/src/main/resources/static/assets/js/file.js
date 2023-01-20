@@ -371,9 +371,13 @@ let changedFiles = [];
 				$("#postId").val('' + obj.item.getPost.postId);
 				$("#userId").val('' + obj.item.getPost.userId);
 				
-				$("#postContentIn" + postId).val(obj.item.getPost.postContent);
-				$("#postContent" + postId).text(obj.item.getPost.postContent);
-				$("#contentIn" + postId).text(obj.item.getPost.postContent);
+				let content_format = obj.item.getPost.postContent;
+				content_format = content_format.replaceAll("&lt;", "<");
+				content_format = content_format.replaceAll("&gt;", ">");
+				
+				$("#postContentIn" + postId).val(content_format);
+				$("#postContent" + postId).text(content_format);
+				$("#contentIn" + postId).text(content_format);
 				$("#restNmIn").val(obj.item.getPost.restNm);
 				//수정 다하면 태그들을 다시 원래대로 돌린다.
 				$("#postAttZone" + postId).html('');
