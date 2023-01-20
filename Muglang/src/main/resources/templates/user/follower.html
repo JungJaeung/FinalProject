@@ -81,8 +81,6 @@
 				});
 
 				//스크롤 로직
-
-				//스크롤 로직
 				$(window).scroll(function () {
 					if (!scrollYn) {
 						if ($(window).scrollTop() == $(document).height() - $(window).height()) {
@@ -95,6 +93,94 @@
 									data: {page: page_num},
 									success: function (obj) {
 										$.get_post(obj);
+										setTimeout(function () {
+											scrollYn = false;
+										}, 1000);
+									},
+									error: function (e) {
+										console.log("실패실패");
+									}
+								});
+							}
+						}
+					}
+				});
+				
+				//처음 포스트 불러오는 로직
+				$.ajax({
+					url: '/search/searchTag',
+					type: 'post',
+					data: {
+						page_num: page_num_2,
+						searchKeyword : searchKeyword
+						},
+					success: function (obj) {
+						$.get_post_2(obj);
+					},
+					error: function (e) {
+						console.log("실패실패");
+					}
+				});
+
+				//스크롤 로직
+				$(window).scroll(function () {
+					if (!scrollYn) {
+						if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+							scrollYn = true;
+							if (page_num_2 < totalPages_2) {
+								$.ajax({
+									url: '/search/searchTag',
+									type: 'post',
+									data: {
+										page_num: page_num_2,
+										searchKeyword : searchKeyword
+										},
+									success: function (obj) {
+										$.get_post_2(obj);
+										setTimeout(function () {
+											scrollYn = false;
+										}, 1000);
+									},
+									error: function (e) {
+										console.log("실패실패");
+									}
+								});
+							}
+						}
+					}
+				});
+				
+				//처음 포스트 불러오는 로직
+				$.ajax({
+					url: '/search/searchNick',
+					type: 'post',
+					data: {
+						page_num: page_num_3,
+						searchKeyword : searchKeyword
+						},
+					success: function (obj) {
+						$.get_post_3(obj);
+					},
+					error: function (e) {
+						console.log("실패실패");
+					}
+				});
+
+				//스크롤 로직
+				$(window).scroll(function () {
+					if (!scrollYn) {
+						if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+							scrollYn = true;
+							if (page_num_3 < totalPages_3) {
+								$.ajax({
+									url: '/search/searchNick',
+									type: 'post',
+									data: {
+										page_num: page_num_3,
+										searchKeyword : searchKeyword
+										},
+									success: function (obj) {
+										$.get_post_3(obj);
 										setTimeout(function () {
 											scrollYn = false;
 										}, 1000);
