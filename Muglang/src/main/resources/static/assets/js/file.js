@@ -80,26 +80,10 @@ let changedFiles = [];
 				$("#attZone").css("display", "inline-block");
 			});
 		}
-		/*
-		//게시글 조회에서 사용함. 해당 게시글의 업로드된 파일을 확인.
-		//업로드된 파일의 개수만큼 반복해서 originFileObj 맵에 파일 정보를 배열에 저장함.
-		//수업 때 했던 게시글은 1개이고, 지금 이건 여러개를 뿌려야하기 때문에 게시된 데이터를 다 가지고 와야함.
-		for(let i = 0; i < postIdList.length; i++) {
-			for(let j = 0; j < $("#fileListSize" + postIdList[i]).val(); j++) {
-				const originFileObj = {
-					postId: postIdList[i],
-					postFileId: $("#postFileId" + postIdList[i]).val(),
-					postFileNm: $("#postFileNm" + postIdList[i]).val(),
-					//업로드 파일 경로가 각각 다를때는 boardFilePath 속성도 추가
-					//파일 상태값(수정되거나 삭제된 파일은 변경) - 파일의 상태 값을 표시함.
-					postFileStatus: "N"
-				};
-				originFiles.push(originFileObj);
-			}
-			//1 게시글의 내용을 모아두는 배열에 담음. - 2차원 배열.
-			originFileList.push(originFiles);
+
+		$.changeFilesBtn = function(postId) {
+			fnImgChange(postId)
 		}
-		*/
 	});
 	
 	//파일 추가창을 활성화하는 이벤트 생성 함수
