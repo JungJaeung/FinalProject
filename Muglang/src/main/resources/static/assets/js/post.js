@@ -547,6 +547,7 @@ function get_post_current(post) {
 				//<!--<input type="text" th:id="'postFileNm' + ${post.insertPost.postId}" value="">
 				//<input type="text" th:id="'postFileId' + ${post.insertPost.postId}" value="">-->
 				//post_text += `<div style="position: relative;">`;
+				post_text += `<div class="fileList${post.postId}" style="position: relative;">`;
 				post_text += `<input type="hidden" id="postFileId${post.postFileList[i].postFileId}"
 								class="postFileId${post.postFileList[i].postId}" name="postFileId"
 								value="${post.postFileList[i].postFileId}">`;
@@ -581,7 +582,7 @@ function get_post_current(post) {
 								style="display: none; font-size: 8px; cursor: pointer;"
 								onclick="fnFileDown(${post.postFileList[i].postId}, ${post.postFileList[i].postFileId})">
 								${post.postFileList[i].postFileOriginNm}</p>`;
-				//post_text += `</div>`;
+				post_text += `</div>`;
 				post_text += `</div>`;
 			}
 		} else {
@@ -817,7 +818,7 @@ $.get_post = function(obj){
 					}
 					//<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
 					//<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-					//post_text += `<div class="fileList${post.postId}" style="position: relative;">`;
+					post_text += `<div class="fileList${post.postId}" style="position: relative;">`;
 					post_text += `<input type="hidden" id="postFileId${post.fileList[i].postFileId}"
 									class="postFileId${post.fileList[i].postId}" name="postFileId"
 									value="${post.fileList[i].postFileId}">`;
@@ -854,7 +855,7 @@ $.get_post = function(obj){
 									style="display: none; font-size: 8px; cursor: pointer;"
 									onclick="fnFileDown(${post.fileList[i].postId}, ${post.fileList[i].postFileId})">
 									${post.fileList[i].postFileOriginNm}</p>`;
-					//post_text += `</div>`;
+					post_text += `</div>`;
 					post_text += `</div>`;
 				}
 			} else {
