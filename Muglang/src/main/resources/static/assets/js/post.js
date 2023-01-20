@@ -732,7 +732,7 @@ $.get_post = function(obj){
 		//<!-- imgArea는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
 		post_text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox${post.postId}">`;
 		post_text += `<div id="imgArea${post.postId}">`;
-		post_text += `<div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">`;
+		post_text += `<div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-ride="carousel">`;
 		post_text += `<div class="carousel-indicators">`;
 		for(let i = 0; i < post.fileLength; i++) {
 			if(i < 1) {
@@ -752,7 +752,7 @@ $.get_post = function(obj){
 				}
 				//<!--<input type="text" th:id="'postFileNm' + ${post.postId}" value="">
 				//<input type="text" th:id="'postFileId' + ${post.postId}" value="">-->
-				post_text += `<div class="fileList${post.postId}" style="position: relative;">`;
+				//post_text += `<div class="fileList${post.postId}" style="position: relative;">`;
 				post_text += `<input type="hidden" id="postFileId${post.fileList[i].postFileId}"
 								class="postFileId${post.fileList[i].postId}" name="postFileId"
 								value="${post.fileList[i].postFileId}">`;
@@ -770,7 +770,7 @@ $.get_post = function(obj){
 					post_text += `<img id="img${post.fileList[i].postFileId}"
 									src="/upload/${post.fileList[i].postFileNm}"
 									style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
-									class="fileImg d-block w-100"
+									class="d-block w-100"
 									onclick="fnImgChange(${post.fileList[i].postFileId})">`;
 					post_text += `<input type="button" class="btnDel" id="btnFileDel${post.postId}" value="x"
 								data-del-file="${post.fileList[i].postFileId}" style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
@@ -781,14 +781,14 @@ $.get_post = function(obj){
 					post_text += `<img id="img${post.fileList[i].postFileId}"
 									src="/upload/${post.fileList[i].postFileNm}"
 									style="width: 100%; height: 100%; z-index: none; cursor: pointer;"
-									class="fileImg d-block w-100"
+									class="d-block w-100"
 									onclick="fnImgChange(${post.fileList[i].postFileId})">`;
 				}
 				post_text += `<p id="fileNm${post.fileList[i].postFileId}"
 								style="display: none; font-size: 8px; cursor: pointer;"
 								onclick="fnFileDown(${post.fileList[i].postId}, ${post.fileList[i].postFileId})">
 								${post.fileList[i].postFileOriginNm}</p>`;
-				post_text += `</div>`;
+				//post_text += `</div>`;
 				post_text += `</div>`;
 			}
 		} else {
@@ -824,9 +824,9 @@ $.get_post = function(obj){
 						  <span class="visually-hidden">Next</span>
 					  </button>`;
 		post_text += `</div>`;
+		
 		post_text += `</div>`;
 		post_text += `</div>`;
-
 		post_text += `<div class="uploadFileSpace" data-post-id="${post.postId}">
 						<input type="file" id="updateBtnAtt${post.postId}"
 							class="updateBtnAtt" data-post-id="${post.postId}" name="uploadFiles"
