@@ -358,10 +358,6 @@ function imageTag(item, fileLength) {
 			 		style="width: 100%; height: 100%; z-index: none; cursor: pointer;" 
 					class="fileImg d-block w-100" 
 					onclick="fnImgChange(${item.updateFileList[i].postFileId})">`;
-				tag += `<input type="button" class="btnDel" value="x" data-del-file="${item.updateFileList[i].postFileId}"
-					   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
-					   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
-					   onclick="fnPostImgDel(event)">`;
 			} else {
 				tag += `<img id="img${item.updateFileList[i].postFileId}" 
 					src="/assets/img/defaultFileImg.png" 
@@ -369,7 +365,10 @@ function imageTag(item, fileLength) {
 					class="fileImg d-block w-100" 
 				 	onclick="fnImgChange(${item.updateFileList[i].postFileId})">`;
 			}
-	
+			tag += `<input type="button" class="btnDel" value="x" data-del-file="${item.updateFileList[i].postFileId}"
+			   style="width: 30px; height: 30px; position: absolute; right: 0px; bottom: 0px; 
+			   z-index: 999; background-color: rgba(255, 255, 255, 0.1); color: #f00;"
+			   onclick="fnPostImgDel(event)">`;
 			tag += `<p id="fileNm${item.updateFileList[i].postFileId}" style="display: none; font-size: 8px; cursor: pointer;" 
 						onclick="fnFileDown(${item.updateFileList[i].postId}, ${item.updateFileList[i].postFileId})"
 						>${item.updateFileList[i].postFileOriginNm}</p>`;
