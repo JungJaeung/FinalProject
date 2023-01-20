@@ -256,6 +256,7 @@
 							console.log(originFiles);
 							//이벤트 다시 적용
 							$.update_post(obj.insertPost.postId);
+							$.deleteButtonSet(obj.insertPost.postId);
 							$.like_button(obj.loginUser.userId);
 							$.comment_button();
 							$.map_button();
