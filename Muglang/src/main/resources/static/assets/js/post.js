@@ -688,19 +688,19 @@ function get_post_current(post) {
 	//<!--해시태그-->
 
 	post_text += `<div class="activity">`
-		if(post.hashTag1 != ""){
+		if(post.insertPost.hashTag1 != ""){
 			post_text += `<br><a href="/search/searchByPost?searchKeyword=${post.insertPost.hashTag1}" style="color: blue;">&emsp;#<span>${post.insertPost.hashTag1}</span></a>`
 		}
-		if(post.hashTag2 != ""){
+		if(post.insertPost.hashTag2 != ""){
 			post_text += `<a href="/search/searchByPost?searchKeyword=${post.insertPost.hashTag2}" style="color: blue;">&emsp;#<span>${post.insertPost.hashTag2}</span></a>`
 		}
-		if(post.hashTag3 != ""){
+		if(post.insertPost.hashTag3 != ""){
 			post_text += `<a href="/search/searchByPost?searchKeyword=${post.insertPost.hashTag3}" style="color: blue;">&emsp;#<span>${post.insertPost.hashTag3}</span></a>`
 		}
-		if(post.hashTag4 != ""){
+		if(post.insertPost.hashTag4 != ""){
 			post_text += `<a href="/search/searchByPost?searchKeyword=${post.insertPost.hashTag4}" style="color: blue;">&emsp;#<span>${post.insertPost.hashTag4}</span></a>`
 		}
-		if(post.hashTag5 != ""){
+		if(post.insertPost.hashTag5 != ""){
 			post_text += `<a href="/search/searchByPost?searchKeyword=${post.insertPost.hashTag5}" style="color: blue;">&emsp;#<span>${post.insertPost.hashTag5}</span></a>`
 		}
 	post_text += `</div>`
