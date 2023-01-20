@@ -146,27 +146,24 @@ public class SocialController {
       try {
          MglgUser user = MglgUser.builder().userId(userId).build();
 
-         int i = 0;
          Page<CamelHashMap> pageUserFollow = userRelationService.followList(user, pageable);
-         for (CamelHashMap a : pageUserFollow) {
+         for ( int i = 0; i < pageUserFollow.getContent().size(); i++) {
 
             int eachUserId = (int) pageUserFollow.getContent().get(i).get("userId");
             MglgUserProfile followerProfile = mglgUserProfileService.followerProfile(eachUserId);
             pageUserFollow.getContent().get(i).put("followerProfile", followerProfile);
-            if (i == 10) {
-               i = 0;
-            } else {
-               i++;
-            }
 
          }
 
          if (loginUser == userId) {
             followYn = -1;
          }
-
-         pageUserFollow.getContent().get(0).put("followYn", followYn);
+         
+         CamelHashMap followYnMap = new CamelHashMap();
+         followYnMap.put("follow_yn", followYn);
+         
          response.setPageItems(pageUserFollow);
+         response.setItem(followYnMap);
          return ResponseEntity.ok().body(response);
       } catch (Exception e) {
          response.setErrorMessage(e.getMessage());
@@ -183,17 +180,12 @@ public class SocialController {
       try {
          MglgUser user = MglgUser.builder().userId(userId).build();
 
-         int i = 0;
          Page<CamelHashMap> pageUserFollowing = userRelationService.followingList(user, pageable);
-         for (CamelHashMap a : pageUserFollowing) {
+         for ( int i = 0; i < pageUserFollowing.getContent().size(); i++) {
             int eachUserId = (int) pageUserFollowing.getContent().get(i).get("userId");
             MglgUserProfile followingProfile = mglgUserProfileService.followingProfile(eachUserId);
             pageUserFollowing.getContent().get(i).put("followingProfile", followingProfile);
-            if (i == 10) {
-               i = 0;
-            } else {
-               i++;
-            }
+        
 
          }
          response.setPageItems(pageUserFollowing);
@@ -238,21 +230,13 @@ public class SocialController {
 
          MglgUser user = MglgUser.builder().searchKeyword(searchKeyword).userId(customUser.getMglgUser().getUserId())
                .build();
-         int i = 0;
-         System.out.println("!!!!!!!!!!!!!!!!!!!!!!팔로워 유저 에이작스 처리 중.");
-         Page<CamelHashMap> pageFollowList = userRelationService.followList(user, pageable);
-         for (CamelHashMap a : pageFollowList) {
-            System.out.println(i + "번째" + pageFollowList.getContent().get(i));
+              Page<CamelHashMap> pageFollowList = userRelationService.followList(user, pageable);
+         for (int i = 0; i < pageFollowList.getContent().size(); i++) {
 
             int eachUserId = (int) pageFollowList.getContent().get(i).get("userId");
             MglgUserProfile followerProfile = mglgUserProfileService.followerProfile(eachUserId);
             pageFollowList.getContent().get(i).put("follower_profile", followerProfile);
 
-            if(i==5) {
-               i=0;
-            }else {
-               i++;
-            }
 
          }
          // response.setItem("followerList", pageFollowList);
@@ -275,17 +259,12 @@ public class SocialController {
 
          MglgUser user = MglgUser.builder().searchKeyword(searchKeyword).userId(customUser.getMglgUser().getUserId())
                .build();
-         int i = 0;
          Page<CamelHashMap> pageFollowList = userRelationService.followList(user, pageable);
-         for (CamelHashMap a : pageFollowList) {
+         for (int i = 0; i < pageFollowList.getContent().size(); i++) {
             int eachUserId = (int) pageFollowList.getContent().get(i).get("userId");
             MglgUserProfile followerProfile = mglgUserProfileService.followerProfile(eachUserId);
             pageFollowList.getContent().get(i).put("follower_profile", followerProfile);
-            if (i == 10) {
-               i = 0;
-            } else {
-               i++;
-            }
+  
          }   
 
          response.setPageItems(pageFollowList);
@@ -309,20 +288,15 @@ public class SocialController {
 
          MglgUser user = MglgUser.builder().searchKeyword(searchKeyword).userId(customUser.getMglgUser().getUserId())
                .build();
-         int i = 0;
          Page<CamelHashMap> pagefollowingList = userRelationService.followingList(user, pageable);
-         for (CamelHashMap a : pagefollowingList) {
+         for (int i = 0; i < pagefollowingList.getContent().size(); i++) {
             System.out.println(i + "번째" + pagefollowingList.getContent().get(i));
 
             int eachUserId = (int) pagefollowingList.getContent().get(i).get("userId");
             MglgUserProfile followingProfile = mglgUserProfileService.followingProfile(eachUserId);
             pagefollowingList.getContent().get(i).put("following_profile", followingProfile);
             System.out.println(i + "번째" + pagefollowingList.getContent().get(i) + "끝");
-            if (i == 5) {
-               i = 0;
-            } else {
-               i++;
-            }
+     
 
          }
          response.setPageItems(pagefollowingList);
@@ -344,20 +318,13 @@ public class SocialController {
       try {
          MglgUser user = MglgUser.builder().searchKeyword(searchKeyword).userId(customUser.getMglgUser().getUserId())
                .build();
-         int i = 0;
          Page<CamelHashMap> pagefollowingList = userRelationService.followingList(user, pageable);
-         for (CamelHashMap a : pagefollowingList) {
-            System.out.println(i + "번째" + pagefollowingList.getContent().get(i));
+         for (int i = 0; i < pagefollowingList.getContent().size(); i++) {
 
             int eachUserId = (int) pagefollowingList.getContent().get(i).get("userId");
             MglgUserProfile followingProfile = mglgUserProfileService.followingProfile(eachUserId);
             pagefollowingList.getContent().get(i).put("following_profile", followingProfile);
-            System.out.println(i + "번째" + pagefollowingList.getContent().get(i) + "끝");
-            if (i == 5) {
-               i = 0;
-            } else {
-               i++;
-            }
+       
 
          }
 

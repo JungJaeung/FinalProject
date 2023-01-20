@@ -275,7 +275,7 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 					+ "     ORDER BY D.POST_ID DESC"
 				,	countQuery = "SELECT COUNT(*) FROM (SELECT * FROM T_MGLG_POST) D",
 				nativeQuery = true)
-	 Page<CamelHashMap> getFollowerPost(@Param("userId") int userId, Pageable pageable);
+	 Page<CamelHashMap> getFollowingPost(@Param("userId") int userId, Pageable pageable);
 	 
 	//팔로잉 한 사람 포스팅만 가져옴
 		 @Query(value = "SELECT D.*\r\n"
@@ -318,7 +318,7 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 		 		+ "     ORDER BY D.POST_ID DESC"
 					,	countQuery = "SELECT COUNT(*) FROM (SELECT * FROM T_MGLG_POST) D",
 					nativeQuery = true)
-		 Page<CamelHashMap> getFollowingPost(@Param("userId") int userId, Pageable pageable);
+		 Page<CamelHashMap> getFollowerPost(@Param("userId") int userId, Pageable pageable);
 	 
 		 
 		//한 유저의 모든 포스트

@@ -294,7 +294,7 @@ public class UserController {
 		newUser = mglgUserService.socialLoginProcess(newUser);
 		
 		//가입시 디폴트 이미지 넣는 로직
-		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/" + "defaultImg.png";
+		String attachPath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
 		 mglgUserProfileService.insertDefault(newUser.getUserId(),attachPath);
 		
 		

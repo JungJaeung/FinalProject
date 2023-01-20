@@ -32,6 +32,7 @@ public class MglgBoard {
    private String boardTitle;
    private String boardContent;
    private int boardCount;
+
    @Column
    private LocalDateTime boardDate;
 }
