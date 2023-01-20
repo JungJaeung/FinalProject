@@ -81,8 +81,9 @@ let changedFiles = [];
 			});
 		}
 
-		$.changeFilesBtn = function(postId) {
-			fnImgChange(postId)
+		$.changeFilesBtn = function(postFileId) {
+			$("#");
+			fnImgChange(postFileId)
 		}
 	});
 	
@@ -97,7 +98,7 @@ let changedFiles = [];
 	}
 	
 	//파일 리스트 배열을 갱신하는 함수.
-	function refreshFileList (targetPostId) {
+	function refreshFileList (targetPostFileId) {
 
 	}
 	
@@ -338,8 +339,8 @@ let changedFiles = [];
 		//해당 postId에 대한 originsFiles만 남김
 		//===은 값과 형태 둘다 같아야 해당 값을 저장함.
 		//this.val로 변환한 값은 string 이므로 해당 값은 db의 형태와 통일시켜 비교하여야한다.
-		originFiles = originFiles.filter(file => file.postId === postId);
-		
+		originFiles = originFiles.filter(file => file.postId == postId);
+		console.log(originFiles);
 		//변경된 파일정보와 삭제된 파일정보를 담고있는 배열 전송
 		//배열 형태로 전송 시 백단(Java)에서 처리불가
 		//JSON String 형태로 변환하여 전송한다.

@@ -732,13 +732,13 @@ $.get_post = function(obj){
 		//<!-- imgArea는 반복문을 사용해 2차원 배열 처럼 사용되어 파일의 내용을 표시하게됨. -->
 		post_text += `<div class="activity" style="margin-bottom: 10px;" id="restImgBox${post.postId}">`;
 		post_text += `<div id="imgArea${post.postId}">`;
-		post_text += `<div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-ride="carousel">`;
+		post_text += `<div id="carouselExampleIndicators${post.postId}" class="carousel carousel-dark slide" data-bs-ride="carousel">`;
 		post_text += `<div class="carousel-indicators">`;
 		for(let i = 0; i < post.fileLength; i++) {
 			if(i < 1) {
-				post_text +=  `<button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="${i}" class="active" aria-current="true" aria-label="Slide ${i+1}"></button>`;
+				post_text +=  `<button type="button" data-bs-target="#carouselExampleIndicators${post.postId}" data-bs-slide-to="${i}" class="active" aria-current="true" aria-label="Slide ${i+1}"></button>`;
 			} else {
-				post_text +=  `<button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="${i}" aria-label="Slide ${i+1}"></button>`;
+				post_text +=  `<button type="button" data-bs-target="#carouselExampleIndicators${post.postId}" data-bs-slide-to="${i}" aria-label="Slide ${i+1}"></button>`;
 			}
 		}
 		post_text += `</div>`; 
@@ -815,11 +815,11 @@ $.get_post = function(obj){
 			}
 		}
 		post_text += `</div>`;
-		post_text += `<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+		post_text += `<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators${post.postId}" data-bs-slide="prev">
 					    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
 					    <span class="visually-hidden">Previous</span>
 						</button>`;
-		post_text += `<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+		post_text += `<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators${post.postId}" data-bs-slide="next">
 						  <span class="carousel-control-next-icon" aria-hidden="true"></span>
 						  <span class="visually-hidden">Next</span>
 					  </button>`;
