@@ -46,7 +46,7 @@ public interface MglgUserRelationRepository extends JpaRepository<MglgUser, Inte
 
 	/// 맞팔
 	@Modifying
-	@Query(value = "INSERT INTO T_MGLG_USER_RELATION " + "	  VALUES(now(), :userId, :followId)", nativeQuery = true)
+	@Query(value = "INSERT INTO T_MGLG_USER_RELATION (FOLLOW_DATE, FOLLOWER_ID, USER_ID)" + "	  VALUES(now(),  :userId, :followId)", nativeQuery = true)
 	public void followUser(@Param("followId") int followId, @Param("userId") int userId);
 	/// 언팔
 	@Modifying

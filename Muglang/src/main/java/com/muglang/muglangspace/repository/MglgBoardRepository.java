@@ -39,7 +39,7 @@ public interface MglgBoardRepository extends JpaRepository<MglgBoard, Integer> {
 	@Query(value=""
 			+ "INSERT INTO T_MGLG_BOARD "
 			+ "VALUES("
-			+ "(SELECT MAX(A.BOARD_ID)+1 FROM T_MGLG_BOARD A), "
+			+ "(SELECT IFNULL(MAX(A.BOARD_ID)+1,0) FROM T_MGLG_BOARD A), "
 			+ ":boardContent, "
 			+ "0, "
 			+ "now(), "

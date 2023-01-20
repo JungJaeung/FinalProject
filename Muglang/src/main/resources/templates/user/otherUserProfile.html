@@ -77,6 +77,8 @@
 					type: 'get',
 					data: {userId: $("#hiddenId").val()},
 					success: function (obj) {
+						console.log("---------------------11111");
+						console.log(obj);
 						let formStr = `
 						<a href="/social/followOtherUser?userId=${userId}">
 						팔로우 하기
@@ -94,16 +96,15 @@
 						</a>
 						`
 
-						if (obj.pageItems.content[0].followyn == 0) {
+						if (obj.item.followYn == 0) {
 							$("#followYn").html(formStr);
 						}
-						else if (obj.pageItems.content[0].followyn == -1) {
+						else if (obj.item.followYn == -1) {
 							$("#followYn").html(formStr3);
 						}
 						else {
 							$("#followYn").html(formStr2);
 						}
-						console.log(obj.pageItems.content[0].followyn);
 						let htmlStr = '';
 						for (let i = 0; i < obj.pageItems.content.length; i++) {
 							otherUser_totalPages = obj.pageItems.totalPages;
@@ -370,9 +371,7 @@
 					});
 				});
 
-				Fancybox.click(function (e) {
-					e.close;
-				})
+				
 
 			});
 		</script>
@@ -522,7 +521,7 @@
 
 
 						<script type="text/javascript"
-							src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ce59e263f5e4e5aeed4d1557b6676a5c&libraries=services"></script>
+							src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4b4b486ea62719eefbee2b4ac9dd7c89&libraries=services"></script>
 						<script>
 							$(function () {
 								//지도 모달 부르는 로직
