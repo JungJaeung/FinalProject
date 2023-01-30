@@ -55,6 +55,39 @@ public interface MglgPostRepository extends JpaRepository<MglgPost, Integer>{
 			+ "     ORDER BY D.POST_ID DESC",
 			countQuery = " SELECT COUNT(*) FROM (SELECT * FROM T_MGLG_POST) D", nativeQuery = true)
 	Page<CamelHashMap> getPagePostList(Pageable pageable, @Param("userId") int userId);
+	
+	//한개의 게시글만 불러옴
+	@Query(value = "SELECT D.*\r\n"
+			+ "			   FROM (\r\n"
+			+ "			         SELECT A.*, IFNULL(C.LIKE_CNT, 0) AS LIKE_CNT\r\n"
+			+ "			            FROM (\r\n"
+			+ "			               SELECT I.*, L.RES_NAME, IFNULL(L.RESTAURANT, 'N') AS RESTAURANT\r\n"
+			+ "			                  FROM (\r\n"
+			+ "			                       SELECT G.*\r\n"
+			+ "			                           , J.USER_NICK\r\n"
+			+ "			                         FROM T_MGLG_POST G\r\n"
+			+ "			                           , T_MGLG_USER J\r\n"
+			+ "			                         WHERE G.USER_ID = J.USER_ID\r\n"
+			+ "			                     ) I\r\n"
+			+ "			                  LEFT OUTER JOIN (\r\n"
+			+ "												SELECT K.POST_ID, K.RES_NAME, 'Y' AS RESTAURANT\r\n"
+			+ "			                                    FROM T_MGLG_RESTAURANT K\r\n"
+			+ "												   WHERE K.RES_NAME != ''\r\n"
+			+ "			                                    ) L\r\n"
+			+ "							  ON I.POST_ID = L.POST_ID\r\n"
+			+ "			                ) A\r\n"
+			+ "			            LEFT OUTER JOIN (\r\n"
+			+ "			                           SELECT COUNT(B.POST_ID) AS LIKE_CNT\r\n"
+			+ "			                                , B.POST_ID\r\n"
+			+ "			                              FROM T_MGLG_POST_LIKES B\r\n"
+			+ "			                              GROUP BY B.POST_ID\r\n"
+			+ "			                        ) C\r\n"
+			+ "			           ON A.POST_ID = C.POST_ID\r\n"
+			+ "			        ) D\r\n"
+			+ "                    where D.POST_ID = :postId\r\n"
+			+ "			    ORDER BY D.POST_ID DESC",
+			countQuery = " SELECT COUNT(*) FROM (SELECT * FROM T_MGLG_POST) D", nativeQuery = true)
+	Page<CamelHashMap> findPostId(Pageable pageable, @Param("postId") int postId);
 
 	//모든 게시글 중 내가 쓴 게시글 혹은 특정 유저의 게시글 만 추려서 가져오는 쿼리 (한명의 유저가 쓴 글을 조회함.)
 	@Query(value = "SELECT D.*\r\n"
