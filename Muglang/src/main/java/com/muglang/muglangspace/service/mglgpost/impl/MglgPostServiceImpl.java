@@ -159,6 +159,12 @@ public class MglgPostServiceImpl implements MglgPostService {
 		return mglgPostRepository.searchByNick(searchKeyword, userId, pageable);
 	}
 
+	@Override
+	public Page<CamelHashMap> getPost(Pageable pageable, int postId) {
+
+		return mglgPostRepository.findPostId(pageable, postId);
+	}
+
 	
 
 

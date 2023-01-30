@@ -16,7 +16,7 @@ public interface MglgPostService {
 
 	public void likePost(MglgPost mglgpost);
 
-	
+	public Page<CamelHashMap> getPost(Pageable pageable, int postId);
 	
 	public Page<CamelHashMap> getPagePostList(Pageable pageable, int userId);
 	
