@@ -71,9 +71,9 @@ public class MglgPostServiceImpl implements MglgPostService {
 	}
 	
 	@Override
-	public Page<CamelHashMap> getPost(Pageable pageable, int postId) {
+	public MglgPost getPost(int postId) {
 
-		return mglgPostRepository.findByPostId(pageable, postId);
+		return mglgPostRepository.findByPostId(postId);
 	}
 
 	// 포스트 갯수 조회

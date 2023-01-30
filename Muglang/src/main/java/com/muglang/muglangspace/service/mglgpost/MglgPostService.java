@@ -22,7 +22,7 @@ public interface MglgPostService {
 	
 	public Page<CamelHashMap> getPagePersonalPostList(Pageable pageable, int userId);
 
-	public Page<CamelHashMap> getPost(Pageable pageable, int postId);
+	public MglgPost getPost(int postId);
 
 	public int postCnt(MglgUserRelation relUser);
 

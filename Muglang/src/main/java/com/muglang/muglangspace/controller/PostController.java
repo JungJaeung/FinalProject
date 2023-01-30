@@ -593,44 +593,24 @@ public class PostController {
 
 	// 포스트 단건 조회
 	@GetMapping("/post")
-	public ResponseEntity<?> getPost(@PageableDefault(page = 0, size = 1) Pageable pageable,@RequestParam("postId") int postId) {
-		Page<CamelHashMap> pagePostList = mglgPostService.getPost(pageable, postId);
-		for (int i = 0; i < pagePostList.getContent().size(); i++) {
-			
-			pagePostList.getContent().get(i).put("index", i);
+	public ResponseEntity<?> getPost(@RequestParam("postId") int postId) {
+		MglgResponseDTO<MglgPostDTO> response = new MglgResponseDTO<>();
+
+		try {
+			MglgPost post = MglgPost.builder().postId(postId).build();
+
+			post = mglgPostService.getPost(postId);
+			MglgPostDTO returnPostDTO = MglgPostDTO.builder().postId(post.getPostId())
+					.postContent(post.getPostContent()).postDate(post.getPostDate().toString())
+					// 아래줄 원래 .postId(post.getMglgUser().getUserId()) 2022/12/21 19:09
+					.userId(post.getMglgUser().getUserId()).restNm(post.getRestNm()).build();
+
+			response.setItem(returnPostDTO);
+			return ResponseEntity.ok().body(response);
+		} catch (Exception e) {
+			response.setErrorMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(response);
 		}
-
-		// 파일의 내용을 맵으로 입력하고, 해당 파일의 정보를 불러오게됨. 2차원 배열
-		for (CamelHashMap file : pagePostList) {
-			int findId = (int) file.get("postId");
-			// 한 게시글의 모든 파일들을 생성함.
-			List<MglgPostFile> fileList = mglgPostFileService.getPostFileList(findId);
-			List<MglgPostFileDTO> fileListDTO = new ArrayList<MglgPostFileDTO>();
-			if (!fileList.isEmpty()) {
-				for (int j = 0; j < fileList.size(); j++) {
-					fileListDTO.add(Load.toHtml(fileList.get(j)));
-					fileListDTO.get(j).setPostId(findId);
-				}
-			}
-			file.put("file_length", fileList.size());
-			file.put("file_list", fileListDTO);
-			System.out.println("확장 페이지의 파일의 개수 : " + file);
-		}
-
-		// 프로필의 정보를 가져오는 부분(가져온 정보는 표시만을 하기위해 사용)
-		for (CamelHashMap post : pagePostList) {
-			int writerId = (int) post.get("userId");
-			MglgUserProfile profile = mglgUserProfileService.getUserImg(writerId);
-
-			MglgUserProfileDTO profileDTO = MglgUserProfileDTO.builder().userId(writerId)
-					.userProfileNm(profile.getUserProfileNm()).userProfileOriginNm(profile.getUserProfileOriginNm())
-					.userProfilePath(profile.getUserProfilePath()).userProfileCate(profile.getUserProfileCate())
-					.build();
-			post.put("profile", profileDTO);
-
-		}
-
-		return ResponseEntity.ok().body(pagePostList);
 	}
 
 	// 내 게시물으로 이동
